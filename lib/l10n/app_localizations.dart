@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Codex Z'**
   String get appName;
 
+  /// No description provided for @home.
+  ///
+  /// In zh, this message translates to:
+  /// **'首页'**
+  String get home;
+
   /// No description provided for @settings.
   ///
   /// In zh, this message translates to:

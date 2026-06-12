@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Codex Z';
 
   @override
+  String get home => 'Home';
+
+  @override
   String get settings => 'Settings';
 
   @override

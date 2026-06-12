@@ -12,6 +12,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appName => 'Codex Z';
 
   @override
+  String get home => '首页';
+
+  @override
   String get settings => '设置';
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:codex_z/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,4 +29,22 @@ extension BuildContextExtensions on BuildContext {
   bool get isZh => Localizations.localeOf(this).languageCode == 'zh';
 
   bool get isEn => Localizations.localeOf(this).languageCode == 'en';
+}
+
+extension ResponsiveSizeExtensions on num {
+  double cw({double min = 0, double max = double.infinity}) {
+    return w.clamp(min, max).toDouble();
+  }
+
+  double ch({double min = 0, double max = double.infinity}) {
+    return h.clamp(min, max).toDouble();
+  }
+
+  double csp({double min = 0, double max = double.infinity}) {
+    return sp.clamp(min, max).toDouble();
+  }
+
+  double cr({double min = 0, double max = double.infinity}) {
+    return r.clamp(min, max).toDouble();
+  }
 }

@@ -1,6 +1,7 @@
 {
   "@@locale": "zh",
   "appName": "Codex Z",
+  "home": "首页",
   "settings": "设置",
   "pageNotFound": "页面不存在",
   "unknownRouteError": "未知路由错误",

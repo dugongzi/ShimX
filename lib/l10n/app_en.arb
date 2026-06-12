@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appName": "Codex Z",
+  "home": "Home",
   "settings": "Settings",
   "pageNotFound": "Page not found",
   "unknownRouteError": "Unknown route error",

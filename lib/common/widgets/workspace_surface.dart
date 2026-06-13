@@ -14,11 +14,13 @@ class WorkspaceSurface extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surface.withValues(
-          alpha: context.isDark ? 0.52 : 0.72,
+          alpha: context.isDark ? 0.78 : 0.72,
         ),
         borderRadius: BorderRadius.circular(AppSizes.cardRadius + 8),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.28),
+          color: colorScheme.outlineVariant.withValues(
+            alpha: context.isDark ? 0.16 : 0.28,
+          ),
         ),
       ),
       clipBehavior: Clip.none,

@@ -35,11 +35,19 @@ class SettingsTab extends ConsumerWidget {
           SettingCard(
             icon: Icons.language_rounded,
             title: context.l10n.systemLanguage,
-            description: locale.languageCode == 'zh' ? '简体中文' : 'English',
+            description: locale.languageCode == 'zh'
+                ? context.l10n.chineseLanguage
+                : context.l10n.englishLanguage,
             child: SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'zh', label: Text('ZH')),
-                ButtonSegment(value: 'en', label: Text('EN')),
+              segments: [
+                ButtonSegment(
+                  value: 'zh',
+                  label: Text(context.l10n.chineseLanguage),
+                ),
+                ButtonSegment(
+                  value: 'en',
+                  label: Text(context.l10n.englishLanguage),
+                ),
               ],
               selected: {locale.languageCode},
               onSelectionChanged: (value) {
@@ -55,13 +63,22 @@ class SettingsTab extends ConsumerWidget {
           SizedBox(height: AppSizes.itemGap),
           SettingCard(
             icon: Icons.dark_mode_rounded,
-            title: 'Theme mode',
-            description: themeMode.name,
+            title: context.l10n.themeMode,
+            description: themeMode.localizedName(context),
             child: SegmentedButton<ThemeMode>(
-              segments: const [
-                ButtonSegment(value: ThemeMode.system, label: Text('Auto')),
-                ButtonSegment(value: ThemeMode.light, label: Text('Light')),
-                ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
+              segments: [
+                ButtonSegment(
+                  value: ThemeMode.system,
+                  label: Text(context.l10n.systemTheme),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.light,
+                  label: Text(context.l10n.lightTheme),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.dark,
+                  label: Text(context.l10n.darkTheme),
+                ),
               ],
               selected: {themeMode},
               onSelectionChanged: (value) {
@@ -99,7 +116,7 @@ class SettingsTab extends ConsumerWidget {
                     },
                   ),
                 IconButton.filledTonal(
-                  tooltip: 'Reset',
+                  tooltip: context.l10n.reset,
                   onPressed: () {
                     ref.read(themeColorProvider.notifier).resetPrimaryColor();
                   },
@@ -110,7 +127,7 @@ class SettingsTab extends ConsumerWidget {
           ),
           SizedBox(height: AppSizes.sectionGap),
           Text(
-            'These settings are persisted with SharedPreferencesAsync.',
+            context.l10n.settingsPersistedDescription,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -118,6 +135,16 @@ class SettingsTab extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+extension on ThemeMode {
+  String localizedName(BuildContext context) {
+    return switch (this) {
+      ThemeMode.system => context.l10n.systemTheme,
+      ThemeMode.light => context.l10n.lightTheme,
+      ThemeMode.dark => context.l10n.darkTheme,
+    };
   }
 }
 

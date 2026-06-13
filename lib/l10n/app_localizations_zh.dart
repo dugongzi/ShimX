@@ -45,7 +45,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get injectReadyStatus => '等待注入';
 
   @override
+  String get readyStatus => '就绪';
+
+  @override
   String get systemLanguage => '系统语言';
+
+  @override
+  String get chineseLanguage => '简体中文';
+
+  @override
+  String get englishLanguage => '英语';
+
+  @override
+  String get themeMode => '主题模式';
+
+  @override
+  String get systemTheme => '跟随系统';
 
   @override
   String get lightTheme => '浅色模式';
@@ -55,4 +70,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get primaryColor => '主题色';
+
+  @override
+  String get reset => '重置';
+
+  @override
+  String get settingsPersistedDescription =>
+      '这些设置会通过 SharedPreferencesAsync 持久化保存。';
 }

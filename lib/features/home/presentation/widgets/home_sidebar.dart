@@ -135,7 +135,7 @@ class SidebarStatus extends StatelessWidget {
           SizedBox(width: AppSizes.itemGap),
           Expanded(
             child: Text(
-              'Ready',
+              context.l10n.readyStatus,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(

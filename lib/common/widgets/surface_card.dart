@@ -26,7 +26,7 @@ class SurfaceCard extends StatelessWidget {
       padding: padding ?? EdgeInsets.all(14.cw(min: 12, max: 16)),
       decoration: BoxDecoration(
         color: colorScheme.surface.withValues(
-          alpha: context.isDark ? 0.70 : 0.82,
+          alpha: context.isDark ? 0.88 : 0.82,
         ),
         borderRadius: BorderRadius.circular(AppSizes.cardRadius + 2),
         border: Border.all(

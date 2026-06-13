@@ -46,7 +46,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get injectReadyStatus => 'Ready to inject';
 
   @override
+  String get readyStatus => 'Ready';
+
+  @override
   String get systemLanguage => 'System language';
+
+  @override
+  String get chineseLanguage => 'Simplified Chinese';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get themeMode => 'Theme mode';
+
+  @override
+  String get systemTheme => 'System';
 
   @override
   String get lightTheme => 'Light mode';
@@ -56,4 +71,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get primaryColor => 'Primary color';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get settingsPersistedDescription =>
+      'These settings are persisted with SharedPreferencesAsync.';
 }

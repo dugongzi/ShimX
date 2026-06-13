@@ -12,8 +12,15 @@
   "injectPanelTitle": "UI Injection",
   "injectPanelDescription": "Inject the Codex Z control surface into the target environment for connection, debugging, and operation.",
   "injectReadyStatus": "Ready to inject",
+  "readyStatus": "Ready",
   "systemLanguage": "System language",
+  "chineseLanguage": "Simplified Chinese",
+  "englishLanguage": "English",
+  "themeMode": "Theme mode",
+  "systemTheme": "System",
   "lightTheme": "Light mode",
   "darkTheme": "Dark mode",
-  "primaryColor": "Primary color"
+  "primaryColor": "Primary color",
+  "reset": "Reset",
+  "settingsPersistedDescription": "These settings are persisted with SharedPreferencesAsync."
 }

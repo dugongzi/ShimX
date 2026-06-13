@@ -170,11 +170,41 @@ abstract class AppLocalizations {
   /// **'等待注入'**
   String get injectReadyStatus;
 
+  /// No description provided for @readyStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'就绪'**
+  String get readyStatus;
+
   /// No description provided for @systemLanguage.
   ///
   /// In zh, this message translates to:
   /// **'系统语言'**
   String get systemLanguage;
+
+  /// No description provided for @chineseLanguage.
+  ///
+  /// In zh, this message translates to:
+  /// **'简体中文'**
+  String get chineseLanguage;
+
+  /// No description provided for @englishLanguage.
+  ///
+  /// In zh, this message translates to:
+  /// **'英语'**
+  String get englishLanguage;
+
+  /// No description provided for @themeMode.
+  ///
+  /// In zh, this message translates to:
+  /// **'主题模式'**
+  String get themeMode;
+
+  /// No description provided for @systemTheme.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get systemTheme;
 
   /// No description provided for @lightTheme.
   ///
@@ -193,6 +223,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'主题色'**
   String get primaryColor;
+
+  /// No description provided for @reset.
+  ///
+  /// In zh, this message translates to:
+  /// **'重置'**
+  String get reset;
+
+  /// No description provided for @settingsPersistedDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'这些设置会通过 SharedPreferencesAsync 持久化保存。'**
+  String get settingsPersistedDescription;
 }
 
 class _AppLocalizationsDelegate

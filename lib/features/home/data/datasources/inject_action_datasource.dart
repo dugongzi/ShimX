@@ -11,13 +11,9 @@ import 'package:web_socket_channel/io.dart';
 class InjectActionDatasource {
   static const String _injectAssetPath = 'assets/inject/codex_enhance.js';
 
-  /// 开发模式下优先读这个外部文件，方便改 JS 立刻生效
-  static String get _devInjectScriptPath {
-    if (Platform.isWindows) {
-      return r'C:\shim_dev\codex_enhance.js';
-    }
-    return '${Platform.environment['HOME']}/.shim/codex_enhance.js';
-  }
+  /// debug 模式下直接读这个源码文件，改完立刻生效（零重启）
+  static const String _devSourcePath =
+      r'F:\Programming_projects\FlutterProject\shim\assets\inject\codex_enhance.js';
 
   final Dio _dio;
 
@@ -151,12 +147,14 @@ class InjectActionDatasource {
     throw TimeoutException('No page target on port $debugPort');
   }
 
-  /// 加载注入脚本：debug 模式优先读外部文件，否则读 asset
+  /// 加载注入脚本：
+  /// - debug 模式直接读项目源码下的 codex_enhance.js（改完立刻生效）
+  /// - release 模式读打包进 app 的 asset
   Future<String> loadInjectScript() async {
     if (kDebugMode) {
-      final file = File(_devInjectScriptPath);
-      if (await file.exists()) {
-        return file.readAsString();
+      final source = File(_devSourcePath);
+      if (await source.exists()) {
+        return source.readAsString();
       }
     }
     return rootBundle.loadString(_injectAssetPath);
@@ -168,15 +166,18 @@ class InjectActionDatasource {
   }) async {
     final wsUrl = await _findPageWebSocketUrl(debugPort);
     final channel = IOWebSocketChannel.connect(Uri.parse(wsUrl));
+    final broadcast = channel.stream.asBroadcastStream();
     try {
       await _sendCommand(
         channel,
+        broadcast,
         id: 1,
         method: 'Page.addScriptToEvaluateOnNewDocument',
         params: {'source': script},
       );
       await _sendCommand(
         channel,
+        broadcast,
         id: 2,
         method: 'Runtime.evaluate',
         params: {
@@ -205,13 +206,14 @@ class InjectActionDatasource {
   }
 
   Future<Map<String, dynamic>> _sendCommand(
-    IOWebSocketChannel channel, {
+    IOWebSocketChannel channel,
+    Stream<dynamic> broadcast, {
     required int id,
     required String method,
     Map<String, dynamic>? params,
   }) async {
     final completer = Completer<Map<String, dynamic>>();
-    final subscription = channel.stream.listen((raw) {
+    final subscription = broadcast.listen((raw) {
       final msg = jsonDecode(raw as String) as Map<String, dynamic>;
       if (msg['id'] == id && !completer.isCompleted) {
         completer.complete(msg);

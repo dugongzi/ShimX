@@ -9,7 +9,7 @@
   const MENU_ITEM_ID = '__shim_menu_item__';
   const POPOVER_ID = '__shim_popover__';
 
-  const BADGE_ANCHOR_SVG_D_PREFIX = 'M12.6683 4.16699C12.6683 3.84391';
+  const BADGE_ANCHOR_SVG_D_PREFIX = 'M16.835 8.66301C16.835 7.71885';
   const SETTINGS_ANCHOR_SVG_D_PREFIX = 'M9.99944 7.24939';
 
   const SHIM_ICON_SVG = `
@@ -72,7 +72,7 @@
       if (d && d.startsWith(BADGE_ANCHOR_SVG_D_PREFIX)) {
         const button = path.closest('button');
         if (!button) continue;
-        return button.parentElement?.parentElement ?? button.parentElement;
+        return button.parentElement;
       }
     }
     return null;
@@ -262,11 +262,259 @@
     document.addEventListener('keydown', onPopoverKey, true);
   }
 
+  // ========== Toast 提示（用 Codex 主题） ==========
+
+  const TOAST_CONTAINER_ID = '__shim_toast_container__';
+
+  function ensureToastContainer() {
+    let container = document.getElementById(TOAST_CONTAINER_ID);
+    if (container) return container;
+    container = document.createElement('div');
+    container.id = TOAST_CONTAINER_ID;
+    Object.assign(container.style, {
+      position: 'fixed',
+      top: '20px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: '2147483647',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px',
+      pointerEvents: 'none',
+    });
+    document.body.appendChild(container);
+    return container;
+  }
+
+  function showToast(message, kind = 'info') {
+    const container = ensureToastContainer();
+    const toast = document.createElement('div');
+    toast.className =
+      'bg-token-dropdown-background/95 text-token-foreground ring-token-border shadow-xl-spread backdrop-blur-sm';
+    Object.assign(toast.style, {
+      padding: '10px 16px',
+      borderRadius: '12px',
+      fontSize: '13px',
+      fontWeight: '500',
+      maxWidth: '420px',
+      outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
+      pointerEvents: 'auto',
+      borderLeft: `3px solid ${
+        kind === 'error' ? '#ef4444' : kind === 'success' ? '#22c55e' : '#3b82f6'
+      }`,
+      opacity: '0',
+      transform: 'translateY(-8px)',
+      transition: 'opacity 0.2s, transform 0.2s',
+    });
+    toast.textContent = message;
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+    });
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-8px)';
+      setTimeout(() => toast.remove(), 200);
+    }, 3000);
+  }
+
+  // ========== 删除确认对话框（用 Codex 主题） ==========
+
+  const CONFIRM_DIALOG_ID = '__shim_confirm_dialog__';
+
+  function showDeleteConfirm(title) {
+    return new Promise((resolve) => {
+      document.getElementById(CONFIRM_DIALOG_ID)?.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = CONFIRM_DIALOG_ID;
+      Object.assign(overlay.style, {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '2147483647',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0, 0, 0, 0.4)',
+        backdropFilter: 'blur(2px)',
+      });
+
+      const dialog = document.createElement('div');
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-modal', 'true');
+      dialog.className =
+        'bg-token-dropdown-background/95 text-token-foreground ring-token-border shadow-xl-spread backdrop-blur-sm';
+      Object.assign(dialog.style, {
+        minWidth: '320px',
+        maxWidth: '420px',
+        padding: '20px 22px',
+        borderRadius: '16px',
+        outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+        boxShadow: '0 24px 64px rgba(0, 0, 0, 0.4)',
+      });
+
+      const heading = document.createElement('div');
+      heading.textContent = '删除对话';
+      Object.assign(heading.style, {
+        fontSize: '15px',
+        fontWeight: '700',
+        marginBottom: '8px',
+      });
+
+      const desc = document.createElement('div');
+      desc.className = 'text-token-description-foreground';
+      desc.style.fontSize = '13px';
+      desc.style.lineHeight = '1.5';
+      desc.style.marginBottom = '18px';
+      desc.textContent = `确定删除「${title}」？此操作不可逆。`;
+
+      const actions = document.createElement('div');
+      Object.assign(actions.style, {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        gap: '8px',
+      });
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.textContent = '取消';
+      cancelBtn.className =
+        'border-token-border no-drag cursor-interaction flex items-center gap-1 border whitespace-nowrap select-none focus:outline-none rounded-full text-token-foreground hover:bg-token-list-hover-background px-3 py-1.5 text-sm';
+
+      const okBtn = document.createElement('button');
+      okBtn.type = 'button';
+      okBtn.textContent = '删除';
+      okBtn.className =
+        'no-drag cursor-interaction flex items-center gap-1 whitespace-nowrap select-none focus:outline-none rounded-full px-3 py-1.5 text-sm font-semibold';
+      Object.assign(okBtn.style, {
+        background: '#dc2626',
+        color: '#fff',
+        border: '0',
+      });
+      okBtn.addEventListener('mouseenter', () => {
+        okBtn.style.background = '#b91c1c';
+      });
+      okBtn.addEventListener('mouseleave', () => {
+        okBtn.style.background = '#dc2626';
+      });
+
+      actions.appendChild(cancelBtn);
+      actions.appendChild(okBtn);
+      dialog.appendChild(heading);
+      dialog.appendChild(desc);
+      dialog.appendChild(actions);
+      overlay.appendChild(dialog);
+      document.body.appendChild(overlay);
+
+      const cleanup = (result) => {
+        document.removeEventListener('keydown', onKey, true);
+        overlay.remove();
+        resolve(result);
+      };
+      const onKey = (e) => {
+        if (e.key === 'Escape') cleanup(false);
+        if (e.key === 'Enter') cleanup(true);
+      };
+
+      overlay.addEventListener('mousedown', (e) => {
+        if (e.target === overlay) cleanup(false);
+      });
+      cancelBtn.addEventListener('click', () => cleanup(false));
+      okBtn.addEventListener('click', () => cleanup(true));
+      document.addEventListener('keydown', onKey, true);
+
+      setTimeout(() => okBtn.focus(), 0);
+    });
+  }
+
+  // ========== 会话删除按钮 ==========
+
+  const DELETE_BUTTON_FLAG = 'data-shim-delete-added';
+
+  function buildDeleteButton(row) {
+    const wrapper = document.createElement('span');
+    wrapper.setAttribute('data-state', 'closed');
+    wrapper.className = 'contents';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-label', '删除对话');
+    btn.className =
+      'border-token-border no-drag cursor-interaction flex items-center gap-1 border whitespace-nowrap select-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 rounded-full electron:rounded-md text-token-muted-foreground enabled:hover:bg-transparent data-[state=open]:bg-transparent hover:text-token-foreground border-transparent electron:p-1 electron:[&>svg]:icon-sm flex items-center justify-center p-0.5 !h-5 !w-5 !p-0 opacity-50 hover:opacity-100 focus-visible:opacity-100 [&>svg]:!h-4 [&>svg]:!w-4';
+    btn.style.color = '#ef4444';
+
+    btn.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.33301 3.33301H11.667C12.0341 3.33301 12.332 3.63087 12.332 3.99805V4.66602H7.66797V3.99805C7.66797 3.63087 7.96586 3.33301 8.33301 3.33301ZM6.33789 4.66602V3.99805C6.33789 2.89623 7.23119 2.00293 8.33301 2.00293H11.667C12.7688 2.00293 13.6621 2.89623 13.6621 3.99805V4.66602H16.667C17.0342 4.66602 17.332 4.96383 17.332 5.33105C17.332 5.69826 17.0342 5.99609 16.667 5.99609H15.6191L14.7891 14.5479C14.6553 15.917 13.5045 16.9648 12.1289 16.9648H7.87109C6.49551 16.9648 5.34469 15.917 5.21094 14.5479L4.38086 5.99609H3.33301C2.96586 5.99609 2.66797 5.69826 2.66797 5.33105C2.66797 4.96383 2.96586 4.66602 3.33301 4.66602H6.33789ZM6.53516 14.4189C6.59995 15.082 7.20566 15.6348 7.87109 15.6348H12.1289C12.7944 15.6348 13.4001 15.082 13.4648 14.4189L14.2832 5.99609H5.7168L6.53516 14.4189Z" fill="currentColor"/>
+      </svg>
+    `;
+
+    btn.addEventListener('click', async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const title = row.getAttribute('data-app-action-sidebar-thread-title') ||
+        row.querySelector('[data-thread-title]')?.textContent?.trim() || '此对话';
+      const ok = await showDeleteConfirm(title);
+      if (!ok) return;
+
+      const rawId = row.getAttribute('data-app-action-sidebar-thread-id') || '';
+      const id = rawId.includes(':') ? rawId.split(':').slice(1).join(':') : rawId;
+      if (!id) {
+        showToast('未找到会话 id', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      console.log('[shim] /session/delete request', { id, rawId, title });
+      try {
+        const res = await window.shim('/session/delete', { id });
+        console.log('[shim] /session/delete response', res);
+        if (res?.code !== 0) {
+          showToast(`删除失败：${res?.message || '未知错误'}`, 'error');
+          btn.disabled = false;
+          return;
+        }
+        const container =
+          row.closest('[role="listitem"]') || row.closest('.after\\:block') || row;
+        container.remove();
+        showToast('已删除', 'success');
+      } catch (err) {
+        console.error('[shim] /session/delete failed', err);
+        showToast(`删除失败：${err?.message || err}`, 'error');
+        btn.disabled = false;
+      }
+    });
+
+    wrapper.appendChild(btn);
+    return wrapper;
+  }
+
+  function ensureDeleteButtons() {
+    const rows = document.querySelectorAll(
+      '[data-app-action-sidebar-thread-row]',
+    );
+    for (const row of rows) {
+      if (row.getAttribute(DELETE_BUTTON_FLAG) === '1') continue;
+      const archiveButton = row.querySelector(
+        'button[aria-label="归档对话"]',
+      );
+      if (!archiveButton) continue;
+      const actionGroup = archiveButton.closest('span.contents')?.parentElement;
+      if (!actionGroup) continue;
+      const deleteWrapper = buildDeleteButton(row);
+      actionGroup.appendChild(deleteWrapper);
+      row.setAttribute(DELETE_BUTTON_FLAG, '1');
+    }
+  }
+
   // ========== 总调度 ==========
 
   function ensureAll() {
     ensureBadge();
     ensureShimMenuItem();
+    ensureDeleteButtons();
   }
 
   ensureAll();

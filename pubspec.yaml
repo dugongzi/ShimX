@@ -27,6 +27,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   drift: ^2.19.1+1
   sqlite3_flutter_libs: ^0.5.42
+  sqlite3: ^2.4.0
   path: ^1.9.1
   file_picker: ^8.0.7
   url_launcher: ^6.3.2

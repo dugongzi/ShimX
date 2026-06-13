@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/core/services/cdp_service.dart';
+import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 import 'package:shim/features/home/data/datasources/inject_action_datasource.dart';
 import 'package:shim/features/home/data/repositories/inject_action_repository_impl.dart';
 import 'package:shim/features/home/domain/repositories/inject_action_repository.dart';
@@ -74,6 +75,7 @@ Future<void> injectToRunningPort(Ref ref, {required int debugPort}) async {
   final repo = ref.read(injectActionRepositoryProvider);
   final cdp = ref.read(cdpServiceProvider);
   final bridge = ref.read(bridgeServiceProvider);
+  ref.read(codexSessionRouteRegistrationProvider);
   final script = await repo.loadInjectScript();
   await cdp.connect(debugPort);
   await bridge.install(documentScripts: [script]);
@@ -90,6 +92,7 @@ Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
   final repo = ref.read(injectActionRepositoryProvider);
   final cdp = ref.read(cdpServiceProvider);
   final bridge = ref.read(bridgeServiceProvider);
+  ref.read(codexSessionRouteRegistrationProvider);
   final path = await ref.read(codexAppPathProvider.future);
   final hasPath = path != null && path.isNotEmpty;
 

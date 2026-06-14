@@ -50,29 +50,44 @@ class HomeSidebar extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SidebarBrand(title: title),
-            SizedBox(height: AppSizes.sectionGap),
-            Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                itemCount: children.length,
-                separatorBuilder: (context, index) =>
-                    SizedBox(height: AppSizes.itemGap),
-                itemBuilder: (context, index) => children[index],
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SidebarBrand(title: title),
+                  SizedBox(height: AppSizes.sectionGap),
+                ],
               ),
             ),
-            const OpenInspectorButton(debugPort: 9229),
-            SizedBox(height: AppSizes.itemGap),
-            const ReloadCodexButton(debugPort: 9229),
-            SizedBox(height: AppSizes.itemGap),
-            const InjectButton(debugPort: 9229),
-            SizedBox(height: AppSizes.itemGap),
-            const SidebarStatus(),
-            SizedBox(height: AppSizes.itemGap),
-            const ProxyStatus(),
+            // 导航 tab 列表
+            SliverList.separated(
+              itemCount: children.length,
+              separatorBuilder: (context, index) =>
+                  SizedBox(height: AppSizes.itemGap),
+              itemBuilder: (context, index) => children[index],
+            ),
+            // 底部按钮组：窗口够高时贴底，矮时整体可滚不溢出
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(height: AppSizes.sectionGap),
+                  const OpenInspectorButton(debugPort: 9229),
+                  SizedBox(height: AppSizes.itemGap),
+                  const ReloadCodexButton(debugPort: 9229),
+                  SizedBox(height: AppSizes.itemGap),
+                  const InjectButton(debugPort: 9229),
+                  SizedBox(height: AppSizes.itemGap),
+                  const SidebarStatus(),
+                  SizedBox(height: AppSizes.itemGap),
+                  const ProxyStatus(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

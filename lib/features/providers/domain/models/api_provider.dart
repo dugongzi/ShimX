@@ -21,7 +21,7 @@ abstract class ApiProvider with _$ApiProvider {
     /// 当前选中模型（null = 不覆盖，用 Codex 自己选的）
     required String? selectedModel,
 
-    /// 上游协议：'responses'（默认）| 'chat'
+    /// 上游协议：'responses'（默认）| 'chat' | 'messages'
     required String wireApi,
   }) = _ApiProvider;
 }

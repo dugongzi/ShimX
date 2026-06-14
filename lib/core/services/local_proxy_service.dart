@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:shim/core/services/anthropic_messages_transformer.dart';
 import 'package:shim/core/services/chat_to_responses_transformer.dart';
 
 final localProxyRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
@@ -41,7 +42,7 @@ class ProxyTarget {
   /// 覆盖请求 body 的 model（null = 不改，用 Codex 自己选的）
   final String? model;
 
-  /// 上游协议：'responses'（默认）| 'chat'
+  /// 上游协议：'responses'（默认）| 'chat' | 'messages'
   final String wireApi;
 }
 
@@ -125,6 +126,7 @@ class LocalProxyService {
     }
 
     final isChat = target.wireApi == 'chat';
+    final isMessages = target.wireApi == 'messages';
     // ignore: avoid_print
     print('[Proxy] 转发 → $upstreamUri model=${target.model ?? "(透传)"} '
         'wire=${target.wireApi}');
@@ -135,12 +137,18 @@ class LocalProxyService {
       final upstreamRequest = await client.openUrl(request.method, upstreamUri);
       _copyRequestHeaders(request, upstreamRequest, upstreamUri.host);
       upstreamRequest.headers.set('authorization', 'Bearer ${target.apiKey}');
+      if (isMessages) {
+        upstreamRequest.headers.set('x-api-key', target.apiKey);
+        upstreamRequest.headers.set('anthropic-version', '2023-06-01');
+      }
 
-      // chat 协议：请求体 Responses→Chat 转换；否则仅按需改写 model。
+      // chat/messages 协议：请求体转换；否则仅按需改写 model。
       final bodyBytes = await _collectBody(request);
       final outBytes = isChat
           ? convertResponsesBodyToChat(bodyBytes, target.model)
-          : _rewriteModelIfNeeded(bodyBytes, target.model);
+          : isMessages
+              ? convertResponsesBodyToAnthropicMessages(bodyBytes, target.model)
+              : _rewriteModelIfNeeded(bodyBytes, target.model);
       upstreamRequest.headers.contentLength = outBytes.length;
       upstreamRequest.add(outBytes);
       final upstreamResponse = await upstreamRequest.close();
@@ -154,6 +162,11 @@ class LocalProxyService {
         request.response.statusCode = 200;
         responseStarted = true;
         await ChatToResponsesTransformer()
+            .transform(upstreamResponse, request.response);
+      } else if (isMessages && upstreamResponse.statusCode == 200) {
+        request.response.statusCode = 200;
+        responseStarted = true;
+        await AnthropicMessagesToResponsesTransformer()
             .transform(upstreamResponse, request.response);
       } else {
         request.response.statusCode = upstreamResponse.statusCode;
@@ -174,8 +187,8 @@ class LocalProxyService {
   }
 
   /// 真实 base_url 的 scheme/host/port + 请求 path/query。
-  /// wireApi == 'chat' 时把 path 改为 base_url path 前缀 + /chat/completions，
-  /// 让只支持 chat 端点的供应商也能用。
+  /// wireApi == 'chat' 时改为 base_url path 前缀 + /chat/completions。
+  /// wireApi == 'messages' 时改为 base_url path 前缀 + /messages。
   Uri? _resolveUpstreamUri(String baseUrl, Uri requestUri, String wireApi) {
     final base = Uri.tryParse(baseUrl);
     if (base == null || base.host.isEmpty) return null;
@@ -183,6 +196,9 @@ class LocalProxyService {
     if (wireApi == 'chat') {
       final prefix = base.path.replaceAll(RegExp(r'/+$'), '');
       path = '$prefix/chat/completions';
+    } else if (wireApi == 'messages') {
+      final prefix = base.path.replaceAll(RegExp(r'/+$'), '');
+      path = '$prefix/messages';
     } else {
       path = requestUri.path;
     }

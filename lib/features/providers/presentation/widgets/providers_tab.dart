@@ -264,6 +264,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                   segments: const [
                     ButtonSegment(value: 'responses', label: Text('Responses')),
                     ButtonSegment(value: 'chat', label: Text('Chat')),
+                    ButtonSegment(value: 'messages', label: Text('Messages')),
                   ],
                   selected: {_wireApi},
                   onSelectionChanged: (v) =>

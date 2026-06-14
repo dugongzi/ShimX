@@ -17,7 +17,7 @@ mixin _$ApiProvider {
  String get id; String get name;/// 例：https://api.muxueai.pro/v1
  String get baseUrl; String get apiKey;/// 可选模型列表
  List<String> get models;/// 当前选中模型（null = 不覆盖，用 Codex 自己选的）
- String? get selectedModel;/// 上游协议：'responses'（默认）| 'chat'
+ String? get selectedModel;/// 上游协议：'responses'（默认）| 'chat' | 'messages'
  String get wireApi;
 /// Create a copy of ApiProvider
 /// with the given fields replaced by the non-null parameter values.
@@ -235,7 +235,7 @@ class _ApiProvider extends ApiProvider {
 
 /// 当前选中模型（null = 不覆盖，用 Codex 自己选的）
 @override final  String? selectedModel;
-/// 上游协议：'responses'（默认）| 'chat'
+/// 上游协议：'responses'（默认）| 'chat' | 'messages'
 @override final  String wireApi;
 
 /// Create a copy of ApiProvider

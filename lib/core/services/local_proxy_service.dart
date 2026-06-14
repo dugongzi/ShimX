@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shim/core/services/anthropic_messages_transformer.dart';
 import 'package:shim/core/services/chat_to_responses_transformer.dart';
+import 'package:shim/core/services/llm_protocol_converter.dart';
 
 final localProxyRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
   final notifier = ValueNotifier<int?>(null);
@@ -145,10 +145,20 @@ class LocalProxyService {
       // chat/messages 协议：请求体转换；否则仅按需改写 model。
       final bodyBytes = await _collectBody(request);
       final outBytes = isChat
-          ? convertResponsesBodyToChat(bodyBytes, target.model)
+          ? convertLlmProtocolBody(
+              bodyBytes,
+              from: LlmWireProtocol.responses,
+              to: LlmWireProtocol.chat,
+              overrideModel: target.model,
+            )
           : isMessages
-              ? convertResponsesBodyToAnthropicMessages(bodyBytes, target.model)
-              : _rewriteModelIfNeeded(bodyBytes, target.model);
+              ? convertLlmProtocolBody(
+                  bodyBytes,
+                  from: LlmWireProtocol.responses,
+                  to: LlmWireProtocol.messages,
+                  overrideModel: target.model,
+                )
+              : rewriteJsonModel(bodyBytes, target.model);
       upstreamRequest.headers.contentLength = outBytes.length;
       upstreamRequest.add(outBytes);
       final upstreamResponse = await upstreamRequest.close();
@@ -213,19 +223,6 @@ class LocalProxyService {
 
   Future<List<int>> _collectBody(HttpRequest request) {
     return request.fold<List<int>>(<int>[], (acc, chunk) => acc..addAll(chunk));
-  }
-
-  /// model 非空则改写 body 的 model 字段；解析失败或无需改写时原样返回。
-  List<int> _rewriteModelIfNeeded(List<int> bodyBytes, String? model) {
-    if (model == null || model.isEmpty || bodyBytes.isEmpty) return bodyBytes;
-    try {
-      final decoded = jsonDecode(utf8.decode(bodyBytes));
-      if (decoded is! Map<String, dynamic>) return bodyBytes;
-      decoded['model'] = model;
-      return utf8.encode(jsonEncode(decoded));
-    } catch (_) {
-      return bodyBytes;
-    }
   }
 
   Future<void> _closeWithStatus(HttpResponse response, int statusCode) async {

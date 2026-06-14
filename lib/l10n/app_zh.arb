@@ -32,11 +32,7 @@
   "darkTheme": "深色模式",
   "primaryColor": "主题色",
   "reset": "重置",
-  "codexAppPath": "Codex 路径",
-  "codexAppPathNotSet": "未设置",
-  "selectCodexExecutable": "选择 Codex 可执行文件",
-  "codexAlreadyRunning": "Codex 已在运行，请先关闭",
-  "codexPathRequired": "请先在设置中指定 Codex 路径",
+  "codexNotInstalled": "未检测到已安装的 Codex",
   "launchFailed": "启动失败：{message}",
   "@launchFailed": {
     "placeholders": {
@@ -60,14 +56,6 @@
       "message": {"type": "String"}
     }
   },
-  "codexDetectedTitle": "检测到 Codex 正在运行",
-  "codexDetectedMessage": "检测到的路径：{path}\n\n是否保存此路径并直接注入？",
-  "@codexDetectedMessage": {
-    "placeholders": {
-      "path": {"type": "String"}
-    }
-  },
-  "codexDetectedNoPathMessage": "未能反查到 Codex 路径，是否直接注入到当前窗口？",
   "confirm": "确认",
   "cancel": "取消",
   "settingsPersistedDescription": "这些设置会通过 SharedPreferencesAsync 持久化保存。"

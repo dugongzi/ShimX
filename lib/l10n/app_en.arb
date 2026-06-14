@@ -32,11 +32,7 @@
   "darkTheme": "Dark mode",
   "primaryColor": "Primary color",
   "reset": "Reset",
-  "codexAppPath": "Codex path",
-  "codexAppPathNotSet": "Not set",
-  "selectCodexExecutable": "Select Codex executable",
-  "codexAlreadyRunning": "Codex is already running, please close it first",
-  "codexPathRequired": "Please set the Codex path in settings first",
+  "codexNotInstalled": "Codex is not installed",
   "launchFailed": "Launch failed: {message}",
   "@launchFailed": {
     "placeholders": {
@@ -60,14 +56,6 @@
       "message": {"type": "String"}
     }
   },
-  "codexDetectedTitle": "Codex is already running",
-  "codexDetectedMessage": "Detected path: {path}\n\nSave this path and inject directly?",
-  "@codexDetectedMessage": {
-    "placeholders": {
-      "path": {"type": "String"}
-    }
-  },
-  "codexDetectedNoPathMessage": "Could not detect Codex path. Inject directly into the running window?",
   "confirm": "Confirm",
   "cancel": "Cancel",
   "settingsPersistedDescription": "These settings are persisted with SharedPreferencesAsync."

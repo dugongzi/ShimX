@@ -92,19 +92,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reset => '重置';
 
   @override
-  String get codexAppPath => 'Codex 路径';
-
-  @override
-  String get codexAppPathNotSet => '未设置';
-
-  @override
-  String get selectCodexExecutable => '选择 Codex 可执行文件';
-
-  @override
-  String get codexAlreadyRunning => 'Codex 已在运行，请先关闭';
-
-  @override
-  String get codexPathRequired => '请先在设置中指定 Codex 路径';
+  String get codexNotInstalled => '未检测到已安装的 Codex';
 
   @override
   String launchFailed(String message) {
@@ -148,17 +136,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String openInspectorFailed(String message) {
     return '打开控制台失败：$message';
   }
-
-  @override
-  String get codexDetectedTitle => '检测到 Codex 正在运行';
-
-  @override
-  String codexDetectedMessage(String path) {
-    return '检测到的路径：$path\n\n是否保存此路径并直接注入？';
-  }
-
-  @override
-  String get codexDetectedNoPathMessage => '未能反查到 Codex 路径，是否直接注入到当前窗口？';
 
   @override
   String get confirm => '确认';

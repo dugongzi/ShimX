@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -43,92 +42,6 @@ class InjectActionDatasource {
     } catch (_) {
       return false;
     }
-  }
-
-  /// 通过监听端口反查可执行文件路径，三平台分别实现
-  Future<String?> findExecutableByPort(int debugPort) async {
-    if (Platform.isWindows) {
-      return _findExecutableWindows(debugPort);
-    }
-    if (Platform.isMacOS) {
-      return _findExecutableMacOS(debugPort);
-    }
-    if (Platform.isLinux) {
-      return _findExecutableLinux(debugPort);
-    }
-    return null;
-  }
-
-  Future<String?> _findExecutableWindows(int debugPort) async {
-    final result = await Process.run(
-      'powershell',
-      [
-        '-NoProfile',
-        '-Command',
-        "(Get-Process -Id (Get-NetTCPConnection -LocalPort $debugPort -State Listen -ErrorAction Stop).OwningProcess).Path",
-      ],
-      stdoutEncoding: utf8,
-      stderrEncoding: utf8,
-    );
-    if (result.exitCode != 0) return null;
-    final path = (result.stdout as String).trim();
-    return path.isEmpty ? null : path;
-  }
-
-  Future<int?> _pidByLsof(int debugPort) async {
-    final result = await Process.run(
-      'lsof',
-      ['-nP', '-iTCP:$debugPort', '-sTCP:LISTEN', '-F', 'p'],
-      stdoutEncoding: utf8,
-      stderrEncoding: utf8,
-    );
-    if (result.exitCode != 0) return null;
-    for (final line in (result.stdout as String).split('\n')) {
-      if (line.startsWith('p')) {
-        return int.tryParse(line.substring(1).trim());
-      }
-    }
-    return null;
-  }
-
-  Future<String?> _findExecutableMacOS(int debugPort) async {
-    final pid = await _pidByLsof(debugPort);
-    if (pid == null) return null;
-    final result = await Process.run(
-      'ps',
-      ['-p', '$pid', '-o', 'comm='],
-      stdoutEncoding: utf8,
-      stderrEncoding: utf8,
-    );
-    if (result.exitCode != 0) return null;
-    final path = (result.stdout as String).trim();
-    return path.isEmpty ? null : path;
-  }
-
-  Future<String?> _findExecutableLinux(int debugPort) async {
-    final pid = await _pidByLsof(debugPort);
-    if (pid == null) return null;
-    final link = Link('/proc/$pid/exe');
-    try {
-      return await link.target();
-    } catch (_) {
-      return null;
-    }
-  }
-
-  /// 启动目标程序并附加 --remote-debugging-port 参数
-  Future<void> launchExecutable({
-    required String executablePath,
-    required int debugPort,
-  }) async {
-    await Process.start(
-      executablePath,
-      [
-        '--remote-debugging-port=$debugPort',
-        '--remote-allow-origins=*',
-      ],
-      mode: ProcessStartMode.detached,
-    );
   }
 
   /// 轮询直到出现可注入的 page target 或超时

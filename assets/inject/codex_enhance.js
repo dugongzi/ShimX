@@ -509,6 +509,152 @@
     }
   }
 
+  // ========== API 请求拦截（fetch + XHR） ==========
+
+  const API_PATTERNS = [/\/v1\//, /openai\.com/, /chatgpt\.com/];
+
+  function shouldLogApi(url) {
+    if (!url) return false;
+    return API_PATTERNS.some((re) => re.test(url));
+  }
+
+  function parseHeaders(input) {
+    const result = {};
+    if (!input) return result;
+    if (input instanceof Headers) {
+      input.forEach((value, key) => {
+        result[key] = value;
+      });
+    } else if (Array.isArray(input)) {
+      for (const [k, v] of input) result[k] = v;
+    } else {
+      for (const k of Object.keys(input)) result[k] = input[k];
+    }
+    return result;
+  }
+
+  function installFetchHook() {
+    if (window.__shimFetchHooked) return;
+    window.__shimFetchHooked = true;
+    const origFetch = window.fetch;
+    window.fetch = async function (...args) {
+      const [input, init] = args;
+      const url =
+        typeof input === 'string'
+          ? input
+          : input instanceof Request
+            ? input.url
+            : String(input);
+      const method =
+        (init && init.method) ||
+        (input instanceof Request ? input.method : 'GET');
+      const willLog = shouldLogApi(url);
+
+      let reqHeaders = {};
+      let reqBody = null;
+      if (willLog) {
+        reqHeaders = parseHeaders(
+          (init && init.headers) ||
+            (input instanceof Request ? input.headers : null),
+        );
+        reqBody = init && init.body;
+        if (input instanceof Request && !reqBody) {
+          try {
+            reqBody = await input.clone().text();
+          } catch (_) {}
+        }
+        console.log(
+          '%c[shim:api] →',
+          'color:#60a5fa;font-weight:bold',
+          method,
+          url,
+          { headers: reqHeaders, body: reqBody },
+        );
+      }
+
+      const response = await origFetch.apply(this, args);
+
+      if (willLog) {
+        const ct = response.headers.get('content-type') || '';
+        const isStream =
+          ct.includes('event-stream') || ct.includes('stream');
+        if (isStream) {
+          console.log(
+            '%c[shim:api] ←',
+            'color:#22c55e;font-weight:bold',
+            response.status,
+            url,
+            { contentType: ct, stream: true },
+          );
+          // 不消费 body，避免破坏 SSE 流
+        } else {
+          response
+            .clone()
+            .text()
+            .then((text) => {
+              console.log(
+                '%c[shim:api] ←',
+                'color:#22c55e;font-weight:bold',
+                response.status,
+                url,
+                { contentType: ct, body: text },
+              );
+            })
+            .catch(() => {});
+        }
+      }
+
+      return response;
+    };
+  }
+
+  function installXhrHook() {
+    if (window.__shimXhrHooked) return;
+    window.__shimXhrHooked = true;
+    const OrigXHR = window.XMLHttpRequest;
+    const origOpen = OrigXHR.prototype.open;
+    const origSetHeader = OrigXHR.prototype.setRequestHeader;
+    const origSend = OrigXHR.prototype.send;
+
+    OrigXHR.prototype.open = function (method, url, ...rest) {
+      this.__shimMethod = method;
+      this.__shimUrl = url;
+      this.__shimHeaders = {};
+      this.__shimWillLog = shouldLogApi(url);
+      return origOpen.call(this, method, url, ...rest);
+    };
+
+    OrigXHR.prototype.setRequestHeader = function (key, value) {
+      if (this.__shimWillLog) this.__shimHeaders[key] = value;
+      return origSetHeader.call(this, key, value);
+    };
+
+    OrigXHR.prototype.send = function (body) {
+      if (this.__shimWillLog) {
+        console.log(
+          '%c[shim:api] →',
+          'color:#60a5fa;font-weight:bold',
+          this.__shimMethod,
+          this.__shimUrl,
+          { headers: this.__shimHeaders, body },
+        );
+        this.addEventListener('loadend', () => {
+          console.log(
+            '%c[shim:api] ←',
+            'color:#22c55e;font-weight:bold',
+            this.status,
+            this.__shimUrl,
+            { response: this.responseType === '' || this.responseType === 'text' ? this.responseText : this.response },
+          );
+        });
+      }
+      return origSend.call(this, body);
+    };
+  }
+
+  installFetchHook();
+  installXhrHook();
+
   // ========== 总调度 ==========
 
   function ensureAll() {

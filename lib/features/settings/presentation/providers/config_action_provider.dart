@@ -12,8 +12,3 @@ ConfigActionRepository configActionRepository(Ref ref) {
   final dataSource = ConfigActionDatasource(appStorage: appStorage);
   return ConfigActionRepositoryImpl(dataSource: dataSource);
 }
-
-@riverpod
-Future<void> setCodexAppPath(Ref ref, {required String path}) async {
-  await ref.read(configActionRepositoryProvider).setCodexAppPath(path);
-}

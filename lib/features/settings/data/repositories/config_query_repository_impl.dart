@@ -5,9 +5,4 @@ class ConfigQueryRepositoryImpl implements ConfigQueryRepository {
   final ConfigQueryDatasource dataSource;
 
   ConfigQueryRepositoryImpl({required this.dataSource});
-
-  @override
-  Future<String?> getCodexAppPath() {
-    return dataSource.getCodexAppPath();
-  }
 }

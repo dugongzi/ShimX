@@ -1,12 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/core/services/cdp_service.dart';
+import 'package:shim/core/services/codex_launcher_service.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 import 'package:shim/features/home/data/datasources/inject_action_datasource.dart';
 import 'package:shim/features/home/data/repositories/inject_action_repository_impl.dart';
 import 'package:shim/features/home/domain/repositories/inject_action_repository.dart';
-import 'package:shim/features/settings/presentation/providers/config_query_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'inject_action_provider.g.dart';
@@ -30,13 +30,6 @@ Future<bool> isDebugPortAlive(Ref ref, {required int debugPort}) async {
 }
 
 @riverpod
-Future<String?> findExecutableByPort(Ref ref, {required int debugPort}) async {
-  return ref
-      .read(injectActionRepositoryProvider)
-      .findExecutableByPort(debugPort: debugPort);
-}
-
-@riverpod
 Future<void> openInspector(Ref ref, {required int debugPort}) async {
   final repo = ref.read(injectActionRepositoryProvider);
   final url = await repo.findDevtoolsUrl(debugPort: debugPort);
@@ -44,18 +37,6 @@ Future<void> openInspector(Ref ref, {required int debugPort}) async {
     throw Exception('未检测到 Codex 正在运行');
   }
   await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-}
-
-@riverpod
-Future<void> launchExecutable(
-  Ref ref, {
-  required String executablePath,
-  required int debugPort,
-}) async {
-  await ref.read(injectActionRepositoryProvider).launchExecutable(
-        executablePath: executablePath,
-        debugPort: debugPort,
-      );
 }
 
 @riverpod
@@ -84,51 +65,26 @@ Future<void> injectToRunningPort(Ref ref, {required int debugPort}) async {
 }
 
 /// 完整流程：
-/// - 端口活 + 路径已设 → 直接注入到现有窗口
-/// - 端口活 + 路径未设 → 抛 CodexAlreadyRunningException(detectedPath)，UI 弹窗确认
-/// - 端口不活 + 路径已设 → 启动 → 等就绪 → 注入
-/// - 端口不活 + 路径未设 → 抛 CodexPathNotSetException
+/// - 端口活 → 直接连上现有 Codex 并注入
+/// - 端口不活 → 自动发现 + 启动 Codex（Windows: COM 激活 UWP；macOS: open .app）→ 等就绪 → 注入
+///
+/// Codex 未安装时抛 CodexNotInstalledException
 @riverpod
 Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
-  // 所有 ref 依赖在第一个 await 前读出，之后只用本地引用（避免 provider dispose 后用 ref）
+  // 所有 ref 依赖在第一个 await 前读出（避免 autoDispose provider 在 async gap 后用 ref）
   final repo = ref.read(injectActionRepositoryProvider);
   final cdp = ref.read(cdpServiceProvider);
   final bridge = ref.read(bridgeServiceProvider);
+  final launcher = ref.read(codexLauncherServiceProvider);
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
-  final path = await ref.read(codexAppPathProvider.future);
-  final hasPath = path != null && path.isNotEmpty;
 
-  Future<void> connectAndInject() async {
-    final script = await repo.loadInjectScript();
-    await cdp.connect(debugPort);
-    await bridge.install(documentScripts: [script]);
+  if (!await repo.isDebugPortAlive(debugPort: debugPort)) {
+    await launcher.launchCodex(debugPort: debugPort);
+    await repo.waitForDebugPort(debugPort: debugPort);
   }
 
-  if (await repo.isDebugPortAlive(debugPort: debugPort)) {
-    if (hasPath) {
-      await connectAndInject();
-      return;
-    }
-    final detected = await repo.findExecutableByPort(debugPort: debugPort);
-    throw CodexAlreadyRunningException(detected);
-  }
-
-  if (!hasPath) {
-    throw const CodexPathNotSetException();
-  }
-
-  await repo.launchExecutable(executablePath: path, debugPort: debugPort);
-  await repo.waitForDebugPort(debugPort: debugPort);
-  await connectAndInject();
-}
-
-class CodexPathNotSetException implements Exception {
-  const CodexPathNotSetException();
-}
-
-class CodexAlreadyRunningException implements Exception {
-  final String? detectedPath;
-
-  const CodexAlreadyRunningException(this.detectedPath);
+  final script = await repo.loadInjectScript();
+  await cdp.connect(debugPort);
+  await bridge.install(documentScripts: [script]);
 }

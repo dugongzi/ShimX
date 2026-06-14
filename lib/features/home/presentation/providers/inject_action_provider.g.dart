@@ -174,76 +174,6 @@ final class IsDebugPortAliveFamily extends $Family
   String toString() => r'isDebugPortAliveProvider';
 }
 
-@ProviderFor(findExecutableByPort)
-const findExecutableByPortProvider = FindExecutableByPortFamily._();
-
-final class FindExecutableByPortProvider
-    extends $FunctionalProvider<AsyncValue<String?>, String?, FutureOr<String?>>
-    with $FutureModifier<String?>, $FutureProvider<String?> {
-  const FindExecutableByPortProvider._({
-    required FindExecutableByPortFamily super.from,
-    required int super.argument,
-  }) : super(
-         retry: null,
-         name: r'findExecutableByPortProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$findExecutableByPortHash();
-
-  @override
-  String toString() {
-    return r'findExecutableByPortProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<String?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<String?> create(Ref ref) {
-    final argument = this.argument as int;
-    return findExecutableByPort(ref, debugPort: argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is FindExecutableByPortProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$findExecutableByPortHash() =>
-    r'59ae34404bdf6cfed105e498ca3d9b8136f0ef82';
-
-final class FindExecutableByPortFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<String?>, int> {
-  const FindExecutableByPortFamily._()
-    : super(
-        retry: null,
-        name: r'findExecutableByPortProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  FindExecutableByPortProvider call({required int debugPort}) =>
-      FindExecutableByPortProvider._(argument: debugPort, from: this);
-
-  @override
-  String toString() => r'findExecutableByPortProvider';
-}
-
 @ProviderFor(openInspector)
 const openInspectorProvider = OpenInspectorFamily._();
 
@@ -311,88 +241,6 @@ final class OpenInspectorFamily extends $Family
 
   @override
   String toString() => r'openInspectorProvider';
-}
-
-@ProviderFor(launchExecutable)
-const launchExecutableProvider = LaunchExecutableFamily._();
-
-final class LaunchExecutableProvider
-    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
-    with $FutureModifier<void>, $FutureProvider<void> {
-  const LaunchExecutableProvider._({
-    required LaunchExecutableFamily super.from,
-    required ({String executablePath, int debugPort}) super.argument,
-  }) : super(
-         retry: null,
-         name: r'launchExecutableProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$launchExecutableHash();
-
-  @override
-  String toString() {
-    return r'launchExecutableProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<void> create(Ref ref) {
-    final argument = this.argument as ({String executablePath, int debugPort});
-    return launchExecutable(
-      ref,
-      executablePath: argument.executablePath,
-      debugPort: argument.debugPort,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is LaunchExecutableProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$launchExecutableHash() => r'6e8fc719f5775e5f5e9d43a7463f3f7c317b8879';
-
-final class LaunchExecutableFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<void>,
-          ({String executablePath, int debugPort})
-        > {
-  const LaunchExecutableFamily._()
-    : super(
-        retry: null,
-        name: r'launchExecutableProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  LaunchExecutableProvider call({
-    required String executablePath,
-    required int debugPort,
-  }) => LaunchExecutableProvider._(
-    argument: (executablePath: executablePath, debugPort: debugPort),
-    from: this,
-  );
-
-  @override
-  String toString() => r'launchExecutableProvider';
 }
 
 @ProviderFor(waitForDebugPort)
@@ -577,28 +425,28 @@ final class InjectToRunningPortFamily extends $Family
 }
 
 /// 完整流程：
-/// - 端口活 + 路径已设 → 直接注入到现有窗口
-/// - 端口活 + 路径未设 → 抛 CodexAlreadyRunningException(detectedPath)，UI 弹窗确认
-/// - 端口不活 + 路径已设 → 启动 → 等就绪 → 注入
-/// - 端口不活 + 路径未设 → 抛 CodexPathNotSetException
+/// - 端口活 → 直接连上现有 Codex 并注入
+/// - 端口不活 → 自动发现 + 启动 Codex（Windows: COM 激活 UWP；macOS: open .app）→ 等就绪 → 注入
+///
+/// Codex 未安装时抛 CodexNotInstalledException
 
 @ProviderFor(launchAndInject)
 const launchAndInjectProvider = LaunchAndInjectFamily._();
 
 /// 完整流程：
-/// - 端口活 + 路径已设 → 直接注入到现有窗口
-/// - 端口活 + 路径未设 → 抛 CodexAlreadyRunningException(detectedPath)，UI 弹窗确认
-/// - 端口不活 + 路径已设 → 启动 → 等就绪 → 注入
-/// - 端口不活 + 路径未设 → 抛 CodexPathNotSetException
+/// - 端口活 → 直接连上现有 Codex 并注入
+/// - 端口不活 → 自动发现 + 启动 Codex（Windows: COM 激活 UWP；macOS: open .app）→ 等就绪 → 注入
+///
+/// Codex 未安装时抛 CodexNotInstalledException
 
 final class LaunchAndInjectProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
     with $FutureModifier<void>, $FutureProvider<void> {
   /// 完整流程：
-  /// - 端口活 + 路径已设 → 直接注入到现有窗口
-  /// - 端口活 + 路径未设 → 抛 CodexAlreadyRunningException(detectedPath)，UI 弹窗确认
-  /// - 端口不活 + 路径已设 → 启动 → 等就绪 → 注入
-  /// - 端口不活 + 路径未设 → 抛 CodexPathNotSetException
+  /// - 端口活 → 直接连上现有 Codex 并注入
+  /// - 端口不活 → 自动发现 + 启动 Codex（Windows: COM 激活 UWP；macOS: open .app）→ 等就绪 → 注入
+  ///
+  /// Codex 未安装时抛 CodexNotInstalledException
   const LaunchAndInjectProvider._({
     required LaunchAndInjectFamily super.from,
     required int super.argument,
@@ -642,13 +490,13 @@ final class LaunchAndInjectProvider
   }
 }
 
-String _$launchAndInjectHash() => r'0210168402c9b83c9585079fd6f39ac1ece7fe10';
+String _$launchAndInjectHash() => r'f0d230907abe87b44388f3d95658be27e2f287a2';
 
 /// 完整流程：
-/// - 端口活 + 路径已设 → 直接注入到现有窗口
-/// - 端口活 + 路径未设 → 抛 CodexAlreadyRunningException(detectedPath)，UI 弹窗确认
-/// - 端口不活 + 路径已设 → 启动 → 等就绪 → 注入
-/// - 端口不活 + 路径未设 → 抛 CodexPathNotSetException
+/// - 端口活 → 直接连上现有 Codex 并注入
+/// - 端口不活 → 自动发现 + 启动 Codex（Windows: COM 激活 UWP；macOS: open .app）→ 等就绪 → 注入
+///
+/// Codex 未安装时抛 CodexNotInstalledException
 
 final class LaunchAndInjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, int> {
@@ -662,10 +510,10 @@ final class LaunchAndInjectFamily extends $Family
       );
 
   /// 完整流程：
-  /// - 端口活 + 路径已设 → 直接注入到现有窗口
-  /// - 端口活 + 路径未设 → 抛 CodexAlreadyRunningException(detectedPath)，UI 弹窗确认
-  /// - 端口不活 + 路径已设 → 启动 → 等就绪 → 注入
-  /// - 端口不活 + 路径未设 → 抛 CodexPathNotSetException
+  /// - 端口活 → 直接连上现有 Codex 并注入
+  /// - 端口不活 → 自动发现 + 启动 Codex（Windows: COM 激活 UWP；macOS: open .app）→ 等就绪 → 注入
+  ///
+  /// Codex 未安装时抛 CodexNotInstalledException
 
   LaunchAndInjectProvider call({required int debugPort}) =>
       LaunchAndInjectProvider._(argument: debugPort, from: this);

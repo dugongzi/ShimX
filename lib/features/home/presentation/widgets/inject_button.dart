@@ -1,8 +1,6 @@
 import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shim/core/services/codex_launcher_service.dart';
 import 'package:shim/features/home/presentation/providers/inject_action_provider.dart';
-import 'package:shim/features/home/presentation/widgets/codex_detected_dialog.dart';
-import 'package:shim/features/settings/presentation/providers/config_action_provider.dart';
-import 'package:shim/features/settings/presentation/providers/config_query_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -47,26 +45,10 @@ class InjectButton extends HookConsumerWidget {
     isInjecting.value = true;
     final l10n = context.l10n;
     try {
-      try {
-        await ref.read(launchAndInjectProvider(debugPort: debugPort).future);
-        SmartDialog.showToast(l10n.injectSuccess);
-      } on CodexPathNotSetException {
-        SmartDialog.showToast(l10n.codexPathRequired);
-      } on CodexAlreadyRunningException catch (e) {
-        final confirmed =
-            await CodexDetectedDialog.show(detectedPath: e.detectedPath);
-        if (confirmed != true) return;
-        if (e.detectedPath != null && e.detectedPath!.isNotEmpty) {
-          await ref.read(
-            setCodexAppPathProvider(path: e.detectedPath!).future,
-          );
-          ref.invalidate(codexAppPathProvider);
-        }
-        await ref.read(
-          injectToRunningPortProvider(debugPort: debugPort).future,
-        );
-        SmartDialog.showToast(l10n.injectSuccess);
-      }
+      await ref.read(launchAndInjectProvider(debugPort: debugPort).future);
+      SmartDialog.showToast(l10n.injectSuccess);
+    } on CodexNotInstalledException {
+      SmartDialog.showToast(l10n.codexNotInstalled);
     } catch (e) {
       SmartDialog.showToast(l10n.launchFailed(e.toString()));
     } finally {

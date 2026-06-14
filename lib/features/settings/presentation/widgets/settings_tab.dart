@@ -6,9 +6,6 @@ import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
-import 'package:shim/features/settings/presentation/providers/config_action_provider.dart';
-import 'package:shim/features/settings/presentation/providers/config_query_provider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,7 +17,6 @@ class SettingsTab extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeModeProvider);
     final themeColor = ref.watch(themeColorProvider);
-    final codexPath = ref.watch(codexAppPathProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final colors = [
       const Color(0xFF98D2D5),
@@ -127,36 +123,6 @@ class SettingsTab extends ConsumerWidget {
                   icon: const Icon(Icons.refresh_rounded),
                 ),
               ],
-            ),
-          ),
-          SizedBox(height: AppSizes.itemGap),
-          SettingCard(
-            icon: Icons.folder_open_rounded,
-            title: context.l10n.codexAppPath,
-            description: codexPath.when(
-              data: (path) =>
-                  (path == null || path.isEmpty)
-                      ? context.l10n.codexAppPathNotSet
-                      : path,
-              loading: () => context.l10n.codexAppPathNotSet,
-              error: (_, __) => context.l10n.codexAppPathNotSet,
-            ),
-            child: FilledButton.tonalIcon(
-              onPressed: () async {
-                final result = await FilePicker.platform.pickFiles(
-                  type: FileType.custom,
-                  allowedExtensions: ['exe'],
-                  dialogTitle: context.l10n.selectCodexExecutable,
-                );
-                final picked = result?.files.single.path;
-                if (picked == null) return;
-                await ref.read(
-                  setCodexAppPathProvider(path: picked).future,
-                );
-                ref.invalidate(codexAppPathProvider);
-              },
-              icon: const Icon(Icons.file_open_rounded),
-              label: Text(context.l10n.selectCodexExecutable),
             ),
           ),
           SizedBox(height: AppSizes.sectionGap),

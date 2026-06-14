@@ -260,35 +260,11 @@ abstract class AppLocalizations {
   /// **'重置'**
   String get reset;
 
-  /// No description provided for @codexAppPath.
+  /// No description provided for @codexNotInstalled.
   ///
   /// In zh, this message translates to:
-  /// **'Codex 路径'**
-  String get codexAppPath;
-
-  /// No description provided for @codexAppPathNotSet.
-  ///
-  /// In zh, this message translates to:
-  /// **'未设置'**
-  String get codexAppPathNotSet;
-
-  /// No description provided for @selectCodexExecutable.
-  ///
-  /// In zh, this message translates to:
-  /// **'选择 Codex 可执行文件'**
-  String get selectCodexExecutable;
-
-  /// No description provided for @codexAlreadyRunning.
-  ///
-  /// In zh, this message translates to:
-  /// **'Codex 已在运行，请先关闭'**
-  String get codexAlreadyRunning;
-
-  /// No description provided for @codexPathRequired.
-  ///
-  /// In zh, this message translates to:
-  /// **'请先在设置中指定 Codex 路径'**
-  String get codexPathRequired;
+  /// **'未检测到已安装的 Codex'**
+  String get codexNotInstalled;
 
   /// No description provided for @launchFailed.
   ///
@@ -367,24 +343,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'打开控制台失败：{message}'**
   String openInspectorFailed(String message);
-
-  /// No description provided for @codexDetectedTitle.
-  ///
-  /// In zh, this message translates to:
-  /// **'检测到 Codex 正在运行'**
-  String get codexDetectedTitle;
-
-  /// No description provided for @codexDetectedMessage.
-  ///
-  /// In zh, this message translates to:
-  /// **'检测到的路径：{path}\n\n是否保存此路径并直接注入？'**
-  String codexDetectedMessage(String path);
-
-  /// No description provided for @codexDetectedNoPathMessage.
-  ///
-  /// In zh, this message translates to:
-  /// **'未能反查到 Codex 路径，是否直接注入到当前窗口？'**
-  String get codexDetectedNoPathMessage;
 
   /// No description provided for @confirm.
   ///

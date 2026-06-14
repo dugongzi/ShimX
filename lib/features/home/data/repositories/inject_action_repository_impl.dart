@@ -18,22 +18,6 @@ class InjectActionRepositoryImpl implements InjectActionRepository {
   }
 
   @override
-  Future<String?> findExecutableByPort({required int debugPort}) {
-    return _dataSource.findExecutableByPort(debugPort);
-  }
-
-  @override
-  Future<void> launchExecutable({
-    required String executablePath,
-    required int debugPort,
-  }) {
-    return _dataSource.launchExecutable(
-      executablePath: executablePath,
-      debugPort: debugPort,
-    );
-  }
-
-  @override
   Future<void> waitForDebugPort({required int debugPort}) {
     return _dataSource.waitForDebugPort(debugPort: debugPort);
   }

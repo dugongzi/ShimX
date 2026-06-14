@@ -93,20 +93,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reset => 'Reset';
 
   @override
-  String get codexAppPath => 'Codex path';
-
-  @override
-  String get codexAppPathNotSet => 'Not set';
-
-  @override
-  String get selectCodexExecutable => 'Select Codex executable';
-
-  @override
-  String get codexAlreadyRunning =>
-      'Codex is already running, please close it first';
-
-  @override
-  String get codexPathRequired => 'Please set the Codex path in settings first';
+  String get codexNotInstalled => 'Codex is not installed';
 
   @override
   String launchFailed(String message) {
@@ -150,18 +137,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String openInspectorFailed(String message) {
     return 'Failed to open inspector: $message';
   }
-
-  @override
-  String get codexDetectedTitle => 'Codex is already running';
-
-  @override
-  String codexDetectedMessage(String path) {
-    return 'Detected path: $path\n\nSave this path and inject directly?';
-  }
-
-  @override
-  String get codexDetectedNoPathMessage =>
-      'Could not detect Codex path. Inject directly into the running window?';
 
   @override
   String get confirm => 'Confirm';

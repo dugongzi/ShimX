@@ -12,8 +12,3 @@ ConfigQueryRepository configQueryRepository(Ref ref) {
   final dataSource = ConfigQueryDatasource(appStorage: appStorage);
   return ConfigQueryRepositoryImpl(dataSource: dataSource);
 }
-
-@riverpod
-Future<String?> codexAppPath(Ref ref) async {
-  return ref.read(configQueryRepositoryProvider).getCodexAppPath();
-}

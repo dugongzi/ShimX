@@ -5,9 +5,4 @@ class ConfigActionRepositoryImpl implements ConfigActionRepository {
   final ConfigActionDatasource dataSource;
 
   ConfigActionRepositoryImpl({required this.dataSource});
-
-  @override
-  Future<void> setCodexAppPath(String path) {
-    return dataSource.setCodexAppPath(path);
-  }
 }

@@ -31,7 +31,12 @@ Future<void> _syncRunningProxyTarget(Ref ref) async {
     return;
   }
   proxy.setTarget(
-    ProxyTarget(baseUrl: selected.baseUrl, apiKey: selected.apiKey),
+    ProxyTarget(
+      baseUrl: selected.baseUrl,
+      apiKey: selected.apiKey,
+      model: selected.selectedModel,
+      wireApi: selected.wireApi,
+    ),
   );
 }
 
@@ -137,7 +142,12 @@ Future<void> startTakeover(Ref ref) async {
   final runningPort = ref.read(localProxyRunningPortProvider);
   await proxy.start(
     port: proxyConfig.port,
-    target: ProxyTarget(baseUrl: selected.baseUrl, apiKey: selected.apiKey),
+    target: ProxyTarget(
+      baseUrl: selected.baseUrl,
+      apiKey: selected.apiKey,
+      model: selected.selectedModel,
+      wireApi: selected.wireApi,
+    ),
   );
   runningPort.value = proxy.port ?? proxyConfig.port;
 

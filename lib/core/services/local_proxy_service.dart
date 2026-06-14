@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:shim/core/services/chat_to_responses_transformer.dart';
 
 final localProxyRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
   final notifier = ValueNotifier<int?>(null);
@@ -23,18 +25,29 @@ final localProxyServiceProvider = Provider<LocalProxyService>((ref) {
 /// 当前转发目标：真实供应商的 base_url + key。
 /// 切换供应商 = 改这个对象，零重启。
 class ProxyTarget {
-  const ProxyTarget({required this.baseUrl, required this.apiKey});
+  const ProxyTarget({
+    required this.baseUrl,
+    required this.apiKey,
+    this.model,
+    this.wireApi = 'responses',
+  });
 
   /// 例：https://api.muxueai.pro/v1
   final String baseUrl;
 
   /// 真实供应商的 bearer token
   final String apiKey;
+
+  /// 覆盖请求 body 的 model（null = 不改，用 Codex 自己选的）
+  final String? model;
+
+  /// 上游协议：'responses'（默认）| 'chat'
+  final String wireApi;
 }
 
 /// 反向代理：Codex 用 HTTP 发到本地，代理按当前 target 改写后用 HTTPS 转发到真实供应商。
 ///
-/// Codex 侧 base_url 配置成 http://127.0.0.1:<port>/v1，
+/// Codex 侧 base_url 配置成 `http://127.0.0.1:<port>/v1`，
 /// 收到 /v1/responses 这类请求后，拼到 target.baseUrl 上转发，
 /// Authorization 换成 target.apiKey。
 class LocalProxyService {
@@ -99,10 +112,11 @@ class LocalProxyService {
       return;
     }
 
-    // 拿到 Codex 请求里 /v1 之后的路径，拼到真实 base_url 上。
-    // base_url 本身可能带 /v1，Codex 发来的也是 /v1/responses，
-    // 所以用 base_url 的 origin + 请求的完整 path。
-    final upstreamUri = _resolveUpstreamUri(target.baseUrl, request.uri);
+    final upstreamUri = _resolveUpstreamUri(
+      target.baseUrl,
+      request.uri,
+      target.wireApi,
+    );
     if (upstreamUri == null) {
       // ignore: avoid_print
       print('[Proxy] ❌ 解析 upstream 失败, baseUrl=${target.baseUrl}');
@@ -110,26 +124,44 @@ class LocalProxyService {
       return;
     }
 
+    final isChat = target.wireApi == 'chat';
     // ignore: avoid_print
-    print('[Proxy] 转发 → $upstreamUri');
+    print('[Proxy] 转发 → $upstreamUri model=${target.model ?? "(透传)"} '
+        'wire=${target.wireApi}');
     final client = HttpClient();
     client.findProxy = (_) => 'DIRECT';
     var responseStarted = false;
     try {
       final upstreamRequest = await client.openUrl(request.method, upstreamUri);
       _copyRequestHeaders(request, upstreamRequest, upstreamUri.host);
-      // 用真实供应商的 key 覆盖 Authorization
       upstreamRequest.headers.set('authorization', 'Bearer ${target.apiKey}');
-      await upstreamRequest.addStream(request.cast<List<int>>());
+
+      // chat 协议：请求体 Responses→Chat 转换；否则仅按需改写 model。
+      final bodyBytes = await _collectBody(request);
+      final outBytes = isChat
+          ? convertResponsesBodyToChat(bodyBytes, target.model)
+          : _rewriteModelIfNeeded(bodyBytes, target.model);
+      upstreamRequest.headers.contentLength = outBytes.length;
+      upstreamRequest.add(outBytes);
       final upstreamResponse = await upstreamRequest.close();
 
       // ignore: avoid_print
-      print('[Proxy] 上游响应 ${upstreamResponse.statusCode} ← $upstreamUri');
-      request.response.statusCode = upstreamResponse.statusCode;
-      request.response.reasonPhrase = upstreamResponse.reasonPhrase;
-      _copyResponseHeaders(upstreamResponse, request.response);
-      responseStarted = true;
-      await upstreamResponse.cast<List<int>>().pipe(request.response);
+      print('[Proxy] 上游响应 ${upstreamResponse.statusCode} '
+          'content-type=${upstreamResponse.headers.contentType} ← $upstreamUri');
+
+      if (isChat && upstreamResponse.statusCode == 200) {
+        // chat 协议：把 Chat SSE 流转成 Responses SSE 流回传
+        request.response.statusCode = 200;
+        responseStarted = true;
+        await ChatToResponsesTransformer()
+            .transform(upstreamResponse, request.response);
+      } else {
+        request.response.statusCode = upstreamResponse.statusCode;
+        request.response.reasonPhrase = upstreamResponse.reasonPhrase;
+        _copyResponseHeaders(upstreamResponse, request.response);
+        responseStarted = true;
+        await upstreamResponse.cast<List<int>>().pipe(request.response);
+      }
     } catch (error) {
       // ignore: avoid_print
       print('[Proxy] ❌ 转发异常: $error');
@@ -141,24 +173,43 @@ class LocalProxyService {
     }
   }
 
-  /// 把真实 base_url 的 scheme/host/port 跟请求的 path/query 拼起来。
-  ///
-  /// base_url = https://api.muxueai.pro/v1
-  /// 请求 path = /v1/responses
-  /// → https://api.muxueai.pro/v1/responses
-  ///
-  /// 为避免 /v1 重复，base_url 的 path 前缀以请求 path 为准：
-  /// 直接用 base origin + 请求完整 path。
-  Uri? _resolveUpstreamUri(String baseUrl, Uri requestUri) {
+  /// 真实 base_url 的 scheme/host/port + 请求 path/query。
+  /// wireApi == 'chat' 时把 path 改为 base_url path 前缀 + /chat/completions，
+  /// 让只支持 chat 端点的供应商也能用。
+  Uri? _resolveUpstreamUri(String baseUrl, Uri requestUri, String wireApi) {
     final base = Uri.tryParse(baseUrl);
     if (base == null || base.host.isEmpty) return null;
+    final String path;
+    if (wireApi == 'chat') {
+      final prefix = base.path.replaceAll(RegExp(r'/+$'), '');
+      path = '$prefix/chat/completions';
+    } else {
+      path = requestUri.path;
+    }
     return Uri(
       scheme: base.scheme,
       host: base.host,
       port: base.hasPort ? base.port : null,
-      path: requestUri.path,
+      path: path,
       query: requestUri.query.isEmpty ? null : requestUri.query,
     );
+  }
+
+  Future<List<int>> _collectBody(HttpRequest request) {
+    return request.fold<List<int>>(<int>[], (acc, chunk) => acc..addAll(chunk));
+  }
+
+  /// model 非空则改写 body 的 model 字段；解析失败或无需改写时原样返回。
+  List<int> _rewriteModelIfNeeded(List<int> bodyBytes, String? model) {
+    if (model == null || model.isEmpty || bodyBytes.isEmpty) return bodyBytes;
+    try {
+      final decoded = jsonDecode(utf8.decode(bodyBytes));
+      if (decoded is! Map<String, dynamic>) return bodyBytes;
+      decoded['model'] = model;
+      return utf8.encode(jsonEncode(decoded));
+    } catch (_) {
+      return bodyBytes;
+    }
   }
 
   Future<void> _closeWithStatus(HttpResponse response, int statusCode) async {

@@ -10,4 +10,10 @@ abstract class ProviderQueryRepository {
 
   /// 读本地代理配置（无则取默认值）
   Future<ProxyConfig> proxyConfig();
+
+  /// 调供应商 /models 端点拉取可用模型 id 列表
+  Future<List<String>> fetchModels({
+    required String baseUrl,
+    required String apiKey,
+  });
 }

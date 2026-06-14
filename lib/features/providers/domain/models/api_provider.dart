@@ -14,5 +14,14 @@ abstract class ApiProvider with _$ApiProvider {
     /// 例：https://api.muxueai.pro/v1
     required String baseUrl,
     required String apiKey,
+
+    /// 可选模型列表
+    required List<String> models,
+
+    /// 当前选中模型（null = 不覆盖，用 Codex 自己选的）
+    required String? selectedModel,
+
+    /// 上游协议：'responses'（默认）| 'chat'
+    required String wireApi,
   }) = _ApiProvider;
 }

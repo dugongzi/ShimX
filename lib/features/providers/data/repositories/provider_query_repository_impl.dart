@@ -26,4 +26,12 @@ class ProviderQueryRepositoryImpl implements ProviderQueryRepository {
     final port = await dataSource.proxyPort() ?? defaults.port;
     return ProxyConfig(enabled: enabled, port: port);
   }
+
+  @override
+  Future<List<String>> fetchModels({
+    required String baseUrl,
+    required String apiKey,
+  }) {
+    return dataSource.fetchModels(baseUrl: baseUrl, apiKey: apiKey);
+  }
 }

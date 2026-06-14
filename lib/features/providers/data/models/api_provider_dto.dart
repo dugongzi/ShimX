@@ -13,6 +13,9 @@ abstract class ApiProviderDto with _$ApiProviderDto {
     @Default('') String name,
     @Default('') String baseUrl,
     @Default('') String apiKey,
+    @Default([]) List<String> models,
+    String? selectedModel,
+    @Default('responses') String wireApi,
   }) = _ApiProviderDto;
 
   factory ApiProviderDto.fromJson(Map<String, dynamic> json) =>
@@ -24,6 +27,9 @@ abstract class ApiProviderDto with _$ApiProviderDto {
       name: entity.name,
       baseUrl: entity.baseUrl,
       apiKey: entity.apiKey,
+      models: entity.models,
+      selectedModel: entity.selectedModel,
+      wireApi: entity.wireApi,
     );
   }
 
@@ -33,6 +39,9 @@ abstract class ApiProviderDto with _$ApiProviderDto {
       name: name,
       baseUrl: baseUrl,
       apiKey: apiKey,
+      models: models,
+      selectedModel: selectedModel,
+      wireApi: wireApi,
     );
   }
 }

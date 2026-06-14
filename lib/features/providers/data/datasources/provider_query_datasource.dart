@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:shim/core/services/app_storage.dart';
 import 'package:shim/features/providers/data/models/api_provider_dto.dart';
 
@@ -32,5 +35,47 @@ class ProviderQueryDatasource {
 
   Future<int?> proxyPort() {
     return appStorage.getInt(_proxyPortKey);
+  }
+
+  /// 调供应商的 OpenAI 兼容 GET {baseUrl}/models 拉取可用模型 id 列表。
+  Future<List<String>> fetchModels({
+    required String baseUrl,
+    required String apiKey,
+  }) async {
+    final trimmed = baseUrl.replaceAll(RegExp(r'/+$'), '');
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 15),
+        headers: {'Authorization': 'Bearer $apiKey'},
+        responseType: ResponseType.plain,
+      ),
+    );
+    // 禁用系统代理直连，避免 VPN 把请求劫持到返回 HTML 的页面
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.findProxy = (uri) => 'DIRECT';
+      return client;
+    };
+    final url = '$trimmed/models';
+    // ignore: avoid_print
+    print('[FetchModels] GET $url');
+    final response = await dio.getUri<String>(Uri.parse(url));
+    final body = response.data;
+    // ignore: avoid_print
+    print('[FetchModels] status=${response.statusCode} '
+        'len=${body?.length} head=${body?.substring(0, body.length.clamp(0, 120))}');
+    if (body == null || body.isEmpty) return const [];
+    final decoded = jsonDecode(body);
+    if (decoded is! Map<String, dynamic>) return const [];
+    final data = decoded['data'];
+    if (data is! List) return const [];
+    final ids = <String>[];
+    for (final item in data) {
+      if (item is Map && item['id'] is String) {
+        ids.add(item['id'] as String);
+      }
+    }
+    return ids;
   }
 }

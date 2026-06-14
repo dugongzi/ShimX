@@ -75,14 +75,149 @@ class ProvidersTab extends ConsumerWidget {
     WidgetRef ref,
     ApiProvider? existing,
   ) {
-    final nameCtrl = TextEditingController(text: existing?.name ?? '');
-    final baseUrlCtrl = TextEditingController(text: existing?.baseUrl ?? '');
-    final apiKeyCtrl = TextEditingController(text: existing?.apiKey ?? '');
-
     SmartDialog.show(
-      builder: (_) => Dialog(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
+      builder: (_) => _ProviderEditDialog(ref: ref, existing: existing),
+    );
+  }
+}
+
+class _ProviderEditDialog extends StatefulWidget {
+  const _ProviderEditDialog({required this.ref, required this.existing});
+
+  final WidgetRef ref;
+  final ApiProvider? existing;
+
+  @override
+  State<_ProviderEditDialog> createState() => _ProviderEditDialogState();
+}
+
+class _ProviderEditDialogState extends State<_ProviderEditDialog> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _baseUrlCtrl;
+  late final TextEditingController _apiKeyCtrl;
+  final _modelCtrl = TextEditingController();
+
+  late List<String> _models;
+  String? _selectedModel;
+  late String _wireApi;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    _nameCtrl = TextEditingController(text: e?.name ?? '');
+    _baseUrlCtrl = TextEditingController(text: e?.baseUrl ?? '');
+    _apiKeyCtrl = TextEditingController(text: e?.apiKey ?? '');
+    _models = List.of(e?.models ?? const []);
+    _selectedModel = e?.selectedModel;
+    _wireApi = e?.wireApi ?? 'responses';
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _baseUrlCtrl.dispose();
+    _apiKeyCtrl.dispose();
+    _modelCtrl.dispose();
+    super.dispose();
+  }
+
+  void _addModel() {
+    final m = _modelCtrl.text.trim();
+    if (m.isEmpty || _models.contains(m)) return;
+    setState(() {
+      _models.add(m);
+      _selectedModel ??= m;
+      _modelCtrl.clear();
+    });
+  }
+
+  void _removeModel(String m) {
+    setState(() {
+      _models.remove(m);
+      if (_selectedModel == m) {
+        _selectedModel = _models.isEmpty ? null : _models.first;
+      }
+    });
+  }
+
+  bool _fetching = false;
+
+  Future<void> _fetchModels() async {
+    final baseUrl = _baseUrlCtrl.text.trim();
+    final apiKey = _apiKeyCtrl.text.trim();
+    if (baseUrl.isEmpty || apiKey.isEmpty) {
+      SmartDialog.showToast('先填 Base URL 和 API Key');
+      return;
+    }
+    setState(() => _fetching = true);
+    try {
+      final ids = await widget.ref.read(
+        fetchProviderModelsProvider(baseUrl: baseUrl, apiKey: apiKey).future,
+      );
+      if (!mounted) return;
+      setState(() {
+        for (final id in ids) {
+          if (!_models.contains(id)) _models.add(id);
+        }
+        _selectedModel ??= _models.isEmpty ? null : _models.first;
+      });
+      SmartDialog.showToast('获取到 ${ids.length} 个模型');
+    } catch (e) {
+      SmartDialog.showToast('获取失败：$e');
+    } finally {
+      if (mounted) setState(() => _fetching = false);
+    }
+  }
+
+  Future<void> _save() async {
+    final name = _nameCtrl.text.trim();
+    final baseUrl = _baseUrlCtrl.text.trim();
+    final apiKey = _apiKeyCtrl.text.trim();
+    if (name.isEmpty || baseUrl.isEmpty || apiKey.isEmpty) {
+      SmartDialog.showToast('请填完整');
+      return;
+    }
+    final ref = widget.ref;
+    final existing = widget.existing;
+    if (existing == null) {
+      await ref.read(
+        addProviderProvider(
+          provider: ApiProvider(
+            id: DateTime.now().microsecondsSinceEpoch.toString(),
+            name: name,
+            baseUrl: baseUrl,
+            apiKey: apiKey,
+            models: _models,
+            selectedModel: _selectedModel,
+            wireApi: _wireApi,
+          ),
+        ).future,
+      );
+    } else {
+      await ref.read(
+        updateProviderProvider(
+          provider: existing.copyWith(
+            name: name,
+            baseUrl: baseUrl,
+            apiKey: apiKey,
+            models: _models,
+            selectedModel: _selectedModel,
+            wireApi: _wireApi,
+          ),
+        ).future,
+      );
+    }
+    SmartDialog.dismiss();
+    SmartDialog.showToast('已保存');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 440),
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(22),
             child: Column(
@@ -90,14 +225,14 @@ class ProvidersTab extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  existing == null ? '新增供应商' : '编辑供应商',
+                  widget.existing == null ? '新增供应商' : '编辑供应商',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 18),
                 TextField(
-                  controller: nameCtrl,
+                  controller: _nameCtrl,
                   decoration: const InputDecoration(
                     labelText: '名称',
                     hintText: 'MuxueAI',
@@ -105,7 +240,7 @@ class ProvidersTab extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 TextField(
-                  controller: baseUrlCtrl,
+                  controller: _baseUrlCtrl,
                   decoration: const InputDecoration(
                     labelText: 'Base URL',
                     hintText: 'https://api.example.com/v1',
@@ -113,12 +248,96 @@ class ProvidersTab extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 TextField(
-                  controller: apiKeyCtrl,
+                  controller: _apiKeyCtrl,
                   decoration: const InputDecoration(
                     labelText: 'API Key',
                     hintText: 'sk-...',
                   ),
                 ),
+                const SizedBox(height: 18),
+                Text(
+                  '协议',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 6),
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'responses', label: Text('Responses')),
+                    ButtonSegment(value: 'chat', label: Text('Chat')),
+                  ],
+                  selected: {_wireApi},
+                  onSelectionChanged: (v) =>
+                      setState(() => _wireApi = v.first),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '模型',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: _fetching ? null : _fetchModels,
+                      icon: _fetching
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.cloud_download_outlined, size: 18),
+                      label: const Text('获取'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _modelCtrl,
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          hintText: 'gpt-5.5 / claude-sonnet-4-6 ...',
+                        ),
+                        onSubmitted: (_) => _addModel(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton.filledTonal(
+                      onPressed: _addModel,
+                      icon: const Icon(Icons.add_rounded),
+                    ),
+                  ],
+                ),
+                if (_models.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final m in _models)
+                        InputChip(
+                          label: Text(m),
+                          selected: _selectedModel == m,
+                          onSelected: (_) =>
+                              setState(() => _selectedModel = m),
+                          onDeleted: () => _removeModel(m),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: _selectedModel == null
+                          ? null
+                          : () => setState(() => _selectedModel = null),
+                      child: const Text('用 Codex 默认（不覆盖）'),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 22),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -129,41 +348,7 @@ class ProvidersTab extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
-                      onPressed: () async {
-                        final name = nameCtrl.text.trim();
-                        final baseUrl = baseUrlCtrl.text.trim();
-                        final apiKey = apiKeyCtrl.text.trim();
-                        if (name.isEmpty || baseUrl.isEmpty || apiKey.isEmpty) {
-                          SmartDialog.showToast('请填完整');
-                          return;
-                        }
-                        if (existing == null) {
-                          await ref.read(
-                            addProviderProvider(
-                              provider: ApiProvider(
-                                id: DateTime.now()
-                                    .microsecondsSinceEpoch
-                                    .toString(),
-                                name: name,
-                                baseUrl: baseUrl,
-                                apiKey: apiKey,
-                              ),
-                            ).future,
-                          );
-                        } else {
-                          await ref.read(
-                            updateProviderProvider(
-                              provider: existing.copyWith(
-                                name: name,
-                                baseUrl: baseUrl,
-                                apiKey: apiKey,
-                              ),
-                            ).future,
-                          );
-                        }
-                        SmartDialog.dismiss();
-                        SmartDialog.showToast('已保存');
-                      },
+                      onPressed: _save,
                       child: const Text('保存'),
                     ),
                   ],

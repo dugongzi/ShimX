@@ -147,6 +147,104 @@ final class ProxyConfigProvider
 
 String _$proxyConfigHash() => r'a74627351e4161d35dfe7a78749ceb45d9d9d86e';
 
+/// 拉取指定供应商的可用模型列表（调其 /models 端点）。
+
+@ProviderFor(fetchProviderModels)
+const fetchProviderModelsProvider = FetchProviderModelsFamily._();
+
+/// 拉取指定供应商的可用模型列表（调其 /models 端点）。
+
+final class FetchProviderModelsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<String>>,
+          List<String>,
+          FutureOr<List<String>>
+        >
+    with $FutureModifier<List<String>>, $FutureProvider<List<String>> {
+  /// 拉取指定供应商的可用模型列表（调其 /models 端点）。
+  const FetchProviderModelsProvider._({
+    required FetchProviderModelsFamily super.from,
+    required ({String baseUrl, String apiKey}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'fetchProviderModelsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$fetchProviderModelsHash();
+
+  @override
+  String toString() {
+    return r'fetchProviderModelsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<String>> create(Ref ref) {
+    final argument = this.argument as ({String baseUrl, String apiKey});
+    return fetchProviderModels(
+      ref,
+      baseUrl: argument.baseUrl,
+      apiKey: argument.apiKey,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchProviderModelsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$fetchProviderModelsHash() =>
+    r'0ed97d116a433efe931c2a80018f5a6b3495b2e7';
+
+/// 拉取指定供应商的可用模型列表（调其 /models 端点）。
+
+final class FetchProviderModelsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<String>>,
+          ({String baseUrl, String apiKey})
+        > {
+  const FetchProviderModelsFamily._()
+    : super(
+        retry: null,
+        name: r'fetchProviderModelsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 拉取指定供应商的可用模型列表（调其 /models 端点）。
+
+  FetchProviderModelsProvider call({
+    required String baseUrl,
+    required String apiKey,
+  }) => FetchProviderModelsProvider._(
+    argument: (baseUrl: baseUrl, apiKey: apiKey),
+    from: this,
+  );
+
+  @override
+  String toString() => r'fetchProviderModelsProvider';
+}
+
 /// 把供应商查询路由注册到 bridge。注入时 read 一次让它生效。
 ///
 /// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
@@ -207,4 +305,4 @@ final class ProviderRouteRegistrationProvider
 }
 
 String _$providerRouteRegistrationHash() =>
-    r'b30182f3f32c946945fee331e337a0cc227b8351';
+    r'd292a2cf2c63a9113371b04c52d91d0c0ac39603';

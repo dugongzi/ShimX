@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ApiProviderDto {
 
- String get id; String get name; String get baseUrl; String get apiKey;
+ String get id; String get name; String get baseUrl; String get apiKey; List<String> get models; String? get selectedModel; String get wireApi;
 /// Create a copy of ApiProviderDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ApiProviderDtoCopyWith<ApiProviderDto> get copyWith => _$ApiProviderDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ApiProviderDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.apiKey, apiKey) || other.apiKey == apiKey));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ApiProviderDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.apiKey, apiKey) || other.apiKey == apiKey)&&const DeepCollectionEquality().equals(other.models, models)&&(identical(other.selectedModel, selectedModel) || other.selectedModel == selectedModel)&&(identical(other.wireApi, wireApi) || other.wireApi == wireApi));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,baseUrl,apiKey);
+int get hashCode => Object.hash(runtimeType,id,name,baseUrl,apiKey,const DeepCollectionEquality().hash(models),selectedModel,wireApi);
 
 @override
 String toString() {
-  return 'ApiProviderDto(id: $id, name: $name, baseUrl: $baseUrl, apiKey: $apiKey)';
+  return 'ApiProviderDto(id: $id, name: $name, baseUrl: $baseUrl, apiKey: $apiKey, models: $models, selectedModel: $selectedModel, wireApi: $wireApi)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ApiProviderDtoCopyWith<$Res>  {
   factory $ApiProviderDtoCopyWith(ApiProviderDto value, $Res Function(ApiProviderDto) _then) = _$ApiProviderDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String baseUrl, String apiKey
+ String id, String name, String baseUrl, String apiKey, List<String> models, String? selectedModel, String wireApi
 });
 
 
@@ -65,12 +65,15 @@ class _$ApiProviderDtoCopyWithImpl<$Res>
 
 /// Create a copy of ApiProviderDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? baseUrl = null,Object? apiKey = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? baseUrl = null,Object? apiKey = null,Object? models = null,Object? selectedModel = freezed,Object? wireApi = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,baseUrl: null == baseUrl ? _self.baseUrl : baseUrl // ignore: cast_nullable_to_non_nullable
 as String,apiKey: null == apiKey ? _self.apiKey : apiKey // ignore: cast_nullable_to_non_nullable
+as String,models: null == models ? _self.models : models // ignore: cast_nullable_to_non_nullable
+as List<String>,selectedModel: freezed == selectedModel ? _self.selectedModel : selectedModel // ignore: cast_nullable_to_non_nullable
+as String?,wireApi: null == wireApi ? _self.wireApi : wireApi // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -156,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String baseUrl,  String apiKey)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String baseUrl,  String apiKey,  List<String> models,  String? selectedModel,  String wireApi)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ApiProviderDto() when $default != null:
-return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey);case _:
+return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey,_that.models,_that.selectedModel,_that.wireApi);case _:
   return orElse();
 
 }
@@ -177,10 +180,10 @@ return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String baseUrl,  String apiKey)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String baseUrl,  String apiKey,  List<String> models,  String? selectedModel,  String wireApi)  $default,) {final _that = this;
 switch (_that) {
 case _ApiProviderDto():
-return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey);case _:
+return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey,_that.models,_that.selectedModel,_that.wireApi);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +200,10 @@ return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String baseUrl,  String apiKey)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String baseUrl,  String apiKey,  List<String> models,  String? selectedModel,  String wireApi)?  $default,) {final _that = this;
 switch (_that) {
 case _ApiProviderDto() when $default != null:
-return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey);case _:
+return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey,_that.models,_that.selectedModel,_that.wireApi);case _:
   return null;
 
 }
@@ -212,13 +215,22 @@ return $default(_that.id,_that.name,_that.baseUrl,_that.apiKey);case _:
 @JsonSerializable()
 
 class _ApiProviderDto extends ApiProviderDto {
-  const _ApiProviderDto({this.id = '', this.name = '', this.baseUrl = '', this.apiKey = ''}): super._();
+  const _ApiProviderDto({this.id = '', this.name = '', this.baseUrl = '', this.apiKey = '', final  List<String> models = const [], this.selectedModel, this.wireApi = 'responses'}): _models = models,super._();
   factory _ApiProviderDto.fromJson(Map<String, dynamic> json) => _$ApiProviderDtoFromJson(json);
 
 @override@JsonKey() final  String id;
 @override@JsonKey() final  String name;
 @override@JsonKey() final  String baseUrl;
 @override@JsonKey() final  String apiKey;
+ final  List<String> _models;
+@override@JsonKey() List<String> get models {
+  if (_models is EqualUnmodifiableListView) return _models;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_models);
+}
+
+@override final  String? selectedModel;
+@override@JsonKey() final  String wireApi;
 
 /// Create a copy of ApiProviderDto
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ApiProviderDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.apiKey, apiKey) || other.apiKey == apiKey));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ApiProviderDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl)&&(identical(other.apiKey, apiKey) || other.apiKey == apiKey)&&const DeepCollectionEquality().equals(other._models, _models)&&(identical(other.selectedModel, selectedModel) || other.selectedModel == selectedModel)&&(identical(other.wireApi, wireApi) || other.wireApi == wireApi));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,baseUrl,apiKey);
+int get hashCode => Object.hash(runtimeType,id,name,baseUrl,apiKey,const DeepCollectionEquality().hash(_models),selectedModel,wireApi);
 
 @override
 String toString() {
-  return 'ApiProviderDto(id: $id, name: $name, baseUrl: $baseUrl, apiKey: $apiKey)';
+  return 'ApiProviderDto(id: $id, name: $name, baseUrl: $baseUrl, apiKey: $apiKey, models: $models, selectedModel: $selectedModel, wireApi: $wireApi)';
 }
 
 
@@ -253,7 +265,7 @@ abstract mixin class _$ApiProviderDtoCopyWith<$Res> implements $ApiProviderDtoCo
   factory _$ApiProviderDtoCopyWith(_ApiProviderDto value, $Res Function(_ApiProviderDto) _then) = __$ApiProviderDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String baseUrl, String apiKey
+ String id, String name, String baseUrl, String apiKey, List<String> models, String? selectedModel, String wireApi
 });
 
 
@@ -270,12 +282,15 @@ class __$ApiProviderDtoCopyWithImpl<$Res>
 
 /// Create a copy of ApiProviderDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? baseUrl = null,Object? apiKey = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? baseUrl = null,Object? apiKey = null,Object? models = null,Object? selectedModel = freezed,Object? wireApi = null,}) {
   return _then(_ApiProviderDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,baseUrl: null == baseUrl ? _self.baseUrl : baseUrl // ignore: cast_nullable_to_non_nullable
 as String,apiKey: null == apiKey ? _self.apiKey : apiKey // ignore: cast_nullable_to_non_nullable
+as String,models: null == models ? _self._models : models // ignore: cast_nullable_to_non_nullable
+as List<String>,selectedModel: freezed == selectedModel ? _self.selectedModel : selectedModel // ignore: cast_nullable_to_non_nullable
+as String?,wireApi: null == wireApi ? _self.wireApi : wireApi // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

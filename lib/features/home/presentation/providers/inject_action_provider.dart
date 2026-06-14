@@ -71,6 +71,12 @@ Future<void> injectToRunningPort(Ref ref, {required int debugPort}) async {
 /// Codex 未安装时抛 CodexNotInstalledException
 @riverpod
 Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
+  void log(String msg) {
+    // ignore: avoid_print
+    print('[shim:launchAndInject] $msg');
+  }
+
+  log('start');
   // 所有 ref 依赖在第一个 await 前读出（避免 autoDispose provider 在 async gap 后用 ref）
   final repo = ref.read(injectActionRepositoryProvider);
   final cdp = ref.read(cdpServiceProvider);
@@ -79,12 +85,22 @@ Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
 
-  if (!await repo.isDebugPortAlive(debugPort: debugPort)) {
+  log('check port alive...');
+  final alive = await repo.isDebugPortAlive(debugPort: debugPort);
+  log('port alive = $alive');
+  if (!alive) {
+    log('launching Codex...');
     await launcher.launchCodex(debugPort: debugPort);
+    log('Codex launched, waiting for debug port...');
     await repo.waitForDebugPort(debugPort: debugPort);
+    log('debug port ready');
   }
 
+  log('load inject script...');
   final script = await repo.loadInjectScript();
+  log('script loaded (${script.length} chars), connect CDP...');
   await cdp.connect(debugPort);
+  log('CDP connected, install bridge...');
   await bridge.install(documentScripts: [script]);
+  log('done');
 }

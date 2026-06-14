@@ -23,6 +23,17 @@
   "codexDisconnected": "未连接",
   "checkingStatus": "检测中...",
   "refresh": "刷新",
+  "desktopShortcut": "桌面快捷方式",
+  "desktopShortcutDescription": "一键启动 Codex 并自动注入",
+  "createShortcut": "创建快捷方式",
+  "shortcutCreated": "快捷方式已创建到桌面",
+  "shortcutFailed": "创建失败：{message}",
+  "@shortcutFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "launchingCodex": "正在启动 Codex 并注入...",
   "trayShowWindow": "显示窗口",
   "trayLaunchCodex": "启动 Codex 并注入",
   "trayQuit": "退出 Shim",

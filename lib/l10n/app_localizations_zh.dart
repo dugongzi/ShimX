@@ -65,6 +65,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get refresh => '刷新';
 
   @override
+  String get desktopShortcut => '桌面快捷方式';
+
+  @override
+  String get desktopShortcutDescription => '一键启动 Codex 并自动注入';
+
+  @override
+  String get createShortcut => '创建快捷方式';
+
+  @override
+  String get shortcutCreated => '快捷方式已创建到桌面';
+
+  @override
+  String shortcutFailed(String message) {
+    return '创建失败：$message';
+  }
+
+  @override
+  String get launchingCodex => '正在启动 Codex 并注入...';
+
+  @override
   String get trayShowWindow => '显示窗口';
 
   @override

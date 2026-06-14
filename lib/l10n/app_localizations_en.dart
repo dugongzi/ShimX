@@ -66,6 +66,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get refresh => 'Refresh';
 
   @override
+  String get desktopShortcut => 'Desktop shortcut';
+
+  @override
+  String get desktopShortcutDescription =>
+      'Launch Codex and inject in one click';
+
+  @override
+  String get createShortcut => 'Create shortcut';
+
+  @override
+  String get shortcutCreated => 'Shortcut created on desktop';
+
+  @override
+  String shortcutFailed(String message) {
+    return 'Failed to create: $message';
+  }
+
+  @override
+  String get launchingCodex => 'Launching Codex & injecting...';
+
+  @override
   String get trayShowWindow => 'Show window';
 
   @override

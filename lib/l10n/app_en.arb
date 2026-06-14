@@ -23,6 +23,17 @@
   "codexDisconnected": "Disconnected",
   "checkingStatus": "Checking...",
   "refresh": "Refresh",
+  "desktopShortcut": "Desktop shortcut",
+  "desktopShortcutDescription": "Launch Codex and inject in one click",
+  "createShortcut": "Create shortcut",
+  "shortcutCreated": "Shortcut created on desktop",
+  "shortcutFailed": "Failed to create: {message}",
+  "@shortcutFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "launchingCodex": "Launching Codex & injecting...",
   "trayShowWindow": "Show window",
   "trayLaunchCodex": "Launch Codex & inject",
   "trayQuit": "Quit Shim",

@@ -206,6 +206,42 @@ abstract class AppLocalizations {
   /// **'刷新'**
   String get refresh;
 
+  /// No description provided for @desktopShortcut.
+  ///
+  /// In zh, this message translates to:
+  /// **'桌面快捷方式'**
+  String get desktopShortcut;
+
+  /// No description provided for @desktopShortcutDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'一键启动 Codex 并自动注入'**
+  String get desktopShortcutDescription;
+
+  /// No description provided for @createShortcut.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建快捷方式'**
+  String get createShortcut;
+
+  /// No description provided for @shortcutCreated.
+  ///
+  /// In zh, this message translates to:
+  /// **'快捷方式已创建到桌面'**
+  String get shortcutCreated;
+
+  /// No description provided for @shortcutFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建失败：{message}'**
+  String shortcutFailed(String message);
+
+  /// No description provided for @launchingCodex.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在启动 Codex 并注入...'**
+  String get launchingCodex;
+
   /// No description provided for @trayShowWindow.
   ///
   /// In zh, this message translates to:

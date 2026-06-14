@@ -6,7 +6,9 @@ import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
+import 'package:shim/core/services/shortcut_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SettingsTab extends ConsumerWidget {
@@ -123,6 +125,27 @@ class SettingsTab extends ConsumerWidget {
                   icon: const Icon(Icons.refresh_rounded),
                 ),
               ],
+            ),
+          ),
+          SizedBox(height: AppSizes.itemGap),
+          SettingCard(
+            icon: Icons.add_link_rounded,
+            title: context.l10n.desktopShortcut,
+            description: context.l10n.desktopShortcutDescription,
+            child: FilledButton.tonalIcon(
+              onPressed: () async {
+                final l10n = context.l10n;
+                try {
+                  await ref
+                      .read(shortcutServiceProvider)
+                      .createDesktopShortcut();
+                  SmartDialog.showToast(l10n.shortcutCreated);
+                } catch (e) {
+                  SmartDialog.showToast(l10n.shortcutFailed(e.toString()));
+                }
+              },
+              icon: const Icon(Icons.desktop_windows_outlined),
+              label: Text(context.l10n.createShortcut),
             ),
           ),
           SizedBox(height: AppSizes.sectionGap),

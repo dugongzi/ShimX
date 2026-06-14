@@ -13,7 +13,7 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
   @override
   ThemeMode build() {
     Future.microtask(loadThemeMode);
-    return ThemeMode.system;
+    return ThemeMode.dark;
   }
 
   Future<void> loadThemeMode() async {
@@ -54,7 +54,7 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
     return switch (name) {
       'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,
-      _ => ThemeMode.system,
+      _ => ThemeMode.dark,
     };
   }
 

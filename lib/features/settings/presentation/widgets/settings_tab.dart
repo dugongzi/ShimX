@@ -20,7 +20,9 @@ class SettingsTab extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final themeColor = ref.watch(themeColorProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    const launchThemeColor = Color(0xFF7143FF);
     final colors = [
+      launchThemeColor,
       const Color(0xFF98D2D5),
       const Color(0xFF6C8CFF),
       const Color(0xFF27AE60),
@@ -110,6 +112,18 @@ class SettingsTab extends ConsumerWidget {
                 for (final color in colors)
                   ColorSwatch(
                     color: color,
+                    gradient: color.toARGB32() == launchThemeColor.toARGB32()
+                        ? const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFF00DDF4),
+                              Color(0xFF2463FF),
+                              Color(0xFF7143FF),
+                              Color(0xFFE843FF),
+                            ],
+                          )
+                        : null,
                     selected: color.toARGB32() == themeColor.toARGB32(),
                     onTap: () {
                       ref
@@ -233,11 +247,13 @@ class ColorSwatch extends StatelessWidget {
     required this.color,
     required this.selected,
     required this.onTap,
+    this.gradient,
   });
 
   final Color color;
   final bool selected;
   final VoidCallback onTap;
+  final Gradient? gradient;
 
   @override
   Widget build(BuildContext context) {
@@ -253,6 +269,7 @@ class ColorSwatch extends StatelessWidget {
           height: 38,
           decoration: BoxDecoration(
             color: color,
+            gradient: gradient,
             shape: BoxShape.circle,
             border: Border.all(
               color: Colors.white.withValues(alpha: selected ? 0.96 : 0.74),

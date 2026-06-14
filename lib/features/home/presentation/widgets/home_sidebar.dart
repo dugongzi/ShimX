@@ -4,12 +4,11 @@ import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/core/services/cdp_service.dart';
+import 'package:shim/core/services/codex_launcher_service.dart';
 import 'package:shim/core/services/local_proxy_service.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 import 'package:shim/features/home/presentation/providers/inject_action_provider.dart';
-import 'package:shim/features/home/presentation/widgets/inject_button.dart';
-import 'package:shim/features/home/presentation/widgets/open_inspector_button.dart';
 import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -76,11 +75,7 @@ class HomeSidebar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   SizedBox(height: AppSizes.sectionGap),
-                  const OpenInspectorButton(debugPort: 9229),
-                  SizedBox(height: AppSizes.itemGap),
-                  const ReloadCodexButton(debugPort: 9229),
-                  SizedBox(height: AppSizes.itemGap),
-                  const InjectButton(debugPort: 9229),
+                  const SidebarActionIconsRow(debugPort: 9229),
                   SizedBox(height: AppSizes.itemGap),
                   const SidebarStatus(),
                   SizedBox(height: AppSizes.itemGap),
@@ -102,8 +97,6 @@ class SidebarBrand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppSizes.itemGap,
@@ -111,18 +104,11 @@ class SidebarBrand extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
+          Image.asset(
+            'assets/images/icon.png',
             width: 34.cr(min: 30, max: 38),
             height: 34.cr(min: 30, max: 38),
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(10.cr(min: 8, max: 12)),
-            ),
-            child: Icon(
-              Icons.terminal_rounded,
-              color: colorScheme.onPrimary,
-              size: 18.cr(min: 16, max: 20),
-            ),
+            fit: BoxFit.contain,
           ),
           SizedBox(width: 10.cw(min: 8, max: 12)),
           Expanded(
@@ -141,8 +127,76 @@ class SidebarBrand extends StatelessWidget {
   }
 }
 
-class ReloadCodexButton extends HookConsumerWidget {
-  const ReloadCodexButton({super.key, required this.debugPort});
+class SidebarActionIconsRow extends ConsumerWidget {
+  const SidebarActionIconsRow({super.key, required this.debugPort});
+
+  final int debugPort;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: EdgeInsets.all(10.cw(min: 8, max: 12)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface.withValues(
+          alpha: context.isDark ? 0.10 : 0.42,
+        ),
+        borderRadius: BorderRadius.circular(AppSizes.cardRadius),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _OpenInspectorIcon(debugPort: debugPort),
+          _ReloadCodexIcon(debugPort: debugPort),
+          _InjectIcon(debugPort: debugPort),
+        ],
+      ),
+    );
+  }
+}
+
+class _OpenInspectorIcon extends HookConsumerWidget {
+  const _OpenInspectorIcon({required this.debugPort});
+
+  final int debugPort;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isOpening = useState(false);
+    final l10n = context.l10n;
+
+    return IconButton(
+      tooltip: l10n.openInspector,
+      onPressed: isOpening.value
+          ? null
+          : () async {
+              isOpening.value = true;
+              try {
+                await ref
+                    .read(openInspectorProvider(debugPort: debugPort).future);
+              } catch (e) {
+                SmartDialog.showToast(l10n.openInspectorFailed(e.toString()));
+              } finally {
+                isOpening.value = false;
+              }
+            },
+      icon: isOpening.value
+          ? SizedBox(
+              width: 18.cr(min: 16, max: 20),
+              height: 18.cr(min: 16, max: 20),
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.terminal_rounded),
+    );
+  }
+}
+
+class _ReloadCodexIcon extends HookConsumerWidget {
+  const _ReloadCodexIcon({required this.debugPort});
 
   final int debugPort;
 
@@ -150,50 +204,83 @@ class ReloadCodexButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isReloading = useState(false);
 
-    return SizedBox(
-      width: double.infinity,
-      height: 42.ch(min: 38, max: 46),
-      child: FilledButton.tonalIcon(
-        onPressed: isReloading.value
-            ? null
-            : () => _run(context, ref, isReloading),
-        icon: isReloading.value
-            ? SizedBox(
-                width: 18.cr(min: 16, max: 20),
-                height: 18.cr(min: 16, max: 20),
-                child: const CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Icon(Icons.refresh_rounded),
-        label: const Text('刷新 Codex'),
-      ),
+    return IconButton(
+      tooltip: '刷新 Codex',
+      onPressed: isReloading.value
+          ? null
+          : () async {
+              isReloading.value = true;
+              try {
+                final repo = ref.read(injectActionRepositoryProvider);
+                final cdp = ref.read(cdpServiceProvider);
+                final bridge = ref.read(bridgeServiceProvider);
+                ref.read(codexSessionRouteRegistrationProvider);
+                ref.read(codexSessionActionRouteRegistrationProvider);
+                ref.read(providerRouteRegistrationProvider);
+
+                await cdp.connect(debugPort);
+                await cdp.reloadPage();
+                await Future<void>.delayed(const Duration(milliseconds: 800));
+                final script = await repo.loadInjectScript();
+                await bridge.install(documentScripts: [script]);
+                SmartDialog.showToast('Codex 已刷新并重新注入');
+              } catch (error) {
+                SmartDialog.showToast('刷新失败：$error');
+              } finally {
+                isReloading.value = false;
+              }
+            },
+      icon: isReloading.value
+          ? SizedBox(
+              width: 18.cr(min: 16, max: 20),
+              height: 18.cr(min: 16, max: 20),
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.refresh_rounded),
     );
   }
+}
 
-  Future<void> _run(
-    BuildContext context,
-    WidgetRef ref,
-    ValueNotifier<bool> isReloading,
-  ) async {
-    isReloading.value = true;
-    try {
-      final repo = ref.read(injectActionRepositoryProvider);
-      final cdp = ref.read(cdpServiceProvider);
-      final bridge = ref.read(bridgeServiceProvider);
-      ref.read(codexSessionRouteRegistrationProvider);
-      ref.read(codexSessionActionRouteRegistrationProvider);
-      ref.read(providerRouteRegistrationProvider);
+class _InjectIcon extends HookConsumerWidget {
+  const _InjectIcon({required this.debugPort});
 
-      await cdp.connect(debugPort);
-      await cdp.reloadPage();
-      await Future<void>.delayed(const Duration(milliseconds: 800));
-      final script = await repo.loadInjectScript();
-      await bridge.install(documentScripts: [script]);
-      SmartDialog.showToast('Codex 已刷新并重新注入');
-    } catch (error) {
-      SmartDialog.showToast('刷新失败：$error');
-    } finally {
-      isReloading.value = false;
-    }
+  final int debugPort;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isInjecting = useState(false);
+    final l10n = context.l10n;
+
+    return IconButton(
+      tooltip: l10n.inject,
+      onPressed: isInjecting.value
+          ? null
+          : () async {
+              isInjecting.value = true;
+              try {
+                ref.invalidate(launchAndInjectProvider(debugPort: debugPort));
+                await ref
+                    .read(launchAndInjectProvider(debugPort: debugPort).future);
+                SmartDialog.showToast(l10n.injectSuccess);
+              } on CodexNotInstalledException {
+                SmartDialog.showToast(l10n.codexNotInstalled);
+              } catch (e) {
+                SmartDialog.showToast(l10n.launchFailed(e.toString()));
+              } finally {
+                isInjecting.value = false;
+              }
+            },
+      icon: isInjecting.value
+          ? SizedBox(
+              width: 18.cr(min: 16, max: 20),
+              height: 18.cr(min: 16, max: 20),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            )
+          : const Icon(Icons.play_arrow_rounded),
+    );
   }
 }
 

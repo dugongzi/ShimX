@@ -520,6 +520,7 @@
     reasoningEffort: 'high',
     providers: [],
   };
+  let shimProviderRefreshInFlight = null;
 
   function refreshCurrentProvider() {
     if (typeof window.shim !== 'function') return;
@@ -533,7 +534,8 @@
 
   function refreshProviderPickerState() {
     if (typeof window.shim !== 'function') return;
-    window.shim('/provider/list', {}).then((res) => {
+    if (shimProviderRefreshInFlight) return shimProviderRefreshInFlight;
+    shimProviderRefreshInFlight = window.shim('/provider/list', {}).then((res) => {
       if (res && res.code === 0 && res.data) {
         shimProviderState = {
           selectedId: res.data.selectedId ?? null,
@@ -544,7 +546,19 @@
         updateProviderPickerPopover();
         updateCodexModelSelectorVisibility();
       }
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => {
+      shimProviderRefreshInFlight = null;
+    });
+    return shimProviderRefreshInFlight;
+  }
+
+  function scheduleProviderPickerRefresh() {
+    const run = () => refreshProviderPickerState();
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(run, { timeout: 600 });
+      return;
+    }
+    setTimeout(run, 80);
   }
 
   function currentProvider() {
@@ -608,6 +622,17 @@
     const provider = currentProvider();
     const selectedModel = provider?.selectedModel || '';
     const providerName = provider?.name || '供应商';
+    const renderKey = [
+      provider?.id || '',
+      providerName,
+      selectedModel,
+      shimProviderState.reasoningEffort || 'high',
+    ].join('|');
+    if (button.getAttribute('data-shim-render-key') === renderKey) {
+      updateCodexModelSelectorVisibility();
+      return;
+    }
+    button.setAttribute('data-shim-render-key', renderKey);
     button.innerHTML = '';
 
     const name = document.createElement('span');
@@ -739,12 +764,12 @@
   }
 
   function ensureProviderPicker() {
-    const anchor = findProviderPickerAnchor();
-    if (!anchor) return;
     if (document.getElementById(PROVIDER_PICKER_ID)) {
       updateProviderPickerButton();
       return;
     }
+    const anchor = findProviderPickerAnchor();
+    if (!anchor) return;
 
     const button = buildProviderPickerButton();
     anchor.group.insertBefore(button, anchor.button);
@@ -763,7 +788,7 @@
     positionProviderPickerPopover(popover, anchor);
     document.addEventListener('mousedown', onProviderPickerOutside, true);
     document.addEventListener('keydown', onProviderPickerKey, true);
-    refreshProviderPickerState();
+    scheduleProviderPickerRefresh();
   }
 
   function dismissProviderPickerPopover() {
@@ -809,8 +834,10 @@
       position: 'fixed',
       zIndex: '2147483647',
       width: '320px',
-      maxHeight: '420px',
-      overflow: 'auto',
+      maxHeight: 'min(420px, calc(100vh - 24px))',
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      overscrollBehavior: 'contain',
       padding: '6px',
       borderRadius: '12px',
       outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
@@ -828,7 +855,6 @@
   }
 
   function renderProviderPickerPopover(popover) {
-    popover.innerHTML = '';
     const providers = shimProviderState.providers;
     if (!providers.length) {
       const empty = document.createElement('div');
@@ -838,10 +864,11 @@
         padding: '12px',
         textAlign: 'center',
       });
-      popover.appendChild(empty);
+      popover.replaceChildren(empty);
       return;
     }
 
+    const fragment = document.createDocumentFragment();
     for (const provider of providers) {
       const providerRow = document.createElement('button');
       providerRow.type = 'button';
@@ -849,6 +876,7 @@
         'no-drag cursor-interaction flex items-center gap-2 rounded-lg hover:bg-token-list-hover-background';
       Object.assign(providerRow.style, {
         width: '100%',
+        minHeight: '34px',
         padding: '8px 10px',
         border: '0',
         background: provider.id === shimProviderState.selectedId
@@ -875,7 +903,7 @@
         fontWeight: provider.id === shimProviderState.selectedId ? '700' : '500',
       });
       providerRow.appendChild(name);
-      popover.appendChild(providerRow);
+      fragment.appendChild(providerRow);
 
       if (provider.id === shimProviderState.selectedId) {
         const modelList = document.createElement('div');
@@ -883,6 +911,10 @@
           margin: '0 0 4px 14px',
           paddingLeft: '10px',
           borderLeft: '1px solid var(--token-border, rgba(255,255,255,0.10))',
+          maxHeight: '260px',
+          overflowX: 'hidden',
+          overflowY: 'auto',
+          overscrollBehavior: 'contain',
         });
         const models = Array.isArray(provider.models) ? provider.models : [];
         if (!models.length) {
@@ -901,6 +933,7 @@
           Object.assign(modelRow.style, {
             display: 'block',
             width: '100%',
+            minHeight: '30px',
             padding: '6px 8px',
             border: '0',
             background: modelName === provider.selectedModel
@@ -927,9 +960,10 @@
         if (shouldShowShimReasoningEffort(provider.selectedModel)) {
           modelList.appendChild(buildReasoningEffortPicker(provider.id));
         }
-        popover.appendChild(modelList);
+        fragment.appendChild(modelList);
       }
     }
+    popover.replaceChildren(fragment);
   }
 
   function buildReasoningEffortPicker(providerId) {

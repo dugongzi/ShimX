@@ -2,14 +2,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/core/services/cdp_service.dart';
 import 'package:shim/core/services/codex_launcher_service.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 import 'package:shim/features/home/data/datasources/inject_action_datasource.dart';
 import 'package:shim/features/home/data/repositories/inject_action_repository_impl.dart';
 import 'package:shim/features/home/domain/repositories/inject_action_repository.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'inject_action_provider.g.dart';
@@ -79,50 +77,11 @@ Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
   final cdp = ref.read(cdpServiceProvider);
   final bridge = ref.read(bridgeServiceProvider);
   final launcher = ref.read(codexLauncherServiceProvider);
-  final proxy = ref.read(localProxyServiceProvider);
-  final runningProxyPort = ref.read(localProxyRunningPortProvider);
-  final takeoverRepo = ref.read(providerActionRepositoryProvider);
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
-  final proxyConfigFuture = ref.read(proxyConfigProvider.future);
-  final providerListFuture = ref.read(providerListProvider.future);
 
-  final proxyConfig = await proxyConfigFuture;
-  if (!ref.mounted) return;
-  final providerList = await providerListFuture;
-  if (!ref.mounted) return;
-  final selected = providerList.selected;
-
-  // ignore: avoid_print
-  print('[Inject] proxyConfig.enabled=${proxyConfig.enabled}, '
-      'selected=${selected?.name}, baseUrl=${selected?.baseUrl}, '
-      'hasKey=${selected?.apiKey.isNotEmpty}, '
-      'localProxyUrl=${proxyConfig.localProxyUrl}');
-
-  // 接管开启：先起反向代理 + 设转发目标 + 改写 config.toml 的 base_url。
-  // base_url 指向本地代理后，Codex 的 app-server 就会把模型请求发到代理，
-  // 代理再按选中供应商转发到真实地址（零重启切换）。
-  if (proxyConfig.enabled &&
-      selected != null &&
-      selected.baseUrl.isNotEmpty &&
-      selected.apiKey.isNotEmpty) {
-    // ignore: avoid_print
-    print('[Inject] → 进入接管分支');
-    await proxy.start(
-      port: proxyConfig.port,
-      target: ProxyTarget(
-        baseUrl: selected.baseUrl,
-        apiKey: selected.apiKey,
-      ),
-    );
-    runningProxyPort.value = proxy.port ?? proxyConfig.port;
-    await takeoverRepo.enableTakeover(localProxyUrl: proxyConfig.localProxyUrl);
-  } else {
-    // 接管关闭或无选中供应商：还原 base_url，停代理。
-    await takeoverRepo.disableTakeover();
-    await proxy.stop();
-    runningProxyPort.value = null;
-  }
+  // 接管开关开着 → 完整接管（起代理 + 改 config）；否则释放。
+  await startTakeover(ref);
   if (!ref.mounted) return;
 
   final alive = await repo.isDebugPortAlive(debugPort: debugPort);

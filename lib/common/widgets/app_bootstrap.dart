@@ -1,6 +1,7 @@
 import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
 import 'package:shim/core/themes/app_theme.dart';
+import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shim/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -39,6 +40,8 @@ class AppBootstrap extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeModeProvider);
     final themeColor = ref.watch(themeColorProvider);
+    // 启动时按持久化的代理开关自动接管（keepAlive，只触发一次）
+    ref.watch(proxyAutoStartProvider);
 
     return ScreenUtilInit(
       designSize: const Size(375, 812),

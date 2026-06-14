@@ -189,7 +189,7 @@ final class UpdateProviderProvider
   }
 }
 
-String _$updateProviderHash() => r'3eccbfa03ad25ae66a9a599c930ff98857a78b4a';
+String _$updateProviderHash() => r'25c87669e02ec2958edf1260a4c6a46cdf4bf534';
 
 /// 更新供应商
 
@@ -267,7 +267,7 @@ final class RemoveProviderProvider
   }
 }
 
-String _$removeProviderHash() => r'c700ebedd3b66d73b2df9ed8473e5af92bef5483';
+String _$removeProviderHash() => r'b846c928d8a9096f2fab005d7ddd1056fa15909f';
 
 /// 删除供应商；删的是当前选中项则改选第一个剩余项。
 
@@ -345,7 +345,7 @@ final class SelectProviderProvider
   }
 }
 
-String _$selectProviderHash() => r'be38ba1dc34a0fc9bbdaaf80008ab3699ade634b';
+String _$selectProviderHash() => r'e9ab73e605491149d536b162c18f689fc5622b74';
 
 /// 选中供应商
 
@@ -369,17 +369,17 @@ final class SelectProviderFamily extends $Family
   String toString() => r'selectProviderProvider';
 }
 
-/// 设置代理开关
+/// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
 
 @ProviderFor(setProxyEnabled)
 const setProxyEnabledProvider = SetProxyEnabledFamily._();
 
-/// 设置代理开关
+/// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
 
 final class SetProxyEnabledProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
     with $FutureModifier<void>, $FutureProvider<void> {
-  /// 设置代理开关
+  /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
   const SetProxyEnabledProvider._({
     required SetProxyEnabledFamily super.from,
     required bool super.argument,
@@ -423,9 +423,9 @@ final class SetProxyEnabledProvider
   }
 }
 
-String _$setProxyEnabledHash() => r'19eab9ce9dc2de3136a751d73bfd61d3dedd97c5';
+String _$setProxyEnabledHash() => r'484dffa8de502de91932d886605a5a8223439688';
 
-/// 设置代理开关
+/// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
 
 final class SetProxyEnabledFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, bool> {
@@ -438,7 +438,7 @@ final class SetProxyEnabledFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// 设置代理开关
+  /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
 
   SetProxyEnabledProvider call({required bool enabled}) =>
       SetProxyEnabledProvider._(argument: enabled, from: this);
@@ -446,6 +446,47 @@ final class SetProxyEnabledFamily extends $Family
   @override
   String toString() => r'setProxyEnabledProvider';
 }
+
+/// 启动时自动接管：app 起来就 watch 一次，按持久化的开关状态自动起代理。
+/// 开关开着且有选中供应商 → 起代理 + 设 target + 改 config.toml。
+
+@ProviderFor(proxyAutoStart)
+const proxyAutoStartProvider = ProxyAutoStartProvider._();
+
+/// 启动时自动接管：app 起来就 watch 一次，按持久化的开关状态自动起代理。
+/// 开关开着且有选中供应商 → 起代理 + 设 target + 改 config.toml。
+
+final class ProxyAutoStartProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  /// 启动时自动接管：app 起来就 watch 一次，按持久化的开关状态自动起代理。
+  /// 开关开着且有选中供应商 → 起代理 + 设 target + 改 config.toml。
+  const ProxyAutoStartProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'proxyAutoStartProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$proxyAutoStartHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    return proxyAutoStart(ref);
+  }
+}
+
+String _$proxyAutoStartHash() => r'973f32c132a08a8c53a23a1c2ea3fe46ff9a1633';
 
 /// 设置代理端口
 

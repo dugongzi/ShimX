@@ -66,6 +66,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get refresh => 'Refresh';
 
   @override
+  String get trayShowWindow => 'Show window';
+
+  @override
+  String get trayLaunchCodex => 'Launch Codex & inject';
+
+  @override
+  String get trayQuit => 'Quit Shim';
+
+  @override
+  String get trayTooltip => 'Shim';
+
+  @override
   String get systemLanguage => 'System language';
 
   @override

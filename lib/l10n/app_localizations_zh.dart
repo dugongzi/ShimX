@@ -65,6 +65,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get refresh => '刷新';
 
   @override
+  String get trayShowWindow => '显示窗口';
+
+  @override
+  String get trayLaunchCodex => '启动 Codex 并注入';
+
+  @override
+  String get trayQuit => '退出 Shim';
+
+  @override
+  String get trayTooltip => 'Shim';
+
+  @override
   String get systemLanguage => '系统语言';
 
   @override

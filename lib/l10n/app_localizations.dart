@@ -206,6 +206,30 @@ abstract class AppLocalizations {
   /// **'刷新'**
   String get refresh;
 
+  /// No description provided for @trayShowWindow.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示窗口'**
+  String get trayShowWindow;
+
+  /// No description provided for @trayLaunchCodex.
+  ///
+  /// In zh, this message translates to:
+  /// **'启动 Codex 并注入'**
+  String get trayLaunchCodex;
+
+  /// No description provided for @trayQuit.
+  ///
+  /// In zh, this message translates to:
+  /// **'退出 Shim'**
+  String get trayQuit;
+
+  /// No description provided for @trayTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'Shim'**
+  String get trayTooltip;
+
   /// No description provided for @systemLanguage.
   ///
   /// In zh, this message translates to:

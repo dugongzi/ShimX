@@ -31,7 +31,9 @@ class CodexLaunchException implements Exception {
 /// - macOS: 扫 /Applications/Codex.app → open -a
 /// - Linux: 暂不支持
 class CodexLauncherService {
-  Future<void> launchCodex({required int debugPort}) async {
+  Future<void> launchCodex({
+    required int debugPort,
+  }) async {
     final cdpArgs = [
       '--remote-debugging-port=$debugPort',
       '--remote-allow-origins=*',

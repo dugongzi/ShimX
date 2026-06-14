@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -11,7 +10,6 @@ class CodexSessionActionDatasource {
   /// 返回备份文件路径供撤销/排查使用。
   Future<String> deleteThread({required String id}) async {
     final dbPath = _codexDbPath();
-    debugPrint('[shim] deleteThread id=$id dbPath=$dbPath');
     if (!File(dbPath).existsSync()) {
       throw StateError('Codex database not found: $dbPath');
     }
@@ -39,18 +37,11 @@ class CodexSessionActionDatasource {
       };
 
       final threadRows = backup['threads'] as List<dynamic>;
-      debugPrint(
-        '[shim] backup found: threads=${threadRows.length} '
-        'tools=${(backup['thread_dynamic_tools'] as List).length} '
-        'edgesParent=${(backup['thread_spawn_edges_as_parent'] as List).length} '
-        'edgesChild=${(backup['thread_spawn_edges_as_child'] as List).length}',
-      );
       if (threadRows.isEmpty) {
         throw StateError('thread not found: $id');
       }
 
       final backupPath = await _writeBackup(id, backup);
-      debugPrint('[shim] backup written: $backupPath');
 
       final rolloutPath = threadRows.first is Map
           ? (threadRows.first as Map)['rollout_path'] as String?
@@ -62,22 +53,14 @@ class CodexSessionActionDatasource {
           'DELETE FROM thread_dynamic_tools WHERE thread_id = ?',
           [id],
         );
-        final toolsDeleted = db.updatedRows;
         db.execute(
           'DELETE FROM thread_spawn_edges WHERE parent_thread_id = ? OR child_thread_id = ?',
           [id, id],
         );
-        final edgesDeleted = db.updatedRows;
         db.execute('DELETE FROM threads WHERE id = ?', [id]);
-        final threadDeleted = db.updatedRows;
         db.execute('COMMIT');
-        debugPrint(
-          '[shim] DELETE done: threads=$threadDeleted '
-          'tools=$toolsDeleted edges=$edgesDeleted',
-        );
       } catch (e) {
         db.execute('ROLLBACK');
-        debugPrint('[shim] DELETE failed, rolled back: $e');
         rethrow;
       }
 
@@ -87,15 +70,8 @@ class CodexSessionActionDatasource {
         if (await rolloutFile.exists()) {
           try {
             await rolloutFile.delete();
-            debugPrint('[shim] rollout deleted: $rolloutPath');
-          } catch (e) {
-            debugPrint('[shim] rollout delete failed: $rolloutPath ($e)');
-          }
-        } else {
-          debugPrint('[shim] rollout already missing: $rolloutPath');
+          } catch (_) {}
         }
-      } else {
-        debugPrint('[shim] rollout path empty, skipped');
       }
 
       return backupPath;

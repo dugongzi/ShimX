@@ -62,8 +62,6 @@ class WindowTrayBootstrap extends HookConsumerWidget {
       windowManager.addListener(listener);
 
       // 由快捷方式拉起：自动注入 Codex 后缩到托盘
-      // ignore: avoid_print
-      print('[shim] bootstrap launchArgs = $args');
       if (isShortcutLaunch && !shortcutLaunchStarted.value) {
         shortcutLaunchStarted.value = true;
         WidgetsBinding.instance.addPostFrameCallback((_) async {

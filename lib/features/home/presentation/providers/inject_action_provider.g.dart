@@ -453,7 +453,7 @@ final class LaunchAndInjectProvider
   }) : super(
          retry: null,
          name: r'launchAndInjectProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -490,7 +490,7 @@ final class LaunchAndInjectProvider
   }
 }
 
-String _$launchAndInjectHash() => r'f0d230907abe87b44388f3d95658be27e2f287a2';
+String _$launchAndInjectHash() => r'5f3c8a91f66acdc2ba01e4dea4b55bc96aab3dda';
 
 /// 完整流程：
 /// - 端口活 → 直接连上现有 Codex 并注入
@@ -506,7 +506,7 @@ final class LaunchAndInjectFamily extends $Family
         name: r'launchAndInjectProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   /// 完整流程：

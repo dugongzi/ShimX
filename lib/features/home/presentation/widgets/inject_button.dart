@@ -45,6 +45,7 @@ class InjectButton extends HookConsumerWidget {
     isInjecting.value = true;
     final l10n = context.l10n;
     try {
+      ref.invalidate(launchAndInjectProvider(debugPort: debugPort));
       await ref.read(launchAndInjectProvider(debugPort: debugPort).future);
       SmartDialog.showToast(l10n.injectSuccess);
     } on CodexNotInstalledException {

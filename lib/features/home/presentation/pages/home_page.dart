@@ -4,12 +4,13 @@ import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/features/home/presentation/widgets/dashboard_tab.dart';
 import 'package:shim/features/home/presentation/widgets/home_sidebar.dart';
 import 'package:shim/features/home/presentation/widgets/home_tab_item.dart';
+import 'package:shim/features/providers/presentation/widgets/providers_tab.dart';
 import 'package:shim/features/settings/presentation/widgets/settings_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-enum HomeTab { home, settings }
+enum HomeTab { home, providers, settings }
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -39,6 +40,13 @@ class HomePage extends HookConsumerWidget {
                       onTap: () => selectedTab.value = HomeTab.home,
                     ),
                     HomeTabItem(
+                      leading: Icons.dns_outlined,
+                      selectedLeading: Icons.dns_rounded,
+                      title: '供应商',
+                      selected: selectedTab.value == HomeTab.providers,
+                      onTap: () => selectedTab.value = HomeTab.providers,
+                    ),
+                    HomeTabItem(
                       leading: Icons.settings_outlined,
                       selectedLeading: Icons.settings_rounded,
                       title: context.l10n.settings,
@@ -51,7 +59,11 @@ class HomePage extends HookConsumerWidget {
                 Expanded(
                   child: IndexedStack(
                     index: selectedTab.value.index,
-                    children: const [DashboardTab(), SettingsTab()],
+                    children: const [
+                      DashboardTab(),
+                      ProvidersTab(),
+                      SettingsTab(),
+                    ],
                   ),
                 ),
               ],

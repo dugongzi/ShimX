@@ -146,3 +146,65 @@ final class ProxyConfigProvider
 }
 
 String _$proxyConfigHash() => r'a74627351e4161d35dfe7a78749ceb45d9d9d86e';
+
+/// 把供应商查询路由注册到 bridge。注入时 read 一次让它生效。
+///
+/// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
+/// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
+/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+/// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
+
+@ProviderFor(providerRouteRegistration)
+const providerRouteRegistrationProvider = ProviderRouteRegistrationProvider._();
+
+/// 把供应商查询路由注册到 bridge。注入时 read 一次让它生效。
+///
+/// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
+/// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
+/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+/// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
+
+final class ProviderRouteRegistrationProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  /// 把供应商查询路由注册到 bridge。注入时 read 一次让它生效。
+  ///
+  /// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
+  /// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
+  /// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+  /// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
+  const ProviderRouteRegistrationProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'providerRouteRegistrationProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$providerRouteRegistrationHash();
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    return providerRouteRegistration(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$providerRouteRegistrationHash() =>
+    r'b30182f3f32c946945fee331e337a0cc227b8351';

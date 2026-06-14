@@ -506,12 +506,83 @@
     }
   }
 
+  // ========== 对话供应商标签（只标注最新 turn） ==========
+
+  const PROVIDER_BADGE_CLASS = '__shim_provider_badge__';
+  // 当前供应商标签缓存（已含语言前缀，如「供应商：muxue」），由 bridge 拉取并定时刷新
+  let shimCurrentProviderLabel = null;
+
+  function refreshCurrentProvider() {
+    if (typeof window.shim !== 'function') return;
+    window.shim('/provider/current', {}).then((res) => {
+      if (res && res.code === 0 && res.data) {
+        shimCurrentProviderLabel = res.data.label ?? null;
+        ensureProviderBadge();
+      }
+    }).catch(() => {});
+  }
+
+  function buildProviderBadge(label) {
+    const badge = document.createElement('div');
+    badge.className = PROVIDER_BADGE_CLASS;
+    Object.assign(badge.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      alignSelf: 'flex-start',
+      margin: '0 0 6px 2px',
+      padding: '2px 10px',
+      borderRadius: '999px',
+      fontSize: '11px',
+      fontWeight: '600',
+      lineHeight: '1.6',
+      userSelect: 'none',
+      pointerEvents: 'none',
+    });
+    badge.classList.add(
+      'bg-token-foreground/5',
+      'text-token-text-tertiary',
+    );
+
+    const dot = document.createElement('span');
+    Object.assign(dot.style, {
+      width: '6px',
+      height: '6px',
+      borderRadius: '50%',
+      background: '#22c55e',
+    });
+
+    const text = document.createElement('span');
+    text.textContent = label;
+
+    badge.appendChild(dot);
+    badge.appendChild(text);
+    return badge;
+  }
+
+  function ensureProviderBadge() {
+    // 先清掉所有旧标签（保证只有最新 turn 带标签）
+    document
+      .querySelectorAll('.' + PROVIDER_BADGE_CLASS)
+      .forEach((el) => el.remove());
+
+    const label = shimCurrentProviderLabel;
+    if (!label) return; // 代理没开 / 无选中供应商 → 不渲染
+
+    const turns = document.querySelectorAll('[data-turn-key]');
+    if (turns.length === 0) return;
+    const latest = turns[turns.length - 1];
+    // 标签插到最新 turn 的最前面
+    latest.insertBefore(buildProviderBadge(label), latest.firstChild);
+  }
+
   // ========== 总调度 ==========
 
   function ensureAll() {
     ensureBadge();
     ensureShimMenuItem();
     ensureDeleteButtons();
+    ensureProviderBadge();
   }
 
   function installUiScheduler() {
@@ -547,5 +618,17 @@
     document.addEventListener('DOMContentLoaded', ensureAll, { once: true });
   }
 
+  // bridge 就绪后拉一次当前供应商，并定时刷新（供应商切换后标签随之更新）
+  (function initProviderBadge() {
+    if (typeof window.shim !== 'function') {
+      setTimeout(initProviderBadge, 500);
+      return;
+    }
+    refreshCurrentProvider();
+    if (!window.__shimProviderPollInstalled) {
+      window.__shimProviderPollInstalled = true;
+      setInterval(refreshCurrentProvider, 5000);
+    }
+  })();
 
 })();

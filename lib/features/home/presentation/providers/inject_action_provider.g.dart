@@ -400,7 +400,7 @@ final class InjectToRunningPortProvider
 }
 
 String _$injectToRunningPortHash() =>
-    r'b072ede4f3e58609e9de5664dfa5e881fd7ca25f';
+    r'9da184408c5c2cb58c4b44810f2a3d9d38ff6925';
 
 /// 直接注入到端口（要求端口上已经有 page），建立 CDP 长连接并安装 bridge + 脚本
 
@@ -490,7 +490,7 @@ final class LaunchAndInjectProvider
   }
 }
 
-String _$launchAndInjectHash() => r'957e8f285238ad37eb6b5b7394ecd2910eaa0242';
+String _$launchAndInjectHash() => r'b9560667f604d5b453460f6a458670cf8bc19fa2';
 
 /// 完整流程：
 /// - 端口活 → 直接连上现有 Codex 并注入

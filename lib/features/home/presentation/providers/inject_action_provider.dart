@@ -8,6 +8,7 @@ import 'package:shim/features/home/data/datasources/inject_action_datasource.dar
 import 'package:shim/features/home/data/repositories/inject_action_repository_impl.dart';
 import 'package:shim/features/home/domain/repositories/inject_action_repository.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'inject_action_provider.g.dart';
@@ -60,6 +61,7 @@ Future<void> injectToRunningPort(Ref ref, {required int debugPort}) async {
   final bridge = ref.read(bridgeServiceProvider);
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
+  ref.read(providerRouteRegistrationProvider);
   final script = await repo.loadInjectScript();
   await cdp.connect(debugPort);
   await bridge.install(documentScripts: [script]);
@@ -79,6 +81,7 @@ Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
   final launcher = ref.read(codexLauncherServiceProvider);
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
+  ref.read(providerRouteRegistrationProvider);
 
   // 接管开关开着 → 完整接管（起代理 + 改 config）；否则释放。
   await startTakeover(ref);

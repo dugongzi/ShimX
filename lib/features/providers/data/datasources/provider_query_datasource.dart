@@ -19,10 +19,13 @@ class ProviderQueryDatasource {
   Future<List<ApiProviderDto>> listProviders() async {
     final raw = await appStorage.getString(_listKey);
     if (raw == null || raw.isEmpty) return const [];
-    final decoded = jsonDecode(raw) as List<dynamic>;
-    return decoded
-        .map((item) => ApiProviderDto.fromJson(item as Map<String, dynamic>))
-        .toList();
+    final Object? decoded = jsonDecode(raw);
+    if (decoded is! List) return const [];
+    return decoded.whereType<Map>().map((item) {
+      return ApiProviderDto.fromJson(
+        item.map((key, value) => MapEntry(key.toString(), value)),
+      );
+    }).toList();
   }
 
   Future<String?> selectedId() {
@@ -79,3 +82,4 @@ class ProviderQueryDatasource {
     return ids;
   }
 }
+

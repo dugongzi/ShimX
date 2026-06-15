@@ -1,94 +1,97 @@
 import 'dart:convert';
 
-import 'package:shim/core/services/anthropic_messages_transformer.dart';
-import 'package:shim/core/services/chat_to_responses_transformer.dart';
-
-enum LlmWireProtocol {
+enum LlmProtocol {
   responses,
   chat,
   messages,
 }
 
-LlmWireProtocol parseLlmWireProtocol(String value) {
+LlmProtocol parseLlmProtocol(String value) {
   switch (value) {
     case 'chat':
-      return LlmWireProtocol.chat;
+      return LlmProtocol.chat;
     case 'messages':
-      return LlmWireProtocol.messages;
+      return LlmProtocol.messages;
     case 'responses':
     default:
-      return LlmWireProtocol.responses;
+      return LlmProtocol.responses;
   }
 }
 
-String llmWireProtocolName(LlmWireProtocol protocol) {
+String llmProtocolStorageValue(LlmProtocol protocol) {
   switch (protocol) {
-    case LlmWireProtocol.responses:
+    case LlmProtocol.responses:
       return 'responses';
-    case LlmWireProtocol.chat:
+    case LlmProtocol.chat:
       return 'chat';
-    case LlmWireProtocol.messages:
+    case LlmProtocol.messages:
       return 'messages';
   }
 }
 
+class LlmRequestConvertOptions {
+  const LlmRequestConvertOptions({
+    this.overrideModel,
+    this.reasoningEffort,
+  });
+
+  final String? overrideModel;
+  final String? reasoningEffort;
+}
+
 List<int> convertLlmProtocolBody(
   List<int> bodyBytes, {
-  required LlmWireProtocol from,
-  required LlmWireProtocol to,
-  String? overrideModel,
+  required LlmProtocol from,
+  required LlmProtocol to,
+  LlmRequestConvertOptions options = const LlmRequestConvertOptions(),
 }) {
-  if (from == to) {
-    return overrideModel == null || overrideModel.isEmpty
-        ? bodyBytes
-        : rewriteJsonModel(bodyBytes, overrideModel);
-  }
+  final responsesBody = _toResponses(bodyBytes, from);
+  if (responsesBody == null) return bodyBytes;
 
-  final responsesBody = from == LlmWireProtocol.responses
-      ? bodyBytes
-      : from == LlmWireProtocol.chat
-          ? convertChatBodyToResponses(bodyBytes, overrideModel)
-          : convertAnthropicMessagesBodyToResponses(bodyBytes, overrideModel);
-
-  return to == LlmWireProtocol.responses
-      ? responsesBody
-      : to == LlmWireProtocol.chat
-          ? convertResponsesBodyToChat(responsesBody, overrideModel)
-          : convertResponsesBodyToAnthropicMessages(responsesBody, overrideModel);
-}
-
-List<int> rewriteJsonModel(List<int> bodyBytes, String? model) {
-  if (model == null || model.isEmpty || bodyBytes.isEmpty) return bodyBytes;
-  try {
-    final decoded = jsonDecode(utf8.decode(bodyBytes));
-    if (decoded is! Map<String, dynamic>) return bodyBytes;
-    decoded['model'] = model;
-    return utf8.encode(jsonEncode(decoded));
-  } catch (_) {
-    return bodyBytes;
+  final prepared = _applyRequestOptionsToResponses(responsesBody, options);
+  switch (to) {
+    case LlmProtocol.responses:
+      return _encodeJsonObject(prepared);
+    case LlmProtocol.chat:
+      return _encodeJsonObject(_convertResponsesToChat(prepared));
+    case LlmProtocol.messages:
+      return _encodeJsonObject(_convertResponsesToAnthropicMessages(prepared));
   }
 }
 
-List<int> rewriteResponsesReasoningEffort(
-  List<int> bodyBytes,
-  String? effort,
+Map<String, Object?>? _toResponses(List<int> bodyBytes, LlmProtocol from) {
+  switch (from) {
+    case LlmProtocol.responses:
+      return _decodeJsonObject(bodyBytes);
+    case LlmProtocol.chat:
+      final src = _decodeJsonObject(bodyBytes);
+      return src == null ? null : _convertChatToResponses(src);
+    case LlmProtocol.messages:
+      final src = _decodeJsonObject(bodyBytes);
+      return src == null ? null : _convertAnthropicMessagesToResponses(src);
+  }
+}
+
+Map<String, Object?> _applyRequestOptionsToResponses(
+  Map<String, Object?> source,
+  LlmRequestConvertOptions options,
 ) {
-  if (!_isSupportedReasoningEffort(effort) || bodyBytes.isEmpty) {
-    return bodyBytes;
+  final out = Map<String, Object?>.from(source);
+  final overrideModel = options.overrideModel;
+  if (overrideModel != null && overrideModel.isNotEmpty) {
+    out['model'] = overrideModel;
   }
-  try {
-    final decoded = jsonDecode(utf8.decode(bodyBytes));
-    if (decoded is! Map<String, dynamic>) return bodyBytes;
-    final reasoning = decoded['reasoning'];
-    final nextReasoning = reasoning is Map<String, dynamic>
-        ? Map<String, dynamic>.from(reasoning)
-        : <String, dynamic>{};
-    nextReasoning['effort'] = effort;
-    decoded['reasoning'] = nextReasoning;
-    return utf8.encode(jsonEncode(decoded));
-  } catch (_) {
-    return bodyBytes;
+
+  final effort = options.reasoningEffort;
+  if (_isSupportedReasoningEffort(effort)) {
+    final existing = out['reasoning'];
+    final reasoning = existing is Map
+        ? _stringKeyedMap(existing)
+        : <String, Object?>{};
+    reasoning['effort'] = effort;
+    out['reasoning'] = reasoning;
   }
+  return out;
 }
 
 bool _isSupportedReasoningEffort(String? effort) {
@@ -98,65 +101,195 @@ bool _isSupportedReasoningEffort(String? effort) {
       effort == 'xhigh';
 }
 
-List<int> convertChatBodyToAnthropicMessages(
-  List<int> bodyBytes,
-  String? overrideModel,
-) {
-  return convertLlmProtocolBody(
-    bodyBytes,
-    from: LlmWireProtocol.chat,
-    to: LlmWireProtocol.messages,
-    overrideModel: overrideModel,
-  );
-}
+Map<String, Object?> _convertResponsesToChat(Map<String, Object?> src) {
+  final messages = <Map<String, Object?>>[];
+  final systemParts = <String>[];
+  _appendInstructionParts(systemParts, src['instructions']);
 
-List<int> convertAnthropicMessagesBodyToChat(
-  List<int> bodyBytes,
-  String? overrideModel,
-) {
-  return convertLlmProtocolBody(
-    bodyBytes,
-    from: LlmWireProtocol.messages,
-    to: LlmWireProtocol.chat,
-    overrideModel: overrideModel,
-  );
-}
+  final body = <Map<String, Object?>>[];
+  final input = src['input'];
+  if (input is String && input.isNotEmpty) {
+    body.add({'role': 'user', 'content': input});
+  } else if (input is List) {
+    for (final raw in input) {
+      if (raw is! Map) continue;
+      final item = _stringKeyedMap(raw);
+      final type = item['type'];
+      if (type == 'reasoning') {
+        continue;
+      }
+      if (type == 'function_call') {
+        body.add({
+          'role': 'assistant',
+          'content': null,
+          'tool_calls': [
+            {
+              'id': item['call_id'] ?? item['id'] ?? '',
+              'type': 'function',
+              'function': {
+                'name': item['name'] ?? '',
+                'arguments': item['arguments'] ?? '',
+              },
+            },
+          ],
+        });
+        continue;
+      }
+      if (type == 'function_call_output') {
+        body.add({
+          'role': 'tool',
+          'tool_call_id': item['call_id'] ?? '',
+          'content': _stringifyContent(item['output']),
+        });
+        continue;
+      }
 
-List<int> convertChatBodyToResponses(List<int> bodyBytes, String? overrideModel) {
-  Map<String, dynamic> src;
-  try {
-    final decoded = jsonDecode(utf8.decode(bodyBytes));
-    if (decoded is! Map<String, dynamic>) return bodyBytes;
-    src = decoded;
-  } catch (_) {
-    return bodyBytes;
+      final role = item['role'];
+      if (role is! String) continue;
+      final text = _stringifyContent(item['content']);
+      if (role == 'developer' || role == 'system') {
+        if (text.isNotEmpty) systemParts.add(text);
+      } else if (text.isNotEmpty) {
+        body.add({'role': _chatRole(role), 'content': text});
+      }
+    }
   }
 
+  if (systemParts.isNotEmpty) {
+    messages.add({'role': 'system', 'content': systemParts.join('\n\n')});
+  }
+  messages.addAll(body);
+
+  final out = <String, Object?>{
+    'model': src['model'],
+    'messages': messages,
+    'stream': true,
+    'stream_options': {'include_usage': true},
+  };
+
+  final tools = _responsesToolsToChat(src['tools']);
+  if (tools.isNotEmpty) out['tools'] = tools;
+  if (src['tool_choice'] != null) out['tool_choice'] = src['tool_choice'];
+
+  final maxOut = src['max_output_tokens'];
+  if (maxOut is int) out['max_tokens'] = maxOut;
+  if (src['temperature'] != null) out['temperature'] = src['temperature'];
+  if (src['top_p'] != null) out['top_p'] = src['top_p'];
+
+  final reasoning = src['reasoning'];
+  if (reasoning is Map) {
+    final effort = _stringKeyedMap(reasoning)['effort'];
+    if (effort is String && _isSupportedReasoningEffort(effort)) {
+      out['reasoning_effort'] = effort;
+    }
+  }
+
+  return out;
+}
+
+Map<String, Object?> _convertResponsesToAnthropicMessages(
+  Map<String, Object?> src,
+) {
+  final systemParts = <String>[];
+  _appendInstructionParts(systemParts, src['instructions']);
+
+  final messages = <Map<String, Object?>>[];
+  final input = src['input'];
+  if (input is String && input.isNotEmpty) {
+    _appendAnthropicMessage(messages, 'user', [_anthropicTextBlock(input)]);
+  } else if (input is List) {
+    for (final raw in input) {
+      if (raw is! Map) continue;
+      final item = _stringKeyedMap(raw);
+      final type = item['type'];
+      if (type == 'reasoning') continue;
+
+      if (type == 'function_call') {
+        _appendAnthropicMessage(messages, 'assistant', [
+          {
+            'type': 'tool_use',
+            'id': item['call_id'] ?? item['id'] ?? '',
+            'name': item['name'] ?? '',
+            'input': _parseArgumentsObject(item['arguments']),
+          },
+        ]);
+        continue;
+      }
+
+      if (type == 'function_call_output') {
+        _appendAnthropicMessage(messages, 'user', [
+          {
+            'type': 'tool_result',
+            'tool_use_id': item['call_id'] ?? '',
+            'content': _stringifyContent(item['output']),
+          },
+        ]);
+        continue;
+      }
+
+      final role = item['role'];
+      if (role is! String) continue;
+      final text = _stringifyContent(item['content']);
+      if (role == 'developer' || role == 'system') {
+        if (text.isNotEmpty) systemParts.add(text);
+      } else if (text.isNotEmpty) {
+        _appendAnthropicMessage(
+          messages,
+          role == 'assistant' ? 'assistant' : 'user',
+          [_anthropicTextBlock(text)],
+        );
+      }
+    }
+  }
+
+  final out = <String, Object?>{
+    'model': src['model'],
+    'messages': messages,
+    'stream': true,
+    'max_tokens': _resolveAnthropicMaxTokens(src),
+  };
+  if (systemParts.isNotEmpty) out['system'] = systemParts.join('\n\n');
+
+  final tools = _responsesToolsToAnthropic(src['tools']);
+  if (tools.isNotEmpty) out['tools'] = tools;
+
+  final toolChoice = _responsesToolChoiceToAnthropic(src['tool_choice']);
+  if (toolChoice != null) out['tool_choice'] = toolChoice;
+  if (src['temperature'] != null) out['temperature'] = src['temperature'];
+  if (src['top_p'] != null) out['top_p'] = src['top_p'];
+
+  return out;
+}
+
+Map<String, Object?> _convertChatToResponses(Map<String, Object?> src) {
   final instructions = <String>[];
-  final input = <Map<String, dynamic>>[];
+  final input = <Map<String, Object?>>[];
   final messages = src['messages'];
   if (messages is List) {
     for (final raw in messages) {
-      if (raw is! Map<String, dynamic>) continue;
-      final role = raw['role'];
+      if (raw is! Map) continue;
+      final message = _stringKeyedMap(raw);
+      final role = message['role'];
       if (role is! String) continue;
 
       if (role == 'system' || role == 'developer') {
-        final text = _chatContentToText(raw['content']);
+        final text = _stringifyContent(message['content']);
         if (text.isNotEmpty) instructions.add(text);
         continue;
       }
 
-      final toolCalls = raw['tool_calls'];
+      final toolCalls = message['tool_calls'];
       if (role == 'assistant' && toolCalls is List) {
-        for (final call in toolCalls) {
-          if (call is! Map<String, dynamic>) continue;
+        for (final rawCall in toolCalls) {
+          if (rawCall is! Map) continue;
+          final call = _stringKeyedMap(rawCall);
           final function = call['function'];
+          final fn = function is Map ? _stringKeyedMap(function) : null;
           input.add({
             'type': 'function_call',
             'call_id': call['id'] ?? '',
-            'name': function is Map ? function['name'] ?? '' : '',
-            'arguments': function is Map ? function['arguments'] ?? '' : '',
+            'name': fn?['name'] ?? '',
+            'arguments': fn?['arguments'] ?? '',
           });
         }
       }
@@ -164,28 +297,29 @@ List<int> convertChatBodyToResponses(List<int> bodyBytes, String? overrideModel)
       if (role == 'tool') {
         input.add({
           'type': 'function_call_output',
-          'call_id': raw['tool_call_id'] ?? '',
-          'output': _chatContentToText(raw['content']),
+          'call_id': message['tool_call_id'] ?? '',
+          'output': _stringifyContent(message['content']),
         });
         continue;
       }
 
-      final text = _chatContentToText(raw['content']);
+      final text = _stringifyContent(message['content']);
       if (text.isNotEmpty) {
         input.add({
           'role': role == 'assistant' ? 'assistant' : 'user',
           'content': [
-            {'type': role == 'assistant' ? 'output_text' : 'input_text', 'text': text},
+            {
+              'type': role == 'assistant' ? 'output_text' : 'input_text',
+              'text': text,
+            },
           ],
         });
       }
     }
   }
 
-  final out = <String, dynamic>{
-    'model': (overrideModel != null && overrideModel.isNotEmpty)
-        ? overrideModel
-        : src['model'],
+  final out = <String, Object?>{
+    'model': src['model'],
     'input': input,
   };
   if (instructions.isNotEmpty) out['instructions'] = instructions.join('\n\n');
@@ -200,42 +334,37 @@ List<int> convertChatBodyToResponses(List<int> bodyBytes, String? overrideModel)
   if (src['stream'] != null) out['stream'] = src['stream'];
   if (src['tool_choice'] != null) out['tool_choice'] = src['tool_choice'];
 
-  return utf8.encode(jsonEncode(out));
-}
-
-List<int> convertAnthropicMessagesBodyToResponses(
-  List<int> bodyBytes,
-  String? overrideModel,
-) {
-  Map<String, dynamic> src;
-  try {
-    final decoded = jsonDecode(utf8.decode(bodyBytes));
-    if (decoded is! Map<String, dynamic>) return bodyBytes;
-    src = decoded;
-  } catch (_) {
-    return bodyBytes;
+  final effort = src['reasoning_effort'];
+  if (effort is String && _isSupportedReasoningEffort(effort)) {
+    out['reasoning'] = {'effort': effort};
   }
 
-  final input = <Map<String, dynamic>>[];
+  return out;
+}
+
+Map<String, Object?> _convertAnthropicMessagesToResponses(
+  Map<String, Object?> src,
+) {
+  final input = <Map<String, Object?>>[];
   final messages = src['messages'];
   if (messages is List) {
     for (final raw in messages) {
-      if (raw is! Map<String, dynamic>) continue;
-      final role = raw['role'];
+      if (raw is! Map) continue;
+      final message = _stringKeyedMap(raw);
+      final role = message['role'];
       if (role is! String) continue;
-      _appendAnthropicContentToResponsesInput(input, role, raw['content']);
+      _appendAnthropicContentToResponsesInput(input, role, message['content']);
     }
   }
 
-  final out = <String, dynamic>{
-    'model': (overrideModel != null && overrideModel.isNotEmpty)
-        ? overrideModel
-        : src['model'],
+  final out = <String, Object?>{
+    'model': src['model'],
     'input': input,
   };
 
   final system = src['system'];
   if (system is String && system.isNotEmpty) out['instructions'] = system;
+
   final tools = _anthropicToolsToResponses(src['tools']);
   if (tools.isNotEmpty) out['tools'] = tools;
 
@@ -246,17 +375,61 @@ List<int> convertAnthropicMessagesBodyToResponses(
   if (src['stream'] != null) out['stream'] = src['stream'];
   if (src['tool_choice'] != null) out['tool_choice'] = src['tool_choice'];
 
-  return utf8.encode(jsonEncode(out));
+  return out;
 }
 
-String _chatContentToText(dynamic content) {
+Map<String, Object?>? _decodeJsonObject(List<int> bodyBytes) {
+  if (bodyBytes.isEmpty) return null;
+  try {
+    final Object? decoded = jsonDecode(utf8.decode(bodyBytes));
+    if (decoded is! Map) return null;
+    return _stringKeyedMap(decoded);
+  } catch (_) {
+    return null;
+  }
+}
+
+List<int> _encodeJsonObject(Map<String, Object?> value) {
+  return utf8.encode(jsonEncode(value));
+}
+
+Map<String, Object?> _stringKeyedMap(Map source) {
+  return source.map((key, value) => MapEntry(key.toString(), value));
+}
+
+void _appendInstructionParts(List<String> target, Object? instructions) {
+  if (instructions is String && instructions.isNotEmpty) {
+    target.add(instructions);
+  } else if (instructions is List) {
+    for (final raw in instructions) {
+      final text = _stringifyContent(raw);
+      if (text.isNotEmpty) target.add(text);
+    }
+  }
+}
+
+String _chatRole(String role) {
+  switch (role) {
+    case 'assistant':
+      return 'assistant';
+    case 'developer':
+    case 'system':
+      return 'system';
+    default:
+      return 'user';
+  }
+}
+
+String _stringifyContent(Object? content) {
   if (content is String) return content;
   if (content is List) {
     final buffer = StringBuffer();
     for (final part in content) {
       if (part is Map) {
-        final text = part['text'];
+        final text = _stringKeyedMap(part)['text'];
         if (text is String) buffer.write(text);
+      } else if (part is String) {
+        buffer.write(part);
       }
     }
     return buffer.toString();
@@ -264,47 +437,191 @@ String _chatContentToText(dynamic content) {
   return content?.toString() ?? '';
 }
 
-List<Map<String, dynamic>> _chatToolsToResponses(dynamic tools) {
-  if (tools is! List) return const [];
-  final out = <Map<String, dynamic>>[];
+List<Map<String, Object?>> _responsesToolsToChat(Object? tools) {
+  if (tools is! List) return const <Map<String, Object?>>[];
+  final out = <Map<String, Object?>>[];
   for (final raw in tools) {
-    if (raw is! Map<String, dynamic>) continue;
-    final function = raw['function'];
-    if (function is Map) {
+    if (raw is! Map) continue;
+    final tool = _stringKeyedMap(raw);
+    if (tool['function'] is Map) {
+      out.add(tool);
+      continue;
+    }
+    if (tool['type'] == 'function' && tool['name'] != null) {
       out.add({
         'type': 'function',
-        'name': function['name'] ?? '',
-        if (function['description'] != null) 'description': function['description'],
-        if (function['parameters'] != null) 'parameters': function['parameters'],
+        'function': {
+          'name': tool['name'],
+          if (tool['description'] != null) 'description': tool['description'],
+          if (tool['parameters'] != null) 'parameters': tool['parameters'],
+        },
       });
-    } else if (raw['type'] == 'function' && raw['name'] is String) {
-      out.add(raw);
     }
   }
   return out;
 }
 
-List<Map<String, dynamic>> _anthropicToolsToResponses(dynamic tools) {
-  if (tools is! List) return const [];
-  final out = <Map<String, dynamic>>[];
+List<Map<String, Object?>> _responsesToolsToAnthropic(Object? tools) {
+  if (tools is! List) return const <Map<String, Object?>>[];
+  final converted = <Map<String, Object?>>[];
   for (final raw in tools) {
-    if (raw is! Map<String, dynamic>) continue;
-    final name = raw['name'];
+    if (raw is! Map) continue;
+    final tool = _stringKeyedMap(raw);
+
+    final inputSchema = tool['input_schema'];
+    if (tool['name'] is String && inputSchema is Map) {
+      converted.add(tool);
+      continue;
+    }
+
+    final function = tool['function'];
+    if (function is Map) {
+      final fn = _stringKeyedMap(function);
+      if (fn['name'] is String) {
+        converted.add({
+          'name': fn['name'],
+          if (fn['description'] != null) 'description': fn['description'],
+          'input_schema': fn['parameters'] ?? _emptyObjectSchema(),
+        });
+      }
+      continue;
+    }
+
+    if (tool['type'] == 'function' && tool['name'] is String) {
+      converted.add({
+        'name': tool['name'],
+        if (tool['description'] != null) 'description': tool['description'],
+        'input_schema': tool['parameters'] ?? _emptyObjectSchema(),
+      });
+    }
+  }
+  return converted;
+}
+
+List<Map<String, Object?>> _chatToolsToResponses(Object? tools) {
+  if (tools is! List) return const <Map<String, Object?>>[];
+  final out = <Map<String, Object?>>[];
+  for (final raw in tools) {
+    if (raw is! Map) continue;
+    final tool = _stringKeyedMap(raw);
+    final function = tool['function'];
+    if (function is Map) {
+      final fn = _stringKeyedMap(function);
+      out.add({
+        'type': 'function',
+        'name': fn['name'] ?? '',
+        if (fn['description'] != null) 'description': fn['description'],
+        if (fn['parameters'] != null) 'parameters': fn['parameters'],
+      });
+    } else if (tool['type'] == 'function' && tool['name'] is String) {
+      out.add(tool);
+    }
+  }
+  return out;
+}
+
+List<Map<String, Object?>> _anthropicToolsToResponses(Object? tools) {
+  if (tools is! List) return const <Map<String, Object?>>[];
+  final out = <Map<String, Object?>>[];
+  for (final raw in tools) {
+    if (raw is! Map) continue;
+    final tool = _stringKeyedMap(raw);
+    final name = tool['name'];
     if (name is! String) continue;
     out.add({
       'type': 'function',
       'name': name,
-      if (raw['description'] != null) 'description': raw['description'],
-      if (raw['input_schema'] != null) 'parameters': raw['input_schema'],
+      if (tool['description'] != null) 'description': tool['description'],
+      if (tool['input_schema'] != null) 'parameters': tool['input_schema'],
     });
   }
   return out;
 }
 
-void _appendAnthropicContentToResponsesInput(
-  List<Map<String, dynamic>> input,
+Map<String, Object?> _emptyObjectSchema() {
+  return {'type': 'object', 'properties': <String, Object?>{}};
+}
+
+Map<String, Object?> _anthropicTextBlock(String text) {
+  return {'type': 'text', 'text': text};
+}
+
+void _appendAnthropicMessage(
+  List<Map<String, Object?>> messages,
   String role,
-  dynamic content,
+  List<Map<String, Object?>> content,
+) {
+  if (content.isEmpty) return;
+  if (messages.isNotEmpty && messages.last['role'] == role) {
+    final existing = messages.last['content'];
+    if (existing is List) {
+      existing.addAll(content);
+      return;
+    }
+  }
+  messages.add({'role': role, 'content': content});
+}
+
+Object _parseArgumentsObject(Object? arguments) {
+  if (arguments is Map) return _stringKeyedMap(arguments);
+  if (arguments is String && arguments.trim().isNotEmpty) {
+    try {
+      final Object? decoded = jsonDecode(arguments);
+      if (decoded is Map) return _stringKeyedMap(decoded);
+    } catch (_) {
+      return <String, Object?>{};
+    }
+  }
+  return <String, Object?>{};
+}
+
+int _resolveAnthropicMaxTokens(Map<String, Object?> src) {
+  final maxOutput = src['max_output_tokens'];
+  if (maxOutput is int && maxOutput > 0) return maxOutput;
+  final maxTokens = src['max_tokens'];
+  if (maxTokens is int && maxTokens > 0) return maxTokens;
+  return 4096;
+}
+
+Map<String, Object?>? _responsesToolChoiceToAnthropic(Object? toolChoice) {
+  if (toolChoice == null) return null;
+  if (toolChoice is String) {
+    switch (toolChoice) {
+      case 'auto':
+      case 'any':
+      case 'none':
+        return {'type': toolChoice};
+      case 'required':
+        return {'type': 'any'};
+      default:
+        return null;
+    }
+  }
+  if (toolChoice is Map) {
+    final choice = _stringKeyedMap(toolChoice);
+    final type = choice['type'];
+    if (type == 'auto' || type == 'any' || type == 'none') {
+      return {'type': type};
+    }
+    if (type == 'required') return {'type': 'any'};
+    if (type == 'tool' && choice['name'] is String) {
+      return {'type': 'tool', 'name': choice['name']};
+    }
+    if (type == 'function') {
+      final function = choice['function'];
+      final name = function is Map ? _stringKeyedMap(function)['name'] : null;
+      if (name is String && name.isNotEmpty) {
+        return {'type': 'tool', 'name': name};
+      }
+    }
+  }
+  return null;
+}
+
+void _appendAnthropicContentToResponsesInput(
+  List<Map<String, Object?>> input,
+  String role,
+  Object? content,
 ) {
   if (content is String) {
     if (content.isNotEmpty) {
@@ -323,8 +640,9 @@ void _appendAnthropicContentToResponsesInput(
 
   if (content is! List) return;
   final textParts = <String>[];
-  for (final part in content) {
-    if (part is! Map<String, dynamic>) continue;
+  for (final rawPart in content) {
+    if (rawPart is! Map) continue;
+    final part = _stringKeyedMap(rawPart);
     final type = part['type'];
     if (type == 'text') {
       final text = part['text'];
@@ -334,13 +652,13 @@ void _appendAnthropicContentToResponsesInput(
         'type': 'function_call',
         'call_id': part['id'] ?? '',
         'name': part['name'] ?? '',
-        'arguments': jsonEncode(part['input'] ?? <String, dynamic>{}),
+        'arguments': jsonEncode(part['input'] ?? <String, Object?>{}),
       });
     } else if (type == 'tool_result') {
       input.add({
         'type': 'function_call_output',
         'call_id': part['tool_use_id'] ?? '',
-        'output': _chatContentToText(part['content']),
+        'output': _stringifyContent(part['content']),
       });
     }
   }

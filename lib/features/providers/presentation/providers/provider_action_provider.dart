@@ -40,7 +40,7 @@ Future<void> _syncRunningProxyTarget(Ref ref) async {
       baseUrl: selected.baseUrl,
       apiKey: selected.apiKey,
       model: selected.selectedModel,
-      wireApi: selected.wireApi,
+      upstreamProtocol: selected.upstreamProtocol,
       reasoningEffort: reasoningEffort,
     ),
   );
@@ -144,7 +144,7 @@ Map<String, dynamic> _providerListPayload(
             'name': provider.name,
             'models': provider.models,
             'selectedModel': provider.selectedModel,
-            'wireApi': provider.wireApi,
+            'protocol': provider.upstreamProtocol,
           },
         )
         .toList(),
@@ -255,7 +255,7 @@ Future<void> startTakeover(Ref ref) async {
       baseUrl: selected.baseUrl,
       apiKey: selected.apiKey,
       model: selected.selectedModel,
-      wireApi: selected.wireApi,
+      upstreamProtocol: selected.upstreamProtocol,
       reasoningEffort: await ref
           .read(appStorageProvider)
           .getString(_reasoningEffortKey),
@@ -290,3 +290,4 @@ Future<void> setProxyPort(Ref ref, {required int port}) async {
   await repo.saveProxyPort(port.clamp(1, 65535));
   ref.invalidate(proxyConfigProvider);
 }
+

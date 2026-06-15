@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'api_provider.freezed.dart';
 
-/// API 供应商实体：一条可切换的中转目标。
+/// API provider entity: one switchable upstream target.
 @freezed
 abstract class ApiProvider with _$ApiProvider {
   const ApiProvider._();
@@ -11,17 +11,17 @@ abstract class ApiProvider with _$ApiProvider {
     required String id,
     required String name,
 
-    /// 例：https://api.muxueai.pro/v1
+    /// Example: https://api.muxueai.pro/v1
     required String baseUrl,
     required String apiKey,
 
-    /// 可选模型列表
+    /// Optional model list.
     required List<String> models,
 
-    /// 当前选中模型（null = 不覆盖，用 Codex 自己选的）
+    /// Selected model override. Null means Codex keeps its own model.
     required String? selectedModel,
 
-    /// 上游协议：'responses'（默认）| 'chat' | 'messages'
-    required String wireApi,
+    /// Upstream protocol storage value: responses | chat | messages.
+    required String upstreamProtocol,
   }) = _ApiProvider;
 }

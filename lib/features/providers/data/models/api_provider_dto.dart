@@ -15,10 +15,10 @@ abstract class ApiProviderDto with _$ApiProviderDto {
     @Default('') String apiKey,
     @Default([]) List<String> models,
     String? selectedModel,
-    @Default('responses') String wireApi,
+    @Default('responses') String upstreamProtocol,
   }) = _ApiProviderDto;
 
-  factory ApiProviderDto.fromJson(Map<String, dynamic> json) =>
+  factory ApiProviderDto.fromJson(Map<String, Object?> json) =>
       _$ApiProviderDtoFromJson(json);
 
   factory ApiProviderDto.fromEntity(ApiProvider entity) {
@@ -29,7 +29,7 @@ abstract class ApiProviderDto with _$ApiProviderDto {
       apiKey: entity.apiKey,
       models: entity.models,
       selectedModel: entity.selectedModel,
-      wireApi: entity.wireApi,
+      upstreamProtocol: entity.upstreamProtocol,
     );
   }
 
@@ -41,7 +41,7 @@ abstract class ApiProviderDto with _$ApiProviderDto {
       apiKey: apiKey,
       models: models,
       selectedModel: selectedModel,
-      wireApi: wireApi,
+      upstreamProtocol: upstreamProtocol,
     );
   }
 }

@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:shim/core/services/anthropic_messages_transformer.dart';
-import 'package:shim/core/services/chat_to_responses_transformer.dart';
+import 'package:shim/core/services/anthropic_messages_stream_to_responses_transformer.dart';
+import 'package:shim/core/services/chat_stream_to_responses_transformer.dart';
 import 'package:shim/core/services/llm_protocol_converter.dart';
+import 'package:shim/core/services/llm_protocol_proxy_spec.dart';
 
 final localProxyRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
   final notifier = ValueNotifier<int?>(null);
@@ -23,51 +24,40 @@ final localProxyServiceProvider = Provider<LocalProxyService>((ref) {
   return service;
 });
 
-/// 当前转发目标：真实供应商的 base_url + key。
-/// 切换供应商 = 改这个对象，零重启。
+/// Current forwarding target: real provider base URL, key, model override, and protocol.
+/// Protocol JSON fields are deliberately isolated in llm_protocol_converter.dart.
 class ProxyTarget {
   const ProxyTarget({
     required this.baseUrl,
     required this.apiKey,
     this.model,
-    this.wireApi = 'responses',
+    this.upstreamProtocol = 'responses',
     this.reasoningEffort,
   });
 
-  /// 例：https://api.muxueai.pro/v1
   final String baseUrl;
-
-  /// 真实供应商的 bearer token
   final String apiKey;
-
-  /// 覆盖请求 body 的 model（null = 不改，用 Codex 自己选的）
   final String? model;
-
-  /// 上游协议：'responses'（默认）| 'chat' | 'messages'
-  final String wireApi;
-
-  /// GPT 文本模型的思考深度：low | medium | high | xhigh
+  final String upstreamProtocol;
   final String? reasoningEffort;
 }
 
-/// 反向代理：Codex 用 HTTP 发到本地，代理按当前 target 改写后用 HTTPS 转发到真实供应商。
+/// Reverse proxy for Codex local requests.
 ///
-/// Codex 侧 base_url 配置成 `http://127.0.0.1:<port>/v1`，
-/// 收到 /v1/responses 这类请求后，拼到 target.baseUrl 上转发，
-/// Authorization 换成 target.apiKey。
+/// This class only owns HTTP proxy flow. Request protocol mapping belongs to
+/// llm_protocol_converter.dart; upstream route/header decisions belong to
+/// llm_protocol_proxy_spec.dart.
 class LocalProxyService {
   HttpServer? _server;
   StreamSubscription<HttpRequest>? _subscription;
   int? _port;
 
-  /// 当前转发目标，可热切换
   ProxyTarget? _target;
 
   bool get isRunning => _server != null;
   int? get port => _port;
   ProxyTarget? get target => _target;
 
-  /// 热切换转发目标（零重启）
   void setTarget(ProxyTarget target) {
     _target = target;
   }
@@ -85,12 +75,12 @@ class LocalProxyService {
     _server = server;
     _port = server.port;
     // ignore: avoid_print
-    print('[Proxy] 监听启动 127.0.0.1:$port');
+    print('[Proxy] listening 127.0.0.1:$port');
     _subscription = server.listen(
       _handleRequest,
       onError: (Object error, StackTrace stackTrace) {
         // ignore: avoid_print
-        print('[Proxy] ❌ server 层错误（请求未进 handler）: $error');
+        print('[Proxy] server error before handler: $error');
       },
     );
   }
@@ -108,94 +98,75 @@ class LocalProxyService {
   Future<void> _handleRequest(HttpRequest request) async {
     final target = _target;
     // ignore: avoid_print
-    print('[Proxy] 收到请求 ${request.method} ${request.uri} '
-        'target=${target?.baseUrl}');
+    print('[Proxy] request ${request.method} ${request.uri} target=${target?.baseUrl}');
     if (target == null) {
-      // ignore: avoid_print
-      print('[Proxy] ❌ target 为 null，返回 503');
       await _closeWithStatus(request.response, HttpStatus.serviceUnavailable);
       return;
     }
 
-    final upstreamUri = _resolveUpstreamUri(
-      target.baseUrl,
-      request.uri,
-      target.wireApi,
-    );
-    if (upstreamUri == null) {
+    late final LlmProtocolSpec spec;
+    try {
+      spec = resolveLlmProtocolSpec(
+        baseUrl: target.baseUrl,
+        requestUri: request.uri,
+        apiKey: target.apiKey,
+        upstreamProtocol: target.upstreamProtocol,
+      );
+    } catch (error) {
       // ignore: avoid_print
-      print('[Proxy] ❌ 解析 upstream 失败, baseUrl=${target.baseUrl}');
+      print('[Proxy] invalid upstream target: $error');
       await _closeWithStatus(request.response, HttpStatus.badGateway);
       return;
     }
 
-    final isChat = target.wireApi == 'chat';
-    final isMessages = target.wireApi == 'messages';
     // ignore: avoid_print
-    print('[Proxy] 转发 → $upstreamUri model=${target.model ?? "(透传)"} '
-        'wire=${target.wireApi} reasoning=${target.reasoningEffort ?? "(默认)"}');
+    print('[Proxy] forwarding to ${spec.uri} model=${target.model ?? "(passthrough)"}');
+
     final client = HttpClient();
     client.findProxy = (_) => 'DIRECT';
     var responseStarted = false;
     try {
-      final upstreamRequest = await client.openUrl(request.method, upstreamUri);
-      _copyRequestHeaders(request, upstreamRequest, upstreamUri.host);
-      upstreamRequest.headers.set('authorization', 'Bearer ${target.apiKey}');
-      if (isMessages) {
-        upstreamRequest.headers.set('x-api-key', target.apiKey);
-        upstreamRequest.headers.set('anthropic-version', '2023-06-01');
-      }
+      final upstreamRequest = await client.openUrl(request.method, spec.uri);
+      _copyRequestHeaders(request, upstreamRequest, spec.uri.host);
+      _applyProtocolHeaders(upstreamRequest, spec.headers);
 
-      // chat/messages 协议：请求体转换；否则仅按需改写 model。
       final bodyBytes = await _collectBody(request);
-      final preparedBodyBytes = rewriteResponsesReasoningEffort(
+      final outBytes = convertLlmProtocolBody(
         bodyBytes,
-        target.reasoningEffort,
+        from: LlmProtocol.responses,
+        to: spec.protocol,
+        options: LlmRequestConvertOptions(
+          overrideModel: target.model,
+          reasoningEffort: target.reasoningEffort,
+        ),
       );
-      final outBytes = isChat
-          ? convertLlmProtocolBody(
-              preparedBodyBytes,
-              from: LlmWireProtocol.responses,
-              to: LlmWireProtocol.chat,
-              overrideModel: target.model,
-            )
-          : isMessages
-              ? convertLlmProtocolBody(
-                  preparedBodyBytes,
-                  from: LlmWireProtocol.responses,
-                  to: LlmWireProtocol.messages,
-                  overrideModel: target.model,
-                )
-              : rewriteJsonModel(preparedBodyBytes, target.model);
       upstreamRequest.headers.contentLength = outBytes.length;
       upstreamRequest.add(outBytes);
+
       final upstreamResponse = await upstreamRequest.close();
-
       // ignore: avoid_print
-      print('[Proxy] 上游响应 ${upstreamResponse.statusCode} '
-          'content-type=${upstreamResponse.headers.contentType} ← $upstreamUri');
+      print('[Proxy] upstream ${upstreamResponse.statusCode} ${upstreamResponse.headers.contentType}');
 
-      if (isChat && upstreamResponse.statusCode == 200) {
-        // chat 协议：把 Chat SSE 流转成 Responses SSE 流回传
-        request.response.statusCode = 200;
-        responseStarted = true;
-        await ChatToResponsesTransformer()
-            .transform(upstreamResponse, request.response);
-      } else if (isMessages && upstreamResponse.statusCode == 200) {
-        request.response.statusCode = 200;
-        responseStarted = true;
-        await AnthropicMessagesToResponsesTransformer()
-            .transform(upstreamResponse, request.response);
-      } else {
-        request.response.statusCode = upstreamResponse.statusCode;
-        request.response.reasonPhrase = upstreamResponse.reasonPhrase;
-        _copyResponseHeaders(upstreamResponse, request.response);
-        responseStarted = true;
-        await upstreamResponse.cast<List<int>>().pipe(request.response);
+      if (upstreamResponse.statusCode == HttpStatus.ok) {
+        final transformed = await _tryTransformStream(
+          spec.responseStreamKind,
+          upstreamResponse,
+          request.response,
+        );
+        if (transformed) {
+          responseStarted = true;
+          return;
+        }
       }
+
+      request.response.statusCode = upstreamResponse.statusCode;
+      request.response.reasonPhrase = upstreamResponse.reasonPhrase;
+      _copyResponseHeaders(upstreamResponse, request.response);
+      responseStarted = true;
+      await upstreamResponse.cast<List<int>>().pipe(request.response);
     } catch (error) {
       // ignore: avoid_print
-      print('[Proxy] ❌ 转发异常: $error');
+      print('[Proxy] forwarding error: $error');
       if (!responseStarted) {
         await _closeWithStatus(request.response, HttpStatus.badGateway);
       }
@@ -204,29 +175,33 @@ class LocalProxyService {
     }
   }
 
-  /// 真实 base_url 的 scheme/host/port + 请求 path/query。
-  /// wireApi == 'chat' 时改为 base_url path 前缀 + /chat/completions。
-  /// wireApi == 'messages' 时改为 base_url path 前缀 + /messages。
-  Uri? _resolveUpstreamUri(String baseUrl, Uri requestUri, String wireApi) {
-    final base = Uri.tryParse(baseUrl);
-    if (base == null || base.host.isEmpty) return null;
-    final String path;
-    if (wireApi == 'chat') {
-      final prefix = base.path.replaceAll(RegExp(r'/+$'), '');
-      path = '$prefix/chat/completions';
-    } else if (wireApi == 'messages') {
-      final prefix = base.path.replaceAll(RegExp(r'/+$'), '');
-      path = '$prefix/messages';
-    } else {
-      path = requestUri.path;
+  Future<bool> _tryTransformStream(
+    LlmResponseStreamKind streamKind,
+    HttpClientResponse upstream,
+    HttpResponse downstream,
+  ) async {
+    switch (streamKind) {
+      case LlmResponseStreamKind.passthrough:
+        return false;
+      case LlmResponseStreamKind.chatToResponses:
+        downstream.statusCode = HttpStatus.ok;
+        await ChatStreamToResponsesTransformer().transform(upstream, downstream);
+        return true;
+      case LlmResponseStreamKind.messagesToResponses:
+        downstream.statusCode = HttpStatus.ok;
+        await AnthropicMessagesStreamToResponsesTransformer()
+            .transform(upstream, downstream);
+        return true;
     }
-    return Uri(
-      scheme: base.scheme,
-      host: base.host,
-      port: base.hasPort ? base.port : null,
-      path: path,
-      query: requestUri.query.isEmpty ? null : requestUri.query,
-    );
+  }
+
+  void _applyProtocolHeaders(
+    HttpClientRequest request,
+    Map<String, String> headers,
+  ) {
+    for (final entry in headers.entries) {
+      request.headers.set(entry.key, entry.value);
+    }
   }
 
   Future<List<int>> _collectBody(HttpRequest request) {
@@ -249,8 +224,9 @@ class LocalProxyService {
   ) {
     source.headers.forEach((name, values) {
       if (_isHopByHopHeader(name)) return;
-      if (name.toLowerCase() == 'host') return; // 用真实 host
-      if (name.toLowerCase() == 'authorization') return; // 稍后单独设
+      final lowerName = name.toLowerCase();
+      if (lowerName == 'host') return;
+      if (lowerName == 'authorization') return;
       for (final value in values) {
         destination.headers.add(name, value);
       }

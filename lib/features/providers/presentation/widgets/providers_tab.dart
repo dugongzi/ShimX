@@ -99,7 +99,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
 
   late List<String> _models;
   String? _selectedModel;
-  late String _wireApi;
+  late String _upstreamProtocol;
 
   @override
   void initState() {
@@ -110,7 +110,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
     _apiKeyCtrl = TextEditingController(text: e?.apiKey ?? '');
     _models = List.of(e?.models ?? const []);
     _selectedModel = e?.selectedModel;
-    _wireApi = e?.wireApi ?? 'responses';
+    _upstreamProtocol = e?.upstreamProtocol ?? 'responses';
   }
 
   @override
@@ -190,7 +190,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
             apiKey: apiKey,
             models: _models,
             selectedModel: _selectedModel,
-            wireApi: _wireApi,
+            upstreamProtocol: _upstreamProtocol,
           ),
         ).future,
       );
@@ -203,7 +203,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
             apiKey: apiKey,
             models: _models,
             selectedModel: _selectedModel,
-            wireApi: _wireApi,
+            upstreamProtocol: _upstreamProtocol,
           ),
         ).future,
       );
@@ -266,9 +266,9 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                     ButtonSegment(value: 'chat', label: Text('Chat')),
                     ButtonSegment(value: 'messages', label: Text('Messages')),
                   ],
-                  selected: {_wireApi},
+                  selected: {_upstreamProtocol},
                   onSelectionChanged: (v) =>
-                      setState(() => _wireApi = v.first),
+                      setState(() => _upstreamProtocol = v.first),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -437,3 +437,4 @@ class _ProviderCard extends StatelessWidget {
     );
   }
 }
+

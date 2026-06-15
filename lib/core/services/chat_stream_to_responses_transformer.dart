@@ -1,176 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// 把 Codex 的 Responses API 请求体转成 Chat Completions 请求体。
-///
-/// Codex 发的是 `{model, instructions, input:[...], tools, max_output_tokens, ...}`，
-/// 上游 chat 端点要的是 `{model, messages:[...], tools, max_tokens, stream}`。
-/// model 用传入的 override（非空时覆盖）。
-List<int> convertResponsesBodyToChat(List<int> bodyBytes, String? overrideModel) {
-  Map<String, dynamic> src;
-  try {
-    final decoded = jsonDecode(utf8.decode(bodyBytes));
-    if (decoded is! Map<String, dynamic>) return bodyBytes;
-    src = decoded;
-  } catch (_) {
-    return bodyBytes;
-  }
-
-  // 调试：打印原始请求体结构（input 各项的 type/role/content 形态）
-  // ignore: avoid_print
-  print('[ReqConvert] keys=${src.keys.toList()}');
-  final dbgInput = src['input'];
-  if (dbgInput is List) {
-    for (var i = 0; i < dbgInput.length; i++) {
-      final it = dbgInput[i];
-      if (it is Map) {
-        final c = it['content'];
-        final cDesc = c is List
-            ? 'List[${c.map((e) => e is Map ? e['type'] : e.runtimeType).toList()}]'
-            : c.runtimeType.toString();
-        // ignore: avoid_print
-        print('[ReqConvert] input[$i] type=${it['type']} role=${it['role']} content=$cDesc');
-      }
-    }
-  }
-
-  final messages = <Map<String, dynamic>>[];
-
-  // 所有 system/developer 文本合并到开头一条 system，避免中间 system 让模型行为异常
-  final systemParts = <String>[];
-  final instructions = src['instructions'];
-  if (instructions is String && instructions.isNotEmpty) {
-    systemParts.add(instructions);
-  }
-
-  final body = <Map<String, dynamic>>[];
-  final input = src['input'];
-  if (input is String && input.isNotEmpty) {
-    body.add({'role': 'user', 'content': input});
-  } else if (input is List) {
-    for (final raw in input) {
-      if (raw is! Map<String, dynamic>) continue;
-      final type = raw['type'];
-      if (type == 'reasoning') {
-        continue; // 推理项不回传给上游
-      } else if (type == 'function_call') {
-        body.add({
-          'role': 'assistant',
-          'content': null,
-          'tool_calls': [
-            {
-              'id': raw['call_id'] ?? raw['id'] ?? '',
-              'type': 'function',
-              'function': {
-                'name': raw['name'] ?? '',
-                'arguments': raw['arguments'] ?? '',
-              },
-            },
-          ],
-        });
-      } else if (type == 'function_call_output') {
-        body.add({
-          'role': 'tool',
-          'tool_call_id': raw['call_id'] ?? '',
-          'content': _stringifyContent(raw['output']),
-        });
-      } else {
-        final role = raw['role'];
-        if (role is! String) continue;
-        final text = _stringifyContent(raw['content']);
-        if (role == 'developer' || role == 'system') {
-          // 收集到 system，不在中间产出
-          if (text.isNotEmpty) systemParts.add(text);
-        } else {
-          body.add({'role': _mapRole(role), 'content': text});
-        }
-      }
-    }
-  }
-
-  if (systemParts.isNotEmpty) {
-    messages.add({'role': 'system', 'content': systemParts.join('\n\n')});
-  }
-  messages.addAll(body);
-
-  final out = <String, dynamic>{
-    'model': (overrideModel != null && overrideModel.isNotEmpty)
-        ? overrideModel
-        : src['model'],
-    'messages': messages,
-    'stream': true,
-    'stream_options': {'include_usage': true},
-  };
-
-  // tools：Responses 扁平格式 → Chat 嵌套格式
-  final tools = src['tools'];
-  if (tools is List && tools.isNotEmpty) {
-    final converted = <Map<String, dynamic>>[];
-    for (final t in tools) {
-      if (t is! Map<String, dynamic>) continue;
-      // 已是 Chat 嵌套格式（含 function 字段）则原样保留
-      if (t['function'] is Map) {
-        converted.add(t);
-        continue;
-      }
-      // Responses 扁平 function：{type, name, description, parameters}
-      if (t['type'] == 'function' && t['name'] != null) {
-        converted.add({
-          'type': 'function',
-          'function': {
-            'name': t['name'],
-            if (t['description'] != null) 'description': t['description'],
-            if (t['parameters'] != null) 'parameters': t['parameters'],
-          },
-        });
-      } else {
-        converted.add(t);
-      }
-    }
-    if (converted.isNotEmpty) out['tools'] = converted;
-  }
-  if (src['tool_choice'] != null) out['tool_choice'] = src['tool_choice'];
-  // max_output_tokens → max_tokens
-  final maxOut = src['max_output_tokens'];
-  if (maxOut is int) out['max_tokens'] = maxOut;
-  if (src['temperature'] != null) out['temperature'] = src['temperature'];
-  final reasoning = src['reasoning'];
-  if (reasoning is Map && reasoning['effort'] is String) {
-    out['reasoning_effort'] = reasoning['effort'];
-  }
-
-  return utf8.encode(jsonEncode(out));
-}
-
-String _mapRole(String role) {
-  switch (role) {
-    case 'developer':
-    case 'system':
-      return 'system';
-    case 'assistant':
-      return 'assistant';
-    default:
-      return 'user';
-  }
-}
-
-/// Responses 的 content 可能是 string，也可能是 [{type, text}] 数组。
-String _stringifyContent(dynamic content) {
-  if (content is String) return content;
-  if (content is List) {
-    final buf = StringBuffer();
-    for (final part in content) {
-      if (part is Map) {
-        final t = part['text'];
-        if (t is String) buf.write(t);
-      }
-    }
-    return buf.toString();
-  }
-  return content?.toString() ?? '';
-}
-
-/// 单个 tool_call 的累积状态（arguments 跨 chunk 拼接）。
 class _ToolCallState {
   int? outputIndex;
   String itemId = '';
@@ -185,7 +15,7 @@ class _ToolCallState {
 /// Codex app-server 只认 Responses 协议（`event: response.output_text.delta` …），
 /// 而中转站把 Claude 等模型包成 Chat Completions（`chat.completion.chunk`）。
 /// 本类逐行消费 Chat chunk，按状态机产出对应的 Responses 事件写回下游。
-class ChatToResponsesTransformer {
+class ChatStreamToResponsesTransformer {
   String _responseId = '';
   String _model = '';
   int _createdAt = 0;
@@ -587,3 +417,4 @@ class ChatToResponsesTransformer {
     out.write('data: ${jsonEncode(data)}\n\n');
   }
 }
+

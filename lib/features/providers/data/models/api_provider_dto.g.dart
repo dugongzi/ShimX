@@ -18,7 +18,7 @@ _ApiProviderDto _$ApiProviderDtoFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const [],
       selectedModel: json['selectedModel'] as String?,
-      wireApi: json['wireApi'] as String? ?? 'responses',
+      upstreamProtocol: json['upstreamProtocol'] as String? ?? 'responses',
     );
 
 Map<String, dynamic> _$ApiProviderDtoToJson(_ApiProviderDto instance) =>
@@ -29,5 +29,5 @@ Map<String, dynamic> _$ApiProviderDtoToJson(_ApiProviderDto instance) =>
       'apiKey': instance.apiKey,
       'models': instance.models,
       'selectedModel': instance.selectedModel,
-      'wireApi': instance.wireApi,
+      'upstreamProtocol': instance.upstreamProtocol,
     };

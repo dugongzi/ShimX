@@ -5,6 +5,121 @@
 // @author      shim
 // ==/Shim==
 (() => {
+  // ========== 阻断 Statsig 等被墙的请求,避免主页面 hydration 卡 10 秒 ==========
+  // ab.chatgpt.com / chatgpt.com/ces 在国内不可达,Codex 启动会等到 10s 超时,
+  // 表现为主页面一直 loading。这里直接让请求立即失败,SPA 拿到 error 会走 fallback。
+  (function installNetworkBlocker() {
+    if (window.__shimNetBlockerInstalled) return;
+    window.__shimNetBlockerInstalled = true;
+
+    const BLOCKED_HOSTS = [
+      'ab.chatgpt.com',
+      'chatgpt.com/ces/',
+      'statsigapi.net',
+      'featuregates.org',
+      'events.statsigapi.net',
+    ];
+    let blockedCount = 0;
+
+    function isBlocked(url) {
+      if (!url) return false;
+      const s = String(url);
+      for (const host of BLOCKED_HOSTS) {
+        if (s.includes(host)) return true;
+      }
+      return false;
+    }
+
+    // 返回一个 Statsig 看起来合法的"空成功"响应,避免触发 SPA 的 error 路径(会重渲染整个页面)
+    function fakeStatsigBody(url) {
+      const u = String(url || '');
+      if (u.includes('/v1/initialize')) {
+        return JSON.stringify({
+          feature_gates: {},
+          dynamic_configs: {},
+          layer_configs: {},
+          sdkParams: {},
+          has_updates: false,
+          time: Date.now(),
+          hash_used: 'djb2',
+        });
+      }
+      // rgstr / log_event / 其它端点 → 空对象 200 就够
+      return JSON.stringify({ success: true });
+    }
+
+    const origFetch = window.fetch;
+    window.fetch = function shimBlockingFetch(input, init) {
+      const url = typeof input === 'string' ? input : input?.url;
+      if (isBlocked(url)) {
+        blockedCount += 1;
+        if (blockedCount <= 3) {
+          console.log('[ShimNetBlock] fetch faked', url);
+        }
+        const body = fakeStatsigBody(url);
+        return Promise.resolve(new Response(body, {
+          status: 200,
+          statusText: 'OK',
+          headers: { 'Content-Type': 'application/json' },
+        }));
+      }
+      return origFetch.apply(this, arguments);
+    };
+
+    const OrigXHR = window.XMLHttpRequest;
+    const origOpen = OrigXHR.prototype.open;
+    const origSend = OrigXHR.prototype.send;
+    const origSetReqHeader = OrigXHR.prototype.setRequestHeader;
+    OrigXHR.prototype.open = function shimBlockingOpen(method, url) {
+      this.__shimBlockedUrl = url;
+      this.__shimIsBlocked = isBlocked(url);
+      return origOpen.apply(this, arguments);
+    };
+    OrigXHR.prototype.setRequestHeader = function (name, value) {
+      if (this.__shimIsBlocked) return; // 不真发,header 也别真写
+      return origSetReqHeader.apply(this, arguments);
+    };
+    OrigXHR.prototype.send = function shimBlockingSend() {
+      if (this.__shimIsBlocked) {
+        blockedCount += 1;
+        if (blockedCount <= 3) {
+          console.log('[ShimNetBlock] xhr faked', this.__shimBlockedUrl);
+        }
+        const body = fakeStatsigBody(this.__shimBlockedUrl);
+        setTimeout(() => {
+          try {
+            Object.defineProperty(this, 'readyState', { value: 4, configurable: true });
+            Object.defineProperty(this, 'status', { value: 200, configurable: true });
+            Object.defineProperty(this, 'statusText', { value: 'OK', configurable: true });
+            Object.defineProperty(this, 'responseText', { value: body, configurable: true });
+            Object.defineProperty(this, 'response', { value: body, configurable: true });
+            Object.defineProperty(this, 'responseURL', { value: this.__shimBlockedUrl, configurable: true });
+            this.dispatchEvent(new Event('readystatechange'));
+            this.dispatchEvent(new Event('load'));
+            this.dispatchEvent(new Event('loadend'));
+          } catch (_) {}
+        }, 0);
+        return;
+      }
+      return origSend.apply(this, arguments);
+    };
+
+    // sendBeacon 也可能被 Statsig 用,直接返回 true 装作发了
+    const origBeacon = navigator.sendBeacon?.bind(navigator);
+    if (origBeacon) {
+      navigator.sendBeacon = function shimBlockingBeacon(url, data) {
+        if (isBlocked(url)) {
+          blockedCount += 1;
+          if (blockedCount <= 3) console.log('[ShimNetBlock] beacon faked', url);
+          return true;
+        }
+        return origBeacon(url, data);
+      };
+    }
+
+    console.log('[ShimNetBlock] installed (fake-success mode), targets:', BLOCKED_HOSTS.join(', '));
+  })();
+
   const BADGE_ID = '__shim_injected_badge__';
   const MENU_ITEM_ID = '__shim_menu_item__';
   const POPOVER_ID = '__shim_popover__';
@@ -87,11 +202,13 @@
     const anchor = findBadgeAnchor();
     if (anchor) {
       if (existing && existing.parentElement === anchor) return;
+      if (typeof __t === 'function') __t('ensureBadge: REPLACE inline', { hadExisting: !!existing });
       existing?.remove();
       anchor.appendChild(buildBadge(true));
       return;
     }
     if (existing) return;
+    if (typeof __t === 'function') __t('ensureBadge: INSERT fixed (no anchor)');
     (document.body || document.documentElement).appendChild(buildBadge(false));
   }
 
@@ -157,6 +274,7 @@
     const list = findSettingsMenuList();
     if (!list) return;
     if (document.getElementById(MENU_ITEM_ID)?.parentElement === list) return;
+    if (typeof __t === 'function') __t('ensureShimMenuItem: INSERT into settings menu');
     document.getElementById(MENU_ITEM_ID)?.remove();
     const item = buildShimMenuItem();
     list.insertBefore(item, list.firstChild);
@@ -496,6 +614,7 @@
     const rows = document.querySelectorAll(
       '[data-app-action-sidebar-thread-row]',
     );
+    let added = 0;
     for (const row of rows) {
       if (row.getAttribute(DELETE_BUTTON_FLAG) === '1') continue;
       const archiveButton = row.querySelector(
@@ -507,7 +626,9 @@
       const deleteWrapper = buildDeleteButton(row);
       actionGroup.appendChild(deleteWrapper);
       row.setAttribute(DELETE_BUTTON_FLAG, '1');
+      added += 1;
     }
+    if (added > 0 && typeof __t === 'function') __t('ensureDeleteButtons: INSERT', { added, totalRows: rows.length });
   }
 
   // ========== 对话供应商标签（只标注最新 turn） ==========
@@ -813,8 +934,12 @@
       return;
     }
     const anchor = findProviderPickerAnchor();
-    if (!anchor) return;
+    if (!anchor) {
+      if (typeof __t === 'function') __t('ensureProviderPicker: anchor missing');
+      return;
+    }
 
+    if (typeof __t === 'function') __t('ensureProviderPicker: INSERT button');
     const button = buildProviderPickerButton();
     anchor.group.insertBefore(button, anchor.button);
     updateProviderPickerButton();
@@ -1163,30 +1288,694 @@
   }
 
   function ensureProviderBadge() {
-    // 先清掉所有旧标签（保证只有最新 turn 带标签）
-    document
-      .querySelectorAll('.' + PROVIDER_BADGE_CLASS)
-      .forEach((el) => el.remove());
-
     const label = shimCurrentProviderLabel;
-    if (!label) return; // 代理没开 / 无选中供应商 → 不渲染
-
     const turns = document.querySelectorAll('[data-turn-key]');
-    if (turns.length === 0) return;
-    const latest = turns[turns.length - 1];
-    // 标签插到最新 turn 的最前面
+    const latest = turns.length ? turns[turns.length - 1] : null;
+    const existing = document.querySelectorAll('.' + PROVIDER_BADGE_CLASS);
+
+    if (!label || !latest) {
+      if (existing.length) {
+        if (typeof __t === 'function') __t('ensureProviderBadge: REMOVE all (no label/turn)', { existing: existing.length });
+        existing.forEach((el) => el.remove());
+      }
+      return;
+    }
+
+    const desiredText = String(label);
+    let already = null;
+    for (const el of existing) {
+      if (el.parentElement === latest && el.textContent?.endsWith(desiredText)) {
+        already = el;
+        break;
+      }
+    }
+    if (already) {
+      const stale = [...existing].filter((el) => el !== already);
+      if (stale.length) {
+        if (typeof __t === 'function') __t('ensureProviderBadge: REMOVE stale', { stale: stale.length });
+        stale.forEach((el) => el.remove());
+      }
+      return;
+    }
+
+    if (typeof __t === 'function') __t('ensureProviderBadge: REPLACE -> insert latest', {
+      existing: existing.length,
+      label: desiredText,
+    });
+    existing.forEach((el) => el.remove());
     latest.insertBefore(buildProviderBadge(label), latest.firstChild);
   }
 
+
+  // ========== Codex 插件运行时兼容 ==========
+
+  const shimRuntimePlugins = (() => {
+    const version = 'shim-runtime-plugin-layer-v1';
+    const arrayGuardVersion = 'shim-runtime-array-visibility-v1';
+    const clientBridgeVersion = 'shim-runtime-client-bridge-v1';
+    const scanFlag = 'data-shim-plugin-ready';
+    const installFlag = 'data-shim-install-ready';
+    const logPrefix = '[ShimPlugin]';
+    const navSelector = 'nav[role="navigation"] button.h-token-nav-row.w-full';
+    const pluginIconPathPrefix = 'M7.94562 14.0277';
+    const marketIds = new Set([
+      'openai-bundled',
+      'openai-curated',
+      'openai-primary-runtime',
+    ]);
+    const moduleCache = new Map();
+    const state = {
+      navSignature: '',
+      installSignature: '',
+      promptSignature: '',
+      arrayGuardInstalled: false,
+      clients: [],
+      pluginRecords: new Map(),
+      lastPluginListParams: null,
+      runtimeHostId: 'local',
+    };
+
+    function log(message, data) {
+      if (data === undefined) {
+        console.info(logPrefix + ' ' + message);
+        return;
+      }
+      let detail;
+      try {
+        detail = JSON.stringify(data);
+      } catch (_) {
+        detail = String(data);
+      }
+      console.info(logPrefix + ' ' + message + ' ' + detail);
+    }
+
+    function visibleText(element) {
+      return (element?.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function isLoginSurface() {
+      // 用具体的登录 DOM 节点判断,避免对整个 body 文本做正则——
+      // 否则主界面只要瞬间出现"Codex"字样就会被误判,触发 array guard 反复装卸。
+      if (document.querySelector('[data-testid="login-with-chatgpt"], [data-testid="login-with-api-key"]')) {
+        return true;
+      }
+      // nav 都没渲染出来时,大概率还在登录页/启动屏
+      if (!document.querySelector(navSelector)) return true;
+      return false;
+    }
+
+    function isRuntimeSurfaceReady() {
+      if (isLoginSurface()) return false;
+      return pluginNavButtons().length > 0;
+    }
+
+    function canonicalMarketName(value) {
+      const raw = String(value || '');
+      return raw.startsWith('remote:') ? raw.slice('remote:'.length) : raw;
+    }
+
+    function isNativeMarket(value) {
+      return marketIds.has(canonicalMarketName(value));
+    }
+
+    function marketLabel(value, fallback) {
+      const name = canonicalMarketName(value);
+      if (name === 'openai-bundled') return 'OpenAI Bundled';
+      if (name === 'openai-curated') return 'OpenAI Curated';
+      if (name === 'openai-primary-runtime') return 'OpenAI Runtime';
+      return fallback || name || '';
+    }
+
+    function runtimeMethodName(method, params) {
+      const raw = String(method || '');
+      if (raw === 'send-cli-request-for-host' && params?.method) return String(params.method);
+      return raw;
+    }
+
+    function normalizeMarketParams(params) {
+      if (!params || typeof params !== 'object') return params;
+      let next = params;
+      if (Array.isArray(params.marketplaceKinds)) {
+        const kinds = params.marketplaceKinds.map((kind) => {
+          const value = String(kind || '');
+          return value.startsWith('remote:')
+            ? 'remote:' + canonicalMarketName(value)
+            : canonicalMarketName(value);
+        });
+        next = { ...next, marketplaceKinds: Array.from(new Set(kinds)) };
+      }
+      if (typeof params.remoteMarketplaceName === 'string') {
+        next = next === params ? { ...params } : { ...next };
+        next.remoteMarketplaceName = canonicalMarketName(params.remoteMarketplaceName);
+      }
+      if (typeof params.marketplacePath === 'string' && params.marketplacePath.startsWith('remote:')) {
+        next = next === params ? { ...params } : { ...next };
+        next.remoteMarketplaceName = canonicalMarketName(params.marketplacePath);
+        delete next.marketplacePath;
+      }
+      return next;
+    }
+
+    function prepareRuntimeParams(method, params) {
+      if (!params || typeof params !== 'object') return params;
+      const nested = params.method && params.params && typeof params.params === 'object';
+      const target = nested ? params.params : params;
+      let nextTarget = normalizeMarketParams(target);
+      if (method === 'list-plugins' && nextTarget && typeof nextTarget === 'object' &&
+          Object.prototype.hasOwnProperty.call(nextTarget, 'marketplaceKinds')) {
+        nextTarget = { ...nextTarget };
+        delete nextTarget.marketplaceKinds;
+      }
+      if (nested) {
+        let nextParams = nextTarget !== target ? { ...params, params: nextTarget } : params;
+        if (typeof nextParams.hostId === 'string' && nextParams.hostId.trim()) {
+          state.runtimeHostId = nextParams.hostId.trim();
+        } else if (String(params.method || '') === method) {
+          nextParams = { ...nextParams, hostId: state.runtimeHostId || 'local' };
+        }
+        return nextParams;
+      }
+      return nextTarget;
+    }
+
+    function normalizeMarketObject(marketplace) {
+      if (!marketplace || typeof marketplace !== 'object') return false;
+      if (marketplace.__shimRuntimeMarket === version) return false;
+      const name = canonicalMarketName(marketplace.name || marketplace.marketplaceName || marketplace.remoteMarketplaceName);
+      if (!marketIds.has(name)) return false;
+      const label = marketLabel(name, marketplace.displayName || marketplace.title || marketplace.label || marketplace.name);
+      marketplace.name = name;
+      marketplace.marketplaceName = name;
+      marketplace.remoteMarketplaceName = name;
+      marketplace.displayName = label;
+      marketplace.title = label;
+      marketplace.label = label;
+      if (marketplace.interface && typeof marketplace.interface === 'object') {
+        marketplace.interface = {
+          ...marketplace.interface,
+          displayName: label,
+          title: label,
+          label,
+        };
+      } else {
+        marketplace.interface = { displayName: label, title: label, label };
+      }
+      if (Array.isArray(marketplace.plugins)) {
+        marketplace.plugins.forEach((item) => {
+          if (item && typeof item === 'object' && isNativeMarket(item.marketplaceName || name)) {
+            item.marketplaceName = name;
+          }
+        });
+      }
+      marketplace.__shimRuntimeMarket = version;
+      return true;
+    }
+
+    function pluginRecordKeys(plugin, marketplace) {
+      return [
+        plugin?.displayName,
+        plugin?.title,
+        plugin?.label,
+        plugin?.name,
+        plugin?.pluginName,
+        plugin?.id,
+        marketplace?.displayName,
+      ].map((value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase()).filter(Boolean);
+    }
+
+    function rememberPluginRecords(payload) {
+      const roots = [payload, payload?.data, payload?.result].filter(Boolean);
+      let count = 0;
+      for (const root of roots) {
+        const marketplaces = Array.isArray(root?.marketplaces) ? root.marketplaces : Array.isArray(root) ? root : [];
+        for (const marketplace of marketplaces) {
+          const marketName = canonicalMarketName(marketplace?.name || marketplace?.marketplaceName || marketplace?.remoteMarketplaceName);
+          const plugins = Array.isArray(marketplace?.plugins) ? marketplace.plugins : [];
+          for (const plugin of plugins) {
+            if (!plugin || typeof plugin !== 'object') continue;
+            const pluginName = plugin.pluginName || plugin.name || plugin.id || plugin.slug;
+            if (!pluginName) continue;
+            const remoteMarketplaceName = canonicalMarketName(plugin.marketplaceName || marketName);
+            const record = {
+              pluginName: String(pluginName),
+              remoteMarketplaceName,
+              marketplacePath: 'remote:' + remoteMarketplaceName,
+              title: plugin.displayName || plugin.title || plugin.label || plugin.name || String(pluginName),
+              raw: plugin,
+            };
+            for (const key of pluginRecordKeys(plugin, marketplace)) {
+              state.pluginRecords.set(key, record);
+            }
+            count += 1;
+          }
+        }
+      }
+      if (count > 0) log('plugin records cached', { count });
+    }
+
+    function normalizeRuntimePayload(method, payload) {
+      if (method !== 'list-plugins') return payload;
+      let changed = 0;
+      const roots = [payload, payload?.data, payload?.result].filter(Boolean);
+      for (const root of roots) {
+        if (Array.isArray(root?.marketplaces)) {
+          root.marketplaces.forEach((marketplace) => {
+            if (normalizeMarketObject(marketplace)) changed += 1;
+          });
+        }
+        if (Array.isArray(root)) {
+          root.forEach((marketplace) => {
+            if (normalizeMarketObject(marketplace)) changed += 1;
+          });
+        }
+      }
+      rememberPluginRecords(payload);
+      if (changed > 0) log('marketplace payload normalized', { changed });
+      return payload;
+    }
+
+    function isSourceGate(callback, items) {
+      if (!Array.isArray(items) || items.length === 0 || typeof callback !== 'function') return false;
+      if (!items.some((item) => isNativeMarket(item?.marketplaceName))) return false;
+      let source = '';
+      try {
+        source = Function.prototype.toString.call(callback);
+      } catch (_) {
+        return false;
+      }
+      if (!source.includes('marketplaceName')) return false;
+      return items.some((item) => isNativeMarket(item?.marketplaceName) && !callback(item));
+    }
+
+    function isVisibilityGate(callback, items) {
+      if (!Array.isArray(items) || items.length === 0 || typeof callback !== 'function') return false;
+      if (!items.some((item) => isNativeMarket(item?.name))) return false;
+      let source = '';
+      try {
+        source = Function.prototype.toString.call(callback);
+      } catch (_) {
+        return false;
+      }
+      if (!source.includes('includes') || !source.includes('name')) return false;
+      return items.some((item) => isNativeMarket(item?.name) && !callback(item));
+    }
+
+    function installScopedArrayGuard() {
+      const baseFilter = Array.prototype.__shimRuntimeArrayFilterSource ||
+        Array.prototype.__shimPluginOriginalFilter ||
+        Array.prototype.filter;
+      if (!Array.prototype.__shimRuntimeArrayFilterSource) {
+        Object.defineProperty(Array.prototype, '__shimRuntimeArrayFilterSource', {
+          value: baseFilter,
+          configurable: true,
+          writable: true,
+        });
+      }
+      if (Array.prototype.filter.__shimRuntimeArrayGuard === arrayGuardVersion) {
+        state.arrayGuardInstalled = true;
+        return;
+      }
+      const guardedFilter = function shimRuntimeScopedFilter(callback, thisArg) {
+        if (isSourceGate(callback, this) || isVisibilityGate(callback, this)) {
+          log('runtime marketplace visibility retained', { count: this.length });
+          return Array.from(this);
+        }
+        return baseFilter.call(this, callback, thisArg);
+      };
+      Object.defineProperty(guardedFilter, '__shimRuntimeArrayGuard', {
+        value: arrayGuardVersion,
+        configurable: true,
+      });
+      Array.prototype.filter = guardedFilter;
+      state.arrayGuardInstalled = true;
+      log('runtime array guard attached');
+    }
+
+    function codexAssetUrl(part) {
+      const urls = [
+        ...Array.from(document.scripts || []).map((script) => script.src),
+        ...Array.from(document.querySelectorAll('link[href]') || []).map((link) => link.href),
+        ...performance.getEntriesByType('resource').map((entry) => entry.name),
+      ].filter(Boolean);
+      return urls.find((url) => url.includes('/assets/') && url.includes(part) && url.split('?')[0].endsWith('.js')) || '';
+    }
+
+    function importCodexRuntime(part) {
+      if (!moduleCache.has(part)) {
+        moduleCache.set(part, Promise.resolve().then(async () => {
+          const url = codexAssetUrl(part);
+          if (!url) throw new Error('Codex asset not found: ' + part);
+          return import(url);
+        }));
+      }
+      return moduleCache.get(part);
+    }
+
+    function attachRequestMiddleware(client) {
+      if (!client || typeof client.sendRequest !== 'function') return false;
+      if (client.__shimRuntimeClientBridge === clientBridgeVersion) return true;
+      const baseSend = client.__shimRuntimeOriginalSendRequest ||
+        client.__shimPluginOriginalSendRequest ||
+        client.sendRequest.bind(client);
+      client.__shimRuntimeOriginalSendRequest = baseSend;
+      client.sendRequest = async function shimRuntimeSendRequest(method, params, options) {
+        const resolvedMethod = runtimeMethodName(method, params);
+        const nextParams = prepareRuntimeParams(resolvedMethod, params);
+        if (resolvedMethod === 'list-plugins') state.lastPluginListParams = nextParams;
+        if (resolvedMethod === 'list-plugins' || resolvedMethod === 'install-plugin' || resolvedMethod === 'plugin/install') {
+          log('runtime request normalized', {
+            method: String(method || ''),
+            resolvedMethod,
+            changed: nextParams !== params,
+          });
+        }
+        const result = await baseSend(method, nextParams, options);
+        return normalizeRuntimePayload(resolvedMethod, result);
+      };
+      client.__shimRuntimeClientBridge = clientBridgeVersion;
+      if (!state.clients.includes(client)) state.clients.push(client);
+      return true;
+    }
+
+    function attachRuntimeClientBridge() {
+      if (window.__shimRuntimeClientBridgeReady === clientBridgeVersion) return;
+      importCodexRuntime('app-server-manager-signals-').then((module) => {
+        const exports = Object.values(module || {}).filter((value) => value && typeof value === 'object');
+        let attached = 0;
+        for (const candidate of exports) {
+          if (attachRequestMiddleware(candidate)) attached += 1;
+          if (typeof candidate.sendRequest !== 'function' && typeof candidate.get === 'function') {
+            try {
+              if (attachRequestMiddleware(candidate.get())) attached += 1;
+            } catch (_) {}
+          }
+        }
+        if (attached > 0) {
+          window.__shimRuntimeClientBridgeReady = clientBridgeVersion;
+          log('runtime client bridge attached', { exports: Object.keys(module || {}).length, candidates: exports.length, attached });
+        } else {
+          log('runtime client bridge not found', { exports: Object.keys(module || {}).length, candidates: exports.length });
+        }
+      }).catch((error) => {
+        log('runtime client bridge failed', { error: error?.message || String(error) });
+      });
+    }
+
+    function pluginNavButtons() {
+      const byIcon = document
+        .querySelector(navSelector + ' svg path[d^="' + pluginIconPathPrefix + '"]')
+        ?.closest('button');
+      const candidates = Array.from(
+        document.querySelectorAll(navSelector + ', nav button, aside button, [role="navigation"] button'),
+      );
+      const matched = candidates.filter((button) => /^(插件|Plugins)(\s|$|[-:：])/.test(visibleText(button)));
+      if (byIcon && !matched.includes(byIcon)) matched.unshift(byIcon);
+      return matched;
+    }
+
+    function patchReactDisabledProps(element) {
+      Object.keys(element || {})
+        .filter((key) => key.startsWith('__reactProps') || key.startsWith('__reactFiber'))
+        .forEach((key) => {
+          const ref = element[key];
+          const props = ref?.memoizedProps || ref?.pendingProps || ref;
+          if (!props || typeof props !== 'object') return;
+          if ('disabled' in props) props.disabled = false;
+          if ('aria-disabled' in props) props['aria-disabled'] = false;
+          if ('data-disabled' in props) props['data-disabled'] = undefined;
+          if ('inert' in props) props.inert = false;
+        });
+    }
+
+    function makeControlInteractive(element) {
+      if (!(element instanceof HTMLElement)) return;
+      if ('disabled' in element) element.disabled = false;
+      element.removeAttribute('disabled');
+      element.removeAttribute('aria-disabled');
+      element.removeAttribute('data-disabled');
+      element.removeAttribute('inert');
+      element.removeAttribute('aria-describedby');
+      const title = element.getAttribute('title') || '';
+      if (/不可用|unavailable/i.test(title)) element.removeAttribute('title');
+      element.style.pointerEvents = 'auto';
+      element.style.opacity = '';
+      element.style.cursor = 'pointer';
+      element.tabIndex = 0;
+      element.classList.remove('disabled', 'pointer-events-none', 'cursor-not-allowed', 'opacity-40', 'opacity-50');
+      patchReactDisabledProps(element);
+    }
+
+    function relatedInteractiveNodes(control) {
+      const nodes = [control];
+      control.querySelectorAll?.('button, [role="button"], [disabled], [aria-disabled], [data-disabled], .cursor-not-allowed, .pointer-events-none')
+        .forEach((node) => nodes.push(node));
+      let parent = control.parentElement;
+      for (let depth = 0; parent && depth < 4; depth += 1, parent = parent.parentElement) {
+        if (parent.matches?.('button, [role="button"], [disabled], [aria-disabled], [data-disabled], .cursor-not-allowed, .pointer-events-none, [data-state]')) {
+          nodes.push(parent);
+        }
+      }
+      return Array.from(new Set(nodes));
+    }
+
+    function forceInteractiveCluster(control) {
+      relatedInteractiveNodes(control).forEach(makeControlInteractive);
+    }
+
+    function keepControlInteractive(control) {
+      if (!(control instanceof HTMLElement)) return;
+      if (control.dataset.shimKeepInteractive === '1') return;
+      control.dataset.shimKeepInteractive = '1';
+      const keep = () => forceInteractiveCluster(control);
+      ['pointerover', 'pointerenter', 'pointerdown', 'mousedown', 'mouseup', 'click', 'focus'].forEach((eventName) => {
+        control.addEventListener(eventName, keep, true);
+      });
+    }
+
+    function syncNavigationControls() {
+      const buttons = pluginNavButtons();
+      const signature = buttons.length + ':' + buttons.map(visibleText).join(' | ');
+      if (signature !== state.navSignature) {
+        state.navSignature = signature;
+        log('navigation controls synced', { count: buttons.length, labels: buttons.map(visibleText).join(' | ') || null });
+      }
+      for (const button of buttons) {
+        // 每个 button 只处理一次——重复 makeControlInteractive 会触发 React reconcile 循环
+        if (button.getAttribute('data-shim-nav-handled') === '1') continue;
+        makeControlInteractive(button);
+        button.style.display = '';
+        button.setAttribute(scanFlag, '1');
+        button.setAttribute('data-shim-nav-handled', '1');
+        button.title = button.title || 'Shim plugin runtime ready';
+      }
+    }
+
+    function isInstallControlText(text) {
+      const label = String(text || '').replace(/\s+/g, ' ').trim();
+      return label === '添加' || label === 'Add' || label === '安装' || label === 'Install' || label === '强制安装';
+    }
+
+    function normalizeInstallControls() {
+      const controls = Array.from(document.querySelectorAll(
+        'button:disabled, button[aria-disabled="true"], [role="button"][aria-disabled="true"], button[data-disabled], [role="button"][data-disabled], button.cursor-not-allowed, [role="button"].cursor-not-allowed, button.pointer-events-none, [role="button"].pointer-events-none',
+      ));
+      const unique = Array.from(new Set(controls.map((node) => node.closest?.('button, [role="button"]') || node)));
+      let matched = 0;
+      let changed = 0;
+      for (const control of unique) {
+        if (!(control instanceof HTMLElement)) continue;
+        if (!isInstallControlText(control.textContent)) continue;
+        matched += 1;
+        const blocked = control.hasAttribute('disabled') ||
+          control.getAttribute('aria-disabled') === 'true' ||
+          control.getAttribute('data-disabled') === 'true' ||
+          control.classList.contains('cursor-not-allowed') ||
+          control.classList.contains('pointer-events-none');
+        forceInteractiveCluster(control);
+        keepControlInteractive(control);
+        control.setAttribute(installFlag, '1');
+        control.title = control.title || 'Shim install control ready';
+        if (blocked) changed += 1;
+      }
+      const signature = matched + ':' + changed;
+      if (signature !== state.installSignature) {
+        state.installSignature = signature;
+        log('install controls normalized', { matched, changed });
+      }
+    }
+
+    function normalizePromptExampleControls() {
+      const controls = Array.from(document.querySelectorAll('button[aria-disabled="true"], [role="button"][aria-disabled="true"]'))
+        .filter((control) => control instanceof HTMLElement && String(control.className || '').includes('group/prompt'));
+      let changed = 0;
+      for (const control of controls) {
+        forceInteractiveCluster(control);
+        keepControlInteractive(control);
+        control.setAttribute('data-shim-prompt-ready', '1');
+        control.title = control.title || 'Shim prompt ready';
+        changed += 1;
+      }
+      const signature = controls.length + ':' + changed;
+      if (signature !== state.promptSignature) {
+        state.promptSignature = signature;
+        log('prompt example controls normalized', { matched: controls.length, changed });
+      }
+    }
+
+    function tick(flags) {
+      const f = flags || {};
+      const ready = isRuntimeSurfaceReady();
+      if (typeof __t === 'function') __t('plugin tick', { ready, isLogin: isLoginSurface() });
+      if (!ready) return;
+      if (f.arrayGuard !== false) installScopedArrayGuard();
+      if (f.clientBridge !== false) attachRuntimeClientBridge();
+      if (f.syncNav !== false) syncNavigationControls();
+      if (f.normalizeInstall !== false) normalizeInstallControls();
+      if (f.normalizePrompt !== false) normalizePromptExampleControls();
+    }
+
+    return { tick };
+  })();
+
+  const __SHIM_PLUGIN_FLAGS = {
+    arrayGuard: true,
+    clientBridge: true,
+    syncNav: true,
+    normalizeInstall: true,
+    normalizePrompt: true,
+  };
+  window.__SHIM_PLUGIN_FLAGS = __SHIM_PLUGIN_FLAGS;
+
+  function ensureCodexPluginFeatures() {
+    shimRuntimePlugins.tick(__SHIM_PLUGIN_FLAGS);
+  }
   // ========== 总调度 ==========
 
+  // ========== Debug trace ==========
+  const __SHIM_TRACE = true;
+  let __shimEnsureCount = 0;
+  let __shimObserverCount = 0;
+  function __t(tag, data) {
+    if (!__SHIM_TRACE) return;
+    if (data === undefined) console.log('[ShimTrace]', tag);
+    else console.log('[ShimTrace]', tag, data);
+  }
+
+  function __countDomBefore() {
+    return {
+      badge: document.querySelectorAll('#' + BADGE_ID).length,
+      menu: document.querySelectorAll('#' + MENU_ITEM_ID).length,
+      picker: document.querySelectorAll('#' + PROVIDER_PICKER_ID).length,
+      providerBadge: document.querySelectorAll('.' + PROVIDER_BADGE_CLASS).length,
+      delBtns: document.querySelectorAll('[data-shim-delete-added="1"]').length,
+    };
+  }
+
   function ensureAll() {
+    __shimEnsureCount += 1;
+    const seq = __shimEnsureCount;
+    const before = __countDomBefore();
+    __t('ensureAll #' + seq + ' before', before);
+
+    const t0 = performance.now();
     ensureBadge();
+    const t1 = performance.now();
     ensureShimMenuItem();
+    const t2 = performance.now();
     ensureDeleteButtons();
+    const t3 = performance.now();
     ensureProviderPicker();
+    const t4 = performance.now();
     updateCodexModelSelectorVisibility();
+    const t5 = performance.now();
     ensureProviderBadge();
+    const t6 = performance.now();
+    ensureCodexPluginFeatures();
+    const t7 = performance.now();
+
+    const after = __countDomBefore();
+    const changed = JSON.stringify(before) !== JSON.stringify(after);
+    __t('ensureAll #' + seq + ' done', {
+      changed,
+      after,
+      ms: {
+        badge: +(t1 - t0).toFixed(1),
+        menu: +(t2 - t1).toFixed(1),
+        del: +(t3 - t2).toFixed(1),
+        picker: +(t4 - t3).toFixed(1),
+        codexModel: +(t5 - t4).toFixed(1),
+        providerBadge: +(t6 - t5).toFixed(1),
+        plugin: +(t7 - t6).toFixed(1),
+        total: +(t7 - t0).toFixed(1),
+      },
+    });
+  }
+
+  let __shimEnsureRunning = false;
+  function runEnsureAll(source) {
+    if (__shimEnsureRunning) {
+      __t('runEnsureAll skip (reentrant)', { source });
+      return;
+    }
+    __shimEnsureRunning = true;
+    __t('runEnsureAll start', { source });
+    try {
+      ensureAll();
+    } finally {
+      requestAnimationFrame(() => {
+        __shimEnsureRunning = false;
+      });
+    }
+  }
+
+  function summarizeMutations(records) {
+    const summary = {
+      total: records.length,
+      addedNodes: 0,
+      removedNodes: 0,
+      attrChanges: 0,
+      sampleTargets: [],
+      sampleAdded: [],
+      sampleRemoved: [],
+    };
+    for (const r of records) {
+      summary.addedNodes += r.addedNodes.length;
+      summary.removedNodes += r.removedNodes.length;
+      if (r.type === 'attributes') summary.attrChanges += 1;
+      if (summary.sampleTargets.length < 5 && r.target instanceof Element) {
+        summary.sampleTargets.push(
+          r.target.tagName + (r.target.id ? '#' + r.target.id : '') +
+          (r.target.className && typeof r.target.className === 'string'
+            ? '.' + r.target.className.split(/\s+/).slice(0, 2).join('.')
+            : ''),
+        );
+      }
+      for (const n of r.addedNodes) {
+        if (summary.sampleAdded.length >= 5) break;
+        if (n instanceof Element) {
+          summary.sampleAdded.push(
+            n.tagName + (n.id ? '#' + n.id : '') +
+            (n.className && typeof n.className === 'string'
+              ? '.' + n.className.split(/\s+/).slice(0, 2).join('.')
+              : ''),
+          );
+        } else if (n.nodeType === 3) {
+          summary.sampleAdded.push('#text:' + String(n.textContent || '').slice(0, 20));
+        }
+      }
+      for (const n of r.removedNodes) {
+        if (summary.sampleRemoved.length >= 5) break;
+        if (n instanceof Element) {
+          summary.sampleRemoved.push(
+            n.tagName + (n.id ? '#' + n.id : '') +
+            (n.className && typeof n.className === 'string'
+              ? '.' + n.className.split(/\s+/).slice(0, 2).join('.')
+              : ''),
+          );
+        }
+      }
+    }
+    return summary;
   }
 
   function installUiScheduler() {
@@ -1195,26 +1984,38 @@
       return;
     }
     if (window.__shimUiSchedulerInstalled) {
-      ensureAll();
+      runEnsureAll('reinit');
       return;
     }
     window.__shimUiSchedulerInstalled = true;
 
-    ensureAll();
+    runEnsureAll('initial');
 
     let scheduled = false;
-    const observer = new MutationObserver(() => {
+    let pendingRecords = [];
+    const observer = new MutationObserver((records) => {
+      __shimObserverCount += 1;
+      const obsSeq = __shimObserverCount;
+      if (__shimEnsureRunning) {
+        __t('observer #' + obsSeq + ' suppressed (self)', { records: records.length });
+        return;
+      }
+      pendingRecords.push(...records);
       if (scheduled) return;
       scheduled = true;
       setTimeout(() => {
         scheduled = false;
-        ensureAll();
-      }, 200);
+        const summary = summarizeMutations(pendingRecords);
+        pendingRecords = [];
+        __t('observer batch fired', summary);
+        runEnsureAll('observer');
+      }, 400);
     });
     observer.observe(document.documentElement, {
       childList: true,
       subtree: true,
     });
+    __t('UI scheduler installed');
   }
 
   installUiScheduler();
@@ -1235,11 +2036,8 @@
       setInterval(() => {
         refreshCurrentProvider();
         refreshProviderPickerState();
-      }, 5000);
+      }, 15000);
     }
   })();
 
 })();
-
-
-

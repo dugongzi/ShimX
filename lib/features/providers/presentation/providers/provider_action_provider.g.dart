@@ -111,7 +111,7 @@ final class AddProviderProvider
   }
 }
 
-String _$addProviderHash() => r'3c0ff4f9e493e2802965393ce0535e940555040e';
+String _$addProviderHash() => r'e7e63385fada5dcb6093501690248e979a30a95e';
 
 /// 新增供应商；列表为空时自动选中第一个加入项。
 
@@ -189,7 +189,7 @@ final class UpdateProviderProvider
   }
 }
 
-String _$updateProviderHash() => r'25c87669e02ec2958edf1260a4c6a46cdf4bf534';
+String _$updateProviderHash() => r'8f80b09f3ce33823bd13a9a923c82817480d4ed3';
 
 /// 更新供应商
 
@@ -267,7 +267,7 @@ final class RemoveProviderProvider
   }
 }
 
-String _$removeProviderHash() => r'b846c928d8a9096f2fab005d7ddd1056fa15909f';
+String _$removeProviderHash() => r'9561404970a4fbca588d5abbe8467aec87a48086';
 
 /// 删除供应商；删的是当前选中项则改选第一个剩余项。
 

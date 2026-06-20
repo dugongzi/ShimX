@@ -6,7 +6,11 @@ import 'package:shim/core/services/local_proxy_service.dart';
 import 'package:shim/features/providers/data/datasources/provider_action_datasource.dart';
 import 'package:shim/features/providers/data/repositories/provider_action_repository_impl.dart';
 import 'package:shim/features/providers/domain/models/api_provider.dart';
+import 'package:shim/features/providers/domain/models/provider_health.dart';
 import 'package:shim/features/providers/domain/repositories/provider_action_repository.dart';
+import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
+import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
+import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
 
 part 'provider_action_provider.g.dart';
@@ -15,6 +19,7 @@ const _reasoningEffortKey = 'shim_reasoning_effort';
 
 /// 若代理正在运行，把当前选中的供应商热更新给代理的转发目标（零重启切换）。
 /// update/select 后调用，保证改了链接/换了供应商，运行中的代理立刻生效。
+/// 顺便把后台测速的周期范围更新到新选中的家。
 Future<void> _syncRunningProxyTarget(Ref ref) async {
   final proxy = ref.read(localProxyServiceProvider);
   if (!proxy.isRunning) return;
@@ -45,6 +50,9 @@ Future<void> _syncRunningProxyTarget(Ref ref) async {
       reasoningEffort: reasoningEffort,
     ),
   );
+  ref.read(providerHealthProbeServiceProvider).setPeriodicScope(
+    onlyIds: {selected.id},
+  );
 }
 
 @riverpod
@@ -65,11 +73,13 @@ void registerProviderActionBridgeRoutes(Ref ref) {
   final queryRepo = ref.read(providerQueryRepositoryProvider);
   final appStorage = ref.read(appStorageProvider);
 
+  final healthRepo = ref.read(providerHealthRepositoryProvider);
+
   bridge.register('/provider/list', (payload) async {
     final providers = await queryRepo.listProviders();
     final selectedId = await queryRepo.selectedId();
     final reasoningEffort = await appStorage.getString(_reasoningEffortKey);
-    return _providerListPayload(providers, selectedId, reasoningEffort);
+    return _providerListPayload(providers, selectedId, reasoningEffort, healthRepo);
   });
 
   bridge.register('/provider/select', (payload) async {
@@ -85,7 +95,7 @@ void registerProviderActionBridgeRoutes(Ref ref) {
     final providers = await queryRepo.listProviders();
     final selectedId = await queryRepo.selectedId();
     final reasoningEffort = await appStorage.getString(_reasoningEffortKey);
-    return _providerListPayload(providers, selectedId, reasoningEffort);
+    return _providerListPayload(providers, selectedId, reasoningEffort, healthRepo);
   });
 
   bridge.register('/provider/select-model', (payload) async {
@@ -113,7 +123,7 @@ void registerProviderActionBridgeRoutes(Ref ref) {
 
     final selectedId = await queryRepo.selectedId();
     final reasoningEffort = await appStorage.getString(_reasoningEffortKey);
-    return _providerListPayload(next, selectedId, reasoningEffort);
+    return _providerListPayload(next, selectedId, reasoningEffort, healthRepo);
   });
 
   bridge.register('/provider/set-reasoning-effort', (payload) async {
@@ -128,7 +138,7 @@ void registerProviderActionBridgeRoutes(Ref ref) {
 
     final providers = await queryRepo.listProviders();
     final selectedId = await queryRepo.selectedId();
-    return _providerListPayload(providers, selectedId, effort);
+    return _providerListPayload(providers, selectedId, effort, healthRepo);
   });
 }
 
@@ -136,6 +146,7 @@ Map<String, dynamic> _providerListPayload(
   List<ApiProvider> providers,
   String? selectedId,
   String? reasoningEffort,
+  ProviderHealthRepository healthRepo,
 ) {
   return {
     'selectedId': selectedId,
@@ -150,9 +161,20 @@ Map<String, dynamic> _providerListPayload(
             'models': provider.models,
             'selectedModel': provider.selectedModel,
             'protocol': provider.upstreamProtocol,
+            'health': _healthJson(healthRepo.read(providerId: provider.id)),
           },
         )
         .toList(),
+  };
+}
+
+Map<String, dynamic>? _healthJson(ProviderHealth? h) {
+  if (h == null) return null;
+  return {
+    'status': h.status,
+    'latencyMs': h.latencyMs,
+    'measuredAt': h.measuredAt,
+    'failureStreak': h.failureStreak,
   };
 }
 
@@ -175,6 +197,7 @@ Future<void> addProvider(Ref ref, {required ApiProvider provider}) async {
     await repo.saveSelectedId(provider.id);
   }
   ref.invalidate(providerListProvider);
+  _syncProbeTargets(ref);
 }
 
 /// 更新供应商
@@ -188,6 +211,7 @@ Future<void> updateProvider(Ref ref, {required ApiProvider provider}) async {
   ref.invalidate(providerListProvider);
   // 改的若是当前选中项，热更新运行中的代理目标（链接/key 改了立刻生效）
   await _syncRunningProxyTarget(ref);
+  _syncProbeTargets(ref);
 }
 
 /// 删除供应商；删的是当前选中项则改选第一个剩余项。
@@ -204,6 +228,18 @@ Future<void> removeProvider(Ref ref, {required String id}) async {
   }
   ref.invalidate(providerListProvider);
   await _syncRunningProxyTarget(ref);
+  _syncProbeTargets(ref);
+}
+
+void _syncProbeTargets(Ref ref) {
+  final probe = ref.read(providerHealthProbeServiceProvider);
+  if (!probe.isRunning) return;
+  // 异步从 repo 取最新列表后推给 probe；不阻塞调用方
+  () async {
+    final query = ref.read(providerQueryRepositoryProvider);
+    final providers = await query.listProviders();
+    probe.updateTargets(providers: providers);
+  }();
 }
 
 /// 选中供应商
@@ -270,12 +306,28 @@ Future<void> startTakeover(Ref ref) async {
 
   final actionRepo = ref.read(providerActionRepositoryProvider);
   await actionRepo.enableTakeover(localProxyUrl: proxyConfig.localProxyUrl);
+
+  // 测速调度只在非 manual 才起。manual 模式下用户开 picker 时点对点测,
+  // 不在后台轮询,完全避免给上游中转造成压力。
+  final allProviders = await query.listProviders();
+  final autoSettings = await ref.read(autoSwitchRepositoryProvider).read();
+  final probe = ref.read(providerHealthProbeServiceProvider);
+  probe.updateTargets(providers: allProviders);
+  if (autoSettings.strategy != 'manual') {
+    probe.setPeriodicScope(onlyIds: {selected.id});
+    probe.start(
+      providers: allProviders,
+      interval: Duration(seconds: autoSettings.probeIntervalSeconds),
+    );
+    ref.read(autoSwitchWatcherProvider);
+  }
 }
 
-/// 释放接管：还原 config.toml 的 base_url + 停代理。
+/// 释放接管：还原 config.toml 的 base_url + 停代理 + 停测速。
 Future<void> stopTakeover(Ref ref) async {
   final actionRepo = ref.read(providerActionRepositoryProvider);
   await actionRepo.disableTakeover();
+  ref.read(providerHealthProbeServiceProvider).stop();
   final proxy = ref.read(localProxyServiceProvider);
   await proxy.stop();
   ref.read(localProxyRunningPortProvider).value = null;

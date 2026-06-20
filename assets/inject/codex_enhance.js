@@ -958,6 +958,21 @@
     document.addEventListener('mousedown', onProviderPickerOutside, true);
     document.addEventListener('keydown', onProviderPickerKey, true);
     scheduleProviderPickerRefresh();
+    triggerHealthRefresh();
+    ensureAutoSwitchLoaded().then(() => updateProviderPickerPopover());
+  }
+
+  // picker 打开 → 测速触发的客户端节流(60s 内不重复打,后端也有同样的去重兜底)
+  let __shimLastHealthRefreshAt = 0;
+  function triggerHealthRefresh() {
+    if (typeof window.shim !== 'function') return;
+    const now = Date.now();
+    if (now - __shimLastHealthRefreshAt < 60 * 1000) return;
+    __shimLastHealthRefreshAt = now;
+    // 默认 scope = selected,只测当前选中的家;用户量大也只多一次中转
+    window.shim('/provider/health/refresh', {}).then(() => {
+      refreshProviderPickerState();
+    }).catch(() => {});
   }
 
   function dismissProviderPickerPopover() {
@@ -1023,6 +1038,44 @@
     if (popover) renderProviderPickerPopover(popover);
   }
 
+  function buildHealthChip(health) {
+    const chip = document.createElement('span');
+    Object.assign(chip.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      flex: '0 0 auto',
+      marginLeft: '6px',
+      padding: '1px 6px',
+      borderRadius: '999px',
+      fontSize: '11px',
+      fontWeight: '700',
+      lineHeight: '1.4',
+      whiteSpace: 'nowrap',
+    });
+    if (!health || health.status === 'unknown') {
+      chip.textContent = '—';
+      chip.style.background = 'rgba(127,127,127,0.16)';
+      chip.style.color = 'var(--text-secondary, currentColor)';
+      return chip;
+    }
+    if (health.status === 'unreachable') {
+      chip.textContent = '超时';
+      chip.style.background = 'rgba(239, 68, 68, 0.18)';
+      chip.style.color = '#ef4444';
+      return chip;
+    }
+    const ms = typeof health.latencyMs === 'number' ? `${health.latencyMs}ms` : '—';
+    chip.textContent = ms;
+    if (health.status === 'slow') {
+      chip.style.background = 'rgba(234, 179, 8, 0.18)';
+      chip.style.color = '#eab308';
+    } else {
+      chip.style.background = 'rgba(34, 197, 94, 0.18)';
+      chip.style.color = '#22c55e';
+    }
+    return chip;
+  }
+
   function renderProviderPickerPopover(popover) {
     const providers = shimProviderState.providers;
     if (!providers.length) {
@@ -1072,6 +1125,7 @@
         fontWeight: provider.id === shimProviderState.selectedId ? '700' : '500',
       });
       providerRow.appendChild(name);
+      providerRow.appendChild(buildHealthChip(provider.health));
       fragment.appendChild(providerRow);
 
       if (provider.id === shimProviderState.selectedId) {
@@ -1132,6 +1186,8 @@
         fragment.appendChild(modelList);
       }
     }
+
+    fragment.appendChild(buildAutoSwitchFooter());
     popover.replaceChildren(fragment);
   }
 
@@ -1195,6 +1251,252 @@
     }
     wrap.appendChild(choices);
     return wrap;
+  }
+
+  // ========== 自动切换 ==========
+
+  let shimAutoSwitch = null; // {strategy, scope, failureThreshold, fastestMarginMs, cooldownSeconds, probeIntervalSeconds}
+  let shimAutoSwitchExpanded = false;
+
+  function ensureAutoSwitchLoaded() {
+    if (shimAutoSwitch || typeof window.shim !== 'function') return Promise.resolve();
+    return window.shim('/auto-switch/get', {}).then((res) => {
+      if (res && res.code === 0 && res.data) {
+        shimAutoSwitch = res.data;
+      }
+    }).catch(() => {});
+  }
+
+  function saveAutoSwitch(patch) {
+    const next = Object.assign({}, shimAutoSwitch || {}, patch);
+    return window.shim('/auto-switch/set', next).then((res) => {
+      if (res && res.code === 0 && res.data) {
+        shimAutoSwitch = res.data;
+        updateProviderPickerPopover();
+      } else {
+        showToast(`保存失败：${res?.message || '未知错误'}`, 'error');
+      }
+    }).catch((err) => {
+      showToast(`保存失败：${err?.message || err}`, 'error');
+    });
+  }
+
+  function strategyLabel(value) {
+    if (value === 'failover') return '故障转移';
+    if (value === 'fastest') return '最快优先';
+    return '手动';
+  }
+
+  function scopeLabel(value) {
+    if (value === 'same-protocol') return '同协议';
+    if (value === 'any') return '任意';
+    return '同类型';
+  }
+
+  function buildAutoSwitchFooter() {
+    const wrap = document.createElement('div');
+    Object.assign(wrap.style, {
+      marginTop: '8px',
+      borderTop: '1px solid var(--token-border, rgba(255,255,255,0.10))',
+      paddingTop: '8px',
+    });
+
+    const header = document.createElement('button');
+    header.type = 'button';
+    header.className = 'no-drag cursor-interaction rounded-md hover:bg-token-list-hover-background';
+    Object.assign(header.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      width: '100%',
+      minHeight: '32px',
+      padding: '6px 8px',
+      border: '0',
+      background: 'transparent',
+      color: 'inherit',
+      textAlign: 'left',
+      fontSize: '12px',
+      fontWeight: '700',
+    });
+    const headerLabel = document.createElement('span');
+    headerLabel.textContent = '⚙ 自动切换';
+    headerLabel.style.flex = '1';
+
+    const summary = document.createElement('span');
+    summary.style.color = 'var(--text-secondary, currentColor)';
+    summary.style.fontWeight = '500';
+    summary.style.fontSize = '11px';
+    if (shimAutoSwitch) {
+      summary.textContent = `${strategyLabel(shimAutoSwitch.strategy)} · ${scopeLabel(shimAutoSwitch.scope)}`;
+    } else {
+      summary.textContent = '加载中…';
+    }
+
+    const caret = document.createElement('span');
+    caret.textContent = shimAutoSwitchExpanded ? '▴' : '▾';
+    caret.style.fontSize = '10px';
+    caret.style.opacity = '0.6';
+
+    header.appendChild(headerLabel);
+    header.appendChild(summary);
+    header.appendChild(caret);
+    header.addEventListener('click', async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      shimAutoSwitchExpanded = !shimAutoSwitchExpanded;
+      if (shimAutoSwitchExpanded) await ensureAutoSwitchLoaded();
+      updateProviderPickerPopover();
+    }, true);
+    wrap.appendChild(header);
+
+    if (shimAutoSwitchExpanded && shimAutoSwitch) {
+      const body = document.createElement('div');
+      Object.assign(body.style, {
+        marginTop: '6px',
+        padding: '8px',
+        borderRadius: '8px',
+        background: 'rgba(127, 127, 127, 0.10)',
+      });
+
+      body.appendChild(buildAutoSwitchSegment('策略', 'strategy', [
+        ['manual', '手动'],
+        ['failover', '故障转移'],
+        ['fastest', '最快优先'],
+      ]));
+
+      body.appendChild(buildAutoSwitchSegment('范围', 'scope', [
+        ['same-type', '同类型'],
+        ['same-protocol', '同协议'],
+        ['any', '任意'],
+      ]));
+
+      body.appendChild(buildAutoSwitchNumberRow('失败阈值', 'failureThreshold', '次', 1, 10, 1));
+      body.appendChild(buildAutoSwitchNumberRow('增益', 'fastestMarginMs', 'ms', 50, 2000, 50));
+      body.appendChild(buildAutoSwitchNumberRow('冷却', 'cooldownSeconds', '秒', 5, 600, 5));
+      body.appendChild(buildAutoSwitchNumberRow('周期', 'probeIntervalSeconds', '秒', 60, 1800, 30));
+
+      wrap.appendChild(body);
+    }
+
+    return wrap;
+  }
+
+  function buildAutoSwitchSegment(labelText, fieldKey, items) {
+    const row = document.createElement('div');
+    Object.assign(row.style, {
+      marginBottom: '8px',
+    });
+
+    const label = document.createElement('div');
+    label.textContent = labelText;
+    Object.assign(label.style, {
+      marginBottom: '4px',
+      fontSize: '11px',
+      fontWeight: '700',
+      color: 'var(--text-secondary, currentColor)',
+    });
+    row.appendChild(label);
+
+    const choices = document.createElement('div');
+    Object.assign(choices.style, {
+      display: 'grid',
+      gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))`,
+      gap: '4px',
+    });
+    for (const [value, text] of items) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = text;
+      const selected = shimAutoSwitch[fieldKey] === value;
+      Object.assign(btn.style, {
+        height: '26px',
+        border: selected
+          ? '1px solid rgba(59, 130, 246, 0.75)'
+          : '1px solid rgba(127, 127, 127, 0.25)',
+        borderRadius: '6px',
+        background: selected
+          ? 'rgba(59, 130, 246, 0.20)'
+          : 'rgba(127, 127, 127, 0.08)',
+        color: 'inherit',
+        fontSize: '11px',
+        fontWeight: selected ? '700' : '500',
+      });
+      btn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        await saveAutoSwitch({ [fieldKey]: value });
+      }, true);
+      choices.appendChild(btn);
+    }
+    row.appendChild(choices);
+    return row;
+  }
+
+  function buildAutoSwitchNumberRow(labelText, fieldKey, suffix, min, max, step) {
+    const row = document.createElement('div');
+    Object.assign(row.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      marginBottom: '4px',
+    });
+
+    const label = document.createElement('span');
+    label.textContent = labelText;
+    Object.assign(label.style, {
+      flex: '1',
+      fontSize: '11px',
+      color: 'var(--text-secondary, currentColor)',
+    });
+
+    const current = Number(shimAutoSwitch[fieldKey] ?? 0);
+
+    function btn(text, delta, disabled) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = text;
+      Object.assign(b.style, {
+        width: '20px',
+        height: '20px',
+        border: '1px solid rgba(127, 127, 127, 0.25)',
+        borderRadius: '5px',
+        background: 'rgba(127, 127, 127, 0.08)',
+        color: 'inherit',
+        fontSize: '12px',
+        lineHeight: '1',
+        opacity: disabled ? '0.4' : '1',
+        cursor: disabled ? 'default' : 'pointer',
+      });
+      if (!disabled) {
+        b.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          const next = Math.max(min, Math.min(max, current + delta));
+          if (next !== current) {
+            await saveAutoSwitch({ [fieldKey]: next });
+          }
+        }, true);
+      }
+      return b;
+    }
+
+    const valSpan = document.createElement('span');
+    valSpan.textContent = `${current} ${suffix}`;
+    Object.assign(valSpan.style, {
+      minWidth: '54px',
+      textAlign: 'center',
+      fontSize: '11px',
+      fontWeight: '700',
+    });
+
+    row.appendChild(label);
+    row.appendChild(btn('−', -step, current <= min));
+    row.appendChild(valSpan);
+    row.appendChild(btn('+', step, current >= max));
+    return row;
   }
 
   async function selectProvider(id) {

@@ -7,6 +7,8 @@ import 'package:shim/common/widgets/workspace_surface.dart';
 import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/features/providers/domain/models/api_provider.dart';
+import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
 
@@ -24,6 +26,10 @@ class ProvidersTab extends ConsumerWidget {
         clipBehavior: Clip.none,
         padding: EdgeInsets.all(AppSizes.pagePadding),
         children: [
+          const SectionTitle(title: '自动切换'),
+          SizedBox(height: AppSizes.sectionGap),
+          const _AutoSwitchCard(),
+          SizedBox(height: AppSizes.sectionGap),
           Row(
             children: [
               const Expanded(child: SectionTitle(title: '供应商')),
@@ -358,6 +364,212 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AutoSwitchCard extends ConsumerWidget {
+  const _AutoSwitchCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final asyncSettings = ref.watch(autoSwitchSettingsProvider);
+    final settings = asyncSettings.value ?? const AutoSwitchSettings();
+
+    return SurfaceCard(
+      padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _AutoSwitchRowLabel(
+            label: '策略',
+            help: 'manual: 只显示延迟,不自动切;\n'
+                'failover: 当前连续失败 N 次后自动切到最快候选;\n'
+                'fastest: 候选比当前快 ≥ 阈值就切',
+          ),
+          SizedBox(height: 6.ch(min: 4, max: 8)),
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'manual', label: Text('手动')),
+              ButtonSegment(value: 'failover', label: Text('故障转移')),
+              ButtonSegment(value: 'fastest', label: Text('最快优先')),
+            ],
+            selected: {settings.strategy},
+            onSelectionChanged: (v) => _save(
+              ref,
+              settings.copyWith(strategy: v.first),
+            ),
+          ),
+          SizedBox(height: 14.ch(min: 10, max: 16)),
+          _AutoSwitchRowLabel(
+            label: '切换范围',
+            help: 'same-type: 候选必须跟当前同模型家族(openai/claude/gemini);\n'
+                'same-protocol: 候选必须跟当前同上游协议;\n'
+                'any: 不限',
+          ),
+          SizedBox(height: 6.ch(min: 4, max: 8)),
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'same-type', label: Text('同类型')),
+              ButtonSegment(value: 'same-protocol', label: Text('同协议')),
+              ButtonSegment(value: 'any', label: Text('任意')),
+            ],
+            selected: {settings.scope},
+            onSelectionChanged: (v) => _save(
+              ref,
+              settings.copyWith(scope: v.first),
+            ),
+          ),
+          SizedBox(height: 14.ch(min: 10, max: 16)),
+          Divider(color: colorScheme.outlineVariant, height: 1),
+          SizedBox(height: 12.ch(min: 8, max: 14)),
+          _AutoSwitchNumberRow(
+            label: '失败阈值',
+            suffix: '次',
+            value: settings.failureThreshold,
+            min: 1,
+            max: 10,
+            help: 'failover 策略下,当前家连续失败几次后切换',
+            onChanged: (v) => _save(
+              ref,
+              settings.copyWith(failureThreshold: v),
+            ),
+          ),
+          _AutoSwitchNumberRow(
+            label: '最快优先增益',
+            suffix: 'ms',
+            value: settings.fastestMarginMs,
+            min: 50,
+            max: 2000,
+            step: 50,
+            help: 'fastest 策略下,候选要比当前快多少 ms 才切',
+            onChanged: (v) => _save(
+              ref,
+              settings.copyWith(fastestMarginMs: v),
+            ),
+          ),
+          _AutoSwitchNumberRow(
+            label: '冷却时间',
+            suffix: '秒',
+            value: settings.cooldownSeconds,
+            min: 5,
+            max: 600,
+            step: 5,
+            help: '切换后多少秒内不再二次切换,防反复横跳',
+            onChanged: (v) => _save(
+              ref,
+              settings.copyWith(cooldownSeconds: v),
+            ),
+          ),
+          _AutoSwitchNumberRow(
+            label: '后台测速周期',
+            suffix: '秒',
+            value: settings.probeIntervalSeconds,
+            min: 60,
+            max: 1800,
+            step: 30,
+            help: '后台多少秒测一次速。manual 策略下完全不跑后台周期',
+            onChanged: (v) => _save(
+              ref,
+              settings.copyWith(probeIntervalSeconds: v),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _save(WidgetRef ref, AutoSwitchSettings next) async {
+    await ref.read(autoSwitchRepositoryProvider).save(settings: next);
+    ref.invalidate(autoSwitchSettingsProvider);
+  }
+}
+
+class _AutoSwitchRowLabel extends StatelessWidget {
+  const _AutoSwitchRowLabel({required this.label, required this.help});
+
+  final String label;
+  final String help;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        const SizedBox(width: 6),
+        Tooltip(
+          message: help,
+          waitDuration: const Duration(milliseconds: 300),
+          child: Icon(
+            Icons.help_outline_rounded,
+            size: 14,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AutoSwitchNumberRow extends StatelessWidget {
+  const _AutoSwitchNumberRow({
+    required this.label,
+    required this.suffix,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.help,
+    required this.onChanged,
+    this.step = 1,
+  });
+
+  final String label;
+  final String suffix;
+  final int value;
+  final int min;
+  final int max;
+  final int step;
+  final String help;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 4.ch(min: 2, max: 6)),
+      child: Row(
+        children: [
+          Expanded(
+            child: _AutoSwitchRowLabel(label: label, help: help),
+          ),
+          IconButton(
+            tooltip: '-',
+            iconSize: 18,
+            visualDensity: VisualDensity.compact,
+            onPressed: value > min ? () => onChanged((value - step).clamp(min, max)) : null,
+            icon: const Icon(Icons.remove_rounded),
+          ),
+          SizedBox(
+            width: 64,
+            child: Text(
+              '$value $suffix',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colorScheme.onSurface,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: '+',
+            iconSize: 18,
+            visualDensity: VisualDensity.compact,
+            onPressed: value < max ? () => onChanged((value + step).clamp(min, max)) : null,
+            icon: const Icon(Icons.add_rounded),
+          ),
+        ],
       ),
     );
   }

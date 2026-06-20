@@ -43,14 +43,14 @@ class HomePage extends HookConsumerWidget {
                     HomeTabItem(
                       leading: Icons.dns_outlined,
                       selectedLeading: Icons.dns_rounded,
-                      title: '供应商',
+                      title: context.l10n.providers,
                       selected: selectedTab.value == HomeTab.providers,
                       onTap: () => selectedTab.value = HomeTab.providers,
                     ),
                     HomeTabItem(
                       leading: Icons.subject_outlined,
                       selectedLeading: Icons.subject_rounded,
-                      title: '日志',
+                      title: context.l10n.navLogs,
                       selected: selectedTab.value == HomeTab.logs,
                       onTap: () => selectedTab.value = HomeTab.logs,
                     ),

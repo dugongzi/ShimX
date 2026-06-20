@@ -445,6 +445,552 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'这些设置会通过 SharedPreferencesAsync 持久化保存。'**
   String get settingsPersistedDescription;
+
+  /// No description provided for @providers.
+  ///
+  /// In zh, this message translates to:
+  /// **'供应商'**
+  String get providers;
+
+  /// No description provided for @addProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增'**
+  String get addProvider;
+
+  /// No description provided for @noProvidersHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有供应商，点右上角新增'**
+  String get noProvidersHint;
+
+  /// No description provided for @deletedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除'**
+  String get deletedToast;
+
+  /// No description provided for @editProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑'**
+  String get editProvider;
+
+  /// No description provided for @deleteProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get deleteProvider;
+
+  /// No description provided for @providerEditTitleNew.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增供应商'**
+  String get providerEditTitleNew;
+
+  /// No description provided for @providerEditTitleEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑供应商'**
+  String get providerEditTitleEdit;
+
+  /// No description provided for @providerName.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get providerName;
+
+  /// No description provided for @providerNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'MuxueAI'**
+  String get providerNameHint;
+
+  /// No description provided for @providerBaseUrl.
+  ///
+  /// In zh, this message translates to:
+  /// **'Base URL'**
+  String get providerBaseUrl;
+
+  /// No description provided for @providerBaseUrlHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'https://api.example.com/v1'**
+  String get providerBaseUrlHint;
+
+  /// No description provided for @providerApiKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key'**
+  String get providerApiKey;
+
+  /// No description provided for @providerApiKeyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'sk-...'**
+  String get providerApiKeyHint;
+
+  /// No description provided for @providerProtocol.
+  ///
+  /// In zh, this message translates to:
+  /// **'供应商格式'**
+  String get providerProtocol;
+
+  /// No description provided for @providerProtocolResponses.
+  ///
+  /// In zh, this message translates to:
+  /// **'Responses'**
+  String get providerProtocolResponses;
+
+  /// No description provided for @providerProtocolChat.
+  ///
+  /// In zh, this message translates to:
+  /// **'Chat'**
+  String get providerProtocolChat;
+
+  /// No description provided for @providerProtocolMessages.
+  ///
+  /// In zh, this message translates to:
+  /// **'Messages'**
+  String get providerProtocolMessages;
+
+  /// No description provided for @providerModels.
+  ///
+  /// In zh, this message translates to:
+  /// **'模型'**
+  String get providerModels;
+
+  /// No description provided for @providerModelsFetch.
+  ///
+  /// In zh, this message translates to:
+  /// **'获取'**
+  String get providerModelsFetch;
+
+  /// No description provided for @providerModelInputHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'gpt-5.5 / claude-sonnet-4-6 ...'**
+  String get providerModelInputHint;
+
+  /// No description provided for @providerUseDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'用 Codex 默认（不覆盖）'**
+  String get providerUseDefault;
+
+  /// No description provided for @providerSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get providerSave;
+
+  /// No description provided for @providerSavedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保存'**
+  String get providerSavedToast;
+
+  /// No description provided for @providerFillFirstToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'先填 Base URL 和 API Key'**
+  String get providerFillFirstToast;
+
+  /// No description provided for @providerFillAllToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'请填完整'**
+  String get providerFillAllToast;
+
+  /// No description provided for @providerFetchedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'获取到 {count} 个模型'**
+  String providerFetchedToast(int count);
+
+  /// No description provided for @providerFetchFailedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'获取失败：{message}'**
+  String providerFetchFailedToast(String message);
+
+  /// No description provided for @autoSwitch.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动切换'**
+  String get autoSwitch;
+
+  /// No description provided for @autoSwitchStrategy.
+  ///
+  /// In zh, this message translates to:
+  /// **'策略'**
+  String get autoSwitchStrategy;
+
+  /// No description provided for @autoSwitchStrategyHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'手动：只显示延迟，不自动切；\n故障转移：当前家连续失败 N 次后切到最快候选；\n最快优先：候选比当前快 ≥ 增益就切'**
+  String get autoSwitchStrategyHelp;
+
+  /// No description provided for @autoSwitchStrategyManual.
+  ///
+  /// In zh, this message translates to:
+  /// **'手动'**
+  String get autoSwitchStrategyManual;
+
+  /// No description provided for @autoSwitchStrategyFailover.
+  ///
+  /// In zh, this message translates to:
+  /// **'故障转移'**
+  String get autoSwitchStrategyFailover;
+
+  /// No description provided for @autoSwitchStrategyFastest.
+  ///
+  /// In zh, this message translates to:
+  /// **'最快优先'**
+  String get autoSwitchStrategyFastest;
+
+  /// No description provided for @autoSwitchScope.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换范围'**
+  String get autoSwitchScope;
+
+  /// No description provided for @autoSwitchScopeHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'同类型：候选必须跟当前同模型家族（openai/claude/gemini）；\n同协议：候选必须跟当前同上游协议；\n任意：不限'**
+  String get autoSwitchScopeHelp;
+
+  /// No description provided for @autoSwitchScopeSameType.
+  ///
+  /// In zh, this message translates to:
+  /// **'同类型'**
+  String get autoSwitchScopeSameType;
+
+  /// No description provided for @autoSwitchScopeSameProtocol.
+  ///
+  /// In zh, this message translates to:
+  /// **'同协议'**
+  String get autoSwitchScopeSameProtocol;
+
+  /// No description provided for @autoSwitchScopeAny.
+  ///
+  /// In zh, this message translates to:
+  /// **'任意'**
+  String get autoSwitchScopeAny;
+
+  /// No description provided for @autoSwitchFailureThreshold.
+  ///
+  /// In zh, this message translates to:
+  /// **'失败阈值'**
+  String get autoSwitchFailureThreshold;
+
+  /// No description provided for @autoSwitchFailureThresholdHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'故障转移策略下，当前家连续失败几次后切换'**
+  String get autoSwitchFailureThresholdHelp;
+
+  /// No description provided for @autoSwitchFailureThresholdUnit.
+  ///
+  /// In zh, this message translates to:
+  /// **'次'**
+  String get autoSwitchFailureThresholdUnit;
+
+  /// No description provided for @autoSwitchFastestMargin.
+  ///
+  /// In zh, this message translates to:
+  /// **'最快优先增益'**
+  String get autoSwitchFastestMargin;
+
+  /// No description provided for @autoSwitchFastestMarginHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'最快优先策略下，候选要比当前快多少 ms 才切'**
+  String get autoSwitchFastestMarginHelp;
+
+  /// No description provided for @autoSwitchFastestMarginUnit.
+  ///
+  /// In zh, this message translates to:
+  /// **'ms'**
+  String get autoSwitchFastestMarginUnit;
+
+  /// No description provided for @autoSwitchCooldown.
+  ///
+  /// In zh, this message translates to:
+  /// **'冷却时间'**
+  String get autoSwitchCooldown;
+
+  /// No description provided for @autoSwitchCooldownHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换后多少秒内不再二次切换，防反复横跳'**
+  String get autoSwitchCooldownHelp;
+
+  /// No description provided for @autoSwitchCooldownUnit.
+  ///
+  /// In zh, this message translates to:
+  /// **'秒'**
+  String get autoSwitchCooldownUnit;
+
+  /// No description provided for @autoSwitchProbeInterval.
+  ///
+  /// In zh, this message translates to:
+  /// **'后台测速周期'**
+  String get autoSwitchProbeInterval;
+
+  /// No description provided for @autoSwitchProbeIntervalHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'后台多少秒测一次速。手动策略下完全不跑后台周期'**
+  String get autoSwitchProbeIntervalHelp;
+
+  /// No description provided for @autoSwitchProbeIntervalUnit.
+  ///
+  /// In zh, this message translates to:
+  /// **'秒'**
+  String get autoSwitchProbeIntervalUnit;
+
+  /// No description provided for @navLogs.
+  ///
+  /// In zh, this message translates to:
+  /// **'日志'**
+  String get navLogs;
+
+  /// No description provided for @proxyRunningOnPort.
+  ///
+  /// In zh, this message translates to:
+  /// **'代理运行中 :{port}'**
+  String proxyRunningOnPort(int port);
+
+  /// No description provided for @proxyEnabledOnPort.
+  ///
+  /// In zh, this message translates to:
+  /// **'代理已启用 :{port}'**
+  String proxyEnabledOnPort(int port);
+
+  /// No description provided for @proxyDisabled.
+  ///
+  /// In zh, this message translates to:
+  /// **'代理未启用'**
+  String get proxyDisabled;
+
+  /// No description provided for @refreshCodex.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新 Codex'**
+  String get refreshCodex;
+
+  /// No description provided for @codexRefreshedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'Codex 已刷新并重新注入'**
+  String get codexRefreshedToast;
+
+  /// No description provided for @codexRefreshFailedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新失败：{message}'**
+  String codexRefreshFailedToast(String message);
+
+  /// No description provided for @codexNotRunningError.
+  ///
+  /// In zh, this message translates to:
+  /// **'未检测到 Codex 正在运行'**
+  String get codexNotRunningError;
+
+  /// No description provided for @logs.
+  ///
+  /// In zh, this message translates to:
+  /// **'日志'**
+  String get logs;
+
+  /// No description provided for @logsFilterAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部'**
+  String get logsFilterAll;
+
+  /// No description provided for @logsFilterInfo.
+  ///
+  /// In zh, this message translates to:
+  /// **'信息'**
+  String get logsFilterInfo;
+
+  /// No description provided for @logsFilterWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'警告'**
+  String get logsFilterWarning;
+
+  /// No description provided for @logsFilterError.
+  ///
+  /// In zh, this message translates to:
+  /// **'错误'**
+  String get logsFilterError;
+
+  /// No description provided for @logsCopy.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制'**
+  String get logsCopy;
+
+  /// No description provided for @logsClear.
+  ///
+  /// In zh, this message translates to:
+  /// **'清空'**
+  String get logsClear;
+
+  /// No description provided for @logsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无日志'**
+  String get logsEmpty;
+
+  /// No description provided for @logsCopiedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'日志已复制'**
+  String get logsCopiedToast;
+
+  /// No description provided for @shimDeleteThreadHeading.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除对话'**
+  String get shimDeleteThreadHeading;
+
+  /// No description provided for @shimDeleteThreadDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get shimDeleteThreadDelete;
+
+  /// No description provided for @shimDeleteThreadAria.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除对话'**
+  String get shimDeleteThreadAria;
+
+  /// No description provided for @shimDeleteThreadDefaultTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'此对话'**
+  String get shimDeleteThreadDefaultTitle;
+
+  /// No description provided for @shimDeleteSessionIdMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到会话 id'**
+  String get shimDeleteSessionIdMissing;
+
+  /// No description provided for @shimDeleteFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除失败'**
+  String get shimDeleteFailed;
+
+  /// No description provided for @shimDeleteSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除'**
+  String get shimDeleteSuccess;
+
+  /// No description provided for @shimUnknownError.
+  ///
+  /// In zh, this message translates to:
+  /// **'未知错误'**
+  String get shimUnknownError;
+
+  /// No description provided for @shimProviderFallbackName.
+  ///
+  /// In zh, this message translates to:
+  /// **'供应商'**
+  String get shimProviderFallbackName;
+
+  /// No description provided for @shimClearModel.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除模型'**
+  String get shimClearModel;
+
+  /// No description provided for @shimEffortLow.
+  ///
+  /// In zh, this message translates to:
+  /// **'低'**
+  String get shimEffortLow;
+
+  /// No description provided for @shimEffortMedium.
+  ///
+  /// In zh, this message translates to:
+  /// **'中'**
+  String get shimEffortMedium;
+
+  /// No description provided for @shimEffortHigh.
+  ///
+  /// In zh, this message translates to:
+  /// **'高'**
+  String get shimEffortHigh;
+
+  /// No description provided for @shimEffortXHigh.
+  ///
+  /// In zh, this message translates to:
+  /// **'超高'**
+  String get shimEffortXHigh;
+
+  /// No description provided for @shimHealthTimeout.
+  ///
+  /// In zh, this message translates to:
+  /// **'超时'**
+  String get shimHealthTimeout;
+
+  /// No description provided for @shimNoProviders.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有导入供应商'**
+  String get shimNoProviders;
+
+  /// No description provided for @shimUnnamedProvider.
+  ///
+  /// In zh, this message translates to:
+  /// **'未命名供应商'**
+  String get shimUnnamedProvider;
+
+  /// No description provided for @shimProviderNoModels.
+  ///
+  /// In zh, this message translates to:
+  /// **'该供应商没有模型'**
+  String get shimProviderNoModels;
+
+  /// No description provided for @shimReasoningEffort.
+  ///
+  /// In zh, this message translates to:
+  /// **'思考深度'**
+  String get shimReasoningEffort;
+
+  /// No description provided for @shimSaveFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存失败'**
+  String get shimSaveFailed;
+
+  /// No description provided for @shimSwitchProviderFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换供应商失败'**
+  String get shimSwitchProviderFailed;
+
+  /// No description provided for @shimSwitchModelFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换模型失败'**
+  String get shimSwitchModelFailed;
+
+  /// No description provided for @shimSwitchEffortFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换思考深度失败'**
+  String get shimSwitchEffortFailed;
 }
 
 class _AppLocalizationsDelegate

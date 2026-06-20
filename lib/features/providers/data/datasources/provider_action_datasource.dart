@@ -153,21 +153,35 @@ class ProviderActionDatasource {
   /// 写入默认 provider 模板。
   /// - [preserveText] 不为空时,会把现有内容里的 [mcp_servers] / [projects.*] 等保留段
   ///   原样拼到模板下方,避免擦掉用户/Codex 自己的配置。
+  /// - provider id 优先沿用:快照里的 model_provider → preserveText 里的 model_provider →
+  ///   "shim"。这样已有 thread 元数据里指名的 provider 不会变。
   Future<void> _writeDefaultTemplate({
     required String localProxyUrl,
     String? preserveText,
   }) async {
+    final providerId = await _resolveProviderIdForTemplate(preserveText);
+    final displayName = providerId == 'shim'
+        ? 'Shim'
+        : providerId; // 用户自命名直接当 display name
+
+    // 按 Codex 官方 model_providers 规范:
+    //   - 段名 [model_providers.<id>] 自定义(openai/ollama/lmstudio 是保留 id 不能用)
+    //   - 顶层 model_provider 必须跟段名一致
+    //   - name 是显示名
+    //   - wire_api 目前只支持 "responses"
+    //   - env_key 指向环境变量名;Codex 读 auth.json 写入的 OPENAI_API_KEY
+    //   - requires_openai_auth 仅官方 OpenAI provider 使用,第三方不要带
     final template = StringBuffer()
-      ..writeln('model_provider = "shim"')
+      ..writeln('model_provider = "$providerId"')
       ..writeln('model = "gpt-5.5"')
       ..writeln('model_reasoning_effort = "high"')
       ..writeln('disable_response_storage = true')
       ..writeln()
-      ..writeln('[model_providers.shim]')
-      ..writeln('name = "shim"')
-      ..writeln('wire_api = "responses"')
-      ..writeln('requires_openai_auth = true')
+      ..writeln('[model_providers.$providerId]')
+      ..writeln('name = "$displayName"')
       ..writeln('base_url = "$localProxyUrl"')
+      ..writeln('env_key = "OPENAI_API_KEY"')
+      ..writeln('wire_api = "responses"')
       ..writeln();
 
     if (preserveText != null && preserveText.trim().isNotEmpty) {
@@ -182,8 +196,43 @@ class ProviderActionDatasource {
     AppLogService.instance.info(
       'Takeover',
       '已写入默认 provider 模板',
-      details: 'localProxyUrl=$localProxyUrl preserved=${preserveText != null}',
+      details: 'providerId=$providerId localProxyUrl=$localProxyUrl preserved=${preserveText != null}',
     );
+  }
+
+  /// 决定写模板时用哪个 provider id。
+  /// 优先级:快照里的 model_provider → 当前文本里的 model_provider → "shim"。
+  /// 这样能继承用户原本的命名(比如旧 thread 里依赖的 "custom"),不破坏已有 thread 元数据。
+  Future<String> _resolveProviderIdForTemplate(String? currentText) async {
+    final fromSnapshot = await _readSnapshotProviderId();
+    if (fromSnapshot != null && fromSnapshot.isNotEmpty) return fromSnapshot;
+    if (currentText != null && currentText.isNotEmpty) {
+      final fromCurrent = _extractModelProviderId(currentText);
+      if (fromCurrent != null && fromCurrent.isNotEmpty) return fromCurrent;
+    }
+    return 'shim';
+  }
+
+  Future<String?> _readSnapshotProviderId() async {
+    try {
+      final bak = File(_backupConfigPath());
+      if (!await bak.exists()) return null;
+      return _extractModelProviderId(await bak.readAsString());
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? _extractModelProviderId(String text) {
+    try {
+      final doc = TomlDocument.parse(text).toMap();
+      final id = doc['model_provider'];
+      return id is String && id.isNotEmpty ? id : null;
+    } catch (_) {
+      // 正则兜底,toml 解析坏了也能抓
+      final m = RegExp(r'''^\s*model_provider\s*=\s*["']([^"']+)["']''', multiLine: true).firstMatch(text);
+      return m?.group(1);
+    }
   }
 
   /// 从原文里剥掉跟 provider 相关的段(顶层 model_*、[model_providers.*]),

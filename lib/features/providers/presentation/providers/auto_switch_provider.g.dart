@@ -201,7 +201,7 @@ final class AutoSwitchRouteRegistrationProvider
 }
 
 String _$autoSwitchRouteRegistrationHash() =>
-    r'010a4a1f99df120eff9b484e83cdc33afcd42906';
+    r'e4c6c7f56d3064d938a4a3e92956956228b2447a';
 
 /// 监听 health 变化 + 设置变化,自动评估切换。
 

@@ -204,8 +204,9 @@ class _ReloadCodexIcon extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isReloading = useState(false);
 
+    final l10n = context.l10n;
     return IconButton(
-      tooltip: '刷新 Codex',
+      tooltip: l10n.refreshCodex,
       onPressed: isReloading.value
           ? null
           : () async {
@@ -223,9 +224,9 @@ class _ReloadCodexIcon extends HookConsumerWidget {
                 await Future<void>.delayed(const Duration(milliseconds: 800));
                 final script = await repo.loadInjectScript();
                 await bridge.install(documentScripts: [script]);
-                SmartDialog.showToast('Codex 已刷新并重新注入');
+                SmartDialog.showToast(l10n.codexRefreshedToast);
               } catch (error) {
-                SmartDialog.showToast('刷新失败：$error');
+                SmartDialog.showToast(l10n.codexRefreshFailedToast(error.toString()));
               } finally {
                 isReloading.value = false;
               }
@@ -390,11 +391,12 @@ class ProxyStatus extends ConsumerWidget {
             : enabled
                 ? Colors.orange
                 : colorScheme.onSurfaceVariant;
+        final l10n = context.l10n;
         final text = running
-            ? '代理运行中 :$runningPort'
+            ? l10n.proxyRunningOnPort(runningPort)
             : enabled
-                ? '代理已启用 :${proxyConfig?.port ?? 8787}'
-                : '代理未启用';
+                ? l10n.proxyEnabledOnPort(proxyConfig?.port ?? 8787)
+                : l10n.proxyDisabled;
 
         return Container(
           padding: EdgeInsets.all(10.cw(min: 8, max: 12)),

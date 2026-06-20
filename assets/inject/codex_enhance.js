@@ -478,7 +478,7 @@
       });
 
       const heading = document.createElement('div');
-      heading.textContent = '删除对话';
+      heading.textContent = S('deleteHeading', 'Delete thread');
       Object.assign(heading.style, {
         fontSize: '15px',
         fontWeight: '700',
@@ -490,7 +490,9 @@
       desc.style.fontSize = '13px';
       desc.style.lineHeight = '1.5';
       desc.style.marginBottom = '18px';
-      desc.textContent = `确定删除「${title}」？此操作不可逆。`;
+      desc.textContent =
+        S('deleteConfirmPrefix', 'Delete "') + title +
+        S('deleteConfirmSuffix', '"? This cannot be undone.');
 
       const actions = document.createElement('div');
       Object.assign(actions.style, {
@@ -501,13 +503,13 @@
 
       const cancelBtn = document.createElement('button');
       cancelBtn.type = 'button';
-      cancelBtn.textContent = '取消';
+      cancelBtn.textContent = S('cancel', 'Cancel');
       cancelBtn.className =
         'border-token-border no-drag cursor-interaction flex items-center gap-1 border whitespace-nowrap select-none focus:outline-none rounded-full text-token-foreground hover:bg-token-list-hover-background px-3 py-1.5 text-sm';
 
       const okBtn = document.createElement('button');
       okBtn.type = 'button';
-      okBtn.textContent = '删除';
+      okBtn.textContent = S('deleteOk', 'Delete');
       okBtn.className =
         'no-drag cursor-interaction flex items-center gap-1 whitespace-nowrap select-none focus:outline-none rounded-full px-3 py-1.5 text-sm font-semibold';
       Object.assign(okBtn.style, {
@@ -562,7 +564,7 @@
 
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.setAttribute('aria-label', '删除对话');
+    btn.setAttribute('aria-label', S('deleteAria', 'Delete thread'));
     btn.className =
       'border-token-border no-drag cursor-interaction flex items-center gap-1 border whitespace-nowrap select-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-40 rounded-full electron:rounded-md text-token-muted-foreground enabled:hover:bg-transparent data-[state=open]:bg-transparent hover:text-token-foreground border-transparent electron:p-1 electron:[&>svg]:icon-sm flex items-center justify-center p-0.5 !h-5 !w-5 !p-0 opacity-50 hover:opacity-100 focus-visible:opacity-100 [&>svg]:!h-4 [&>svg]:!w-4';
     btn.style.color = '#ef4444';
@@ -577,14 +579,15 @@
       event.preventDefault();
       event.stopPropagation();
       const title = row.getAttribute('data-app-action-sidebar-thread-title') ||
-        row.querySelector('[data-thread-title]')?.textContent?.trim() || '此对话';
+        row.querySelector('[data-thread-title]')?.textContent?.trim() ||
+        S('deleteDefaultTitle', 'this thread');
       const ok = await showDeleteConfirm(title);
       if (!ok) return;
 
       const rawId = row.getAttribute('data-app-action-sidebar-thread-id') || '';
       const id = rawId.includes(':') ? rawId.split(':').slice(1).join(':') : rawId;
       if (!id) {
-        showToast('未找到会话 id', 'error');
+        showToast(S('deleteSessionIdMissing', 'Session id not found'), 'error');
         return;
       }
 
@@ -592,16 +595,16 @@
       try {
         const res = await window.shim('/session/delete', { id });
         if (res?.code !== 0) {
-          showToast(`删除失败：${res?.message || '未知错误'}`, 'error');
+          showToast(`${S('deleteFailed', 'Delete failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
           btn.disabled = false;
           return;
         }
         const container =
           row.closest('[role="listitem"]') || row.closest('.after\\:block') || row;
         container.remove();
-        showToast('已删除', 'success');
+        showToast(S('deleteSuccess', 'Deleted'), 'success');
       } catch (err) {
-        showToast(`删除失败：${err?.message || err}`, 'error');
+        showToast(`${S('deleteFailed', 'Delete failed')}: ${err?.message || err}`, 'error');
         btn.disabled = false;
       }
     });
@@ -640,8 +643,15 @@
     selectedId: null,
     reasoningEffort: 'high',
     providers: [],
+    labels: {},
   };
   let shimProviderRefreshInFlight = null;
+
+  // 取 dart 返回的本地化文案;万一没拉到走 fallback 不会留下中文。
+  function S(key, fallback) {
+    const v = shimProviderState.labels && shimProviderState.labels[key];
+    return v || fallback || '';
+  }
 
   function refreshCurrentProvider() {
     if (typeof window.shim !== 'function') return;
@@ -662,6 +672,7 @@
           selectedId: res.data.selectedId ?? null,
           reasoningEffort: res.data.reasoningEffort || 'high',
           providers: Array.isArray(res.data.providers) ? res.data.providers : [],
+          labels: res.data.labels || {},
         };
         updateProviderPickerButton();
         updateProviderPickerPopover();
@@ -782,7 +793,7 @@
     if (!button) return;
     const provider = currentProvider();
     const selectedModel = provider?.selectedModel || '';
-    const providerName = provider?.name || '供应商';
+    const providerName = provider?.name || S('providerFallback', 'Provider');
     const protocol = providerProtocolValue(provider);
     const renderKey = [
       provider?.id || '',
@@ -842,7 +853,7 @@
       const clear = document.createElement('span');
       clear.textContent = '×';
       clear.setAttribute('data-shim-clear-model', '1');
-      clear.setAttribute('aria-label', '清除模型');
+      clear.setAttribute('aria-label', S('clearModel', 'Clear model'));
       Object.assign(clear.style, {
         display: 'inline-flex',
         alignItems: 'center',
@@ -897,10 +908,10 @@
   }
 
   function reasoningEffortLabel(value) {
-    if (value === 'low') return '低';
-    if (value === 'medium') return '中';
-    if (value === 'xhigh') return '超高';
-    return '高';
+    if (value === 'low') return S('effortLow', 'Low');
+    if (value === 'medium') return S('effortMedium', 'Med');
+    if (value === 'xhigh') return S('effortXHigh', 'XHigh');
+    return S('effortHigh', 'High');
   }
 
   function findCodexModelSelector() {
@@ -1059,7 +1070,7 @@
       return chip;
     }
     if (health.status === 'unreachable') {
-      chip.textContent = '超时';
+      chip.textContent = S('healthTimeout', 'timeout');
       chip.style.background = 'rgba(239, 68, 68, 0.18)';
       chip.style.color = '#ef4444';
       return chip;
@@ -1080,7 +1091,7 @@
     const providers = shimProviderState.providers;
     if (!providers.length) {
       const empty = document.createElement('div');
-      empty.textContent = '还没有导入供应商';
+      empty.textContent = S('noProviders', 'No providers configured yet');
       empty.className = 'text-token-text-tertiary';
       Object.assign(empty.style, {
         padding: '12px',
@@ -1115,7 +1126,7 @@
       }, true);
 
       const name = document.createElement('span');
-      name.textContent = provider.name || '未命名供应商';
+      name.textContent = provider.name || S('unnamedProvider', 'Unnamed provider');
       Object.assign(name.style, {
         flex: '1',
         minWidth: '0',
@@ -1142,7 +1153,7 @@
         const models = Array.isArray(provider.models) ? provider.models : [];
         if (!models.length) {
           const empty = document.createElement('div');
-          empty.textContent = '该供应商没有模型';
+          empty.textContent = S('providerNoModels', 'No models for this provider');
           empty.className = 'text-token-text-tertiary';
           Object.assign(empty.style, { padding: '6px 8px' });
           modelList.appendChild(empty);
@@ -1201,7 +1212,7 @@
     });
 
     const label = document.createElement('div');
-    label.textContent = '思考深度';
+    label.textContent = S('reasoningEffort', 'Reasoning');
     Object.assign(label.style, {
       marginBottom: '6px',
       fontSize: '12px',
@@ -1218,10 +1229,10 @@
     });
 
     const items = [
-      ['low', '低'],
-      ['medium', '中'],
-      ['high', '高'],
-      ['xhigh', '超高'],
+      ['low', S('effortLow', 'Low')],
+      ['medium', S('effortMedium', 'Med')],
+      ['high', S('effortHigh', 'High')],
+      ['xhigh', S('effortXHigh', 'XHigh')],
     ];
     for (const [value, text] of items) {
       const btn = document.createElement('button');
@@ -1274,23 +1285,29 @@
         shimAutoSwitch = res.data;
         updateProviderPickerPopover();
       } else {
-        showToast(`保存失败：${res?.message || '未知错误'}`, 'error');
+        showToast(`${S('saveFailed', 'Save failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       }
     }).catch((err) => {
-      showToast(`保存失败：${err?.message || err}`, 'error');
+      showToast(`${S('saveFailed', 'Save failed')}: ${err?.message || err}`, 'error');
     });
   }
 
+  function shimAutoSwitchLabels() {
+    return (shimAutoSwitch && shimAutoSwitch.labels) || {};
+  }
+
   function strategyLabel(value) {
-    if (value === 'failover') return '故障转移';
-    if (value === 'fastest') return '最快优先';
-    return '手动';
+    const L = shimAutoSwitchLabels();
+    if (value === 'failover') return L.strategyFailover || 'Failover';
+    if (value === 'fastest') return L.strategyFastest || 'Fastest';
+    return L.strategyManual || 'Manual';
   }
 
   function scopeLabel(value) {
-    if (value === 'same-protocol') return '同协议';
-    if (value === 'any') return '任意';
-    return '同类型';
+    const L = shimAutoSwitchLabels();
+    if (value === 'same-protocol') return L.scopeSameProtocol || 'Same proto';
+    if (value === 'any') return L.scopeAny || 'Any';
+    return L.scopeSameType || 'Same type';
   }
 
   function buildAutoSwitchFooter() {
@@ -1318,8 +1335,9 @@
       fontSize: '12px',
       fontWeight: '700',
     });
+    const L = shimAutoSwitchLabels();
     const headerLabel = document.createElement('span');
-    headerLabel.textContent = '⚙ 自动切换';
+    headerLabel.textContent = '⚙ ' + (L.title || 'Auto switch');
     headerLabel.style.flex = '1';
 
     const summary = document.createElement('span');
@@ -1329,7 +1347,7 @@
     if (shimAutoSwitch) {
       summary.textContent = `${strategyLabel(shimAutoSwitch.strategy)} · ${scopeLabel(shimAutoSwitch.scope)}`;
     } else {
-      summary.textContent = '加载中…';
+      summary.textContent = '…';
     }
 
     const caret = document.createElement('span');
@@ -1359,22 +1377,22 @@
         background: 'rgba(127, 127, 127, 0.10)',
       });
 
-      body.appendChild(buildAutoSwitchSegment('策略', 'strategy', [
-        ['manual', '手动'],
-        ['failover', '故障转移'],
-        ['fastest', '最快优先'],
+      body.appendChild(buildAutoSwitchSegment(L.strategy || 'Strategy', 'strategy', [
+        ['manual', L.strategyManual || 'Manual'],
+        ['failover', L.strategyFailover || 'Failover'],
+        ['fastest', L.strategyFastest || 'Fastest'],
       ]));
 
-      body.appendChild(buildAutoSwitchSegment('范围', 'scope', [
-        ['same-type', '同类型'],
-        ['same-protocol', '同协议'],
-        ['any', '任意'],
+      body.appendChild(buildAutoSwitchSegment(L.scope || 'Scope', 'scope', [
+        ['same-type', L.scopeSameType || 'Same type'],
+        ['same-protocol', L.scopeSameProtocol || 'Same proto'],
+        ['any', L.scopeAny || 'Any'],
       ]));
 
-      body.appendChild(buildAutoSwitchNumberRow('失败阈值', 'failureThreshold', '次', 1, 10, 1));
-      body.appendChild(buildAutoSwitchNumberRow('增益', 'fastestMarginMs', 'ms', 50, 2000, 50));
-      body.appendChild(buildAutoSwitchNumberRow('冷却', 'cooldownSeconds', '秒', 5, 600, 5));
-      body.appendChild(buildAutoSwitchNumberRow('周期', 'probeIntervalSeconds', '秒', 60, 1800, 30));
+      body.appendChild(buildAutoSwitchNumberRow(L.failureThreshold || 'Threshold', 'failureThreshold', L.unitTimes || 'x', 1, 10, 1));
+      body.appendChild(buildAutoSwitchNumberRow(L.fastestMarginMs || 'Margin', 'fastestMarginMs', L.unitMs || 'ms', 50, 2000, 50));
+      body.appendChild(buildAutoSwitchNumberRow(L.cooldownSeconds || 'Cooldown', 'cooldownSeconds', L.unitSeconds || 's', 5, 600, 5));
+      body.appendChild(buildAutoSwitchNumberRow(L.probeIntervalSeconds || 'Interval', 'probeIntervalSeconds', L.unitSeconds || 's', 60, 1800, 30));
 
       wrap.appendChild(body);
     }
@@ -1502,13 +1520,14 @@
   async function selectProvider(id) {
     const res = await window.shim('/provider/select', { id });
     if (!res || res.code !== 0) {
-      showToast(`切换供应商失败：${res?.message || '未知错误'}`, 'error');
+      showToast(`${S('switchProviderFailed', 'Switch provider failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
     shimProviderState = {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
+      labels: res.data.labels || shimProviderState.labels || {},
     };
     updateProviderPickerButton();
     updateProviderPickerPopover();
@@ -1519,13 +1538,14 @@
   async function selectProviderModel(id, model) {
     const res = await window.shim('/provider/select-model', { id, model });
     if (!res || res.code !== 0) {
-      showToast(`切换模型失败：${res?.message || '未知错误'}`, 'error');
+      showToast(`${S('switchModelFailed', 'Switch model failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
     shimProviderState = {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
+      labels: res.data.labels || shimProviderState.labels || {},
     };
     updateProviderPickerButton();
     updateProviderPickerPopover();
@@ -1539,13 +1559,14 @@
       effort,
     });
     if (!res || res.code !== 0) {
-      showToast(`切换思考深度失败：${res?.message || '未知错误'}`, 'error');
+      showToast(`${S('switchEffortFailed', 'Switch reasoning failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
     shimProviderState = {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
+      labels: res.data.labels || shimProviderState.labels || {},
     };
     updateProviderPickerButton();
     updateProviderPickerPopover();

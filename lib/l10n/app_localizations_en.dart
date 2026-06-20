@@ -194,4 +194,293 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsPersistedDescription =>
       'These settings are persisted with SharedPreferencesAsync.';
+
+  @override
+  String get providers => 'Providers';
+
+  @override
+  String get addProvider => 'Add';
+
+  @override
+  String get noProvidersHint => 'No providers yet. Tap Add at the top right.';
+
+  @override
+  String get deletedToast => 'Deleted';
+
+  @override
+  String get editProvider => 'Edit';
+
+  @override
+  String get deleteProvider => 'Delete';
+
+  @override
+  String get providerEditTitleNew => 'Add provider';
+
+  @override
+  String get providerEditTitleEdit => 'Edit provider';
+
+  @override
+  String get providerName => 'Name';
+
+  @override
+  String get providerNameHint => 'MuxueAI';
+
+  @override
+  String get providerBaseUrl => 'Base URL';
+
+  @override
+  String get providerBaseUrlHint => 'https://api.example.com/v1';
+
+  @override
+  String get providerApiKey => 'API Key';
+
+  @override
+  String get providerApiKeyHint => 'sk-...';
+
+  @override
+  String get providerProtocol => 'Provider protocol';
+
+  @override
+  String get providerProtocolResponses => 'Responses';
+
+  @override
+  String get providerProtocolChat => 'Chat';
+
+  @override
+  String get providerProtocolMessages => 'Messages';
+
+  @override
+  String get providerModels => 'Models';
+
+  @override
+  String get providerModelsFetch => 'Fetch';
+
+  @override
+  String get providerModelInputHint => 'gpt-5.5 / claude-sonnet-4-6 ...';
+
+  @override
+  String get providerUseDefault => 'Use Codex default (no override)';
+
+  @override
+  String get providerSave => 'Save';
+
+  @override
+  String get providerSavedToast => 'Saved';
+
+  @override
+  String get providerFillFirstToast => 'Fill Base URL and API Key first';
+
+  @override
+  String get providerFillAllToast => 'Please fill all fields';
+
+  @override
+  String providerFetchedToast(int count) {
+    return 'Fetched $count models';
+  }
+
+  @override
+  String providerFetchFailedToast(String message) {
+    return 'Fetch failed: $message';
+  }
+
+  @override
+  String get autoSwitch => 'Auto switch';
+
+  @override
+  String get autoSwitchStrategy => 'Strategy';
+
+  @override
+  String get autoSwitchStrategyHelp =>
+      'Manual: only show latency, no auto switch;\nFailover: switch to fastest candidate when current fails N times in a row;\nFastest: switch when a candidate is at least margin ms faster than the current one';
+
+  @override
+  String get autoSwitchStrategyManual => 'Manual';
+
+  @override
+  String get autoSwitchStrategyFailover => 'Failover';
+
+  @override
+  String get autoSwitchStrategyFastest => 'Fastest';
+
+  @override
+  String get autoSwitchScope => 'Scope';
+
+  @override
+  String get autoSwitchScopeHelp =>
+      'Same type: candidates must share the same model family (openai/claude/gemini);\nSame protocol: candidates must share the same upstream protocol;\nAny: no restriction';
+
+  @override
+  String get autoSwitchScopeSameType => 'Same type';
+
+  @override
+  String get autoSwitchScopeSameProtocol => 'Same protocol';
+
+  @override
+  String get autoSwitchScopeAny => 'Any';
+
+  @override
+  String get autoSwitchFailureThreshold => 'Failure threshold';
+
+  @override
+  String get autoSwitchFailureThresholdHelp =>
+      'In failover strategy, number of consecutive failures before switching';
+
+  @override
+  String get autoSwitchFailureThresholdUnit => 'x';
+
+  @override
+  String get autoSwitchFastestMargin => 'Fastest margin';
+
+  @override
+  String get autoSwitchFastestMarginHelp =>
+      'In fastest strategy, how much faster (ms) a candidate must be than the current one to trigger a switch';
+
+  @override
+  String get autoSwitchFastestMarginUnit => 'ms';
+
+  @override
+  String get autoSwitchCooldown => 'Cooldown';
+
+  @override
+  String get autoSwitchCooldownHelp =>
+      'Seconds after a switch during which another switch is suppressed';
+
+  @override
+  String get autoSwitchCooldownUnit => 's';
+
+  @override
+  String get autoSwitchProbeInterval => 'Probe interval';
+
+  @override
+  String get autoSwitchProbeIntervalHelp =>
+      'Background probe period in seconds. Disabled when strategy is Manual.';
+
+  @override
+  String get autoSwitchProbeIntervalUnit => 's';
+
+  @override
+  String get navLogs => 'Logs';
+
+  @override
+  String proxyRunningOnPort(int port) {
+    return 'Proxy running :$port';
+  }
+
+  @override
+  String proxyEnabledOnPort(int port) {
+    return 'Proxy enabled :$port';
+  }
+
+  @override
+  String get proxyDisabled => 'Proxy disabled';
+
+  @override
+  String get refreshCodex => 'Refresh Codex';
+
+  @override
+  String get codexRefreshedToast => 'Codex refreshed and re-injected';
+
+  @override
+  String codexRefreshFailedToast(String message) {
+    return 'Refresh failed: $message';
+  }
+
+  @override
+  String get codexNotRunningError => 'Codex is not running';
+
+  @override
+  String get logs => 'Logs';
+
+  @override
+  String get logsFilterAll => 'All';
+
+  @override
+  String get logsFilterInfo => 'Info';
+
+  @override
+  String get logsFilterWarning => 'Warn';
+
+  @override
+  String get logsFilterError => 'Error';
+
+  @override
+  String get logsCopy => 'Copy';
+
+  @override
+  String get logsClear => 'Clear';
+
+  @override
+  String get logsEmpty => 'No logs';
+
+  @override
+  String get logsCopiedToast => 'Logs copied';
+
+  @override
+  String get shimDeleteThreadHeading => 'Delete thread';
+
+  @override
+  String get shimDeleteThreadDelete => 'Delete';
+
+  @override
+  String get shimDeleteThreadAria => 'Delete thread';
+
+  @override
+  String get shimDeleteThreadDefaultTitle => 'this thread';
+
+  @override
+  String get shimDeleteSessionIdMissing => 'Session id not found';
+
+  @override
+  String get shimDeleteFailed => 'Delete failed';
+
+  @override
+  String get shimDeleteSuccess => 'Deleted';
+
+  @override
+  String get shimUnknownError => 'Unknown error';
+
+  @override
+  String get shimProviderFallbackName => 'Provider';
+
+  @override
+  String get shimClearModel => 'Clear model';
+
+  @override
+  String get shimEffortLow => 'Low';
+
+  @override
+  String get shimEffortMedium => 'Med';
+
+  @override
+  String get shimEffortHigh => 'High';
+
+  @override
+  String get shimEffortXHigh => 'XHigh';
+
+  @override
+  String get shimHealthTimeout => 'timeout';
+
+  @override
+  String get shimNoProviders => 'No providers configured yet';
+
+  @override
+  String get shimUnnamedProvider => 'Unnamed provider';
+
+  @override
+  String get shimProviderNoModels => 'No models for this provider';
+
+  @override
+  String get shimReasoningEffort => 'Reasoning';
+
+  @override
+  String get shimSaveFailed => 'Save failed';
+
+  @override
+  String get shimSwitchProviderFailed => 'Switch provider failed';
+
+  @override
+  String get shimSwitchModelFailed => 'Switch model failed';
+
+  @override
+  String get shimSwitchEffortFailed => 'Switch reasoning failed';
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/auto_switch_service.dart';
 import 'package:shim/core/services/bridge_service.dart';
@@ -51,7 +52,8 @@ bool autoSwitchRouteRegistration(Ref ref) {
 
   bridge.register('/auto-switch/get', (payload) async {
     final settings = await repo.read();
-    return _settingsPayload(settings);
+    final isZh = ref.read(localeProvider).languageCode == 'zh';
+    return _settingsPayload(settings, isZh);
   });
 
   bridge.register('/auto-switch/set', (payload) async {
@@ -70,7 +72,8 @@ bool autoSwitchRouteRegistration(Ref ref) {
       details: 'strategy=${next.strategy} scope=${next.scope}',
     );
     ref.invalidate(autoSwitchSettingsProvider);
-    return _settingsPayload(next);
+    final isZh = ref.read(localeProvider).languageCode == 'zh';
+    return _settingsPayload(next, isZh);
   });
 
   return true;
@@ -99,7 +102,7 @@ Future<void> autoSwitchWatcher(Ref ref) async {
   ref.onDispose(sub.cancel);
 }
 
-Map<String, dynamic> _settingsPayload(AutoSwitchSettings settings) {
+Map<String, dynamic> _settingsPayload(AutoSwitchSettings settings, bool isZh) {
   return {
     'strategy': settings.strategy,
     'scope': settings.scope,
@@ -107,6 +110,48 @@ Map<String, dynamic> _settingsPayload(AutoSwitchSettings settings) {
     'fastestMarginMs': settings.fastestMarginMs,
     'cooldownSeconds': settings.cooldownSeconds,
     'probeIntervalSeconds': settings.probeIntervalSeconds,
+    'labels': _labels(isZh),
+  };
+}
+
+Map<String, dynamic> _labels(bool isZh) {
+  if (isZh) {
+    return {
+      'title': '自动切换',
+      'strategy': '策略',
+      'scope': '范围',
+      'failureThreshold': '失败阈值',
+      'fastestMarginMs': '增益',
+      'cooldownSeconds': '冷却',
+      'probeIntervalSeconds': '周期',
+      'unitTimes': '次',
+      'unitMs': 'ms',
+      'unitSeconds': '秒',
+      'strategyManual': '手动',
+      'strategyFailover': '故障转移',
+      'strategyFastest': '最快优先',
+      'scopeSameType': '同类型',
+      'scopeSameProtocol': '同协议',
+      'scopeAny': '任意',
+    };
+  }
+  return {
+    'title': 'Auto switch',
+    'strategy': 'Strategy',
+    'scope': 'Scope',
+    'failureThreshold': 'Threshold',
+    'fastestMarginMs': 'Margin',
+    'cooldownSeconds': 'Cooldown',
+    'probeIntervalSeconds': 'Interval',
+    'unitTimes': 'x',
+    'unitMs': 'ms',
+    'unitSeconds': 's',
+    'strategyManual': 'Manual',
+    'strategyFailover': 'Failover',
+    'strategyFastest': 'Fastest',
+    'scopeSameType': 'Same type',
+    'scopeSameProtocol': 'Same proto',
+    'scopeAny': 'Any',
   };
 }
 

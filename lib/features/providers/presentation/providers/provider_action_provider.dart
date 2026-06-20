@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/app_storage.dart';
 import 'package:shim/core/services/bridge_service.dart';
@@ -75,11 +76,13 @@ void registerProviderActionBridgeRoutes(Ref ref) {
 
   final healthRepo = ref.read(providerHealthRepositoryProvider);
 
+  bool isZh() => ref.read(localeProvider).languageCode == 'zh';
+
   bridge.register('/provider/list', (payload) async {
     final providers = await queryRepo.listProviders();
     final selectedId = await queryRepo.selectedId();
     final reasoningEffort = await appStorage.getString(_reasoningEffortKey);
-    return _providerListPayload(providers, selectedId, reasoningEffort, healthRepo);
+    return _providerListPayload(providers, selectedId, reasoningEffort, healthRepo, isZh());
   });
 
   bridge.register('/provider/select', (payload) async {
@@ -95,7 +98,7 @@ void registerProviderActionBridgeRoutes(Ref ref) {
     final providers = await queryRepo.listProviders();
     final selectedId = await queryRepo.selectedId();
     final reasoningEffort = await appStorage.getString(_reasoningEffortKey);
-    return _providerListPayload(providers, selectedId, reasoningEffort, healthRepo);
+    return _providerListPayload(providers, selectedId, reasoningEffort, healthRepo, isZh());
   });
 
   bridge.register('/provider/select-model', (payload) async {
@@ -123,7 +126,7 @@ void registerProviderActionBridgeRoutes(Ref ref) {
 
     final selectedId = await queryRepo.selectedId();
     final reasoningEffort = await appStorage.getString(_reasoningEffortKey);
-    return _providerListPayload(next, selectedId, reasoningEffort, healthRepo);
+    return _providerListPayload(next, selectedId, reasoningEffort, healthRepo, isZh());
   });
 
   bridge.register('/provider/set-reasoning-effort', (payload) async {
@@ -138,7 +141,7 @@ void registerProviderActionBridgeRoutes(Ref ref) {
 
     final providers = await queryRepo.listProviders();
     final selectedId = await queryRepo.selectedId();
-    return _providerListPayload(providers, selectedId, effort, healthRepo);
+    return _providerListPayload(providers, selectedId, effort, healthRepo, isZh());
   });
 }
 
@@ -147,6 +150,7 @@ Map<String, dynamic> _providerListPayload(
   String? selectedId,
   String? reasoningEffort,
   ProviderHealthRepository healthRepo,
+  bool isZh,
 ) {
   return {
     'selectedId': selectedId,
@@ -165,6 +169,70 @@ Map<String, dynamic> _providerListPayload(
           },
         )
         .toList(),
+    'labels': _shimLabels(isZh),
+  };
+}
+
+/// Codex 注入侧需要展示给用户看的所有文案。JS 不持有 i18n,这边一并拼好,
+/// 任意 /provider/list /select /select-model /set-reasoning-effort 返回时都带。
+Map<String, String> _shimLabels(bool isZh) {
+  if (isZh) {
+    return {
+      'deleteHeading': '删除对话',
+      'deleteOk': '删除',
+      'deleteAria': '删除对话',
+      'deleteDefaultTitle': '此对话',
+      'deleteSessionIdMissing': '未找到会话 id',
+      'deleteFailed': '删除失败',
+      'deleteSuccess': '已删除',
+      'deleteConfirmPrefix': '确定删除「',
+      'deleteConfirmSuffix': '」？此操作不可逆。',
+      'cancel': '取消',
+      'unknownError': '未知错误',
+      'providerFallback': '供应商',
+      'clearModel': '清除模型',
+      'effortLow': '低',
+      'effortMedium': '中',
+      'effortHigh': '高',
+      'effortXHigh': '超高',
+      'healthTimeout': '超时',
+      'noProviders': '还没有导入供应商',
+      'unnamedProvider': '未命名供应商',
+      'providerNoModels': '该供应商没有模型',
+      'reasoningEffort': '思考深度',
+      'saveFailed': '保存失败',
+      'switchProviderFailed': '切换供应商失败',
+      'switchModelFailed': '切换模型失败',
+      'switchEffortFailed': '切换思考深度失败',
+    };
+  }
+  return {
+    'deleteHeading': 'Delete thread',
+    'deleteOk': 'Delete',
+    'deleteAria': 'Delete thread',
+    'deleteDefaultTitle': 'this thread',
+    'deleteSessionIdMissing': 'Session id not found',
+    'deleteFailed': 'Delete failed',
+    'deleteSuccess': 'Deleted',
+    'deleteConfirmPrefix': 'Delete "',
+    'deleteConfirmSuffix': '"? This cannot be undone.',
+    'cancel': 'Cancel',
+    'unknownError': 'Unknown error',
+    'providerFallback': 'Provider',
+    'clearModel': 'Clear model',
+    'effortLow': 'Low',
+    'effortMedium': 'Med',
+    'effortHigh': 'High',
+    'effortXHigh': 'XHigh',
+    'healthTimeout': 'timeout',
+    'noProviders': 'No providers configured yet',
+    'unnamedProvider': 'Unnamed provider',
+    'providerNoModels': 'No models for this provider',
+    'reasoningEffort': 'Reasoning',
+    'saveFailed': 'Save failed',
+    'switchProviderFailed': 'Switch provider failed',
+    'switchModelFailed': 'Switch model failed',
+    'switchEffortFailed': 'Switch reasoning failed',
   };
 }
 

@@ -29,6 +29,7 @@ class _LogsTabState extends ConsumerState<LogsTab> {
   Widget build(BuildContext context) {
     final logService = ref.watch(appLogServiceProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
 
     return WorkspaceSurface(
       child: Padding(
@@ -38,14 +39,14 @@ class _LogsTabState extends ConsumerState<LogsTab> {
           children: [
             Row(
               children: [
-                const Expanded(child: SectionTitle(title: '日志')),
+                Expanded(child: SectionTitle(title: l10n.logs)),
                 IconButton(
-                  tooltip: '复制',
-                  onPressed: () => _copyLogs(logService.value),
+                  tooltip: l10n.logsCopy,
+                  onPressed: () => _copyLogs(context, logService.value),
                   icon: const Icon(Icons.content_copy_rounded),
                 ),
                 IconButton(
-                  tooltip: '清空',
+                  tooltip: l10n.logsClear,
                   onPressed: logService.clear,
                   icon: const Icon(Icons.delete_outline_rounded),
                 ),
@@ -55,11 +56,11 @@ class _LogsTabState extends ConsumerState<LogsTab> {
             Align(
               alignment: Alignment.centerLeft,
               child: SegmentedButton<_LogFilter>(
-                segments: const [
-                  ButtonSegment(value: _LogFilter.all, label: Text('全部')),
-                  ButtonSegment(value: _LogFilter.info, label: Text('信息')),
-                  ButtonSegment(value: _LogFilter.warning, label: Text('警告')),
-                  ButtonSegment(value: _LogFilter.error, label: Text('错误')),
+                segments: [
+                  ButtonSegment(value: _LogFilter.all, label: Text(l10n.logsFilterAll)),
+                  ButtonSegment(value: _LogFilter.info, label: Text(l10n.logsFilterInfo)),
+                  ButtonSegment(value: _LogFilter.warning, label: Text(l10n.logsFilterWarning)),
+                  ButtonSegment(value: _LogFilter.error, label: Text(l10n.logsFilterError)),
                 ],
                 selected: {_filter},
                 onSelectionChanged: (value) {
@@ -76,7 +77,7 @@ class _LogsTabState extends ConsumerState<LogsTab> {
                   if (visible.isEmpty) {
                     return Center(
                       child: Text(
-                        '暂无日志',
+                        l10n.logsEmpty,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -114,10 +115,11 @@ class _LogsTabState extends ConsumerState<LogsTab> {
     }
   }
 
-  Future<void> _copyLogs(List<AppLogEntry> entries) async {
+  Future<void> _copyLogs(BuildContext context, List<AppLogEntry> entries) async {
+    final l10n = context.l10n;
     final text = entries.map(_formatEntryForCopy).join('\n');
     await Clipboard.setData(ClipboardData(text: text));
-    SmartDialog.showToast('日志已复制');
+    SmartDialog.showToast(l10n.logsCopiedToast);
   }
 
   String _formatEntryForCopy(AppLogEntry entry) {

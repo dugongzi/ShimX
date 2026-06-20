@@ -192,4 +192,289 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settingsPersistedDescription =>
       '这些设置会通过 SharedPreferencesAsync 持久化保存。';
+
+  @override
+  String get providers => '供应商';
+
+  @override
+  String get addProvider => '新增';
+
+  @override
+  String get noProvidersHint => '还没有供应商，点右上角新增';
+
+  @override
+  String get deletedToast => '已删除';
+
+  @override
+  String get editProvider => '编辑';
+
+  @override
+  String get deleteProvider => '删除';
+
+  @override
+  String get providerEditTitleNew => '新增供应商';
+
+  @override
+  String get providerEditTitleEdit => '编辑供应商';
+
+  @override
+  String get providerName => '名称';
+
+  @override
+  String get providerNameHint => 'MuxueAI';
+
+  @override
+  String get providerBaseUrl => 'Base URL';
+
+  @override
+  String get providerBaseUrlHint => 'https://api.example.com/v1';
+
+  @override
+  String get providerApiKey => 'API Key';
+
+  @override
+  String get providerApiKeyHint => 'sk-...';
+
+  @override
+  String get providerProtocol => '供应商格式';
+
+  @override
+  String get providerProtocolResponses => 'Responses';
+
+  @override
+  String get providerProtocolChat => 'Chat';
+
+  @override
+  String get providerProtocolMessages => 'Messages';
+
+  @override
+  String get providerModels => '模型';
+
+  @override
+  String get providerModelsFetch => '获取';
+
+  @override
+  String get providerModelInputHint => 'gpt-5.5 / claude-sonnet-4-6 ...';
+
+  @override
+  String get providerUseDefault => '用 Codex 默认（不覆盖）';
+
+  @override
+  String get providerSave => '保存';
+
+  @override
+  String get providerSavedToast => '已保存';
+
+  @override
+  String get providerFillFirstToast => '先填 Base URL 和 API Key';
+
+  @override
+  String get providerFillAllToast => '请填完整';
+
+  @override
+  String providerFetchedToast(int count) {
+    return '获取到 $count 个模型';
+  }
+
+  @override
+  String providerFetchFailedToast(String message) {
+    return '获取失败：$message';
+  }
+
+  @override
+  String get autoSwitch => '自动切换';
+
+  @override
+  String get autoSwitchStrategy => '策略';
+
+  @override
+  String get autoSwitchStrategyHelp =>
+      '手动：只显示延迟，不自动切；\n故障转移：当前家连续失败 N 次后切到最快候选；\n最快优先：候选比当前快 ≥ 增益就切';
+
+  @override
+  String get autoSwitchStrategyManual => '手动';
+
+  @override
+  String get autoSwitchStrategyFailover => '故障转移';
+
+  @override
+  String get autoSwitchStrategyFastest => '最快优先';
+
+  @override
+  String get autoSwitchScope => '切换范围';
+
+  @override
+  String get autoSwitchScopeHelp =>
+      '同类型：候选必须跟当前同模型家族（openai/claude/gemini）；\n同协议：候选必须跟当前同上游协议；\n任意：不限';
+
+  @override
+  String get autoSwitchScopeSameType => '同类型';
+
+  @override
+  String get autoSwitchScopeSameProtocol => '同协议';
+
+  @override
+  String get autoSwitchScopeAny => '任意';
+
+  @override
+  String get autoSwitchFailureThreshold => '失败阈值';
+
+  @override
+  String get autoSwitchFailureThresholdHelp => '故障转移策略下，当前家连续失败几次后切换';
+
+  @override
+  String get autoSwitchFailureThresholdUnit => '次';
+
+  @override
+  String get autoSwitchFastestMargin => '最快优先增益';
+
+  @override
+  String get autoSwitchFastestMarginHelp => '最快优先策略下，候选要比当前快多少 ms 才切';
+
+  @override
+  String get autoSwitchFastestMarginUnit => 'ms';
+
+  @override
+  String get autoSwitchCooldown => '冷却时间';
+
+  @override
+  String get autoSwitchCooldownHelp => '切换后多少秒内不再二次切换，防反复横跳';
+
+  @override
+  String get autoSwitchCooldownUnit => '秒';
+
+  @override
+  String get autoSwitchProbeInterval => '后台测速周期';
+
+  @override
+  String get autoSwitchProbeIntervalHelp => '后台多少秒测一次速。手动策略下完全不跑后台周期';
+
+  @override
+  String get autoSwitchProbeIntervalUnit => '秒';
+
+  @override
+  String get navLogs => '日志';
+
+  @override
+  String proxyRunningOnPort(int port) {
+    return '代理运行中 :$port';
+  }
+
+  @override
+  String proxyEnabledOnPort(int port) {
+    return '代理已启用 :$port';
+  }
+
+  @override
+  String get proxyDisabled => '代理未启用';
+
+  @override
+  String get refreshCodex => '刷新 Codex';
+
+  @override
+  String get codexRefreshedToast => 'Codex 已刷新并重新注入';
+
+  @override
+  String codexRefreshFailedToast(String message) {
+    return '刷新失败：$message';
+  }
+
+  @override
+  String get codexNotRunningError => '未检测到 Codex 正在运行';
+
+  @override
+  String get logs => '日志';
+
+  @override
+  String get logsFilterAll => '全部';
+
+  @override
+  String get logsFilterInfo => '信息';
+
+  @override
+  String get logsFilterWarning => '警告';
+
+  @override
+  String get logsFilterError => '错误';
+
+  @override
+  String get logsCopy => '复制';
+
+  @override
+  String get logsClear => '清空';
+
+  @override
+  String get logsEmpty => '暂无日志';
+
+  @override
+  String get logsCopiedToast => '日志已复制';
+
+  @override
+  String get shimDeleteThreadHeading => '删除对话';
+
+  @override
+  String get shimDeleteThreadDelete => '删除';
+
+  @override
+  String get shimDeleteThreadAria => '删除对话';
+
+  @override
+  String get shimDeleteThreadDefaultTitle => '此对话';
+
+  @override
+  String get shimDeleteSessionIdMissing => '未找到会话 id';
+
+  @override
+  String get shimDeleteFailed => '删除失败';
+
+  @override
+  String get shimDeleteSuccess => '已删除';
+
+  @override
+  String get shimUnknownError => '未知错误';
+
+  @override
+  String get shimProviderFallbackName => '供应商';
+
+  @override
+  String get shimClearModel => '清除模型';
+
+  @override
+  String get shimEffortLow => '低';
+
+  @override
+  String get shimEffortMedium => '中';
+
+  @override
+  String get shimEffortHigh => '高';
+
+  @override
+  String get shimEffortXHigh => '超高';
+
+  @override
+  String get shimHealthTimeout => '超时';
+
+  @override
+  String get shimNoProviders => '还没有导入供应商';
+
+  @override
+  String get shimUnnamedProvider => '未命名供应商';
+
+  @override
+  String get shimProviderNoModels => '该供应商没有模型';
+
+  @override
+  String get shimReasoningEffort => '思考深度';
+
+  @override
+  String get shimSaveFailed => '保存失败';
+
+  @override
+  String get shimSwitchProviderFailed => '切换供应商失败';
+
+  @override
+  String get shimSwitchModelFailed => '切换模型失败';
+
+  @override
+  String get shimSwitchEffortFailed => '切换思考深度失败';
 }

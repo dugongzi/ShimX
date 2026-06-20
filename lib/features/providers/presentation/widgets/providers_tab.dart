@@ -20,23 +20,24 @@ class ProvidersTab extends ConsumerWidget {
     final listAsync = ref.watch(providerListProvider);
     final state = listAsync.value;
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
 
     return WorkspaceSurface(
       child: ListView(
         clipBehavior: Clip.none,
         padding: EdgeInsets.all(AppSizes.pagePadding),
         children: [
-          const SectionTitle(title: '自动切换'),
+          SectionTitle(title: l10n.autoSwitch),
           SizedBox(height: AppSizes.sectionGap),
           const _AutoSwitchCard(),
           SizedBox(height: AppSizes.sectionGap),
           Row(
             children: [
-              const Expanded(child: SectionTitle(title: '供应商')),
+              Expanded(child: SectionTitle(title: l10n.providers)),
               FilledButton.icon(
                 onPressed: () => _showEditDialog(context, ref, null),
                 icon: const Icon(Icons.add_rounded),
-                label: const Text('新增'),
+                label: Text(l10n.addProvider),
               ),
             ],
           ),
@@ -46,7 +47,7 @@ class ProvidersTab extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 48),
               child: Center(
                 child: Text(
-                  '还没有供应商，点右上角新增',
+                  l10n.noProvidersHint,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -66,7 +67,7 @@ class ProvidersTab extends ConsumerWidget {
                   await ref.read(
                     removeProviderProvider(id: provider.id).future,
                   );
-                  SmartDialog.showToast('已删除');
+                  SmartDialog.showToast(l10n.deletedToast);
                 },
               ),
               SizedBox(height: AppSizes.itemGap),
@@ -149,11 +150,12 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
 
   bool _fetching = false;
 
-  Future<void> _fetchModels() async {
+  Future<void> _fetchModels(BuildContext context) async {
+    final l10n = context.l10n;
     final baseUrl = _baseUrlCtrl.text.trim();
     final apiKey = _apiKeyCtrl.text.trim();
     if (baseUrl.isEmpty || apiKey.isEmpty) {
-      SmartDialog.showToast('先填 Base URL 和 API Key');
+      SmartDialog.showToast(l10n.providerFillFirstToast);
       return;
     }
     setState(() => _fetching = true);
@@ -168,20 +170,21 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
         }
         _selectedModel ??= _models.isEmpty ? null : _models.first;
       });
-      SmartDialog.showToast('获取到 ${ids.length} 个模型');
+      SmartDialog.showToast(l10n.providerFetchedToast(ids.length));
     } catch (e) {
-      SmartDialog.showToast('获取失败：$e');
+      SmartDialog.showToast(l10n.providerFetchFailedToast(e.toString()));
     } finally {
       if (mounted) setState(() => _fetching = false);
     }
   }
 
-  Future<void> _save() async {
+  Future<void> _save(BuildContext context) async {
+    final l10n = context.l10n;
     final name = _nameCtrl.text.trim();
     final baseUrl = _baseUrlCtrl.text.trim();
     final apiKey = _apiKeyCtrl.text.trim();
     if (name.isEmpty || baseUrl.isEmpty || apiKey.isEmpty) {
-      SmartDialog.showToast('请填完整');
+      SmartDialog.showToast(l10n.providerFillAllToast);
       return;
     }
     final ref = widget.ref;
@@ -215,11 +218,12 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
       );
     }
     SmartDialog.dismiss();
-    SmartDialog.showToast('已保存');
+    SmartDialog.showToast(l10n.providerSavedToast);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Dialog(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 440),
@@ -231,7 +235,9 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  widget.existing == null ? '新增供应商' : '编辑供应商',
+                  widget.existing == null
+                      ? l10n.providerEditTitleNew
+                      : l10n.providerEditTitleEdit,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -239,38 +245,47 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                 const SizedBox(height: 18),
                 TextField(
                   controller: _nameCtrl,
-                  decoration: const InputDecoration(
-                    labelText: '名称',
-                    hintText: 'MuxueAI',
+                  decoration: InputDecoration(
+                    labelText: l10n.providerName,
+                    hintText: l10n.providerNameHint,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _baseUrlCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Base URL',
-                    hintText: 'https://api.example.com/v1',
+                  decoration: InputDecoration(
+                    labelText: l10n.providerBaseUrl,
+                    hintText: l10n.providerBaseUrlHint,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _apiKeyCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'API Key',
-                    hintText: 'sk-...',
+                  decoration: InputDecoration(
+                    labelText: l10n.providerApiKey,
+                    hintText: l10n.providerApiKeyHint,
                   ),
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  '供应商格式',
+                  l10n.providerProtocol,
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
                 const SizedBox(height: 6),
                 SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(value: 'responses', label: Text('Responses')),
-                    ButtonSegment(value: 'chat', label: Text('Chat')),
-                    ButtonSegment(value: 'messages', label: Text('Messages')),
+                  segments: [
+                    ButtonSegment(
+                      value: 'responses',
+                      label: Text(l10n.providerProtocolResponses),
+                    ),
+                    ButtonSegment(
+                      value: 'chat',
+                      label: Text(l10n.providerProtocolChat),
+                    ),
+                    ButtonSegment(
+                      value: 'messages',
+                      label: Text(l10n.providerProtocolMessages),
+                    ),
                   ],
                   selected: {_upstreamProtocol},
                   onSelectionChanged: (v) =>
@@ -281,12 +296,12 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                   children: [
                     Expanded(
                       child: Text(
-                        '模型',
+                        l10n.providerModels,
                         style: Theme.of(context).textTheme.labelLarge,
                       ),
                     ),
                     TextButton.icon(
-                      onPressed: _fetching ? null : _fetchModels,
+                      onPressed: _fetching ? null : () => _fetchModels(context),
                       icon: _fetching
                           ? const SizedBox(
                               width: 14,
@@ -294,7 +309,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.cloud_download_outlined, size: 18),
-                      label: const Text('获取'),
+                      label: Text(l10n.providerModelsFetch),
                     ),
                   ],
                 ),
@@ -304,9 +319,9 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                     Expanded(
                       child: TextField(
                         controller: _modelCtrl,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           isDense: true,
-                          hintText: 'gpt-5.5 / claude-sonnet-4-6 ...',
+                          hintText: l10n.providerModelInputHint,
                         ),
                         onSubmitted: (_) => _addModel(),
                       ),
@@ -341,7 +356,7 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                       onPressed: _selectedModel == null
                           ? null
                           : () => setState(() => _selectedModel = null),
-                      child: const Text('用 Codex 默认（不覆盖）'),
+                      child: Text(l10n.providerUseDefault),
                     ),
                   ),
                 ],
@@ -351,12 +366,12 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                   children: [
                     TextButton(
                       onPressed: () => SmartDialog.dismiss(),
-                      child: const Text('取消'),
+                      child: Text(l10n.cancel),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
-                      onPressed: _save,
-                      child: const Text('保存'),
+                      onPressed: () => _save(context),
+                      child: Text(l10n.providerSave),
                     ),
                   ],
                 ),
@@ -377,6 +392,7 @@ class _AutoSwitchCard extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final asyncSettings = ref.watch(autoSwitchSettingsProvider);
     final settings = asyncSettings.value ?? const AutoSwitchSettings();
+    final l10n = context.l10n;
 
     return SurfaceCard(
       padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
@@ -384,17 +400,24 @@ class _AutoSwitchCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _AutoSwitchRowLabel(
-            label: '策略',
-            help: 'manual: 只显示延迟,不自动切;\n'
-                'failover: 当前连续失败 N 次后自动切到最快候选;\n'
-                'fastest: 候选比当前快 ≥ 阈值就切',
+            label: l10n.autoSwitchStrategy,
+            help: l10n.autoSwitchStrategyHelp,
           ),
           SizedBox(height: 6.ch(min: 4, max: 8)),
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'manual', label: Text('手动')),
-              ButtonSegment(value: 'failover', label: Text('故障转移')),
-              ButtonSegment(value: 'fastest', label: Text('最快优先')),
+            segments: [
+              ButtonSegment(
+                value: 'manual',
+                label: Text(l10n.autoSwitchStrategyManual),
+              ),
+              ButtonSegment(
+                value: 'failover',
+                label: Text(l10n.autoSwitchStrategyFailover),
+              ),
+              ButtonSegment(
+                value: 'fastest',
+                label: Text(l10n.autoSwitchStrategyFastest),
+              ),
             ],
             selected: {settings.strategy},
             onSelectionChanged: (v) => _save(
@@ -404,17 +427,24 @@ class _AutoSwitchCard extends ConsumerWidget {
           ),
           SizedBox(height: 14.ch(min: 10, max: 16)),
           _AutoSwitchRowLabel(
-            label: '切换范围',
-            help: 'same-type: 候选必须跟当前同模型家族(openai/claude/gemini);\n'
-                'same-protocol: 候选必须跟当前同上游协议;\n'
-                'any: 不限',
+            label: l10n.autoSwitchScope,
+            help: l10n.autoSwitchScopeHelp,
           ),
           SizedBox(height: 6.ch(min: 4, max: 8)),
           SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'same-type', label: Text('同类型')),
-              ButtonSegment(value: 'same-protocol', label: Text('同协议')),
-              ButtonSegment(value: 'any', label: Text('任意')),
+            segments: [
+              ButtonSegment(
+                value: 'same-type',
+                label: Text(l10n.autoSwitchScopeSameType),
+              ),
+              ButtonSegment(
+                value: 'same-protocol',
+                label: Text(l10n.autoSwitchScopeSameProtocol),
+              ),
+              ButtonSegment(
+                value: 'any',
+                label: Text(l10n.autoSwitchScopeAny),
+              ),
             ],
             selected: {settings.scope},
             onSelectionChanged: (v) => _save(
@@ -426,51 +456,51 @@ class _AutoSwitchCard extends ConsumerWidget {
           Divider(color: colorScheme.outlineVariant, height: 1),
           SizedBox(height: 12.ch(min: 8, max: 14)),
           _AutoSwitchNumberRow(
-            label: '失败阈值',
-            suffix: '次',
+            label: l10n.autoSwitchFailureThreshold,
+            suffix: l10n.autoSwitchFailureThresholdUnit,
             value: settings.failureThreshold,
             min: 1,
             max: 10,
-            help: 'failover 策略下,当前家连续失败几次后切换',
+            help: l10n.autoSwitchFailureThresholdHelp,
             onChanged: (v) => _save(
               ref,
               settings.copyWith(failureThreshold: v),
             ),
           ),
           _AutoSwitchNumberRow(
-            label: '最快优先增益',
-            suffix: 'ms',
+            label: l10n.autoSwitchFastestMargin,
+            suffix: l10n.autoSwitchFastestMarginUnit,
             value: settings.fastestMarginMs,
             min: 50,
             max: 2000,
             step: 50,
-            help: 'fastest 策略下,候选要比当前快多少 ms 才切',
+            help: l10n.autoSwitchFastestMarginHelp,
             onChanged: (v) => _save(
               ref,
               settings.copyWith(fastestMarginMs: v),
             ),
           ),
           _AutoSwitchNumberRow(
-            label: '冷却时间',
-            suffix: '秒',
+            label: l10n.autoSwitchCooldown,
+            suffix: l10n.autoSwitchCooldownUnit,
             value: settings.cooldownSeconds,
             min: 5,
             max: 600,
             step: 5,
-            help: '切换后多少秒内不再二次切换,防反复横跳',
+            help: l10n.autoSwitchCooldownHelp,
             onChanged: (v) => _save(
               ref,
               settings.copyWith(cooldownSeconds: v),
             ),
           ),
           _AutoSwitchNumberRow(
-            label: '后台测速周期',
-            suffix: '秒',
+            label: l10n.autoSwitchProbeInterval,
+            suffix: l10n.autoSwitchProbeIntervalUnit,
             value: settings.probeIntervalSeconds,
             min: 60,
             max: 1800,
             step: 30,
-            help: '后台多少秒测一次速。manual 策略下完全不跑后台周期',
+            help: l10n.autoSwitchProbeIntervalHelp,
             onChanged: (v) => _save(
               ref,
               settings.copyWith(probeIntervalSeconds: v),
@@ -593,6 +623,7 @@ class _ProviderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
     return SurfaceCard(
       padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
       child: InkWell(
@@ -634,12 +665,12 @@ class _ProviderCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: '编辑',
+              tooltip: l10n.editProvider,
               onPressed: onEdit,
               icon: const Icon(Icons.edit_outlined),
             ),
             IconButton(
-              tooltip: '删除',
+              tooltip: l10n.deleteProvider,
               onPressed: onDelete,
               icon: Icon(Icons.delete_outline_rounded, color: colorScheme.error),
             ),

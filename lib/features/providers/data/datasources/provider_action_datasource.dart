@@ -17,8 +17,17 @@ class ProviderActionDatasource {
   static const _proxyEnabledKey = 'codex_proxy_enabled';
   static const _proxyPortKey = 'codex_proxy_port';
 
-  /// 备份原始 base_url 的存储 key
+  /// 备份原始 base_url 的存储 key(旧版字符串备份,仍保留以便 disableTakeover 兼容)
   static const _backupKey = 'codex_base_url_backup';
+
+  /// 接管前的整份 config.toml + auth.json 快照目录。
+  /// 切换到 ChatGPT 官方登录时 Codex 会把 config.toml 几乎擦光、auth.json 改成 {},
+  /// 用户原本写在里面的 [projects.*] / [mcp_servers] / model / sandbox_mode 等也会一起丢。
+  /// 单存 base_url 字符串不够 —— 必须把"接管前的完整状态"整份留底。
+  static const _backupDirName = '.shim_takeover_backup';
+  static const _backupConfigName = 'config.toml.bak';
+  static const _backupAuthName = 'auth.json.bak';
+  static const _backupMetaName = 'meta.json';
 
   Future<void> saveProviders(List<ApiProviderDto> providers) async {
     final encoded = jsonEncode(providers.map((p) => p.toJson()).toList());
@@ -43,8 +52,14 @@ class ProviderActionDatasource {
 
   /// 开启接管：把当前生效的 base_url 改成本地代理地址，原值备份。
   ///
-  /// 用 toml 库只做定位（解析出当前 `model_provider` 段的 base_url 准确原值），
-  /// 再对原文里那个具体的值做精确文本替换，避免重排格式/丢注释。
+  /// 流程：
+  /// 1. config.toml 不存在 → 写默认模板(base_url 直接是本地代理)
+  /// 2. 解析 base_url:
+  ///    - 已是 127.0.0.1 → 不动
+  ///    - 是别的有效 URL → 拍快照(整份 config + auth,已有则跳过)+ 原文精确替换
+  ///    - 拿不到:
+  ///        a. 有快照 → 还原快照后重新走 (2)
+  ///        b. 无快照 → 首次安装/全新 Codex,写默认模板进去
   Future<bool> enableTakeover({required String localProxyUrl}) async {
     final path = _codexConfigPath();
     AppLogService.instance.info(
@@ -54,21 +69,70 @@ class ProviderActionDatasource {
     );
     final file = File(path);
     if (!await file.exists()) {
-      AppLogService.instance.error('Takeover', 'config.toml 不存在', details: path);
-      return false;
+      AppLogService.instance.warning(
+        'Takeover',
+        'config.toml 不存在,写入默认模板',
+        details: path,
+      );
+      await _writeDefaultTemplate(localProxyUrl: localProxyUrl);
+      return true;
     }
 
-    final text = await file.readAsString();
-    final currentUrl = _resolveActiveBaseUrl(text);
+    var text = await file.readAsString();
+    var currentUrl = _resolveActiveBaseUrl(text);
     AppLogService.instance.info('Takeover', '定位到当前 base_url', details: '$currentUrl');
-    if (currentUrl == null || currentUrl.isEmpty) {
-      AppLogService.instance.error('Takeover', '定位 base_url 失败');
-      return false;
-    }
-    if (_isLocalProxy(currentUrl)) {
+
+    // 已经是本地代理 → 不动
+    if (currentUrl != null && _isLocalProxy(currentUrl)) {
       AppLogService.instance.warning('Takeover', '当前已是本地代理地址，跳过', details: currentUrl);
       return true;
     }
+
+    // 拿不到 base_url:被 Codex 擦写过(切官方) 或 首次安装从未配过 provider
+    if (currentUrl == null || currentUrl.isEmpty) {
+      // 先试快照
+      final hasSnapshot = await File(_backupConfigPath()).exists();
+      if (hasSnapshot) {
+        AppLogService.instance.warning(
+          'Takeover',
+          '当前 config.toml 无法定位 base_url,尝试从快照还原',
+        );
+        final restored = await _restoreSnapshot();
+        if (!restored) {
+          AppLogService.instance.error('Takeover', '快照还原失败');
+          return false;
+        }
+        text = await file.readAsString();
+        currentUrl = _resolveActiveBaseUrl(text);
+        if (currentUrl == null || currentUrl.isEmpty) {
+          AppLogService.instance.error('Takeover', '快照还原后仍无法定位 base_url');
+          return false;
+        }
+        if (_isLocalProxy(currentUrl)) {
+          AppLogService.instance.info(
+            'Takeover',
+            '快照还原后已是本地代理,无需改写',
+            details: currentUrl,
+          );
+          return true;
+        }
+        // fall-through: 走下面的"拍快照(已跳过)+ 替换"
+      } else {
+        // 无快照 → 首次安装,写默认模板覆盖现有(可能只剩 [mcp_servers])的 config
+        AppLogService.instance.warning(
+          'Takeover',
+          'config.toml 无 base_url 且无快照,视为首次安装,写入默认模板',
+        );
+        await _writeDefaultTemplate(
+          localProxyUrl: localProxyUrl,
+          preserveText: text,
+        );
+        return true;
+      }
+    }
+
+    // 走到这里 currentUrl 一定是非本地的有效 URL —— 拍快照(若已有则跳过)
+    await _captureSnapshotIfMissing(configText: text, originalBaseUrl: currentUrl);
 
     final replaced = _replaceBaseUrlValue(text, currentUrl, localProxyUrl);
     if (replaced == null) {
@@ -84,6 +148,73 @@ class ProviderActionDatasource {
       details: '$currentUrl -> $localProxyUrl',
     );
     return true;
+  }
+
+  /// 写入默认 provider 模板。
+  /// - [preserveText] 不为空时,会把现有内容里的 [mcp_servers] / [projects.*] 等保留段
+  ///   原样拼到模板下方,避免擦掉用户/Codex 自己的配置。
+  Future<void> _writeDefaultTemplate({
+    required String localProxyUrl,
+    String? preserveText,
+  }) async {
+    final template = StringBuffer()
+      ..writeln('model_provider = "shim"')
+      ..writeln('model = "gpt-5.5"')
+      ..writeln('model_reasoning_effort = "high"')
+      ..writeln('disable_response_storage = true')
+      ..writeln()
+      ..writeln('[model_providers.shim]')
+      ..writeln('name = "shim"')
+      ..writeln('wire_api = "responses"')
+      ..writeln('requires_openai_auth = true')
+      ..writeln('base_url = "$localProxyUrl"')
+      ..writeln();
+
+    if (preserveText != null && preserveText.trim().isNotEmpty) {
+      // 把"非 model 相关"的段原样追加 —— [mcp_servers] / [projects.*] / [windows] 等
+      final kept = _stripProviderSectionsFromText(preserveText);
+      if (kept.isNotEmpty) {
+        template.writeln(kept);
+      }
+    }
+
+    await File(_codexConfigPath()).writeAsString(template.toString());
+    AppLogService.instance.info(
+      'Takeover',
+      '已写入默认 provider 模板',
+      details: 'localProxyUrl=$localProxyUrl preserved=${preserveText != null}',
+    );
+  }
+
+  /// 从原文里剥掉跟 provider 相关的段(顶层 model_*、[model_providers.*]),
+  /// 其它段原样返回。用于"首次安装"场景下保留 [mcp_servers] / [projects.*]。
+  String _stripProviderSectionsFromText(String text) {
+    final lines = text.split('\n');
+    final keep = <String>[];
+    bool inProviderSection = false;
+    final providerSectionHeader = RegExp(r'^\s*\[\s*model_providers(\.|\s*\])');
+    final anySectionHeader = RegExp(r'^\s*\[');
+    final topLevelProviderKey = RegExp(
+      r'^\s*(model_provider|model|model_reasoning_effort|disable_response_storage)\s*=',
+    );
+
+    for (final line in lines) {
+      if (providerSectionHeader.hasMatch(line)) {
+        inProviderSection = true;
+        continue;
+      }
+      if (inProviderSection && anySectionHeader.hasMatch(line)) {
+        inProviderSection = false;
+      }
+      if (inProviderSection) continue;
+      // 顶层 provider 相关 key 也跳过(它们在第一个 [section] 出现前)
+      if (keep.where((l) => anySectionHeader.hasMatch(l)).isEmpty &&
+          topLevelProviderKey.hasMatch(line)) {
+        continue;
+      }
+      keep.add(line);
+    }
+    return keep.join('\n').trim();
   }
 
   /// 关闭接管：把当前的本地代理 base_url 精确还原成备份的原值。
@@ -147,13 +278,80 @@ class ProviderActionDatasource {
     return url.contains('127.0.0.1') || url.contains('localhost');
   }
 
-  String _codexConfigPath() {
+  String _codexHomeDir() {
     final home = Platform.isWindows
         ? Platform.environment['USERPROFILE']
         : Platform.environment['HOME'];
     if (home == null || home.isEmpty) {
       throw StateError('Cannot resolve user home directory');
     }
-    return p.join(home, '.codex', 'config.toml');
+    return p.join(home, '.codex');
+  }
+
+  String _codexConfigPath() => p.join(_codexHomeDir(), 'config.toml');
+  String _codexAuthPath() => p.join(_codexHomeDir(), 'auth.json');
+
+  String _backupDir() => p.join(_codexHomeDir(), _backupDirName);
+  String _backupConfigPath() => p.join(_backupDir(), _backupConfigName);
+  String _backupAuthPath() => p.join(_backupDir(), _backupAuthName);
+  String _backupMetaPath() => p.join(_backupDir(), _backupMetaName);
+
+  /// 拍一份"接管前的完整状态"快照:config.toml + auth.json + 元信息。
+  /// 已存在则不覆盖 —— 避免 Codex 已经擦写过、此时再"备份"等于把空文件存进去。
+  Future<void> _captureSnapshotIfMissing({
+    required String configText,
+    String? originalBaseUrl,
+  }) async {
+    final dir = Directory(_backupDir());
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    final configBak = File(_backupConfigPath());
+    if (await configBak.exists()) {
+      AppLogService.instance.info(
+        'Takeover',
+        '快照已存在,跳过备份',
+        details: configBak.path,
+      );
+      return;
+    }
+    await configBak.writeAsString(configText);
+
+    final authSrc = File(_codexAuthPath());
+    final authBak = File(_backupAuthPath());
+    if (await authSrc.exists()) {
+      await authBak.writeAsString(await authSrc.readAsString());
+    }
+
+    final meta = {
+      'createdAt': DateTime.now().toIso8601String(),
+      'originalBaseUrl': originalBaseUrl,
+    };
+    await File(_backupMetaPath()).writeAsString(jsonEncode(meta));
+
+    AppLogService.instance.info(
+      'Takeover',
+      '已快照接管前状态',
+      details: 'dir=${dir.path}\noriginalBaseUrl=$originalBaseUrl',
+    );
+  }
+
+  /// 用快照还原 config.toml + auth.json。
+  /// 返回 true 表示真的写回去了。
+  Future<bool> _restoreSnapshot() async {
+    final configBak = File(_backupConfigPath());
+    if (!await configBak.exists()) {
+      AppLogService.instance.warning('Takeover', '没有快照可还原');
+      return false;
+    }
+    await File(_codexConfigPath()).writeAsString(await configBak.readAsString());
+
+    final authBak = File(_backupAuthPath());
+    if (await authBak.exists()) {
+      await File(_codexAuthPath()).writeAsString(await authBak.readAsString());
+    }
+
+    AppLogService.instance.info('Takeover', '已从快照还原 config.toml + auth.json');
+    return true;
   }
 }

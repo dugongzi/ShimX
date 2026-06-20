@@ -75,7 +75,12 @@ class InjectActionDatasource {
     return rootBundle.loadString(_injectAssetPath);
   }
 
-  /// 在 page target 上拿到 devtoolsFrontendUrl，用于系统浏览器打开完整 DevTools
+  /// 在 page target 上拿到 devtoolsFrontendUrl，用于系统浏览器打开完整 DevTools。
+  ///
+  /// Chromium 默认返回的 URL 形如
+  ///   https://chrome-devtools-frontend.appspot.com/serve_rev/@<hash>/inspector.html?ws=127.0.0.1:<port>/...
+  /// appspot 在国内被墙,这里把 host 改写成 127.0.0.1:<port>,
+  /// 用 Codex 自带的 DevTools 前端,完全走本地,不需要 VPN。
   Future<String?> findDevtoolsUrl(int debugPort) async {
     try {
       final response = await _dio.getUri<List<dynamic>>(
@@ -84,15 +89,35 @@ class InjectActionDatasource {
       final targets = response.data ?? const [];
       for (final raw in targets) {
         final target = raw as Map<String, dynamic>;
-        if (target['type'] == 'page' &&
-            target['devtoolsFrontendUrl'] is String) {
-          final relative = target['devtoolsFrontendUrl'] as String;
-          if (relative.startsWith('http')) return relative;
+        if (target['type'] != 'page') continue;
+        final wsUrl = target['webSocketDebuggerUrl'] as String?;
+        final relative = target['devtoolsFrontendUrl'] as String?;
+        if (wsUrl != null && wsUrl.isNotEmpty) {
+          final wsPath = Uri.parse(wsUrl).toString().replaceFirst(
+                RegExp(r'^wss?://'),
+                '',
+              );
+          return 'http://127.0.0.1:$debugPort/devtools/inspector.html?ws=$wsPath';
+        }
+        if (relative != null && relative.isNotEmpty) {
+          if (relative.startsWith('http')) {
+            return _rewriteAppspotToLocal(relative, debugPort);
+          }
           return 'http://127.0.0.1:$debugPort$relative';
         }
       }
     } catch (_) {}
     return null;
+  }
+
+  String _rewriteAppspotToLocal(String url, int debugPort) {
+    final appspot = RegExp(
+      r'^https?://chrome-devtools-frontend\.appspot\.com/serve_rev/@[^/]+/',
+    );
+    if (appspot.hasMatch(url)) {
+      return url.replaceFirst(appspot, 'http://127.0.0.1:$debugPort/devtools/');
+    }
+    return url;
   }
 
   Future<String> _findPageWebSocketUrl(int debugPort) async {

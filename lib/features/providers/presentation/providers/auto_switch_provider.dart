@@ -5,6 +5,7 @@ import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/auto_switch_service.dart';
 import 'package:shim/core/services/bridge_service.dart';
+import 'package:shim/core/services/local_proxy_service.dart';
 import 'package:shim/features/providers/data/datasources/auto_switch_datasource.dart';
 import 'package:shim/features/providers/data/repositories/auto_switch_repository_impl.dart';
 import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
@@ -34,9 +35,31 @@ Future<AutoSwitchSettings> autoSwitchSettings(Ref ref) {
 AutoSwitchService autoSwitchService(Ref ref) {
   return AutoSwitchService(
     healthRepository: ref.read(providerHealthRepositoryProvider),
+    probeService: ref.read(providerHealthProbeServiceProvider),
     onSwitch: (targetId) async {
       // 复用现有 selectProvider 逻辑(写持久化 + 同步 proxy + invalidate)
       await ref.read(selectProviderProvider(id: targetId).future);
+    },
+    onMaintenanceMode: (reason) {
+      AppLogService.instance.error(
+        'AutoSwitch',
+        '维护模式已激活',
+        details: reason,
+      );
+      // 通知 bridge 推一条提示到 Codex
+      final bridge = ref.read(bridgeServiceProvider);
+      bridge.dispatchEvent('/provider/auto-switched', {
+        'event': 'maintenance',
+        'reason': reason,
+      });
+    },
+    onAutoSwitched: (fromId, toId) {
+      final bridge = ref.read(bridgeServiceProvider);
+      bridge.dispatchEvent('/provider/auto-switched', {
+        'event': 'switched',
+        'from': fromId,
+        'to': toId,
+      });
     },
   );
 }
@@ -64,14 +87,23 @@ bool autoSwitchRouteRegistration(Ref ref) {
       fastestMarginMs: _readInt(payload, 'fastestMarginMs', 200),
       cooldownSeconds: _readInt(payload, 'cooldownSeconds', 10),
       probeIntervalSeconds: _readInt(payload, 'probeIntervalSeconds', 300),
+      slowRequestTimeoutSeconds: _readInt(payload, 'slowRequestTimeoutSeconds', 20),
+      slowRequestSwitchThreshold: _readInt(payload, 'slowRequestSwitchThreshold', 1),
     );
     await repo.save(settings: next);
     AppLogService.instance.info(
       'AutoSwitch',
       '设置已更新',
-      details: 'strategy=${next.strategy} scope=${next.scope}',
+      details: 'strategy=${next.strategy} scope=${next.scope} slowTimeout=${next.slowRequestTimeoutSeconds}s slowThreshold=${next.slowRequestSwitchThreshold}',
     );
     ref.invalidate(autoSwitchSettingsProvider);
+
+    // 慢响应阈值热推给运行中的 proxy(否则得等 startTakeover 重新跑才生效)
+    final proxy = ref.read(localProxyServiceProvider);
+    if (proxy.isRunning) {
+      proxy.setSlowTimeout(Duration(seconds: next.slowRequestTimeoutSeconds));
+    }
+
     final isZh = ref.read(localeProvider).languageCode == 'zh';
     return _settingsPayload(next, isZh);
   });
@@ -87,11 +119,24 @@ Future<void> autoSwitchWatcher(Ref ref) async {
   final autoRepo = ref.read(autoSwitchRepositoryProvider);
   final healthRepo = ref.read(providerHealthRepositoryProvider);
 
+  AppLogService.instance.info('AutoSwitch', 'watcher 已订阅 health 变化');
+
   final sub = healthRepo.watch().listen((snapshot) async {
+    AppLogService.instance.info(
+      'AutoSwitch',
+      '收到 health 变化事件',
+      details: 'count=${snapshot.length}',
+    );
     final settings = await autoRepo.read();
-    if (settings.strategy == 'manual') return;
+    if (settings.strategy == 'manual') {
+      AppLogService.instance.info('AutoSwitch', '策略=manual,不评估');
+      return;
+    }
     final selectedId = await queryRepo.selectedId();
-    if (selectedId == null) return;
+    if (selectedId == null) {
+      AppLogService.instance.warning('AutoSwitch', '当前无选中供应商,不评估');
+      return;
+    }
     final providers = await queryRepo.listProviders();
     await service.maybeSwitch(
       settings: settings,
@@ -110,6 +155,8 @@ Map<String, dynamic> _settingsPayload(AutoSwitchSettings settings, bool isZh) {
     'fastestMarginMs': settings.fastestMarginMs,
     'cooldownSeconds': settings.cooldownSeconds,
     'probeIntervalSeconds': settings.probeIntervalSeconds,
+    'slowRequestTimeoutSeconds': settings.slowRequestTimeoutSeconds,
+    'slowRequestSwitchThreshold': settings.slowRequestSwitchThreshold,
     'labels': _labels(isZh),
   };
 }
@@ -124,6 +171,8 @@ Map<String, dynamic> _labels(bool isZh) {
       'fastestMarginMs': '增益',
       'cooldownSeconds': '冷却',
       'probeIntervalSeconds': '周期',
+      'slowRequestTimeoutSeconds': '慢响应阈值',
+      'slowRequestSwitchThreshold': '慢响应次数',
       'unitTimes': '次',
       'unitMs': 'ms',
       'unitSeconds': '秒',
@@ -143,6 +192,8 @@ Map<String, dynamic> _labels(bool isZh) {
     'fastestMarginMs': 'Margin',
     'cooldownSeconds': 'Cooldown',
     'probeIntervalSeconds': 'Interval',
+    'slowRequestTimeoutSeconds': 'Slow th.',
+    'slowRequestSwitchThreshold': 'Slow streak',
     'unitTimes': 'x',
     'unitMs': 'ms',
     'unitSeconds': 's',

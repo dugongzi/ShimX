@@ -359,6 +359,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get autoSwitchProbeIntervalUnit => 's';
 
   @override
+  String get autoSwitchSlowTimeout => 'Slow threshold';
+
+  @override
+  String get autoSwitchSlowTimeoutHelp =>
+      'A single request waiting longer than this for response headers is treated as stalled. 0 = disabled.';
+
+  @override
+  String get autoSwitchSlowTimeoutUnit => 's';
+
+  @override
+  String get autoSwitchSlowThreshold => 'Slow streak';
+
+  @override
+  String get autoSwitchSlowThresholdHelp =>
+      'N consecutive slow responses trigger auto-switch directly (bypasses failure threshold). 1 = switch on first slow response.';
+
+  @override
+  String get autoSwitchSlowThresholdUnit => 'x';
+
+  @override
   String get navLogs => 'Logs';
 
   @override

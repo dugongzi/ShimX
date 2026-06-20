@@ -1393,6 +1393,8 @@
       body.appendChild(buildAutoSwitchNumberRow(L.fastestMarginMs || 'Margin', 'fastestMarginMs', L.unitMs || 'ms', 50, 2000, 50));
       body.appendChild(buildAutoSwitchNumberRow(L.cooldownSeconds || 'Cooldown', 'cooldownSeconds', L.unitSeconds || 's', 5, 600, 5));
       body.appendChild(buildAutoSwitchNumberRow(L.probeIntervalSeconds || 'Interval', 'probeIntervalSeconds', L.unitSeconds || 's', 60, 1800, 30));
+      body.appendChild(buildAutoSwitchNumberRow(L.slowRequestTimeoutSeconds || 'Slow th.', 'slowRequestTimeoutSeconds', L.unitSeconds || 's', 0, 120, 5));
+      body.appendChild(buildAutoSwitchNumberRow(L.slowRequestSwitchThreshold || 'Slow streak', 'slowRequestSwitchThreshold', L.unitTimes || 'x', 1, 10, 1));
 
       wrap.appendChild(body);
     }
@@ -2427,9 +2429,44 @@
       window.__shimProviderPollInstalled = true;
       setInterval(() => {
         refreshCurrentProvider();
-        refreshProviderPickerState();
+        // picker 弹层正打开时跳过 list 刷新,避免重建按钮列表导致用户点击落空
+        if (!document.getElementById(PROVIDER_PICKER_POPOVER_ID)) {
+          refreshProviderPickerState();
+        }
       }, 15000);
     }
+
+    // 订阅 dart 推送的自动切换事件。注意:picker 打开时不要触发 list 重建,
+    // 否则用户正点的按钮会被销毁重建,表现为"菜单卡死无法点击"。
+    let __shimLastPushAt = 0;
+    if (typeof window.__shimOn === 'function' && !window.__shimAutoSwitchSub) {
+      window.__shimAutoSwitchSub = window.__shimOn('/provider/auto-switched', (payload) => {
+        if (!payload) return;
+        const now = Date.now();
+        // 节流:同一秒内多次 push 只处理一次
+        if (now - __shimLastPushAt < 1000) return;
+        __shimLastPushAt = now;
+        if (payload.event === 'switched') {
+          const fromName = providerNameFromId(payload.from) || payload.from || '';
+          const toName = providerNameFromId(payload.to) || payload.to || '';
+          showToast(`${S('autoSwitchedToast', 'Provider auto-switched')}: ${fromName} → ${toName}`, 'success');
+          // picker 弹层正打开时不重建,避免点击按钮被销毁
+          if (!document.getElementById(PROVIDER_PICKER_POPOVER_ID)) {
+            refreshProviderPickerState();
+          }
+          refreshCurrentProvider();
+        } else if (payload.event === 'maintenance') {
+          showToast(`${S('autoSwitchMaintenanceToast', 'Auto-switch paused')}: ${payload.reason || ''}`, 'error');
+        }
+      });
+    }
   })();
+
+  function providerNameFromId(id) {
+    if (!id) return null;
+    const list = (shimProviderState && shimProviderState.providers) || [];
+    const p = list.find((x) => x.id === id);
+    return p?.name || null;
+  }
 
 })();

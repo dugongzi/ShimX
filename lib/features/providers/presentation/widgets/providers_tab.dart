@@ -506,6 +506,31 @@ class _AutoSwitchCard extends ConsumerWidget {
               settings.copyWith(probeIntervalSeconds: v),
             ),
           ),
+          _AutoSwitchNumberRow(
+            label: l10n.autoSwitchSlowTimeout,
+            suffix: l10n.autoSwitchSlowTimeoutUnit,
+            value: settings.slowRequestTimeoutSeconds,
+            min: 0,
+            max: 120,
+            step: 5,
+            help: l10n.autoSwitchSlowTimeoutHelp,
+            onChanged: (v) => _save(
+              ref,
+              settings.copyWith(slowRequestTimeoutSeconds: v),
+            ),
+          ),
+          _AutoSwitchNumberRow(
+            label: l10n.autoSwitchSlowThreshold,
+            suffix: l10n.autoSwitchSlowThresholdUnit,
+            value: settings.slowRequestSwitchThreshold,
+            min: 1,
+            max: 10,
+            help: l10n.autoSwitchSlowThresholdHelp,
+            onChanged: (v) => _save(
+              ref,
+              settings.copyWith(slowRequestSwitchThreshold: v),
+            ),
+          ),
         ],
       ),
     );

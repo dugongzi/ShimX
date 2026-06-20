@@ -146,6 +146,12 @@
   "autoSwitchProbeInterval": "Probe interval",
   "autoSwitchProbeIntervalHelp": "Background probe period in seconds. Disabled when strategy is Manual.",
   "autoSwitchProbeIntervalUnit": "s",
+  "autoSwitchSlowTimeout": "Slow threshold",
+  "autoSwitchSlowTimeoutHelp": "A single request waiting longer than this for response headers is treated as stalled. 0 = disabled.",
+  "autoSwitchSlowTimeoutUnit": "s",
+  "autoSwitchSlowThreshold": "Slow streak",
+  "autoSwitchSlowThresholdHelp": "N consecutive slow responses trigger auto-switch directly (bypasses failure threshold). 1 = switch on first slow response.",
+  "autoSwitchSlowThresholdUnit": "x",
 
   "navLogs": "Logs",
   "proxyRunningOnPort": "Proxy running :{port}",

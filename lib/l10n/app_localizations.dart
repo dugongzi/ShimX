@@ -752,6 +752,42 @@ abstract class AppLocalizations {
   /// **'秒'**
   String get autoSwitchProbeIntervalUnit;
 
+  /// No description provided for @autoSwitchSlowTimeout.
+  ///
+  /// In zh, this message translates to:
+  /// **'慢响应阈值'**
+  String get autoSwitchSlowTimeout;
+
+  /// No description provided for @autoSwitchSlowTimeoutHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'单条请求等待响应头超过此秒数视为挂起。0 表示不启用'**
+  String get autoSwitchSlowTimeoutHelp;
+
+  /// No description provided for @autoSwitchSlowTimeoutUnit.
+  ///
+  /// In zh, this message translates to:
+  /// **'秒'**
+  String get autoSwitchSlowTimeoutUnit;
+
+  /// No description provided for @autoSwitchSlowThreshold.
+  ///
+  /// In zh, this message translates to:
+  /// **'慢响应次数'**
+  String get autoSwitchSlowThreshold;
+
+  /// No description provided for @autoSwitchSlowThresholdHelp.
+  ///
+  /// In zh, this message translates to:
+  /// **'连续 N 次慢响应直接触发自动切换(绕过失败阈值)。1 = 1 次就切'**
+  String get autoSwitchSlowThresholdHelp;
+
+  /// No description provided for @autoSwitchSlowThresholdUnit.
+  ///
+  /// In zh, this message translates to:
+  /// **'次'**
+  String get autoSwitchSlowThresholdUnit;
+
   /// No description provided for @navLogs.
   ///
   /// In zh, this message translates to:

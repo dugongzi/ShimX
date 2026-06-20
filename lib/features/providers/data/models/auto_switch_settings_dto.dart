@@ -15,6 +15,8 @@ abstract class AutoSwitchSettingsDto with _$AutoSwitchSettingsDto {
     @Default(200) int fastestMarginMs,
     @Default(10) int cooldownSeconds,
     @Default(300) int probeIntervalSeconds,
+    @Default(20) int slowRequestTimeoutSeconds,
+    @Default(1) int slowRequestSwitchThreshold,
   }) = _AutoSwitchSettingsDto;
 
   factory AutoSwitchSettingsDto.fromJson(Map<String, Object?> json) =>
@@ -28,6 +30,8 @@ abstract class AutoSwitchSettingsDto with _$AutoSwitchSettingsDto {
       fastestMarginMs: entity.fastestMarginMs,
       cooldownSeconds: entity.cooldownSeconds,
       probeIntervalSeconds: entity.probeIntervalSeconds,
+      slowRequestTimeoutSeconds: entity.slowRequestTimeoutSeconds,
+      slowRequestSwitchThreshold: entity.slowRequestSwitchThreshold,
     );
   }
 
@@ -39,6 +43,8 @@ abstract class AutoSwitchSettingsDto with _$AutoSwitchSettingsDto {
       fastestMarginMs: fastestMarginMs,
       cooldownSeconds: cooldownSeconds,
       probeIntervalSeconds: probeIntervalSeconds,
+      slowRequestTimeoutSeconds: slowRequestTimeoutSeconds,
+      slowRequestSwitchThreshold: slowRequestSwitchThreshold,
     );
   }
 }

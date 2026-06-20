@@ -353,6 +353,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get autoSwitchProbeIntervalUnit => '秒';
 
   @override
+  String get autoSwitchSlowTimeout => '慢响应阈值';
+
+  @override
+  String get autoSwitchSlowTimeoutHelp => '单条请求等待响应头超过此秒数视为挂起。0 表示不启用';
+
+  @override
+  String get autoSwitchSlowTimeoutUnit => '秒';
+
+  @override
+  String get autoSwitchSlowThreshold => '慢响应次数';
+
+  @override
+  String get autoSwitchSlowThresholdHelp =>
+      '连续 N 次慢响应直接触发自动切换(绕过失败阈值)。1 = 1 次就切';
+
+  @override
+  String get autoSwitchSlowThresholdUnit => '次';
+
+  @override
   String get navLogs => '日志';
 
   @override

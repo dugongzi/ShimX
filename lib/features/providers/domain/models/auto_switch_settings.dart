@@ -30,5 +30,12 @@ abstract class AutoSwitchSettings with _$AutoSwitchSettings {
     /// 后台测速周期秒数。默认 5 分钟,避免给上游中转造成压力。
     /// strategy=manual 时此值不生效(完全不跑后台周期)。
     @Default(300) int probeIntervalSeconds,
+
+    /// 单条上游请求耗时超过此秒数视为慢响应/挂起。0 表示不启用慢响应检测。
+    @Default(20) int slowRequestTimeoutSeconds,
+
+    /// 连续慢响应几次后直接触发自动切换(绕过 failureThreshold)。
+    /// 默认 1 = 1 次就切。设为 0 等价于不启用。
+    @Default(1) int slowRequestSwitchThreshold,
   }) = _AutoSwitchSettings;
 }

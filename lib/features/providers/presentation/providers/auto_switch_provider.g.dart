@@ -144,7 +144,7 @@ final class AutoSwitchServiceProvider
   }
 }
 
-String _$autoSwitchServiceHash() => r'b65908afb309c21b19ed8d1b8d69a20205a95397';
+String _$autoSwitchServiceHash() => r'72f8d3c4a28cd86f758da3b1d814f31b48e92ab8';
 
 /// 把自动切换路由注册到 bridge。
 ///
@@ -201,7 +201,7 @@ final class AutoSwitchRouteRegistrationProvider
 }
 
 String _$autoSwitchRouteRegistrationHash() =>
-    r'e4c6c7f56d3064d938a4a3e92956956228b2447a';
+    r'aad4343244a3a6f68ca51b2b0d7cc4491adb4178';
 
 /// 监听 health 变化 + 设置变化,自动评估切换。
 
@@ -239,4 +239,4 @@ final class AutoSwitchWatcherProvider
   }
 }
 
-String _$autoSwitchWatcherHash() => r'f50d1c06c6834be994840d1224b7d3c5a73494e0';
+String _$autoSwitchWatcherHash() => r'02700877bf963cc8c8ae466cb7ec18d42ee80b85';

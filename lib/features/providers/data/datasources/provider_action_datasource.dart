@@ -160,17 +160,7 @@ class ProviderActionDatasource {
     String? preserveText,
   }) async {
     final providerId = await _resolveProviderIdForTemplate(preserveText);
-    final displayName = providerId == 'shim'
-        ? 'Shim'
-        : providerId; // 用户自命名直接当 display name
 
-    // 按 Codex 官方 model_providers 规范:
-    //   - 段名 [model_providers.<id>] 自定义(openai/ollama/lmstudio 是保留 id 不能用)
-    //   - 顶层 model_provider 必须跟段名一致
-    //   - name 是显示名
-    //   - wire_api 目前只支持 "responses"
-    //   - env_key 指向环境变量名;Codex 读 auth.json 写入的 OPENAI_API_KEY
-    //   - requires_openai_auth 仅官方 OpenAI provider 使用,第三方不要带
     final template = StringBuffer()
       ..writeln('model_provider = "$providerId"')
       ..writeln('model = "gpt-5.5"')
@@ -178,10 +168,10 @@ class ProviderActionDatasource {
       ..writeln('disable_response_storage = true')
       ..writeln()
       ..writeln('[model_providers.$providerId]')
-      ..writeln('name = "$displayName"')
-      ..writeln('base_url = "$localProxyUrl"')
-      ..writeln('env_key = "OPENAI_API_KEY"')
+      ..writeln('name = "$providerId"')
       ..writeln('wire_api = "responses"')
+      ..writeln('requires_openai_auth = true')
+      ..writeln('base_url = "$localProxyUrl"')
       ..writeln();
 
     if (preserveText != null && preserveText.trim().isNotEmpty) {

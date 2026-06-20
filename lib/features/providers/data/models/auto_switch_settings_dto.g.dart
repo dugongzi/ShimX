@@ -15,6 +15,10 @@ _AutoSwitchSettingsDto _$AutoSwitchSettingsDtoFromJson(
   fastestMarginMs: (json['fastestMarginMs'] as num?)?.toInt() ?? 200,
   cooldownSeconds: (json['cooldownSeconds'] as num?)?.toInt() ?? 10,
   probeIntervalSeconds: (json['probeIntervalSeconds'] as num?)?.toInt() ?? 300,
+  slowRequestTimeoutSeconds:
+      (json['slowRequestTimeoutSeconds'] as num?)?.toInt() ?? 20,
+  slowRequestSwitchThreshold:
+      (json['slowRequestSwitchThreshold'] as num?)?.toInt() ?? 1,
 );
 
 Map<String, dynamic> _$AutoSwitchSettingsDtoToJson(
@@ -26,4 +30,6 @@ Map<String, dynamic> _$AutoSwitchSettingsDtoToJson(
   'fastestMarginMs': instance.fastestMarginMs,
   'cooldownSeconds': instance.cooldownSeconds,
   'probeIntervalSeconds': instance.probeIntervalSeconds,
+  'slowRequestTimeoutSeconds': instance.slowRequestTimeoutSeconds,
+  'slowRequestSwitchThreshold': instance.slowRequestSwitchThreshold,
 };

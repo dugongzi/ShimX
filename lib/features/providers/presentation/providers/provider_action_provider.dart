@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/services/app_log_service.dart';
@@ -49,10 +51,15 @@ Future<void> _syncRunningProxyTarget(Ref ref) async {
       model: selected.selectedModel,
       upstreamProtocol: selected.upstreamProtocol,
       reasoningEffort: reasoningEffort,
+      providerId: selected.id,
     ),
   );
-  ref.read(providerHealthProbeServiceProvider).setPeriodicScope(
-    onlyIds: {selected.id},
+  // 切换供应商时,周期 scope 也要带新的候选(top2 同 scope)
+  final autoSettings = await ref.read(autoSwitchRepositoryProvider).read();
+  ref.read(providerHealthProbeServiceProvider).refreshPeriodicScopeFor(
+    currentProviderId: selected.id,
+    providers: providers,
+    scope: autoSettings.scope,
   );
 }
 
@@ -204,6 +211,8 @@ Map<String, String> _shimLabels(bool isZh) {
       'switchProviderFailed': '切换供应商失败',
       'switchModelFailed': '切换模型失败',
       'switchEffortFailed': '切换思考深度失败',
+      'autoSwitchedToast': '已自动切换供应商',
+      'autoSwitchMaintenanceToast': '自动切换已暂停',
     };
   }
   return {
@@ -233,6 +242,8 @@ Map<String, String> _shimLabels(bool isZh) {
     'switchProviderFailed': 'Switch provider failed',
     'switchModelFailed': 'Switch model failed',
     'switchEffortFailed': 'Switch reasoning failed',
+    'autoSwitchedToast': 'Provider auto-switched',
+    'autoSwitchMaintenanceToast': 'Auto-switch paused',
   };
 }
 
@@ -368,6 +379,7 @@ Future<void> startTakeover(Ref ref) async {
       reasoningEffort: await ref
           .read(appStorageProvider)
           .getString(_reasoningEffortKey),
+      providerId: selected.id,
     ),
   );
   runningPort.value = proxy.port ?? proxyConfig.port;
@@ -381,13 +393,42 @@ Future<void> startTakeover(Ref ref) async {
   final autoSettings = await ref.read(autoSwitchRepositoryProvider).read();
   final probe = ref.read(providerHealthProbeServiceProvider);
   probe.updateTargets(providers: allProviders);
+
+  // 把请求 success/failure/timeout 回调接到 probe 上(请求实时感知)
+  bindProxyRequestHooks(
+    proxy: proxy,
+    onSuccess: (id) => probe.reportRequestSuccess(providerId: id),
+    onFailure: (id, reason) {
+      probe.reportRequestFailure(providerId: id);
+      AppLogService.instance.warning(
+        'Proxy',
+        '上游请求失败,已上报 health',
+        details: 'provider=$id reason=$reason',
+      );
+    },
+    onTimeout: (id, waitedMs) {
+      probe.reportSlowTimeout(
+        providerId: id,
+        waitedMs: waitedMs,
+        threshold: autoSettings.slowRequestSwitchThreshold,
+      );
+    },
+  );
+  // 把慢响应阈值推给 proxy(0 表示不启用)
+  proxy.setSlowTimeout(Duration(seconds: autoSettings.slowRequestTimeoutSeconds));
+
   if (autoSettings.strategy != 'manual') {
-    probe.setPeriodicScope(onlyIds: {selected.id});
+    probe.refreshPeriodicScopeFor(
+      currentProviderId: selected.id,
+      providers: allProviders,
+      scope: autoSettings.scope,
+    );
     probe.start(
       providers: allProviders,
       interval: Duration(seconds: autoSettings.probeIntervalSeconds),
     );
-    ref.read(autoSwitchWatcherProvider);
+    // 必须用 .future 触发 Future provider 执行,只 read 不会跑里面的代码
+    unawaited(ref.read(autoSwitchWatcherProvider.future));
   }
 }
 

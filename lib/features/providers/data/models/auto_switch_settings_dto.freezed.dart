@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AutoSwitchSettingsDto {
 
- String get strategy; String get scope; int get failureThreshold; int get fastestMarginMs; int get cooldownSeconds; int get probeIntervalSeconds;
+ String get strategy; String get scope; int get failureThreshold; int get fastestMarginMs; int get cooldownSeconds; int get probeIntervalSeconds; int get slowRequestTimeoutSeconds; int get slowRequestSwitchThreshold;
 /// Create a copy of AutoSwitchSettingsDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AutoSwitchSettingsDtoCopyWith<AutoSwitchSettingsDto> get copyWith => _$AutoSwit
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AutoSwitchSettingsDto&&(identical(other.strategy, strategy) || other.strategy == strategy)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.failureThreshold, failureThreshold) || other.failureThreshold == failureThreshold)&&(identical(other.fastestMarginMs, fastestMarginMs) || other.fastestMarginMs == fastestMarginMs)&&(identical(other.cooldownSeconds, cooldownSeconds) || other.cooldownSeconds == cooldownSeconds)&&(identical(other.probeIntervalSeconds, probeIntervalSeconds) || other.probeIntervalSeconds == probeIntervalSeconds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AutoSwitchSettingsDto&&(identical(other.strategy, strategy) || other.strategy == strategy)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.failureThreshold, failureThreshold) || other.failureThreshold == failureThreshold)&&(identical(other.fastestMarginMs, fastestMarginMs) || other.fastestMarginMs == fastestMarginMs)&&(identical(other.cooldownSeconds, cooldownSeconds) || other.cooldownSeconds == cooldownSeconds)&&(identical(other.probeIntervalSeconds, probeIntervalSeconds) || other.probeIntervalSeconds == probeIntervalSeconds)&&(identical(other.slowRequestTimeoutSeconds, slowRequestTimeoutSeconds) || other.slowRequestTimeoutSeconds == slowRequestTimeoutSeconds)&&(identical(other.slowRequestSwitchThreshold, slowRequestSwitchThreshold) || other.slowRequestSwitchThreshold == slowRequestSwitchThreshold));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,strategy,scope,failureThreshold,fastestMarginMs,cooldownSeconds,probeIntervalSeconds);
+int get hashCode => Object.hash(runtimeType,strategy,scope,failureThreshold,fastestMarginMs,cooldownSeconds,probeIntervalSeconds,slowRequestTimeoutSeconds,slowRequestSwitchThreshold);
 
 @override
 String toString() {
-  return 'AutoSwitchSettingsDto(strategy: $strategy, scope: $scope, failureThreshold: $failureThreshold, fastestMarginMs: $fastestMarginMs, cooldownSeconds: $cooldownSeconds, probeIntervalSeconds: $probeIntervalSeconds)';
+  return 'AutoSwitchSettingsDto(strategy: $strategy, scope: $scope, failureThreshold: $failureThreshold, fastestMarginMs: $fastestMarginMs, cooldownSeconds: $cooldownSeconds, probeIntervalSeconds: $probeIntervalSeconds, slowRequestTimeoutSeconds: $slowRequestTimeoutSeconds, slowRequestSwitchThreshold: $slowRequestSwitchThreshold)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AutoSwitchSettingsDtoCopyWith<$Res>  {
   factory $AutoSwitchSettingsDtoCopyWith(AutoSwitchSettingsDto value, $Res Function(AutoSwitchSettingsDto) _then) = _$AutoSwitchSettingsDtoCopyWithImpl;
 @useResult
 $Res call({
- String strategy, String scope, int failureThreshold, int fastestMarginMs, int cooldownSeconds, int probeIntervalSeconds
+ String strategy, String scope, int failureThreshold, int fastestMarginMs, int cooldownSeconds, int probeIntervalSeconds, int slowRequestTimeoutSeconds, int slowRequestSwitchThreshold
 });
 
 
@@ -65,7 +65,7 @@ class _$AutoSwitchSettingsDtoCopyWithImpl<$Res>
 
 /// Create a copy of AutoSwitchSettingsDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? strategy = null,Object? scope = null,Object? failureThreshold = null,Object? fastestMarginMs = null,Object? cooldownSeconds = null,Object? probeIntervalSeconds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? strategy = null,Object? scope = null,Object? failureThreshold = null,Object? fastestMarginMs = null,Object? cooldownSeconds = null,Object? probeIntervalSeconds = null,Object? slowRequestTimeoutSeconds = null,Object? slowRequestSwitchThreshold = null,}) {
   return _then(_self.copyWith(
 strategy: null == strategy ? _self.strategy : strategy // ignore: cast_nullable_to_non_nullable
 as String,scope: null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
@@ -73,6 +73,8 @@ as String,failureThreshold: null == failureThreshold ? _self.failureThreshold : 
 as int,fastestMarginMs: null == fastestMarginMs ? _self.fastestMarginMs : fastestMarginMs // ignore: cast_nullable_to_non_nullable
 as int,cooldownSeconds: null == cooldownSeconds ? _self.cooldownSeconds : cooldownSeconds // ignore: cast_nullable_to_non_nullable
 as int,probeIntervalSeconds: null == probeIntervalSeconds ? _self.probeIntervalSeconds : probeIntervalSeconds // ignore: cast_nullable_to_non_nullable
+as int,slowRequestTimeoutSeconds: null == slowRequestTimeoutSeconds ? _self.slowRequestTimeoutSeconds : slowRequestTimeoutSeconds // ignore: cast_nullable_to_non_nullable
+as int,slowRequestSwitchThreshold: null == slowRequestSwitchThreshold ? _self.slowRequestSwitchThreshold : slowRequestSwitchThreshold // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -158,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String strategy,  String scope,  int failureThreshold,  int fastestMarginMs,  int cooldownSeconds,  int probeIntervalSeconds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String strategy,  String scope,  int failureThreshold,  int fastestMarginMs,  int cooldownSeconds,  int probeIntervalSeconds,  int slowRequestTimeoutSeconds,  int slowRequestSwitchThreshold)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AutoSwitchSettingsDto() when $default != null:
-return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestMarginMs,_that.cooldownSeconds,_that.probeIntervalSeconds);case _:
+return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestMarginMs,_that.cooldownSeconds,_that.probeIntervalSeconds,_that.slowRequestTimeoutSeconds,_that.slowRequestSwitchThreshold);case _:
   return orElse();
 
 }
@@ -179,10 +181,10 @@ return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestM
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String strategy,  String scope,  int failureThreshold,  int fastestMarginMs,  int cooldownSeconds,  int probeIntervalSeconds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String strategy,  String scope,  int failureThreshold,  int fastestMarginMs,  int cooldownSeconds,  int probeIntervalSeconds,  int slowRequestTimeoutSeconds,  int slowRequestSwitchThreshold)  $default,) {final _that = this;
 switch (_that) {
 case _AutoSwitchSettingsDto():
-return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestMarginMs,_that.cooldownSeconds,_that.probeIntervalSeconds);case _:
+return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestMarginMs,_that.cooldownSeconds,_that.probeIntervalSeconds,_that.slowRequestTimeoutSeconds,_that.slowRequestSwitchThreshold);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +201,10 @@ return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestM
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String strategy,  String scope,  int failureThreshold,  int fastestMarginMs,  int cooldownSeconds,  int probeIntervalSeconds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String strategy,  String scope,  int failureThreshold,  int fastestMarginMs,  int cooldownSeconds,  int probeIntervalSeconds,  int slowRequestTimeoutSeconds,  int slowRequestSwitchThreshold)?  $default,) {final _that = this;
 switch (_that) {
 case _AutoSwitchSettingsDto() when $default != null:
-return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestMarginMs,_that.cooldownSeconds,_that.probeIntervalSeconds);case _:
+return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestMarginMs,_that.cooldownSeconds,_that.probeIntervalSeconds,_that.slowRequestTimeoutSeconds,_that.slowRequestSwitchThreshold);case _:
   return null;
 
 }
@@ -214,7 +216,7 @@ return $default(_that.strategy,_that.scope,_that.failureThreshold,_that.fastestM
 @JsonSerializable()
 
 class _AutoSwitchSettingsDto extends AutoSwitchSettingsDto {
-  const _AutoSwitchSettingsDto({this.strategy = 'manual', this.scope = 'same-type', this.failureThreshold = 3, this.fastestMarginMs = 200, this.cooldownSeconds = 10, this.probeIntervalSeconds = 300}): super._();
+  const _AutoSwitchSettingsDto({this.strategy = 'manual', this.scope = 'same-type', this.failureThreshold = 3, this.fastestMarginMs = 200, this.cooldownSeconds = 10, this.probeIntervalSeconds = 300, this.slowRequestTimeoutSeconds = 20, this.slowRequestSwitchThreshold = 1}): super._();
   factory _AutoSwitchSettingsDto.fromJson(Map<String, dynamic> json) => _$AutoSwitchSettingsDtoFromJson(json);
 
 @override@JsonKey() final  String strategy;
@@ -223,6 +225,8 @@ class _AutoSwitchSettingsDto extends AutoSwitchSettingsDto {
 @override@JsonKey() final  int fastestMarginMs;
 @override@JsonKey() final  int cooldownSeconds;
 @override@JsonKey() final  int probeIntervalSeconds;
+@override@JsonKey() final  int slowRequestTimeoutSeconds;
+@override@JsonKey() final  int slowRequestSwitchThreshold;
 
 /// Create a copy of AutoSwitchSettingsDto
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AutoSwitchSettingsDto&&(identical(other.strategy, strategy) || other.strategy == strategy)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.failureThreshold, failureThreshold) || other.failureThreshold == failureThreshold)&&(identical(other.fastestMarginMs, fastestMarginMs) || other.fastestMarginMs == fastestMarginMs)&&(identical(other.cooldownSeconds, cooldownSeconds) || other.cooldownSeconds == cooldownSeconds)&&(identical(other.probeIntervalSeconds, probeIntervalSeconds) || other.probeIntervalSeconds == probeIntervalSeconds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AutoSwitchSettingsDto&&(identical(other.strategy, strategy) || other.strategy == strategy)&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.failureThreshold, failureThreshold) || other.failureThreshold == failureThreshold)&&(identical(other.fastestMarginMs, fastestMarginMs) || other.fastestMarginMs == fastestMarginMs)&&(identical(other.cooldownSeconds, cooldownSeconds) || other.cooldownSeconds == cooldownSeconds)&&(identical(other.probeIntervalSeconds, probeIntervalSeconds) || other.probeIntervalSeconds == probeIntervalSeconds)&&(identical(other.slowRequestTimeoutSeconds, slowRequestTimeoutSeconds) || other.slowRequestTimeoutSeconds == slowRequestTimeoutSeconds)&&(identical(other.slowRequestSwitchThreshold, slowRequestSwitchThreshold) || other.slowRequestSwitchThreshold == slowRequestSwitchThreshold));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,strategy,scope,failureThreshold,fastestMarginMs,cooldownSeconds,probeIntervalSeconds);
+int get hashCode => Object.hash(runtimeType,strategy,scope,failureThreshold,fastestMarginMs,cooldownSeconds,probeIntervalSeconds,slowRequestTimeoutSeconds,slowRequestSwitchThreshold);
 
 @override
 String toString() {
-  return 'AutoSwitchSettingsDto(strategy: $strategy, scope: $scope, failureThreshold: $failureThreshold, fastestMarginMs: $fastestMarginMs, cooldownSeconds: $cooldownSeconds, probeIntervalSeconds: $probeIntervalSeconds)';
+  return 'AutoSwitchSettingsDto(strategy: $strategy, scope: $scope, failureThreshold: $failureThreshold, fastestMarginMs: $fastestMarginMs, cooldownSeconds: $cooldownSeconds, probeIntervalSeconds: $probeIntervalSeconds, slowRequestTimeoutSeconds: $slowRequestTimeoutSeconds, slowRequestSwitchThreshold: $slowRequestSwitchThreshold)';
 }
 
 
@@ -257,7 +261,7 @@ abstract mixin class _$AutoSwitchSettingsDtoCopyWith<$Res> implements $AutoSwitc
   factory _$AutoSwitchSettingsDtoCopyWith(_AutoSwitchSettingsDto value, $Res Function(_AutoSwitchSettingsDto) _then) = __$AutoSwitchSettingsDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String strategy, String scope, int failureThreshold, int fastestMarginMs, int cooldownSeconds, int probeIntervalSeconds
+ String strategy, String scope, int failureThreshold, int fastestMarginMs, int cooldownSeconds, int probeIntervalSeconds, int slowRequestTimeoutSeconds, int slowRequestSwitchThreshold
 });
 
 
@@ -274,7 +278,7 @@ class __$AutoSwitchSettingsDtoCopyWithImpl<$Res>
 
 /// Create a copy of AutoSwitchSettingsDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? strategy = null,Object? scope = null,Object? failureThreshold = null,Object? fastestMarginMs = null,Object? cooldownSeconds = null,Object? probeIntervalSeconds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? strategy = null,Object? scope = null,Object? failureThreshold = null,Object? fastestMarginMs = null,Object? cooldownSeconds = null,Object? probeIntervalSeconds = null,Object? slowRequestTimeoutSeconds = null,Object? slowRequestSwitchThreshold = null,}) {
   return _then(_AutoSwitchSettingsDto(
 strategy: null == strategy ? _self.strategy : strategy // ignore: cast_nullable_to_non_nullable
 as String,scope: null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
@@ -282,6 +286,8 @@ as String,failureThreshold: null == failureThreshold ? _self.failureThreshold : 
 as int,fastestMarginMs: null == fastestMarginMs ? _self.fastestMarginMs : fastestMarginMs // ignore: cast_nullable_to_non_nullable
 as int,cooldownSeconds: null == cooldownSeconds ? _self.cooldownSeconds : cooldownSeconds // ignore: cast_nullable_to_non_nullable
 as int,probeIntervalSeconds: null == probeIntervalSeconds ? _self.probeIntervalSeconds : probeIntervalSeconds // ignore: cast_nullable_to_non_nullable
+as int,slowRequestTimeoutSeconds: null == slowRequestTimeoutSeconds ? _self.slowRequestTimeoutSeconds : slowRequestTimeoutSeconds // ignore: cast_nullable_to_non_nullable
+as int,slowRequestSwitchThreshold: null == slowRequestSwitchThreshold ? _self.slowRequestSwitchThreshold : slowRequestSwitchThreshold // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

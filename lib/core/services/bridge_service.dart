@@ -93,6 +93,18 @@ class BridgeService {
     );
   }
 
+  /// 从 dart 主动向 JS 推一条事件。JS 侧用 window.__shimEvent(path, listener) 订阅。
+  /// 失败静默(可能注入未就绪),不抛出。
+  void dispatchEvent(String path, Map<String, dynamic> payload) {
+    () async {
+      try {
+        await _cdp.evaluate(
+          'window.__shimDispatch && window.__shimDispatch(${jsonEncode(path)}, ${jsonEncode(payload)})',
+        );
+      } catch (_) {}
+    }();
+  }
+
   Future<String> _loadBootstrap() async {
     if (kDebugMode) {
       final source = File(_devBootstrapPath);

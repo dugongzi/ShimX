@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:shim/core/services/app_log_service.dart';
+import 'package:shim/core/utils/model_family.dart';
 import 'package:shim/features/providers/domain/models/api_provider.dart';
 import 'package:shim/features/providers/domain/models/provider_health.dart';
 import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
@@ -180,7 +181,51 @@ class ProviderHealthProbeService {
     );
   }
 
+  /// 慢响应专用上报。累计 slowStreak,到阈值直接写 unreachable + 触发 watch。
+  /// 不走常规 failureStreak 通道,响应更快。
+  ///
+  /// [threshold] 来自 AutoSwitchSettings.slowRequestSwitchThreshold,
+  /// 1 = 1 次慢响应就直接标 unreachable。
+  void reportSlowTimeout({
+    required String providerId,
+    required int waitedMs,
+    required int threshold,
+  }) {
+    if (threshold <= 0) return; // 用户关了
+    final prev = repository.read(providerId: providerId);
+    final slowStreak = (_slowStreaks[providerId] ?? 0) + 1;
+    _slowStreaks[providerId] = slowStreak;
+
+    AppLogService.instance.warning(
+      'HealthProbe',
+      '慢响应累计',
+      details: 'provider=$providerId waited=${waitedMs}ms slowStreak=$slowStreak threshold=$threshold',
+    );
+
+    if (slowStreak < threshold) return;
+
+    _slowStreaks[providerId] = 0;
+    repository.write(
+      health: ProviderHealth(
+        providerId: providerId,
+        status: 'unreachable',
+        latencyMs: null,
+        measuredAt: DateTime.now().toUtc().toIso8601String(),
+        failureStreak: (prev?.failureStreak ?? 0) + 1,
+      ),
+    );
+    AppLogService.instance.error(
+      'HealthProbe',
+      '慢响应达到阈值,已标 unreachable',
+      details: 'provider=$providerId waited=${waitedMs}ms',
+    );
+  }
+
+  /// 慢响应累计次数表(内存)
+  final Map<String, int> _slowStreaks = {};
+
   void reportRequestSuccess({required String providerId}) {
+    _slowStreaks[providerId] = 0;
     final prev = repository.read(providerId: providerId);
     if (prev == null || prev.failureStreak == 0) return;
     repository.write(
@@ -200,6 +245,71 @@ class ProviderHealthProbeService {
 
   void setPeriodicScope({required Set<String> onlyIds}) {
     _periodicOnlyIds = onlyIds;
+  }
+
+  /// 按当前选中 + top2 同 scope 候选刷新周期 scope。
+  /// 这样 failover/fastest 策略要切的时候,候选 latency 已经被预热过了,可比可切。
+  void refreshPeriodicScopeFor({
+    required String currentProviderId,
+    required List<ApiProvider> providers,
+    required String scope,
+  }) {
+    final ids = <String>{currentProviderId};
+    final candidates = topCandidatesForScope(
+      currentProviderId: currentProviderId,
+      providers: providers,
+      scope: scope,
+      n: 2,
+    );
+    for (final c in candidates) {
+      ids.add(c.id);
+    }
+    _periodicOnlyIds = ids;
+    AppLogService.instance.info(
+      'HealthProbe',
+      '周期 scope 已更新',
+      details: 'current=$currentProviderId candidates=${candidates.map((p) => p.id).join(",")}',
+    );
+  }
+
+  /// 候选筛选:同 scope 限制下,按上次 latency 升序取前 n 个。
+  /// 没 latency 数据的家排在最后,字典序排序作为冷启动垫底。
+  List<ApiProvider> topCandidatesForScope({
+    required String currentProviderId,
+    required List<ApiProvider> providers,
+    required String scope,
+    required int n,
+  }) {
+    final current = providers.where((p) => p.id == currentProviderId).cast<ApiProvider?>().firstOrNull;
+    if (current == null) return const [];
+    final currentFamily = modelFamily(current.selectedModel);
+    final filtered = <ApiProvider>[];
+    for (final p in providers) {
+      if (p.id == currentProviderId) continue;
+      if (p.baseUrl.isEmpty || p.apiKey.isEmpty) continue;
+      switch (scope) {
+        case 'same-type':
+          if (modelFamily(p.selectedModel) != currentFamily) continue;
+          break;
+        case 'same-protocol':
+          if (p.upstreamProtocol != current.upstreamProtocol) continue;
+          break;
+        case 'any':
+        default:
+          break;
+      }
+      filtered.add(p);
+    }
+    int latencyOf(ApiProvider p) {
+      final h = repository.read(providerId: p.id);
+      return h?.latencyMs ?? 0x7fffffff;
+    }
+    filtered.sort((a, b) {
+      final cmp = latencyOf(a).compareTo(latencyOf(b));
+      if (cmp != 0) return cmp;
+      return a.id.compareTo(b.id);
+    });
+    return filtered.take(n).toList();
   }
 
   void _restartTimer() {

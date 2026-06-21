@@ -37,8 +37,8 @@ AutoSwitchService autoSwitchService(Ref ref) {
     healthRepository: ref.read(providerHealthRepositoryProvider),
     probeService: ref.read(providerHealthProbeServiceProvider),
     onSwitch: (targetId) async {
-      // 复用现有 selectProvider 逻辑(写持久化 + 同步 proxy + invalidate)
-      await ref.read(selectProviderProvider(id: targetId).future);
+      // 复用现有 select 逻辑(写持久化 + 同步 proxy + invalidate)
+      await ref.read(providerActionsProvider.notifier).select(targetId);
     },
     onMaintenanceMode: (reason) {
       AppLogService.instance.error(

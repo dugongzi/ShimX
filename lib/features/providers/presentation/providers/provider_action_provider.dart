@@ -287,52 +287,6 @@ bool _isSupportedReasoningEffort(String? effort) {
       effort == 'xhigh';
 }
 
-/// 新增供应商；列表为空时自动选中第一个加入项。
-@riverpod
-Future<void> addProvider(Ref ref, {required ApiProvider provider}) async {
-  final repo = ref.read(providerActionRepositoryProvider);
-  final query = ref.read(providerQueryRepositoryProvider);
-  final current = await query.listProviders();
-  final selectedId = await query.selectedId();
-  await repo.saveProviders([...current, provider]);
-  if (selectedId == null) {
-    await repo.saveSelectedId(provider.id);
-  }
-  ref.invalidate(providerListProvider);
-  _syncProbeTargets(ref);
-}
-
-/// 更新供应商
-@riverpod
-Future<void> updateProvider(Ref ref, {required ApiProvider provider}) async {
-  final repo = ref.read(providerActionRepositoryProvider);
-  final query = ref.read(providerQueryRepositoryProvider);
-  final current = await query.listProviders();
-  final next = current.map((p) => p.id == provider.id ? provider : p).toList();
-  await repo.saveProviders(next);
-  ref.invalidate(providerListProvider);
-  // 改的若是当前选中项，热更新运行中的代理目标（链接/key 改了立刻生效）
-  await _syncRunningProxyTarget(ref);
-  _syncProbeTargets(ref);
-}
-
-/// 删除供应商；删的是当前选中项则改选第一个剩余项。
-@riverpod
-Future<void> removeProvider(Ref ref, {required String id}) async {
-  final repo = ref.read(providerActionRepositoryProvider);
-  final query = ref.read(providerQueryRepositoryProvider);
-  final current = await query.listProviders();
-  final selectedId = await query.selectedId();
-  final next = current.where((p) => p.id != id).toList();
-  await repo.saveProviders(next);
-  if (selectedId == id) {
-    await repo.saveSelectedId(next.isEmpty ? null : next.first.id);
-  }
-  ref.invalidate(providerListProvider);
-  await _syncRunningProxyTarget(ref);
-  _syncProbeTargets(ref);
-}
-
 void _syncProbeTargets(Ref ref) {
   final probe = ref.read(providerHealthProbeServiceProvider);
   if (!probe.isRunning) return;
@@ -344,31 +298,93 @@ void _syncProbeTargets(Ref ref) {
   }();
 }
 
-/// 选中供应商
-@riverpod
-Future<void> selectProvider(Ref ref, {required String id}) async {
-  final repo = ref.read(providerActionRepositoryProvider);
-  await repo.saveSelectedId(id);
-  ref.invalidate(providerListProvider);
-  // 切换供应商，热更新运行中的代理目标（零重启）
-  await _syncRunningProxyTarget(ref);
-}
-
-/// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
-/// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
-/// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
+/// 供应商相关写操作的命令面板。
+///
+/// 用 Notifier 而不是一堆 family-Future provider:
+/// - family-Future provider 按参数缓存(`addProviderProvider(provider: X)` 算一个 key),
+///   同 key 第二次 `ref.read(...future)` 拿到的是上次的 completed Future,根本不重跑。
+/// - 没人 watch 时 family 会被 auto-dispose,正在跑的 await 后续用 ref 直接抛
+///   "Cannot use the Ref ... after it has been disposed"。
+/// - Notifier 是单例 + keepAlive,方法每次调用都重新执行,没有缓存复用问题,
+///   ref 也不会在异步 gap 后被销毁。
 @Riverpod(keepAlive: true)
-Future<void> setProxyEnabled(Ref ref, {required bool enabled}) async {
-  final repo = ref.read(providerActionRepositoryProvider);
-  await repo.saveProxyEnabled(enabled);
-  // 先执行接管/释放,再 invalidate proxyConfigProvider。
-  // 否则 invalidate 时 startTakeover 里 read 出来的 proxyConfig 还是旧值。
-  if (enabled) {
-    await startTakeover(ref, enabledOverride: true);
-  } else {
-    await stopTakeover(ref);
+class ProviderActions extends _$ProviderActions {
+  @override
+  void build() {}
+
+  /// 新增供应商；列表为空时自动选中第一个加入项。
+  Future<void> add(ApiProvider provider) async {
+    final repo = ref.read(providerActionRepositoryProvider);
+    final query = ref.read(providerQueryRepositoryProvider);
+    final current = await query.listProviders();
+    final selectedId = await query.selectedId();
+    await repo.saveProviders([...current, provider]);
+    if (selectedId == null) {
+      await repo.saveSelectedId(provider.id);
+    }
+    ref.invalidate(providerListProvider);
+    _syncProbeTargets(ref);
   }
-  ref.invalidate(proxyConfigProvider);
+
+  /// 更新供应商。
+  Future<void> update(ApiProvider provider) async {
+    final repo = ref.read(providerActionRepositoryProvider);
+    final query = ref.read(providerQueryRepositoryProvider);
+    final current = await query.listProviders();
+    final next =
+        current.map((p) => p.id == provider.id ? provider : p).toList();
+    await repo.saveProviders(next);
+    ref.invalidate(providerListProvider);
+    // 改的若是当前选中项,热更新运行中的代理目标(链接/key 改了立刻生效)
+    await _syncRunningProxyTarget(ref);
+    _syncProbeTargets(ref);
+  }
+
+  /// 删除供应商；删的是当前选中项则改选第一个剩余项。
+  Future<void> remove(String id) async {
+    final repo = ref.read(providerActionRepositoryProvider);
+    final query = ref.read(providerQueryRepositoryProvider);
+    final current = await query.listProviders();
+    final selectedId = await query.selectedId();
+    final next = current.where((p) => p.id != id).toList();
+    await repo.saveProviders(next);
+    if (selectedId == id) {
+      await repo.saveSelectedId(next.isEmpty ? null : next.first.id);
+    }
+    ref.invalidate(providerListProvider);
+    await _syncRunningProxyTarget(ref);
+    _syncProbeTargets(ref);
+  }
+
+  /// 选中供应商。
+  Future<void> select(String id) async {
+    final repo = ref.read(providerActionRepositoryProvider);
+    await repo.saveSelectedId(id);
+    ref.invalidate(providerListProvider);
+    // 切换供应商,热更新运行中的代理目标(零重启)
+    await _syncRunningProxyTarget(ref);
+  }
+
+  /// 设置代理开关:写持久化后立即应用(开 → 接管,关 → 释放)。
+  Future<void> setProxyEnabled(bool enabled) async {
+    final repo = ref.read(providerActionRepositoryProvider);
+    await repo.saveProxyEnabled(enabled);
+    // 先执行接管/释放,再 invalidate proxyConfigProvider。
+    // 否则 invalidate 时 startTakeover 里 read 出来的 proxyConfig 还是旧值。
+    if (enabled) {
+      await startTakeover(ref, enabledOverride: true);
+    } else {
+      await stopTakeover(ref);
+    }
+    ref.invalidate(proxyConfigProvider);
+  }
+
+  /// 设置代理端口。
+  Future<void> setProxyPort(int port) async {
+    final repo = ref.read(providerActionRepositoryProvider);
+    await repo.saveProxyPort(port.clamp(1, 65535));
+    ref.invalidate(proxyConfigProvider);
+  }
 }
 
 /// 完整接管：起反向代理 + 设转发目标 + 改写 config.toml 的 base_url。
@@ -476,14 +492,4 @@ Future<void> stopTakeover(Ref ref) async {
 Future<void> proxyAutoStart(Ref ref) async {
   await startTakeover(ref);
 }
-
-/// 设置代理端口
-@riverpod
-Future<void> setProxyPort(Ref ref, {required int port}) async {
-  final repo = ref.read(providerActionRepositoryProvider);
-  await repo.saveProxyPort(port.clamp(1, 65535));
-  ref.invalidate(proxyConfigProvider);
-}
-
-
 

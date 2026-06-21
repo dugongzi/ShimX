@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsTab extends ConsumerWidget {
   const SettingsTab({super.key});
@@ -175,8 +176,34 @@ class SettingsTab extends ConsumerWidget {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
+          SizedBox(height: AppSizes.itemGap),
+          const _AppVersionLine(),
         ],
       ),
+    );
+  }
+}
+
+class _AppVersionLine extends StatelessWidget {
+  const _AppVersionLine();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final info = snapshot.data;
+        final text = info == null
+            ? 'Shim'
+            : 'Shim v${info.version} (${info.buildNumber})';
+        return Text(
+          text,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        );
+      },
     );
   }
 }
@@ -232,11 +259,9 @@ class _ProxyCard extends ConsumerWidget {
                 onChanged: isLoading
                     ? null
                     : (value) {
-                        // family 缓存复用问题:同一个 (enabled: value) 第二次点击时
-                        // 拿到的是上次的 completed Future,startTakeover 不会再跑。
-                        // 每次点击前 invalidate 一次,强制重新执行。
-                        ref.invalidate(setProxyEnabledProvider(enabled: value));
-                        ref.read(setProxyEnabledProvider(enabled: value).future);
+                        ref
+                            .read(providerActionsProvider.notifier)
+                            .setProxyEnabled(value);
                       },
               ),
             ],
@@ -259,7 +284,9 @@ class _ProxyCard extends ConsumerWidget {
                 onFieldSubmitted: (value) {
                   final port = int.tryParse(value);
                   if (port != null) {
-                    ref.read(setProxyPortProvider(port: port).future);
+                    ref
+                        .read(providerActionsProvider.notifier)
+                        .setProxyPort(port);
                   }
                 },
               ),

@@ -144,7 +144,7 @@ final class AutoSwitchServiceProvider
   }
 }
 
-String _$autoSwitchServiceHash() => r'72f8d3c4a28cd86f758da3b1d814f31b48e92ab8';
+String _$autoSwitchServiceHash() => r'5239aa987cc87498f9af7dedc0662e30dbaad0aa';
 
 /// 把自动切换路由注册到 bridge。
 ///

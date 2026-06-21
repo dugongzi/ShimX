@@ -59,14 +59,14 @@ class ProvidersTab extends ConsumerWidget {
               _ProviderCard(
                 provider: provider,
                 selected: provider.id == state.selectedId,
-                onSelect: () => ref.read(
-                  selectProviderProvider(id: provider.id).future,
-                ),
+                onSelect: () => ref
+                    .read(providerActionsProvider.notifier)
+                    .select(provider.id),
                 onEdit: () => _showEditDialog(context, ref, provider),
                 onDelete: () async {
-                  await ref.read(
-                    removeProviderProvider(id: provider.id).future,
-                  );
+                  await ref
+                      .read(providerActionsProvider.notifier)
+                      .remove(provider.id);
                   SmartDialog.showToast(l10n.deletedToast);
                 },
               ),
@@ -198,36 +198,32 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
     final ref = widget.ref;
     final existing = widget.existing;
     if (existing == null) {
-      await ref.read(
-        addProviderProvider(
-          provider: ApiProvider(
-            id: DateTime.now().microsecondsSinceEpoch.toString(),
-            name: name,
-            baseUrl: baseUrl,
-            apiKey: apiKey,
-            models: _models,
-            selectedModel: _selectedModel,
-            upstreamProtocol: _upstreamProtocol,
-            providerWeight: _providerWeight,
-            modelWeight: _modelWeight,
-          ),
-        ).future,
-      );
+      await ref.read(providerActionsProvider.notifier).add(
+            ApiProvider(
+              id: DateTime.now().microsecondsSinceEpoch.toString(),
+              name: name,
+              baseUrl: baseUrl,
+              apiKey: apiKey,
+              models: _models,
+              selectedModel: _selectedModel,
+              upstreamProtocol: _upstreamProtocol,
+              providerWeight: _providerWeight,
+              modelWeight: _modelWeight,
+            ),
+          );
     } else {
-      await ref.read(
-        updateProviderProvider(
-          provider: existing.copyWith(
-            name: name,
-            baseUrl: baseUrl,
-            apiKey: apiKey,
-            models: _models,
-            selectedModel: _selectedModel,
-            upstreamProtocol: _upstreamProtocol,
-            providerWeight: _providerWeight,
-            modelWeight: _modelWeight,
-          ),
-        ).future,
-      );
+      await ref.read(providerActionsProvider.notifier).update(
+            existing.copyWith(
+              name: name,
+              baseUrl: baseUrl,
+              apiKey: apiKey,
+              models: _models,
+              selectedModel: _selectedModel,
+              upstreamProtocol: _upstreamProtocol,
+              providerWeight: _providerWeight,
+              modelWeight: _modelWeight,
+            ),
+          );
     }
     SmartDialog.dismiss();
     SmartDialog.showToast(l10n.providerSavedToast);

@@ -114,6 +114,7 @@
   "providerSavedToast": "Saved",
   "providerFillFirstToast": "Fill Base URL and API Key first",
   "providerFillAllToast": "Please fill all fields",
+  "providerSelectModelRequiredToast": "Please pick a model below",
   "providerFetchedToast": "Fetched {count} models",
   "@providerFetchedToast": {
     "placeholders": {

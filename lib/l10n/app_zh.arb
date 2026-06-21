@@ -114,6 +114,7 @@
   "providerSavedToast": "已保存",
   "providerFillFirstToast": "先填 Base URL 和 API Key",
   "providerFillAllToast": "请填完整",
+  "providerSelectModelRequiredToast": "请在下方点选一个模型",
   "providerFetchedToast": "获取到 {count} 个模型",
   "@providerFetchedToast": {
     "placeholders": {

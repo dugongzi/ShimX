@@ -234,9 +234,6 @@ class AutoSwitchService {
     final result = <_HealthyCandidate>[];
     for (final p in providers) {
       if (p.id == current.id) continue;
-      // passthrough 候选(shim 里没指定 model)切过去会让 Codex 发出去的 model
-      // 字段保留原家的名字,落到不匹配的上游会乱。强制要求候选明确选了 model。
-      if (p.selectedModel == null || p.selectedModel!.isEmpty) continue;
       // 同一家供应商(baseUrl + apiKey 相同)默认不互切,
       // 用户在 settings 里打开 allowSameProviderSibling 才允许。
       if (!settings.allowSameProviderSibling &&

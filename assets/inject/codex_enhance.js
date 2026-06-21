@@ -663,8 +663,11 @@
     }).catch(() => {});
   }
 
-  function refreshProviderPickerState() {
+  /// rebuildPopover=false 时不重建 popover 内容(避免用户点击按钮被销毁),
+  /// 但 picker 按钮和 Codex 原生选择器可见性依然刷新。
+  function refreshProviderPickerState(opts) {
     if (typeof window.shim !== 'function') return;
+    const rebuildPopover = !opts || opts.rebuildPopover !== false;
     if (shimProviderRefreshInFlight) return shimProviderRefreshInFlight;
     shimProviderRefreshInFlight = window.shim('/provider/list', {}).then((res) => {
       if (res && res.code === 0 && res.data) {
@@ -675,7 +678,7 @@
           labels: res.data.labels || {},
         };
         updateProviderPickerButton();
-        updateProviderPickerPopover();
+        if (rebuildPopover) updateProviderPickerPopover();
         updateCodexModelSelectorVisibility();
       }
     }).catch(() => {}).finally(() => {
@@ -2433,10 +2436,9 @@
       window.__shimProviderPollInstalled = true;
       setInterval(() => {
         refreshCurrentProvider();
-        // picker 弹层正打开时跳过 list 刷新,避免重建按钮列表导致用户点击落空
-        if (!document.getElementById(PROVIDER_PICKER_POPOVER_ID)) {
-          refreshProviderPickerState();
-        }
+        // 总是刷新数据(按钮跟着变),popover 只有关着才重建
+        const popoverOpen = !!document.getElementById(PROVIDER_PICKER_POPOVER_ID);
+        refreshProviderPickerState({ rebuildPopover: !popoverOpen });
       }, 15000);
     }
 
@@ -2454,10 +2456,9 @@
           const fromName = providerNameFromId(payload.from) || payload.from || '';
           const toName = providerNameFromId(payload.to) || payload.to || '';
           showToast(`${S('autoSwitchedToast', 'Provider auto-switched')}: ${fromName} → ${toName}`, 'success');
-          // picker 弹层正打开时不重建,避免点击按钮被销毁
-          if (!document.getElementById(PROVIDER_PICKER_POPOVER_ID)) {
-            refreshProviderPickerState();
-          }
+          // 总是刷新数据(按钮跟着变),popover 只有关着才重建
+          const popoverOpen = !!document.getElementById(PROVIDER_PICKER_POPOVER_ID);
+          refreshProviderPickerState({ rebuildPopover: !popoverOpen });
           refreshCurrentProvider();
         } else if (payload.event === 'maintenance') {
           showToast(`${S('autoSwitchMaintenanceToast', 'Auto-switch paused')}: ${payload.reason || ''}`, 'error');

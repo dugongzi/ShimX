@@ -288,6 +288,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get providerFillAllToast => 'Please fill all fields';
 
   @override
+  String get providerSelectModelRequiredToast => 'Please pick a model below';
+
+  @override
   String providerFetchedToast(int count) {
     return 'Fetched $count models';
   }

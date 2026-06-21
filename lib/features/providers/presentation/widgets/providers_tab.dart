@@ -191,6 +191,10 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
       SmartDialog.showToast(l10n.providerFillAllToast);
       return;
     }
+    if (_selectedModel == null || _selectedModel!.isEmpty) {
+      SmartDialog.showToast(l10n.providerSelectModelRequiredToast);
+      return;
+    }
     final ref = widget.ref;
     final existing = widget.existing;
     if (existing == null) {
@@ -369,16 +373,6 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
                           onDeleted: () => _removeModel(m),
                         ),
                     ],
-                  ),
-                  const SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      onPressed: _selectedModel == null
-                          ? null
-                          : () => setState(() => _selectedModel = null),
-                      child: Text(l10n.providerUseDefault),
-                    ),
                   ),
                 ],
                 const SizedBox(height: 22),

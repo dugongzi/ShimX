@@ -285,6 +285,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get providerFillAllToast => '请填完整';
 
   @override
+  String get providerSelectModelRequiredToast => '请在下方点选一个模型';
+
+  @override
   String providerFetchedToast(int count) {
     return '获取到 $count 个模型';
   }

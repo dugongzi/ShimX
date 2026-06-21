@@ -626,6 +626,12 @@ abstract class AppLocalizations {
   /// **'请填完整'**
   String get providerFillAllToast;
 
+  /// No description provided for @providerSelectModelRequiredToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'请在下方点选一个模型'**
+  String get providerSelectModelRequiredToast;
+
   /// No description provided for @providerFetchedToast.
   ///
   /// In zh, this message translates to:

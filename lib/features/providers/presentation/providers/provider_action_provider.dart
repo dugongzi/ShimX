@@ -264,7 +264,7 @@ Map<String, String> _shimLabels(bool isZh) {
     'threadMenu': 'More',
     'threadExport': 'Export',
     'threadExportMarkdown': 'Export as Markdown',
-    'threadExportRaw': 'Export raw data',
+    'threadExportRaw': 'Export raws data',
     'threadExportedToast': 'Exported',
     'threadExportFailed': 'Export failed',
   };
@@ -355,24 +355,29 @@ Future<void> selectProvider(Ref ref, {required String id}) async {
 }
 
 /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
-@riverpod
+/// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
+/// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
+@Riverpod(keepAlive: true)
 Future<void> setProxyEnabled(Ref ref, {required bool enabled}) async {
   final repo = ref.read(providerActionRepositoryProvider);
   await repo.saveProxyEnabled(enabled);
-  ref.invalidate(proxyConfigProvider);
+  // 先执行接管/释放,再 invalidate proxyConfigProvider。
+  // 否则 invalidate 时 startTakeover 里 read 出来的 proxyConfig 还是旧值。
   if (enabled) {
-    await startTakeover(ref);
+    await startTakeover(ref, enabledOverride: true);
   } else {
     await stopTakeover(ref);
   }
+  ref.invalidate(proxyConfigProvider);
 }
 
 /// 完整接管：起反向代理 + 设转发目标 + 改写 config.toml 的 base_url。
 /// 仅当代理开关开着且有可用的选中供应商时执行。可重复调用（幂等）。
-Future<void> startTakeover(Ref ref) async {
+Future<void> startTakeover(Ref ref, {bool? enabledOverride}) async {
   final query = ref.read(providerQueryRepositoryProvider);
   final proxyConfig = await query.proxyConfig();
-  if (!proxyConfig.enabled) return;
+  final effectiveEnabled = enabledOverride ?? proxyConfig.enabled;
+  if (!effectiveEnabled) return;
 
   final selectedId = await query.selectedId();
   if (selectedId == null) return;

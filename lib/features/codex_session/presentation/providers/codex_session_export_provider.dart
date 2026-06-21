@@ -21,7 +21,7 @@ CodexSessionExportRepository codexSessionExportRepository(Ref ref) {
 ///
 /// /session/export — 弹系统保存对话框 → 选完路径后真正写文件。
 ///   payload.id     thread id (required)
-///   payload.format 'markdown' | 'raw' (required)
+///   payload.format 'markdown' | 'raws' (required)
 @Riverpod(keepAlive: true)
 bool codexSessionExportRouteRegistration(Ref ref) {
   final bridge = ref.read(bridgeServiceProvider);
@@ -70,7 +70,7 @@ String _extOf(String format) {
   switch (format) {
     case 'markdown':
       return 'md';
-    case 'raw':
+    case 'raws':
       return 'jsonl';
     default:
       return 'txt';

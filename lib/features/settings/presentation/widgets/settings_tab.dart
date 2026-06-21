@@ -231,9 +231,13 @@ class _ProxyCard extends ConsumerWidget {
                 value: proxy.enabled,
                 onChanged: isLoading
                     ? null
-                    : (value) => ref.read(
-                        setProxyEnabledProvider(enabled: value).future,
-                      ),
+                    : (value) {
+                        // family 缓存复用问题:同一个 (enabled: value) 第二次点击时
+                        // 拿到的是上次的 completed Future,startTakeover 不会再跑。
+                        // 每次点击前 invalidate 一次,强制重新执行。
+                        ref.invalidate(setProxyEnabledProvider(enabled: value));
+                        ref.read(setProxyEnabledProvider(enabled: value).future);
+                      },
               ),
             ],
           ),

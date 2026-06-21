@@ -427,23 +427,29 @@ final class SelectProviderFamily extends $Family
 }
 
 /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
+/// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
+/// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
 
 @ProviderFor(setProxyEnabled)
 const setProxyEnabledProvider = SetProxyEnabledFamily._();
 
 /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
+/// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
+/// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
 
 final class SetProxyEnabledProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
     with $FutureModifier<void>, $FutureProvider<void> {
   /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
+  /// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
+  /// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
   const SetProxyEnabledProvider._({
     required SetProxyEnabledFamily super.from,
     required bool super.argument,
   }) : super(
          retry: null,
          name: r'setProxyEnabledProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -480,9 +486,11 @@ final class SetProxyEnabledProvider
   }
 }
 
-String _$setProxyEnabledHash() => r'484dffa8de502de91932d886605a5a8223439688';
+String _$setProxyEnabledHash() => r'41f786d52f5def5981e1a7c2b0d6a11d692fde28';
 
 /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
+/// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
+/// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
 
 final class SetProxyEnabledFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, bool> {
@@ -492,10 +500,12 @@ final class SetProxyEnabledFamily extends $Family
         name: r'setProxyEnabledProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   /// 设置代理开关：写持久化后立即应用（开 → 接管，关 → 释放）。
+  /// keepAlive: true —— 否则点完开关后,本 family-provider 因为没人 watch 它,
+  /// 在 await 期间被 Riverpod 自动 dispose,后面 startTakeover 整段被吞。
 
   SetProxyEnabledProvider call({required bool enabled}) =>
       SetProxyEnabledProvider._(argument: enabled, from: this);

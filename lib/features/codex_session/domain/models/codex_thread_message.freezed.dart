@@ -17,7 +17,7 @@ mixin _$CodexThreadMessage {
 /// 0-based 在 rollout 流里的位置
  int get index;/// 事件时间戳(ISO 8601 UTC)。可能为空字符串,表示没拿到。
  String get timestamp;/// user / assistant / developer / system / tool
- String get role;/// text / tool_use / tool_result / raw
+ String get role;/// text / tool_use / tool_result / raws
  String get kind;/// 纯文本内容(tool_use 时是 "<toolName>(<jsonArgs>)" 之类的字符串描述)
  String get text;
 /// Create a copy of CodexThreadMessage
@@ -224,7 +224,7 @@ class _CodexThreadMessage extends CodexThreadMessage {
 @override final  String timestamp;
 /// user / assistant / developer / system / tool
 @override final  String role;
-/// text / tool_use / tool_result / raw
+/// text / tool_use / tool_result / raws
 @override final  String kind;
 /// 纯文本内容(tool_use 时是 "<toolName>(<jsonArgs>)" 之类的字符串描述)
 @override final  String text;

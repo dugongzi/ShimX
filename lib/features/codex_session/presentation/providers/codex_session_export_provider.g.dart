@@ -62,7 +62,7 @@ String _$codexSessionExportRepositoryHash() =>
 ///
 /// /session/export — 弹系统保存对话框 → 选完路径后真正写文件。
 ///   payload.id     thread id (required)
-///   payload.format 'markdown' | 'raw' (required)
+///   payload.format 'markdown' | 'raws' (required)
 
 @ProviderFor(codexSessionExportRouteRegistration)
 const codexSessionExportRouteRegistrationProvider =
@@ -72,7 +72,7 @@ const codexSessionExportRouteRegistrationProvider =
 ///
 /// /session/export — 弹系统保存对话框 → 选完路径后真正写文件。
 ///   payload.id     thread id (required)
-///   payload.format 'markdown' | 'raw' (required)
+///   payload.format 'markdown' | 'raws' (required)
 
 final class CodexSessionExportRouteRegistrationProvider
     extends $FunctionalProvider<bool, bool, bool>
@@ -81,7 +81,7 @@ final class CodexSessionExportRouteRegistrationProvider
   ///
   /// /session/export — 弹系统保存对话框 → 选完路径后真正写文件。
   ///   payload.id     thread id (required)
-  ///   payload.format 'markdown' | 'raw' (required)
+  ///   payload.format 'markdown' | 'raws' (required)
   const CodexSessionExportRouteRegistrationProvider._()
     : super(
         from: null,

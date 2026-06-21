@@ -27,7 +27,7 @@ class CodexSessionExportRepositoryImpl implements CodexSessionExportRepository {
     required String outputPath,
   }) async {
     switch (format) {
-      case 'raw':
+      case 'raws':
         // 直接拷贝原始 rollout JSONL,不重新拼
         if (detail.rolloutPath.isEmpty) {
           throw StateError('rollout path is empty');

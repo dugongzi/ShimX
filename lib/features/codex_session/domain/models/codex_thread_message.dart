@@ -8,7 +8,7 @@ part 'codex_thread_message.freezed.dart';
 ///   text      — 普通文本(role=user/assistant/system/developer 的 input_text/output_text)
 ///   tool_use  — 工具调用(name + 参数 JSON)
 ///   tool_result — 工具返回
-///   raw       — 解析不出的兜底,原文整段 JSON
+///   raws       — 解析不出的兜底,原文整段 JSON
 @freezed
 abstract class CodexThreadMessage with _$CodexThreadMessage {
   const CodexThreadMessage._();
@@ -20,7 +20,7 @@ abstract class CodexThreadMessage with _$CodexThreadMessage {
     required String timestamp,
     /// user / assistant / developer / system / tool
     required String role,
-    /// text / tool_use / tool_result / raw
+    /// text / tool_use / tool_result / raws
     required String kind,
     /// 纯文本内容(tool_use 时是 "<toolName>(<jsonArgs>)" 之类的字符串描述)
     required String text,

@@ -256,7 +256,7 @@ class LocalProxyService {
     );
 
     final client = HttpClient();
-    client.findProxy = (_) => 'DIRECT';
+    client.findProxy = HttpClient.findProxyFromEnvironment;
     var responseStarted = false;
     try {
       final upstreamRequest = await client.openUrl(request.method, spec.uri);

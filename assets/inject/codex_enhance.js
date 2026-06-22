@@ -2701,6 +2701,8 @@
           refreshCurrentProvider();
         } else if (payload.event === 'maintenance') {
           showToast(`${S('autoSwitchMaintenanceToast', 'Auto-switch paused')}: ${payload.reason || ''}`, 'error');
+        } else if (payload.event === 'no-eligible') {
+          showToast(S('autoSwitchNoEligibleToast', 'Current provider unhealthy, but no eligible candidate to switch — please check manually'), 'error');
         }
       });
     }

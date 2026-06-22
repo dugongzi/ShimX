@@ -18,6 +18,7 @@ class AutoSwitchService {
     required this.onSwitch,
     required this.onMaintenanceMode,
     required this.onAutoSwitched,
+    this.onNoEligibleCandidate,
   });
 
   final ProviderHealthRepository healthRepository;
@@ -31,6 +32,13 @@ class AutoSwitchService {
 
   /// 自动切换成功时通知 presentation 层(给用户 toast)
   final void Function(String fromProviderId, String toProviderId) onAutoSwitched;
+
+  /// 评估时发现「没有符合条件的候选」 → 想切但没人可切,提醒用户。
+  /// 同一状态用 [_noCandidateNotified] 去抖,避免 health 反复跳动刷屏。
+  final void Function(String scope, String? currentModel)? onNoEligibleCandidate;
+
+  /// 已通知过「没有符合条件的候选」的去抖标志;有候选/已切换后重置。
+  bool _noCandidateNotified = false;
 
   /// 最近一次切换时间，用于 cooldown 判定
   DateTime? _lastSwitchAt;
@@ -109,8 +117,13 @@ class AutoSwitchService {
             'currentModel=${currentProvider.selectedModel} '
             'allProviders=${providers.map((p) => "${p.id}:${p.selectedModel}").join(",")}',
       );
+      if (!_noCandidateNotified) {
+        _noCandidateNotified = true;
+        onNoEligibleCandidate?.call(settings.scope, currentProvider.selectedModel);
+      }
       return null;
     }
+    _noCandidateNotified = false;
 
     String? preferredTarget;
     switch (settings.strategy) {

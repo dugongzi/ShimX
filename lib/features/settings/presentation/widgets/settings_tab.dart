@@ -208,15 +208,43 @@ class _AppVersionLine extends StatelessWidget {
   }
 }
 
-class _ProxyCard extends ConsumerWidget {
+class _ProxyCard extends ConsumerStatefulWidget {
   const _ProxyCard();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProxyCard> createState() => _ProxyCardState();
+}
+
+class _ProxyCardState extends ConsumerState<_ProxyCard> {
+  final TextEditingController _portController = TextEditingController();
+  int? _syncedPort;
+
+  @override
+  void dispose() {
+    _portController.dispose();
+    super.dispose();
+  }
+
+  void _syncControllerWithPort(int port) {
+    if (_syncedPort == port) return;
+    _syncedPort = port;
+    _portController.text = port.toString();
+  }
+
+  void _savePort() {
+    final parsed = int.tryParse(_portController.text);
+    if (parsed == null || parsed < 1 || parsed > 65535) return;
+    if (parsed == _syncedPort) return;
+    ref.read(providerActionsProvider.notifier).setProxyPort(parsed);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final proxyAsync = ref.watch(proxyConfigProvider);
     final proxy = proxyAsync.value ?? const ProxyConfig();
     final isLoading = proxyAsync.isLoading;
+    _syncControllerWithPort(proxy.port);
 
     return SurfaceCard(
       padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
@@ -268,28 +296,30 @@ class _ProxyCard extends ConsumerWidget {
           ),
           if (proxy.enabled) ...[
             SizedBox(height: 12.ch(min: 10, max: 14)),
-            SizedBox(
-              width: 120,
-              child: TextFormField(
-                key: ValueKey('port_${proxy.port}'),
-                initialValue: proxy.port.toString(),
-                enabled: !isLoading,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(
-                  isDense: true,
-                  prefixText: ':',
-                  labelText: l10n.proxyPort,
+            Row(
+              children: [
+                SizedBox(
+                  width: 120,
+                  child: TextField(
+                    controller: _portController,
+                    enabled: !isLoading,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(
+                      isDense: true,
+                      prefixText: ':',
+                      labelText: l10n.proxyPort,
+                    ),
+                    onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) => _savePort(),
+                  ),
                 ),
-                onFieldSubmitted: (value) {
-                  final port = int.tryParse(value);
-                  if (port != null) {
-                    ref
-                        .read(providerActionsProvider.notifier)
-                        .setProxyPort(port);
-                  }
-                },
-              ),
+                SizedBox(width: 12.cw(min: 8, max: 16)),
+                FilledButton.tonal(
+                  onPressed: isLoading ? null : _savePort,
+                  child: Text(l10n.providerSave),
+                ),
+              ],
             ),
           ],
         ],

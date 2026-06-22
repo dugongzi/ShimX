@@ -61,6 +61,19 @@ AutoSwitchService autoSwitchService(Ref ref) {
         'to': toId,
       });
     },
+    onNoEligibleCandidate: (scope, currentModel) {
+      AppLogService.instance.warning(
+        'AutoSwitch',
+        '想切但无候选,提醒用户',
+        details: 'scope=$scope currentModel=$currentModel',
+      );
+      final bridge = ref.read(bridgeServiceProvider);
+      bridge.dispatchEvent('/provider/auto-switched', {
+        'event': 'no-eligible',
+        'scope': scope,
+        'currentModel': currentModel ?? '',
+      });
+    },
   );
 }
 

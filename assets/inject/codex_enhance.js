@@ -2442,6 +2442,223 @@
     };
   }
 
+  // ========== Claude 桥:在 codex 侧栏 nav 列表里加一个折叠按钮 ==========
+  // 点击展开 → 列出 ~/.claude/projects/ 下所有项目分组,每个项目下又能再折叠列出会话。
+  // 点会话目前先 toast(接续逻辑等 codex 写入面调查报告出来再做)。
+  const NAV_BTN_ID = '__shim_claude_bridge_nav__';
+  const NAV_PANEL_ID = '__shim_claude_bridge_panel__';
+
+  // 找到 codex 自带 nav 按钮所在的列表容器(包含"插件"按钮的 .flex.flex-col.gap-px)。
+  // 我们把"Claude 桥"按钮追加到该容器末尾,折叠面板紧跟其后。
+  function findCodexNavList() {
+    const sample = document.querySelector(
+      'nav[role="navigation"] button.h-token-nav-row.w-full',
+    );
+    if (!sample) return null;
+    return sample.closest('div.flex.flex-col.gap-px') || sample.parentElement;
+  }
+
+  function ensureClaudeBridge() {
+    const navList = findCodexNavList();
+    if (!navList) return;
+    if (document.getElementById(NAV_BTN_ID)) return; // 已注入
+
+    const btn = renderClaudeBridgeButton();
+    navList.appendChild(btn);
+  }
+
+  function renderClaudeBridgeButton() {
+    const btn = document.createElement('button');
+    btn.id = NAV_BTN_ID;
+    btn.type = 'button';
+    btn.className =
+      'focus-visible:outline-token-border relative h-token-nav-row px-row-x py-row-y cursor-interaction shrink-0 items-center overflow-hidden rounded-lg text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 gap-2 flex w-full hover:bg-token-list-hover-background';
+    btn.innerHTML = `
+      <div class="flex min-w-0 items-center text-base gap-2 flex-1 text-token-foreground">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="icon-xs">
+          <path d="M2.667 3.333A1.333 1.333 0 0 1 4 2h8a1.333 1.333 0 0 1 1.333 1.333v6.667A1.333 1.333 0 0 1 12 11.333H5.886l-2.553 2.553V3.333Z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+          <circle cx="6" cy="7" r="0.8" fill="currentColor"/>
+          <circle cx="8" cy="7" r="0.8" fill="currentColor"/>
+          <circle cx="10" cy="7" r="0.8" fill="currentColor"/>
+        </svg>
+        <span class="truncate">${S('claudeBridgeNavLabel', 'Claude bridge')}</span>
+        <span class="ml-auto opacity-60" data-claude-bridge-chevron>▸</span>
+      </div>
+    `;
+    btn.addEventListener('click', () => toggleClaudeBridgePanel(btn));
+    return btn;
+  }
+
+  function toggleClaudeBridgePanel(btn) {
+    const existing = document.getElementById(NAV_PANEL_ID);
+    const chevron = btn.querySelector('[data-claude-bridge-chevron]');
+    if (existing) {
+      existing.remove();
+      if (chevron) chevron.textContent = '▸';
+      return;
+    }
+    const panel = document.createElement('div');
+    panel.id = NAV_PANEL_ID;
+    panel.style.cssText =
+      'margin: 4px 0 6px 12px; padding: 6px 0; border-left: 1px solid var(--token-border, rgba(255,255,255,0.12)); max-height: 50vh; overflow-y: auto; overscroll-behavior: contain;';
+    // codex 的 sidebar 容器可能拦截 wheel 事件,这里阻止冒泡,保证内部能滚
+    panel.addEventListener(
+      'wheel',
+      (e) => {
+        const atTop = panel.scrollTop === 0 && e.deltaY < 0;
+        const atBottom =
+          panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1 &&
+          e.deltaY > 0;
+        if (!atTop && !atBottom) e.stopPropagation();
+      },
+      { passive: true },
+    );
+    panel.innerHTML = `<div style="padding: 6px 10px; opacity: 0.7; font-size: 12px;">${S('claudeBridgeLoading', 'Loading…')}</div>`;
+    btn.insertAdjacentElement('afterend', panel);
+    if (chevron) chevron.textContent = '▾';
+
+    loadClaudeProjects()
+      .then((projects) => renderClaudeProjects(panel, projects))
+      .catch((error) => renderClaudeError(panel, error));
+  }
+
+  async function loadClaudeProjects() {
+    if (typeof window.shim !== 'function') {
+      throw new Error('shim bridge not ready');
+    }
+    const res = await window.shim('/claude-session/projects', {});
+    if (!res || res.code !== 0) {
+      throw new Error(res?.message || 'rpc error');
+    }
+    return (res.data && res.data.projects) || [];
+  }
+
+  async function loadClaudeThreads(encodedDir) {
+    const res = await window.shim('/claude-session/threads', { encodedDir });
+    if (!res || res.code !== 0) {
+      throw new Error(res?.message || 'rpc error');
+    }
+    return (res.data && res.data.threads) || [];
+  }
+
+  function renderClaudeError(panel, error) {
+    panel.innerHTML = '';
+    const div = document.createElement('div');
+    div.style.cssText =
+      'padding: 6px 10px; font-size: 12px; color: var(--token-error, #ef4444);';
+    div.textContent =
+      S('claudeBridgeErrorPrefix', 'Load failed: ') + (error?.message || String(error));
+    panel.appendChild(div);
+  }
+
+  function renderClaudeProjects(panel, projects) {
+    panel.innerHTML = '';
+    if (!projects.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding: 6px 10px; opacity: 0.7; font-size: 12px;';
+      empty.textContent = S('claudeBridgeEmpty', 'No Claude Code sessions found');
+      panel.appendChild(empty);
+      return;
+    }
+    for (const p of projects) {
+      panel.appendChild(renderClaudeProjectRow(p));
+    }
+  }
+
+  function renderClaudeProjectRow(project) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display: flex; flex-direction: column;';
+
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className =
+      'cursor-pointer hover:bg-token-list-hover-background rounded-md';
+    row.style.cssText =
+      'text-align: left; padding: 6px 10px; display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--token-foreground); width: 100%; border: 0; background: transparent;';
+    const lastSeg = projectLastSegment(project.cwd) || project.encodedDir;
+    row.innerHTML = `
+      <span data-claude-project-chevron style="opacity: 0.6; font-size: 10px; width: 10px;">▸</span>
+      <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(lastSeg)}</span>
+      <span style="opacity: 0.55; font-size: 11px;">${project.sessionCount}</span>
+    `;
+    wrap.appendChild(row);
+
+    const threadsBox = document.createElement('div');
+    threadsBox.style.cssText = 'display: none; padding: 2px 0 4px 18px;';
+    wrap.appendChild(threadsBox);
+
+    row.addEventListener('click', async () => {
+      const chevron = row.querySelector('[data-claude-project-chevron]');
+      const isOpen = threadsBox.style.display !== 'none';
+      if (isOpen) {
+        threadsBox.style.display = 'none';
+        if (chevron) chevron.textContent = '▸';
+        return;
+      }
+      threadsBox.style.display = 'block';
+      if (chevron) chevron.textContent = '▾';
+      if (threadsBox.dataset.loaded === '1') return;
+      threadsBox.innerHTML = `<div style="padding: 4px 8px; font-size: 12px; opacity: 0.7;">${S('claudeBridgeLoading', 'Loading…')}</div>`;
+      try {
+        const threads = await loadClaudeThreads(project.encodedDir);
+        threadsBox.innerHTML = '';
+        if (!threads.length) {
+          const empty = document.createElement('div');
+          empty.style.cssText = 'padding: 4px 8px; font-size: 12px; opacity: 0.6;';
+          empty.textContent = S('claudeBridgeEmpty', 'No sessions');
+          threadsBox.appendChild(empty);
+        } else {
+          for (const t of threads) {
+            threadsBox.appendChild(renderClaudeThreadRow(t));
+          }
+        }
+        threadsBox.dataset.loaded = '1';
+      } catch (error) {
+        renderClaudeError(threadsBox, error);
+      }
+    });
+
+    return wrap;
+  }
+
+  function renderClaudeThreadRow(thread) {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className =
+      'cursor-pointer hover:bg-token-list-hover-background rounded-md';
+    row.style.cssText =
+      'text-align: left; padding: 5px 8px; display: block; font-size: 12px; color: var(--token-foreground); width: 100%; border: 0; background: transparent;';
+    const title = (thread.title || thread.sessionId || '').trim();
+    row.innerHTML = `
+      <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(title || thread.sessionId)}</div>
+    `;
+    row.addEventListener('click', () => {
+      // 接续逻辑待写。先 toast 占位,告诉用户拿到了哪条会话。
+      showToast(
+        S('claudeBridgeContinueToast', 'Continue is not implemented yet') +
+          ' · ' +
+          (title || thread.sessionId),
+        'info',
+      );
+    });
+    return row;
+  }
+
+  function projectLastSegment(path) {
+    if (!path) return '';
+    const norm = String(path).replace(/\\/g, '/');
+    const segs = norm.split('/').filter((s) => s.length > 0);
+    return segs.length ? segs[segs.length - 1] : path;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   function ensureAll() {
     __shimEnsureCount += 1;
     const seq = __shimEnsureCount;
@@ -2463,6 +2680,8 @@
     const t6 = performance.now();
     ensureCodexPluginFeatures();
     const t7 = performance.now();
+    ensureClaudeBridge();
+    const t8 = performance.now();
 
     const after = __countDomBefore();
     const changed = JSON.stringify(before) !== JSON.stringify(after);
@@ -2477,7 +2696,8 @@
         codexModel: +(t5 - t4).toFixed(1),
         providerBadge: +(t6 - t5).toFixed(1),
         plugin: +(t7 - t6).toFixed(1),
-        total: +(t7 - t0).toFixed(1),
+        claudeBridge: +(t8 - t7).toFixed(1),
+        total: +(t8 - t0).toFixed(1),
       },
     });
   }

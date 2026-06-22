@@ -230,6 +230,12 @@ Map<String, String> _shimLabels(bool isZh) {
       'threadExportRaw': '导出原始数据',
       'threadExportedToast': '已导出',
       'threadExportFailed': '导出失败',
+      'claudeBridgeNavLabel': 'Claude 桥',
+      'claudeBridgeLoading': '加载中…',
+      'claudeBridgeEmpty': '未发现 Claude Code 会话',
+      'claudeBridgeErrorPrefix': '加载失败:',
+      'claudeBridgeContinueToast': '接续功能待开发',
+      'claudeBridgeSessionsCount': '个会话',
     };
   }
   return {
@@ -269,6 +275,12 @@ Map<String, String> _shimLabels(bool isZh) {
     'threadExportRaw': 'Export raws data',
     'threadExportedToast': 'Exported',
     'threadExportFailed': 'Export failed',
+    'claudeBridgeNavLabel': 'Claude bridge',
+    'claudeBridgeLoading': 'Loading…',
+    'claudeBridgeEmpty': 'No Claude Code sessions found',
+    'claudeBridgeErrorPrefix': 'Load failed: ',
+    'claudeBridgeContinueToast': 'Continue is not implemented yet',
+    'claudeBridgeSessionsCount': 'sessions',
   };
 }
 

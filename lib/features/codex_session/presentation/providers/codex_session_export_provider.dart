@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/features/codex_session/data/datasources/codex_session_export_datasource.dart';
-import 'package:shim/features/codex_session/data/datasources/codex_session_export_formatter.dart';
+import 'package:shim/core/utils/codex_session_export_formatter.dart';
 import 'package:shim/features/codex_session/data/repositories/codex_session_export_repository_impl.dart';
 import 'package:shim/features/codex_session/domain/repositories/codex_session_export_repository.dart';
 

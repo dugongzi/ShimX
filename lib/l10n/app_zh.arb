@@ -210,5 +210,48 @@
   "shimSaveFailed": "保存失败",
   "shimSwitchProviderFailed": "切换供应商失败",
   "shimSwitchModelFailed": "切换模型失败",
-  "shimSwitchEffortFailed": "切换思考深度失败"
+  "shimSwitchEffortFailed": "切换思考深度失败",
+  "claudeSessions": "Claude 会话",
+  "claudeProjects": "项目",
+  "claudeProjectsEmpty": "未发现 Claude Code 会话(~/.claude/projects/)",
+  "claudeProjectsSelectHint": "在左侧选择一个项目",
+  "claudeSessionsEmpty": "该项目下还没有会话",
+  "claudeThreadSelectHint": "在中间选择一个会话",
+  "claudeThreadEmpty": "会话内容为空",
+  "claudeProjectSubtitle": "{count} 个会话 · {time}",
+  "@claudeProjectSubtitle": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "time": {"type": "String"}
+    }
+  },
+  "claudeSessionExport": "导出",
+  "claudeSessionExportMarkdown": "导出为 Markdown",
+  "claudeSessionExportRaw": "导出原始 JSONL",
+  "claudeSessionExportSuccess": "已导出",
+  "claudeSessionExportFailed": "导出失败:{error}",
+  "@claudeSessionExportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "justNow": "刚刚",
+  "minutesAgo": "{n} 分钟前",
+  "@minutesAgo": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "hoursAgo": "{n} 小时前",
+  "@hoursAgo": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "daysAgo": "{n} 天前",
+  "@daysAgo": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  }
 }

@@ -210,5 +210,48 @@
   "shimSaveFailed": "Save failed",
   "shimSwitchProviderFailed": "Switch provider failed",
   "shimSwitchModelFailed": "Switch model failed",
-  "shimSwitchEffortFailed": "Switch reasoning failed"
+  "shimSwitchEffortFailed": "Switch reasoning failed",
+  "claudeSessions": "Claude sessions",
+  "claudeProjects": "Projects",
+  "claudeProjectsEmpty": "No Claude Code sessions found (~/.claude/projects/)",
+  "claudeProjectsSelectHint": "Pick a project on the left",
+  "claudeSessionsEmpty": "No sessions under this project",
+  "claudeThreadSelectHint": "Pick a session in the middle",
+  "claudeThreadEmpty": "Session has no messages",
+  "claudeProjectSubtitle": "{count} sessions · {time}",
+  "@claudeProjectSubtitle": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "time": {"type": "String"}
+    }
+  },
+  "claudeSessionExport": "Export",
+  "claudeSessionExportMarkdown": "Export as Markdown",
+  "claudeSessionExportRaw": "Export raw JSONL",
+  "claudeSessionExportSuccess": "Exported",
+  "claudeSessionExportFailed": "Export failed: {error}",
+  "@claudeSessionExportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "justNow": "just now",
+  "minutesAgo": "{n} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "hoursAgo": "{n} h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "daysAgo": "{n} d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  }
 }

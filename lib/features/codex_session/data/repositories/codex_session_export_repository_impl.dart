@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:shim/features/codex_session/data/datasources/codex_session_export_datasource.dart';
-import 'package:shim/features/codex_session/data/datasources/codex_session_export_formatter.dart';
+import 'package:shim/core/utils/codex_session_export_formatter.dart';
 import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
 import 'package:shim/features/codex_session/domain/repositories/codex_session_export_repository.dart';
 

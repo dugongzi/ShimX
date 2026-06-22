@@ -527,4 +527,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shimSwitchEffortFailed => 'Switch reasoning failed';
+
+  @override
+  String get claudeSessions => 'Claude sessions';
+
+  @override
+  String get claudeProjects => 'Projects';
+
+  @override
+  String get claudeProjectsEmpty =>
+      'No Claude Code sessions found (~/.claude/projects/)';
+
+  @override
+  String get claudeProjectsSelectHint => 'Pick a project on the left';
+
+  @override
+  String get claudeSessionsEmpty => 'No sessions under this project';
+
+  @override
+  String get claudeThreadSelectHint => 'Pick a session in the middle';
+
+  @override
+  String get claudeThreadEmpty => 'Session has no messages';
+
+  @override
+  String claudeProjectSubtitle(int count, String time) {
+    return '$count sessions · $time';
+  }
+
+  @override
+  String get claudeSessionExport => 'Export';
+
+  @override
+  String get claudeSessionExportMarkdown => 'Export as Markdown';
+
+  @override
+  String get claudeSessionExportRaw => 'Export raw JSONL';
+
+  @override
+  String get claudeSessionExportSuccess => 'Exported';
+
+  @override
+  String claudeSessionExportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get justNow => 'just now';
+
+  @override
+  String minutesAgo(int n) {
+    return '$n min ago';
+  }
+
+  @override
+  String hoursAgo(int n) {
+    return '$n h ago';
+  }
+
+  @override
+  String daysAgo(int n) {
+    return '$n d ago';
+  }
 }

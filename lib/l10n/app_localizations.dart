@@ -1069,6 +1069,108 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'切换思考深度失败'**
   String get shimSwitchEffortFailed;
+
+  /// No description provided for @claudeSessions.
+  ///
+  /// In zh, this message translates to:
+  /// **'Claude 会话'**
+  String get claudeSessions;
+
+  /// No description provided for @claudeProjects.
+  ///
+  /// In zh, this message translates to:
+  /// **'项目'**
+  String get claudeProjects;
+
+  /// No description provided for @claudeProjectsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'未发现 Claude Code 会话(~/.claude/projects/)'**
+  String get claudeProjectsEmpty;
+
+  /// No description provided for @claudeProjectsSelectHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'在左侧选择一个项目'**
+  String get claudeProjectsSelectHint;
+
+  /// No description provided for @claudeSessionsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'该项目下还没有会话'**
+  String get claudeSessionsEmpty;
+
+  /// No description provided for @claudeThreadSelectHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'在中间选择一个会话'**
+  String get claudeThreadSelectHint;
+
+  /// No description provided for @claudeThreadEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'会话内容为空'**
+  String get claudeThreadEmpty;
+
+  /// No description provided for @claudeProjectSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个会话 · {time}'**
+  String claudeProjectSubtitle(int count, String time);
+
+  /// No description provided for @claudeSessionExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出'**
+  String get claudeSessionExport;
+
+  /// No description provided for @claudeSessionExportMarkdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出为 Markdown'**
+  String get claudeSessionExportMarkdown;
+
+  /// No description provided for @claudeSessionExportRaw.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出原始 JSONL'**
+  String get claudeSessionExportRaw;
+
+  /// No description provided for @claudeSessionExportSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已导出'**
+  String get claudeSessionExportSuccess;
+
+  /// No description provided for @claudeSessionExportFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出失败:{error}'**
+  String claudeSessionExportFailed(String error);
+
+  /// No description provided for @justNow.
+  ///
+  /// In zh, this message translates to:
+  /// **'刚刚'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In zh, this message translates to:
+  /// **'{n} 分钟前'**
+  String minutesAgo(int n);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In zh, this message translates to:
+  /// **'{n} 小时前'**
+  String hoursAgo(int n);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In zh, this message translates to:
+  /// **'{n} 天前'**
+  String daysAgo(int n);
 }
 
 class _AppLocalizationsDelegate

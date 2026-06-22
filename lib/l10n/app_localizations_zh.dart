@@ -519,4 +519,65 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shimSwitchEffortFailed => '切换思考深度失败';
+
+  @override
+  String get claudeSessions => 'Claude 会话';
+
+  @override
+  String get claudeProjects => '项目';
+
+  @override
+  String get claudeProjectsEmpty => '未发现 Claude Code 会话(~/.claude/projects/)';
+
+  @override
+  String get claudeProjectsSelectHint => '在左侧选择一个项目';
+
+  @override
+  String get claudeSessionsEmpty => '该项目下还没有会话';
+
+  @override
+  String get claudeThreadSelectHint => '在中间选择一个会话';
+
+  @override
+  String get claudeThreadEmpty => '会话内容为空';
+
+  @override
+  String claudeProjectSubtitle(int count, String time) {
+    return '$count 个会话 · $time';
+  }
+
+  @override
+  String get claudeSessionExport => '导出';
+
+  @override
+  String get claudeSessionExportMarkdown => '导出为 Markdown';
+
+  @override
+  String get claudeSessionExportRaw => '导出原始 JSONL';
+
+  @override
+  String get claudeSessionExportSuccess => '已导出';
+
+  @override
+  String claudeSessionExportFailed(String error) {
+    return '导出失败:$error';
+  }
+
+  @override
+  String get justNow => '刚刚';
+
+  @override
+  String minutesAgo(int n) {
+    return '$n 分钟前';
+  }
+
+  @override
+  String hoursAgo(int n) {
+    return '$n 小时前';
+  }
+
+  @override
+  String daysAgo(int n) {
+    return '$n 天前';
+  }
 }

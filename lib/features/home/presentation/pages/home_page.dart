@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shim/common/widgets/app_background.dart';
 import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shim/features/claude_session/presentation/widgets/claude_sessions_tab.dart';
 import 'package:shim/features/home/presentation/widgets/dashboard_tab.dart';
 import 'package:shim/features/home/presentation/widgets/home_sidebar.dart';
 import 'package:shim/features/home/presentation/widgets/home_tab_item.dart';
@@ -11,7 +12,7 @@ import 'package:shim/features/logs/presentation/widgets/logs_tab.dart';
 import 'package:shim/features/providers/presentation/widgets/providers_tab.dart';
 import 'package:shim/features/settings/presentation/widgets/settings_tab.dart';
 
-enum HomeTab { home, providers, logs, settings }
+enum HomeTab { home, providers, claudeSessions, logs, settings }
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -48,6 +49,13 @@ class HomePage extends HookConsumerWidget {
                       onTap: () => selectedTab.value = HomeTab.providers,
                     ),
                     HomeTabItem(
+                      leading: Icons.forum_outlined,
+                      selectedLeading: Icons.forum_rounded,
+                      title: context.l10n.claudeSessions,
+                      selected: selectedTab.value == HomeTab.claudeSessions,
+                      onTap: () => selectedTab.value = HomeTab.claudeSessions,
+                    ),
+                    HomeTabItem(
                       leading: Icons.subject_outlined,
                       selectedLeading: Icons.subject_rounded,
                       title: context.l10n.navLogs,
@@ -70,6 +78,7 @@ class HomePage extends HookConsumerWidget {
                     children: const [
                       DashboardTab(),
                       ProvidersTab(),
+                      ClaudeSessionsTab(),
                       LogsTab(),
                       SettingsTab(),
                     ],

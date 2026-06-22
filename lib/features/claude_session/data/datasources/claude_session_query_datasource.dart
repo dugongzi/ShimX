@@ -185,9 +185,15 @@ class ClaudeSessionQueryDatasource {
   /// 之类的命令注入包裹,只留真实用户文本
   String _stripCommandWrap(String s) {
     var out = s;
-    // 移除整个 <command-*>...</command-*> 块
+    // 剥掉常见的上下文注入块:
+    //   <command-name>...</command-name>
+    //   <local-command-stdout>...</local-command-stdout>
+    //   <ide_opened_file>...</ide_opened_file>
+    //   <ide_selection>...</ide_selection>
+    //   <system-reminder>...</system-reminder>
+    // 标签名允许字母/数字/`-`/`_`。
     final tagBlock = RegExp(
-      r'<(command-[a-z-]+|local-command-[a-z-]+)[^>]*>[\s\S]*?</\1>',
+      r'<(command-[a-z-]+|local-command-[a-z-]+|ide_[a-z_]+|system-reminder)[^>]*>[\s\S]*?</\1>',
       multiLine: true,
     );
     out = out.replaceAll(tagBlock, '');

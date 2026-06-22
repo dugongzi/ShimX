@@ -202,8 +202,9 @@ class ClaudeSessionExportDatasource {
   }
 
   String _stripCommandWrap(String s) {
+    // 剥掉常见上下文注入(命令注入 / IDE 注入 / system-reminder)
     final tagBlock = RegExp(
-      r'<(command-[a-z-]+|local-command-[a-z-]+)[^>]*>[\s\S]*?</\1>',
+      r'<(command-[a-z-]+|local-command-[a-z-]+|ide_[a-z_]+|system-reminder)[^>]*>[\s\S]*?</\1>',
       multiLine: true,
     );
     return s.replaceAll(tagBlock, '').trim();

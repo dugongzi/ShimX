@@ -211,28 +211,31 @@
   "shimSwitchProviderFailed": "切换供应商失败",
   "shimSwitchModelFailed": "切换模型失败",
   "shimSwitchEffortFailed": "切换思考深度失败",
-  "claudeSessions": "Claude 会话",
+  "sessionManagement": "会话管理",
+  "sessionTabClaude": "Claude",
+  "sessionTabCodex": "Codex",
+  "sessionsTitle": "会话",
+  "sessionsEmpty": "暂无会话",
+  "threadSelectHint": "选择一个会话查看详情",
+  "threadEmpty": "会话内容为空",
+  "sessionExport": "导出",
+  "sessionExportMarkdown": "导出为 Markdown",
+  "sessionExportRaw": "导出原始 JSONL",
+  "sessionExportSuccess": "已导出",
+  "sessionExportFailed": "导出失败:{error}",
+  "@sessionExportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
   "claudeProjects": "项目",
   "claudeProjectsEmpty": "未发现 Claude Code 会话(~/.claude/projects/)",
   "claudeProjectsSelectHint": "在左侧选择一个项目",
-  "claudeSessionsEmpty": "该项目下还没有会话",
-  "claudeThreadSelectHint": "在中间选择一个会话",
-  "claudeThreadEmpty": "会话内容为空",
   "claudeProjectSubtitle": "{count} 个会话 · {time}",
   "@claudeProjectSubtitle": {
     "placeholders": {
       "count": {"type": "int"},
       "time": {"type": "String"}
-    }
-  },
-  "claudeSessionExport": "导出",
-  "claudeSessionExportMarkdown": "导出为 Markdown",
-  "claudeSessionExportRaw": "导出原始 JSONL",
-  "claudeSessionExportSuccess": "已导出",
-  "claudeSessionExportFailed": "导出失败:{error}",
-  "@claudeSessionExportFailed": {
-    "placeholders": {
-      "error": {"type": "String"}
     }
   },
   "justNow": "刚刚",

@@ -529,7 +529,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shimSwitchEffortFailed => 'Switch reasoning failed';
 
   @override
-  String get claudeSessions => 'Claude sessions';
+  String get sessionManagement => 'Sessions';
+
+  @override
+  String get sessionTabClaude => 'Claude';
+
+  @override
+  String get sessionTabCodex => 'Codex';
+
+  @override
+  String get sessionsTitle => 'Sessions';
+
+  @override
+  String get sessionsEmpty => 'No sessions';
+
+  @override
+  String get threadSelectHint => 'Pick a session to view';
+
+  @override
+  String get threadEmpty => 'Session has no messages';
+
+  @override
+  String get sessionExport => 'Export';
+
+  @override
+  String get sessionExportMarkdown => 'Export as Markdown';
+
+  @override
+  String get sessionExportRaw => 'Export raw JSONL';
+
+  @override
+  String get sessionExportSuccess => 'Exported';
+
+  @override
+  String sessionExportFailed(String error) {
+    return 'Export failed: $error';
+  }
 
   @override
   String get claudeProjects => 'Projects';
@@ -542,34 +577,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get claudeProjectsSelectHint => 'Pick a project on the left';
 
   @override
-  String get claudeSessionsEmpty => 'No sessions under this project';
-
-  @override
-  String get claudeThreadSelectHint => 'Pick a session in the middle';
-
-  @override
-  String get claudeThreadEmpty => 'Session has no messages';
-
-  @override
   String claudeProjectSubtitle(int count, String time) {
     return '$count sessions · $time';
-  }
-
-  @override
-  String get claudeSessionExport => 'Export';
-
-  @override
-  String get claudeSessionExportMarkdown => 'Export as Markdown';
-
-  @override
-  String get claudeSessionExportRaw => 'Export raw JSONL';
-
-  @override
-  String get claudeSessionExportSuccess => 'Exported';
-
-  @override
-  String claudeSessionExportFailed(String error) {
-    return 'Export failed: $error';
   }
 
   @override

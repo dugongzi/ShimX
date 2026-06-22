@@ -521,7 +521,42 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shimSwitchEffortFailed => '切换思考深度失败';
 
   @override
-  String get claudeSessions => 'Claude 会话';
+  String get sessionManagement => '会话管理';
+
+  @override
+  String get sessionTabClaude => 'Claude';
+
+  @override
+  String get sessionTabCodex => 'Codex';
+
+  @override
+  String get sessionsTitle => '会话';
+
+  @override
+  String get sessionsEmpty => '暂无会话';
+
+  @override
+  String get threadSelectHint => '选择一个会话查看详情';
+
+  @override
+  String get threadEmpty => '会话内容为空';
+
+  @override
+  String get sessionExport => '导出';
+
+  @override
+  String get sessionExportMarkdown => '导出为 Markdown';
+
+  @override
+  String get sessionExportRaw => '导出原始 JSONL';
+
+  @override
+  String get sessionExportSuccess => '已导出';
+
+  @override
+  String sessionExportFailed(String error) {
+    return '导出失败:$error';
+  }
 
   @override
   String get claudeProjects => '项目';
@@ -533,34 +568,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get claudeProjectsSelectHint => '在左侧选择一个项目';
 
   @override
-  String get claudeSessionsEmpty => '该项目下还没有会话';
-
-  @override
-  String get claudeThreadSelectHint => '在中间选择一个会话';
-
-  @override
-  String get claudeThreadEmpty => '会话内容为空';
-
-  @override
   String claudeProjectSubtitle(int count, String time) {
     return '$count 个会话 · $time';
-  }
-
-  @override
-  String get claudeSessionExport => '导出';
-
-  @override
-  String get claudeSessionExportMarkdown => '导出为 Markdown';
-
-  @override
-  String get claudeSessionExportRaw => '导出原始 JSONL';
-
-  @override
-  String get claudeSessionExportSuccess => '已导出';
-
-  @override
-  String claudeSessionExportFailed(String error) {
-    return '导出失败:$error';
   }
 
   @override

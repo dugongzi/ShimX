@@ -1070,11 +1070,77 @@ abstract class AppLocalizations {
   /// **'切换思考深度失败'**
   String get shimSwitchEffortFailed;
 
-  /// No description provided for @claudeSessions.
+  /// No description provided for @sessionManagement.
   ///
   /// In zh, this message translates to:
-  /// **'Claude 会话'**
-  String get claudeSessions;
+  /// **'会话管理'**
+  String get sessionManagement;
+
+  /// No description provided for @sessionTabClaude.
+  ///
+  /// In zh, this message translates to:
+  /// **'Claude'**
+  String get sessionTabClaude;
+
+  /// No description provided for @sessionTabCodex.
+  ///
+  /// In zh, this message translates to:
+  /// **'Codex'**
+  String get sessionTabCodex;
+
+  /// No description provided for @sessionsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'会话'**
+  String get sessionsTitle;
+
+  /// No description provided for @sessionsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无会话'**
+  String get sessionsEmpty;
+
+  /// No description provided for @threadSelectHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择一个会话查看详情'**
+  String get threadSelectHint;
+
+  /// No description provided for @threadEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'会话内容为空'**
+  String get threadEmpty;
+
+  /// No description provided for @sessionExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出'**
+  String get sessionExport;
+
+  /// No description provided for @sessionExportMarkdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出为 Markdown'**
+  String get sessionExportMarkdown;
+
+  /// No description provided for @sessionExportRaw.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出原始 JSONL'**
+  String get sessionExportRaw;
+
+  /// No description provided for @sessionExportSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已导出'**
+  String get sessionExportSuccess;
+
+  /// No description provided for @sessionExportFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出失败:{error}'**
+  String sessionExportFailed(String error);
 
   /// No description provided for @claudeProjects.
   ///
@@ -1094,59 +1160,11 @@ abstract class AppLocalizations {
   /// **'在左侧选择一个项目'**
   String get claudeProjectsSelectHint;
 
-  /// No description provided for @claudeSessionsEmpty.
-  ///
-  /// In zh, this message translates to:
-  /// **'该项目下还没有会话'**
-  String get claudeSessionsEmpty;
-
-  /// No description provided for @claudeThreadSelectHint.
-  ///
-  /// In zh, this message translates to:
-  /// **'在中间选择一个会话'**
-  String get claudeThreadSelectHint;
-
-  /// No description provided for @claudeThreadEmpty.
-  ///
-  /// In zh, this message translates to:
-  /// **'会话内容为空'**
-  String get claudeThreadEmpty;
-
   /// No description provided for @claudeProjectSubtitle.
   ///
   /// In zh, this message translates to:
   /// **'{count} 个会话 · {time}'**
   String claudeProjectSubtitle(int count, String time);
-
-  /// No description provided for @claudeSessionExport.
-  ///
-  /// In zh, this message translates to:
-  /// **'导出'**
-  String get claudeSessionExport;
-
-  /// No description provided for @claudeSessionExportMarkdown.
-  ///
-  /// In zh, this message translates to:
-  /// **'导出为 Markdown'**
-  String get claudeSessionExportMarkdown;
-
-  /// No description provided for @claudeSessionExportRaw.
-  ///
-  /// In zh, this message translates to:
-  /// **'导出原始 JSONL'**
-  String get claudeSessionExportRaw;
-
-  /// No description provided for @claudeSessionExportSuccess.
-  ///
-  /// In zh, this message translates to:
-  /// **'已导出'**
-  String get claudeSessionExportSuccess;
-
-  /// No description provided for @claudeSessionExportFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'导出失败:{error}'**
-  String claudeSessionExportFailed(String error);
 
   /// No description provided for @justNow.
   ///

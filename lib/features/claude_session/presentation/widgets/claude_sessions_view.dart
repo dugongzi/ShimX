@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
 import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/features/claude_session/domain/models/claude_project.dart';
@@ -13,8 +12,8 @@ import 'package:shim/features/claude_session/domain/models/claude_thread_message
 import 'package:shim/features/claude_session/presentation/providers/claude_session_export_provider.dart';
 import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
 
-class ClaudeSessionsTab extends HookConsumerWidget {
-  const ClaudeSessionsTab({super.key});
+class ClaudeSessionsView extends HookConsumerWidget {
+  const ClaudeSessionsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,41 +21,36 @@ class ClaudeSessionsTab extends HookConsumerWidget {
     final selectedThread = useState<ClaudeThread?>(null);
     final l10n = context.l10n;
 
-    return WorkspaceSurface(
-      child: Padding(
-        padding: EdgeInsets.all(AppSizes.itemGap),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 项目列表
-            SizedBox(
-              width: 240,
-              child: _ProjectsPane(
-                selected: selectedProject.value,
-                onSelect: (p) {
-                  selectedProject.value = p;
-                  selectedThread.value = null;
-                },
-              ),
+    return Padding(
+      padding: EdgeInsets.all(AppSizes.itemGap),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 240,
+            child: _ProjectsPane(
+              selected: selectedProject.value,
+              onSelect: (p) {
+                selectedProject.value = p;
+                selectedThread.value = null;
+              },
             ),
-            SizedBox(width: AppSizes.itemGap),
-            // 会话列表
-            SizedBox(
-              width: 320,
-              child: _ThreadsPane(
-                project: selectedProject.value,
-                selected: selectedThread.value,
-                onSelect: (t) => selectedThread.value = t,
-                emptyHint: l10n.claudeProjectsSelectHint,
-              ),
+          ),
+          SizedBox(width: AppSizes.itemGap),
+          SizedBox(
+            width: 320,
+            child: _ThreadsPane(
+              project: selectedProject.value,
+              selected: selectedThread.value,
+              onSelect: (t) => selectedThread.value = t,
+              emptyHint: l10n.claudeProjectsSelectHint,
             ),
-            SizedBox(width: AppSizes.itemGap),
-            // 详情
-            Expanded(
-              child: _ThreadDetailPane(thread: selectedThread.value),
-            ),
-          ],
-        ),
+          ),
+          SizedBox(width: AppSizes.itemGap),
+          Expanded(
+            child: _ThreadDetailPane(thread: selectedThread.value),
+          ),
+        ],
       ),
     );
   }
@@ -123,11 +117,9 @@ class _ProjectsPane extends ConsumerWidget {
                     final p = projects[i];
                     final isSelected = selected?.encodedDir == p.encodedDir;
                     return _ListTile(
-                      title: _shortenPath(p.cwd),
-                      subtitle: l10n.claudeProjectSubtitle(
-                        p.sessionCount,
-                        _formatRelativeTime(context, p.lastActiveMs),
-                      ),
+                      title: _projectDisplayName(p.cwd),
+                      subtitle:
+                          '${l10n.claudeProjectSubtitle(p.sessionCount, _formatRelativeTime(context, p.lastActiveMs))} · ${_projectParentHint(p.cwd)}',
                       selected: isSelected,
                       onTap: () => onSelect(p),
                     );
@@ -180,7 +172,7 @@ class _ThreadsPane extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Text(
-                    l10n.claudeSessions,
+                    l10n.sessionsTitle,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
@@ -210,7 +202,7 @@ class _ThreadsPane extends ConsumerWidget {
               error: (e, _) => _ErrorBox(message: e.toString()),
               data: (threads) {
                 if (threads.isEmpty) {
-                  return _EmptyBox(message: l10n.claudeSessionsEmpty);
+                  return _EmptyBox(message: l10n.sessionsEmpty);
                 }
                 return ListView.separated(
                   padding: EdgeInsets.symmetric(vertical: 8),
@@ -249,7 +241,7 @@ class _ThreadDetailPane extends ConsumerWidget {
     final l10n = context.l10n;
     if (thread == null) {
       return SurfaceCard(
-        child: Center(child: _EmptyBox(message: l10n.claudeThreadSelectHint)),
+        child: Center(child: _EmptyBox(message: l10n.threadSelectHint)),
       );
     }
     final asyncDetail = ref.watch(
@@ -280,7 +272,7 @@ class _ThreadDetailPane extends ConsumerWidget {
               error: (e, _) => _ErrorBox(message: e.toString()),
               data: (d) {
                 if (d.messages.isEmpty) {
-                  return _EmptyBox(message: l10n.claudeThreadEmpty);
+                  return _EmptyBox(message: l10n.threadEmpty);
                 }
                 return ListView.builder(
                   padding: EdgeInsets.all(14),
@@ -334,17 +326,17 @@ class _DetailHeader extends ConsumerWidget {
           ),
         ),
         PopupMenuButton<String>(
-          tooltip: l10n.claudeSessionExport,
+          tooltip: l10n.sessionExport,
           icon: const Icon(Icons.more_horiz_rounded),
           onSelected: (value) => _export(context, ref, detail, value),
           itemBuilder: (context) => [
             PopupMenuItem(
               value: 'markdown',
-              child: Text(l10n.claudeSessionExportMarkdown),
+              child: Text(l10n.sessionExportMarkdown),
             ),
             PopupMenuItem(
               value: 'raws',
-              child: Text(l10n.claudeSessionExportRaw),
+              child: Text(l10n.sessionExportRaw),
             ),
           ],
         ),
@@ -367,9 +359,9 @@ class _DetailHeader extends ConsumerWidget {
         format: format,
       );
       if (path == null) return;
-      SmartDialog.showToast(l10n.claudeSessionExportSuccess);
+      SmartDialog.showToast(l10n.sessionExportSuccess);
     } catch (e) {
-      SmartDialog.showToast(l10n.claudeSessionExportFailed(e.toString()));
+      SmartDialog.showToast(l10n.sessionExportFailed(e.toString()));
     }
   }
 }
@@ -511,7 +503,7 @@ class _ListTile extends StatelessWidget {
           color: selected
               ? colorScheme.primary.withValues(alpha: 0.10)
               : Colors.transparent,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -519,19 +511,19 @@ class _ListTile extends StatelessWidget {
                 title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
                       color: selected
                           ? colorScheme.primary
                           : colorScheme.onSurface,
                     ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
               ),
@@ -585,10 +577,25 @@ class _ErrorBox extends StatelessWidget {
   }
 }
 
-String _shortenPath(String path) {
-  // 仅在路径过长时展示尾部 + 头部省略
-  if (path.length <= 38) return path;
-  return '…${path.substring(path.length - 36)}';
+/// 取路径最后一段(项目名本身),例如:
+///   f:\Programming_projects\FlutterProject\shim → shim
+///   /Users/mkbk/Documents/foo → foo
+String _projectDisplayName(String path) {
+  if (path.isEmpty) return '(unknown)';
+  final normalized = path.replaceAll('\\', '/');
+  final segments = normalized.split('/').where((s) => s.isNotEmpty).toList();
+  if (segments.isEmpty) return path;
+  return segments.last;
+}
+
+/// 取倒数第二段父目录,用作 subtitle 里的辨识提示(同名项目时能区分)。
+/// 例如:f:\Programming_projects\FlutterProject\shim → FlutterProject
+String _projectParentHint(String path) {
+  if (path.isEmpty) return '';
+  final normalized = path.replaceAll('\\', '/');
+  final segments = normalized.split('/').where((s) => s.isNotEmpty).toList();
+  if (segments.length < 2) return path;
+  return segments[segments.length - 2];
 }
 
 String _formatRelativeTime(BuildContext context, int ms) {

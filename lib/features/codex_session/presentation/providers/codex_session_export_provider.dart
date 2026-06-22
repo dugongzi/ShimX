@@ -5,6 +5,7 @@ import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/features/codex_session/data/datasources/codex_session_export_datasource.dart';
 import 'package:shim/core/utils/codex_session_export_formatter.dart';
 import 'package:shim/features/codex_session/data/repositories/codex_session_export_repository_impl.dart';
+import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
 import 'package:shim/features/codex_session/domain/repositories/codex_session_export_repository.dart';
 
 part 'codex_session_export_provider.g.dart';
@@ -15,6 +16,14 @@ CodexSessionExportRepository codexSessionExportRepository(Ref ref) {
     dataSource: CodexSessionExportDatasource(),
     formatter: CodexSessionExportFormatter(),
   );
+}
+
+@riverpod
+Future<CodexThreadDetail> codexThreadDetail(
+  Ref ref, {
+  required String id,
+}) {
+  return ref.read(codexSessionExportRepositoryProvider).loadThreadDetail(id: id);
 }
 
 /// 把导出会话路由注册到 bridge。

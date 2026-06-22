@@ -211,28 +211,31 @@
   "shimSwitchProviderFailed": "Switch provider failed",
   "shimSwitchModelFailed": "Switch model failed",
   "shimSwitchEffortFailed": "Switch reasoning failed",
-  "claudeSessions": "Claude sessions",
+  "sessionManagement": "Sessions",
+  "sessionTabClaude": "Claude",
+  "sessionTabCodex": "Codex",
+  "sessionsTitle": "Sessions",
+  "sessionsEmpty": "No sessions",
+  "threadSelectHint": "Pick a session to view",
+  "threadEmpty": "Session has no messages",
+  "sessionExport": "Export",
+  "sessionExportMarkdown": "Export as Markdown",
+  "sessionExportRaw": "Export raw JSONL",
+  "sessionExportSuccess": "Exported",
+  "sessionExportFailed": "Export failed: {error}",
+  "@sessionExportFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
   "claudeProjects": "Projects",
   "claudeProjectsEmpty": "No Claude Code sessions found (~/.claude/projects/)",
   "claudeProjectsSelectHint": "Pick a project on the left",
-  "claudeSessionsEmpty": "No sessions under this project",
-  "claudeThreadSelectHint": "Pick a session in the middle",
-  "claudeThreadEmpty": "Session has no messages",
   "claudeProjectSubtitle": "{count} sessions · {time}",
   "@claudeProjectSubtitle": {
     "placeholders": {
       "count": {"type": "int"},
       "time": {"type": "String"}
-    }
-  },
-  "claudeSessionExport": "Export",
-  "claudeSessionExportMarkdown": "Export as Markdown",
-  "claudeSessionExportRaw": "Export raw JSONL",
-  "claudeSessionExportSuccess": "Exported",
-  "claudeSessionExportFailed": "Export failed: {error}",
-  "@claudeSessionExportFailed": {
-    "placeholders": {
-      "error": {"type": "String"}
     }
   },
   "justNow": "just now",

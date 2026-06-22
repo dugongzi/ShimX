@@ -58,6 +58,83 @@ final class CodexSessionExportRepositoryProvider
 String _$codexSessionExportRepositoryHash() =>
     r'e4bd458e52f43e3c926d8c0b7a7af93788c09985';
 
+@ProviderFor(codexThreadDetail)
+const codexThreadDetailProvider = CodexThreadDetailFamily._();
+
+final class CodexThreadDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CodexThreadDetail>,
+          CodexThreadDetail,
+          FutureOr<CodexThreadDetail>
+        >
+    with
+        $FutureModifier<CodexThreadDetail>,
+        $FutureProvider<CodexThreadDetail> {
+  const CodexThreadDetailProvider._({
+    required CodexThreadDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'codexThreadDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$codexThreadDetailHash();
+
+  @override
+  String toString() {
+    return r'codexThreadDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<CodexThreadDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CodexThreadDetail> create(Ref ref) {
+    final argument = this.argument as String;
+    return codexThreadDetail(ref, id: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CodexThreadDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$codexThreadDetailHash() => r'd18fc2ff1e30a072bf7f063e38b18eef14be5b08';
+
+final class CodexThreadDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<CodexThreadDetail>, String> {
+  const CodexThreadDetailFamily._()
+    : super(
+        retry: null,
+        name: r'codexThreadDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CodexThreadDetailProvider call({required String id}) =>
+      CodexThreadDetailProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'codexThreadDetailProvider';
+}
+
 /// 把导出会话路由注册到 bridge。
 ///
 /// /session/export — 弹系统保存对话框 → 选完路径后真正写文件。

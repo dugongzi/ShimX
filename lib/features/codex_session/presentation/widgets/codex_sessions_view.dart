@@ -311,12 +311,7 @@ class _ThreadDetailPane extends ConsumerWidget {
                 if (d.messages.isEmpty) {
                   return _EmptyBox(message: l10n.threadEmpty);
                 }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(14),
-                  itemCount: d.messages.length,
-                  itemBuilder: (context, i) =>
-                      _MessageTile(message: d.messages[i]),
-                );
+                return _MessagesList(messages: d.messages);
               },
             ),
           ),
@@ -409,6 +404,23 @@ class _DetailHeader extends ConsumerWidget {
     } catch (e) {
       SmartDialog.showToast(l10n.sessionExportFailed(e.toString()));
     }
+  }
+}
+
+class _MessagesList extends StatelessWidget {
+  const _MessagesList({required this.messages});
+
+  final List<CodexThreadMessage> messages;
+
+  @override
+  Widget build(BuildContext context) {
+    final last = messages.length - 1;
+    return ListView.builder(
+      reverse: true,
+      padding: const EdgeInsets.all(14),
+      itemCount: messages.length,
+      itemBuilder: (context, i) => _MessageTile(message: messages[last - i]),
+    );
   }
 }
 

@@ -274,12 +274,7 @@ class _ThreadDetailPane extends ConsumerWidget {
                 if (d.messages.isEmpty) {
                   return _EmptyBox(message: l10n.threadEmpty);
                 }
-                return ListView.builder(
-                  padding: EdgeInsets.all(14),
-                  itemCount: d.messages.length,
-                  itemBuilder: (context, i) =>
-                      _MessageTile(message: d.messages[i]),
-                );
+                return _MessagesList(messages: d.messages);
               },
             ),
           ),
@@ -363,6 +358,25 @@ class _DetailHeader extends ConsumerWidget {
     } catch (e) {
       SmartDialog.showToast(l10n.sessionExportFailed(e.toString()));
     }
+  }
+}
+
+/// 消息流。`reverse: true` 从下往上懒加载渲染,默认即在底部,大会话不卡。
+class _MessagesList extends StatelessWidget {
+  const _MessagesList({required this.messages});
+
+  final List<ClaudeThreadMessage> messages;
+
+  @override
+  Widget build(BuildContext context) {
+    final last = messages.length - 1;
+    return ListView.builder(
+      reverse: true,
+      padding: const EdgeInsets.all(14),
+      itemCount: messages.length,
+      // reverse 后 index 0 是最底部一条,所以倒着取
+      itemBuilder: (context, i) => _MessageTile(message: messages[last - i]),
+    );
   }
 }
 

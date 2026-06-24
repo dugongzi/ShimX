@@ -66,6 +66,24 @@ class ProxyTarget {
   final String? providerId;
 }
 
+/// Claude 会话接续绑定:用户在 codex 侧栏点了一条 Claude 会话后,
+/// proxy 会在每次转发前往 body.input 首部插一条 system message,
+/// 指引上游 LLM 调 MCP 工具 read_claude_session 读取这条会话作为接续上下文。
+///
+/// 单一绑定:整个 LocalProxyService 全局只有一个绑定。
+/// 由 JS 注入侧通过 bridge `/claude-bridge/bind` 触发,`/claude-bridge/unbind` 解绑。
+class ClaudeBridgeBinding {
+  const ClaudeBridgeBinding({
+    required this.sessionId,
+    required this.jsonlPath,
+    this.title,
+  });
+
+  final String sessionId;
+  final String jsonlPath;
+  final String? title;
+}
+
 /// Reverse proxy for Codex local requests.
 ///
 /// This class only owns HTTP proxy flow. Request protocol mapping belongs to
@@ -77,6 +95,24 @@ class LocalProxyService {
   int? _port;
 
   ProxyTarget? _target;
+
+  /// 当前生效的 Claude 会话接续绑定。null = 未绑定。
+  ClaudeBridgeBinding? _claudeBinding;
+
+  ClaudeBridgeBinding? get claudeBinding => _claudeBinding;
+
+  void setClaudeBinding(ClaudeBridgeBinding? binding) {
+    _claudeBinding = binding;
+    if (binding == null) {
+      AppLogService.instance.info('ClaudeBridge', '已解绑');
+    } else {
+      AppLogService.instance.info(
+        'ClaudeBridge',
+        '已绑定',
+        details: 'sessionId=${binding.sessionId} jsonlPath=${binding.jsonlPath}',
+      );
+    }
+  }
 
   /// 由 ProbeService 注入。每条上游请求结束时通知它结果。
   /// providerId 为空则跳过(老调用方未带 id)。
@@ -290,6 +326,22 @@ class LocalProxyService {
         '请求 body',
         details: _summarizeBody(bodyBytes),
       );
+      final binding = _claudeBinding;
+      final injectedSystem = binding == null
+          ? null
+          : _buildClaudeBridgeSystemMessage(binding);
+      if (injectedSystem != null) {
+        AppLogService.instance.info(
+          'ClaudeBridge',
+          '注入 system message',
+          details:
+              'sessionId=${binding!.sessionId} promptBytes=${utf8.encode(injectedSystem).length}',
+        );
+        // 关键诊断:把 codex 自己发的 input[0] (它的 developer message 模板)
+        // 跟我注入的那条 dump 出来对比格式。
+        // 如果两者结构不同 → 我塞的格式不被上游接受 → 503。
+        _dumpInputItemComparison(bodyBytes, injectedSystem);
+      }
       final outBytes = convertLlmProtocolBody(
         bodyBytes,
         from: LlmProtocol.responses,
@@ -297,8 +349,18 @@ class LocalProxyService {
         options: LlmRequestConvertOptions(
           overrideModel: target.model,
           reasoningEffort: target.reasoningEffort,
+          prependSystemMessage: injectedSystem,
         ),
       );
+      if (injectedSystem != null) {
+        AppLogService.instance.info(
+          'ClaudeBridge',
+          '注入后 body 大小',
+          details: 'inBytes=${bodyBytes.length} outBytes=${outBytes.length}',
+        );
+        // 输出注入后整个 input/messages 数组(去掉 instructions 那段固定 prompt 后)
+        _dumpInjectedBody(outBytes);
+      }
       upstreamRequest.headers.contentLength = outBytes.length;
       upstreamRequest.add(outBytes);
 
@@ -480,6 +542,120 @@ class LocalProxyService {
     return parts.isEmpty ? '(no notable headers)' : parts.join(' | ');
   }
 
+  /// 诊断:对比 codex 自己的 input[0] (developer message 模板) 和我注入的那一条。
+  /// 如果两者的 JSON 结构不同 → 我塞的格式不被上游接受,大概率是 503 根因。
+  void _dumpInputItemComparison(List<int> bodyBytes, String injected) {
+    try {
+      final decoded = jsonDecode(utf8.decode(bodyBytes));
+      if (decoded is! Map) return;
+      final input = decoded['input'];
+      if (input is! List || input.isEmpty) return;
+      final firstItem = input.first;
+      // codex 自己的 developer message:只看结构 + content[0] 的 type,
+      // 文本太长截掉前 80 字符就够看格式了
+      String firstSummary;
+      try {
+        firstSummary = _shortenJsonValues(firstItem);
+      } catch (_) {
+        firstSummary = '<dump-failed>';
+      }
+      // 我注入的那一条 — 模拟 _applyRequestOptionsToResponses 里的构造
+      final myInjection = {
+        'type': 'message',
+        'role': 'developer',
+        'content': [
+          {'type': 'input_text', 'text': injected},
+        ],
+      };
+      AppLogService.instance.info(
+        'ClaudeBridge',
+        '对比:codex 原生 input[0] vs 我注入的',
+        details:
+            'codex_input[0]=$firstSummary\n  my_inject=${_shortenJsonValues(myInjection)}',
+      );
+    } catch (e) {
+      AppLogService.instance.warning(
+        'ClaudeBridge',
+        '对比失败',
+        details: '$e',
+      );
+    }
+  }
+
+  /// 注入后,把整个 input/messages 数组(每项摘要)dump 出来。
+  /// 这样能看到我塞的那条到底落在哪个位置、跟前后是什么关系。
+  void _dumpInjectedBody(List<int> outBytes) {
+    try {
+      final decoded = jsonDecode(utf8.decode(outBytes));
+      if (decoded is! Map) return;
+      final buf = StringBuffer();
+      // responses 协议:dump input 数组
+      final input = decoded['input'];
+      if (input is List) {
+        buf.write('input.count=${input.length}');
+        for (var i = 0; i < input.length; i++) {
+          buf.write('\n  [$i]=${_shortenJsonValues(input[i])}');
+        }
+      }
+      // messages 协议:dump messages 数组 + 顶层 system
+      final messages = decoded['messages'];
+      if (messages is List) {
+        final sys = decoded['system'];
+        if (sys != null) {
+          buf.write('system=${_clip(sys.toString().replaceAll('\n', '\\n'), 400)}');
+        }
+        buf.write('\n  messages.count=${messages.length}');
+        for (var i = 0; i < messages.length; i++) {
+          buf.write('\n  [$i]=${_shortenJsonValues(messages[i])}');
+        }
+      }
+      AppLogService.instance.info(
+        'ClaudeBridge',
+        '注入后完整 input/messages dump',
+        details: buf.toString(),
+      );
+    } catch (e) {
+      AppLogService.instance.warning(
+        'ClaudeBridge',
+        'dump 失败',
+        details: '$e',
+      );
+    }
+  }
+
+  /// 递归把 JSON 里的长字符串截断,保留结构。用 JSON encode 输出。
+  String _shortenJsonValues(Object? value) {
+    final shortened = _shortenValue(value, 80);
+    return jsonEncode(shortened);
+  }
+
+  Object? _shortenValue(Object? value, int maxStr) {
+    if (value is String) {
+      if (value.length <= maxStr) return value;
+      return '${value.substring(0, maxStr)}…(+${value.length - maxStr})';
+    }
+    if (value is List) {
+      return value.map((v) => _shortenValue(v, maxStr)).toList();
+    }
+    if (value is Map) {
+      return value.map((k, v) => MapEntry(k, _shortenValue(v, maxStr)));
+    }
+    return value;
+  }
+
+  /// 把当前的 Claude 桥绑定渲染成一条 system message 内容。
+  /// 让上游 LLM 知道这次对话需要先调 MCP 工具读取这条 Claude 会话作为接续上下文。
+  String _buildClaudeBridgeSystemMessage(ClaudeBridgeBinding binding) {
+    final titlePart =
+        (binding.title != null && binding.title!.isNotEmpty) ? '\n- 标题: ${binding.title}' : '';
+    return '本次对话需要接续一条已存在的 Claude Code 会话作为上下文。\n'
+        '请在响应用户之前,通过 MCP 工具 `read_claude_session` 读取下列会话的消息流,\n'
+        '理解其历史后再回答用户的新请求。可分页读取(每次 limit≤200),必要时多次调用直到 hasMore=false。\n\n'
+        '- jsonl_path: ${binding.jsonlPath}\n'
+        '- sessionId: ${binding.sessionId}$titlePart\n\n'
+        '注意:这条 system 指引每轮都会出现,直到用户在客户端解除绑定。如果你已经在前面的轮次读取过该会话,可以直接复用记忆,不需要重复调用工具。';
+  }
+
   /// body 摘要:解析 JSON 后只打印 model + input/messages 摘要,跳过固定的 instructions。
   /// 让日志直接体现"这次请求究竟跟上次哪里不一样",好判断是不是 codex 重发同一个请求。
   String _summarizeBody(List<int> bytes) {
@@ -503,6 +679,22 @@ class LocalProxyService {
     final buf = StringBuffer('bytes=${bytes.length}');
     final model = decoded['model'];
     if (model != null) buf.write('\n  model=$model');
+
+    // tools 摘要:codex 发来的工具列表 — 名字 + 总数。Claude 桥用户最关心
+    // 「我注册的 MCP 工具 read_claude_session 有没有进上游」
+    final tools = decoded['tools'];
+    if (tools is List) {
+      final names = <String>[];
+      for (final t in tools) {
+        if (t is Map) {
+          final n = t['name'] ?? (t['function'] is Map ? (t['function'] as Map)['name'] : null);
+          if (n is String) names.add(n);
+        }
+      }
+      buf.write('\n  tools.count=${tools.length} names=[${names.join(", ")}]');
+    } else {
+      buf.write('\n  tools=(none)');
+    }
 
     // responses 协议:input 是 list of turns
     final input = decoded['input'];

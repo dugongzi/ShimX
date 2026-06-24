@@ -11,6 +11,7 @@ import 'package:shim/features/codex_session/presentation/providers/codex_session
 import 'package:shim/features/codex_session/presentation/providers/codex_session_export_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 import 'package:shim/features/home/presentation/providers/inject_action_provider.dart';
+import 'package:shim/features/mcp/presentation/providers/claude_bridge_provider.dart';
 import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
@@ -228,6 +229,7 @@ class _ReloadCodexIcon extends HookConsumerWidget {
                 ref.read(providerHealthRouteRegistrationProvider);
                 ref.read(autoSwitchRouteRegistrationProvider);
                 ref.read(providerActionRouteRegistrationProvider);
+                ref.read(claudeBridgeRouteRegistrationProvider);
 
                 await cdp.connect(debugPort);
                 await cdp.reloadPage();

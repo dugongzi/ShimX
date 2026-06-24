@@ -33,10 +33,15 @@ class LlmRequestConvertOptions {
   const LlmRequestConvertOptions({
     this.overrideModel,
     this.reasoningEffort,
+    this.prependSystemMessage,
   });
 
   final String? overrideModel;
   final String? reasoningEffort;
+
+  /// 在 input 首部插一条 role=system 的 message,用于注入"接续 Claude 会话"等运行时指引。
+  /// 空/null = 不插。
+  final String? prependSystemMessage;
 }
 
 List<int> convertLlmProtocolBody(
@@ -90,6 +95,56 @@ Map<String, Object?> _applyRequestOptionsToResponses(
         : <String, Object?>{};
     reasoning['effort'] = effort;
     out['reasoning'] = reasoning;
+  }
+
+  final prepend = options.prependSystemMessage;
+  if (prepend != null && prepend.isNotEmpty) {
+    // role 跟 codex 自己发的保持一致:codex 用 'developer' 当 system 角色
+    // (Responses API 新规范),所以这里也用 developer,避免中转网关因 role
+    // 不在白名单里直接 502。messages 协议转换那边的 _convertResponsesToAnthropicMessages
+    // 已经把 developer 当 system 收口。
+    final injected = <String, Object?>{
+      'type': 'message',
+      'role': 'developer',
+      'content': [
+        {'type': 'input_text', 'text': prepend},
+      ],
+    };
+    final existingInput = out['input'];
+    if (existingInput is List) {
+      // 插在"最后一条 role=user message"之前。这样能避开 input 头部可能存在的
+      // reasoning/assistant 配对(它们必须保持相邻顺序,中间硬塞 system 会让
+      // 网关/Responses API 认为结构错乱直接 502)。
+      // 找不到 user message 就退回到尾部追加,而不是头部前插。
+      final list = List<Object?>.from(existingInput);
+      var insertIndex = -1;
+      for (var i = list.length - 1; i >= 0; i--) {
+        final item = list[i];
+        if (item is Map && item['role'] == 'user') {
+          insertIndex = i;
+          break;
+        }
+      }
+      if (insertIndex >= 0) {
+        list.insert(insertIndex, injected);
+      } else {
+        list.add(injected);
+      }
+      out['input'] = list;
+    } else if (existingInput is String && existingInput.isNotEmpty) {
+      out['input'] = [
+        injected,
+        {
+          'type': 'message',
+          'role': 'user',
+          'content': [
+            {'type': 'input_text', 'text': existingInput},
+          ],
+        },
+      ];
+    } else {
+      out['input'] = [injected];
+    }
   }
   return out;
 }

@@ -268,7 +268,11 @@ Map<String, String> _shimLabels(bool isZh) {
       'claudeBridgeLoading': '加载中…',
       'claudeBridgeEmpty': '未发现 Claude Code 会话',
       'claudeBridgeErrorPrefix': '加载失败:',
-      'claudeBridgeContinueToast': '接续功能待开发',
+      'claudeBridgeBoundToast': '已绑定为接续上下文',
+      'claudeBridgeUnboundToast': '已解除绑定',
+      'claudeBridgeBindFailed': '绑定失败',
+      'claudeBridgeChipPrefix': 'Claude:',
+      'claudeBridgeChipUnbindAria': '解除绑定',
       'claudeBridgeSessionsCount': '个会话',
     };
   }
@@ -313,7 +317,11 @@ Map<String, String> _shimLabels(bool isZh) {
     'claudeBridgeLoading': 'Loading…',
     'claudeBridgeEmpty': 'No Claude Code sessions found',
     'claudeBridgeErrorPrefix': 'Load failed: ',
-    'claudeBridgeContinueToast': 'Continue is not implemented yet',
+    'claudeBridgeBoundToast': 'Bound as continuation context',
+    'claudeBridgeUnboundToast': 'Unbound',
+    'claudeBridgeBindFailed': 'Bind failed',
+    'claudeBridgeChipPrefix': 'Claude:',
+    'claudeBridgeChipUnbindAria': 'Unbind',
     'claudeBridgeSessionsCount': 'sessions',
   };
 }

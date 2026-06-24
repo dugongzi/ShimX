@@ -2657,16 +2657,153 @@
     row.innerHTML = `
       <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(title || thread.sessionId)}</div>
     `;
-    row.addEventListener('click', () => {
-      // 接续逻辑待写。先 toast 占位,告诉用户拿到了哪条会话。
-      showToast(
-        S('claudeBridgeContinueToast', 'Continue is not implemented yet') +
-          ' · ' +
-          (title || thread.sessionId),
-        'info',
-      );
+    row.addEventListener('click', async () => {
+      try {
+        const res = await window.shim('/claude-bridge/bind', {
+          sessionId: thread.sessionId,
+          jsonlPath: thread.jsonlPath,
+          title: title,
+        });
+        if (!res || res.code !== 0) {
+          showToast(`${S('claudeBridgeBindFailed', 'Bind failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
+          return;
+        }
+        shimClaudeBridgeState = res.data || { bound: false };
+        ensureClaudeBridgeChip();
+        showToast(
+          S('claudeBridgeBoundToast', 'Bound as continuation context') +
+            ' · ' + (title || thread.sessionId),
+          'success',
+        );
+      } catch (err) {
+        showToast(`${S('claudeBridgeBindFailed', 'Bind failed')}: ${err?.message || err}`, 'error');
+      }
     });
     return row;
+  }
+
+  // ========== Claude 桥:composer 旁的绑定状态 chip ==========
+  // 单一全局绑定:dart 侧 LocalProxyService 持有 ClaudeBridgeBinding。
+  // - 进页面/刷新时通过 /claude-bridge/state 拉一次,后续 ensure 时只复用缓存
+  // - 用户点会话 row → /claude-bridge/bind → 刷新 chip
+  // - 用户点 chip 的 × → /claude-bridge/unbind → 静默移除 chip
+  const CLAUDE_BRIDGE_CHIP_ID = '__shim_claude_bridge_chip__';
+  let shimClaudeBridgeState = { bound: false };
+  let shimClaudeBridgeStateLoaded = false;
+
+  function refreshClaudeBridgeState() {
+    if (typeof window.shim !== 'function') return Promise.resolve();
+    return window.shim('/claude-bridge/state', {}).then((res) => {
+      if (res && res.code === 0 && res.data) {
+        shimClaudeBridgeState = res.data;
+        ensureClaudeBridgeChip();
+      }
+    }).catch(() => {});
+  }
+
+  function ensureClaudeBridgeChip() {
+    if (!shimClaudeBridgeStateLoaded) {
+      shimClaudeBridgeStateLoaded = true;
+      refreshClaudeBridgeState();
+      return;
+    }
+    const existing = document.getElementById(CLAUDE_BRIDGE_CHIP_ID);
+    if (!shimClaudeBridgeState.bound) {
+      existing?.remove();
+      return;
+    }
+    const anchor = findProviderPickerAnchor();
+    if (!anchor) return;
+    if (existing && existing.parentElement === anchor.group) {
+      const labelEl = existing.querySelector('[data-shim-bridge-label]');
+      if (labelEl) {
+        const title = shimClaudeBridgeState.title || shimClaudeBridgeState.sessionId || '';
+        const expected = `${S('claudeBridgeChipPrefix', 'Claude:')} ${title}`;
+        if (labelEl.textContent !== expected) labelEl.textContent = expected;
+      }
+      return;
+    }
+    existing?.remove();
+    const chip = buildClaudeBridgeChip();
+    // 挂在 provider picker 同一行的最左边,picker 按钮之前
+    const pickerBtn = document.getElementById(PROVIDER_PICKER_ID);
+    if (pickerBtn && pickerBtn.parentElement === anchor.group) {
+      anchor.group.insertBefore(chip, pickerBtn);
+    } else {
+      anchor.group.insertBefore(chip, anchor.button);
+    }
+  }
+
+  function buildClaudeBridgeChip() {
+    const chip = document.createElement('span');
+    chip.id = CLAUDE_BRIDGE_CHIP_ID;
+    Object.assign(chip.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '6px',
+      height: '24px',
+      padding: '0 8px',
+      borderRadius: '999px',
+      background: 'rgba(34, 197, 94, 0.14)',
+      color: '#22c55e',
+      border: '1px solid rgba(34, 197, 94, 0.32)',
+      fontSize: '12px',
+      fontWeight: '600',
+      lineHeight: '1',
+      maxWidth: '220px',
+      whiteSpace: 'nowrap',
+    });
+    const title = shimClaudeBridgeState.title || shimClaudeBridgeState.sessionId || '';
+    const label = document.createElement('span');
+    label.setAttribute('data-shim-bridge-label', '1');
+    label.textContent = `${S('claudeBridgeChipPrefix', 'Claude:')} ${title}`;
+    Object.assign(label.style, {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      maxWidth: '180px',
+    });
+    chip.appendChild(label);
+
+    const close = document.createElement('span');
+    close.textContent = '×';
+    close.setAttribute('role', 'button');
+    close.setAttribute('aria-label', S('claudeBridgeChipUnbindAria', 'Unbind'));
+    Object.assign(close.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '16px',
+      height: '16px',
+      borderRadius: '999px',
+      cursor: 'pointer',
+      fontSize: '14px',
+      fontWeight: '700',
+      opacity: '0.8',
+    });
+    const stopAll = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    };
+    close.addEventListener('pointerdown', stopAll, true);
+    close.addEventListener('mousedown', stopAll, true);
+    close.addEventListener('click', async (event) => {
+      stopAll(event);
+      try {
+        const res = await window.shim('/claude-bridge/unbind', {});
+        if (res && res.code === 0) {
+          shimClaudeBridgeState = res.data || { bound: false };
+          ensureClaudeBridgeChip();
+        }
+      } catch (_) {
+        // 静默,即使后端没回,chip 也直接消失
+        shimClaudeBridgeState = { bound: false };
+        ensureClaudeBridgeChip();
+      }
+    }, true);
+    chip.appendChild(close);
+    return chip;
   }
 
   function projectLastSegment(path) {
@@ -2706,6 +2843,7 @@
     ensureCodexPluginFeatures();
     const t7 = performance.now();
     ensureClaudeBridge();
+    ensureClaudeBridgeChip();
     const t8 = performance.now();
 
     const after = __countDomBefore();

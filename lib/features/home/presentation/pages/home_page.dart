@@ -9,10 +9,11 @@ import 'package:shim/features/home/presentation/widgets/home_sidebar.dart';
 import 'package:shim/features/home/presentation/widgets/home_tab_item.dart';
 import 'package:shim/features/home/presentation/widgets/sessions_tab.dart';
 import 'package:shim/features/logs/presentation/widgets/logs_tab.dart';
+import 'package:shim/features/mcp/presentation/widgets/mcp_tab.dart';
 import 'package:shim/features/providers/presentation/widgets/providers_tab.dart';
 import 'package:shim/features/settings/presentation/widgets/settings_tab.dart';
 
-enum HomeTab { home, providers, sessions, logs, settings }
+enum HomeTab { home, providers, sessions, mcp, logs, settings }
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -56,6 +57,13 @@ class HomePage extends HookConsumerWidget {
                       onTap: () => selectedTab.value = HomeTab.sessions,
                     ),
                     HomeTabItem(
+                      leading: Icons.hub_outlined,
+                      selectedLeading: Icons.hub_rounded,
+                      title: context.l10n.mcp,
+                      selected: selectedTab.value == HomeTab.mcp,
+                      onTap: () => selectedTab.value = HomeTab.mcp,
+                    ),
+                    HomeTabItem(
                       leading: Icons.subject_outlined,
                       selectedLeading: Icons.subject_rounded,
                       title: context.l10n.navLogs,
@@ -79,6 +87,7 @@ class HomePage extends HookConsumerWidget {
                       DashboardTab(),
                       ProvidersTab(),
                       SessionsTab(),
+                      McpTab(),
                       LogsTab(),
                       SettingsTab(),
                     ],

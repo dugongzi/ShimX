@@ -1189,6 +1189,102 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'{n} 天前'**
   String daysAgo(int n);
+
+  /// No description provided for @copy.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制'**
+  String get copy;
+
+  /// No description provided for @copied.
+  ///
+  /// In zh, this message translates to:
+  /// **'已复制'**
+  String get copied;
+
+  /// No description provided for @mcp.
+  ///
+  /// In zh, this message translates to:
+  /// **'MCP'**
+  String get mcp;
+
+  /// No description provided for @mcpServersTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'shim 提供的 MCP server'**
+  String get mcpServersTitle;
+
+  /// No description provided for @mcpServersHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'这些 MCP server 由 shim 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。'**
+  String get mcpServersHint;
+
+  /// No description provided for @mcpServersEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未启用任何 MCP server'**
+  String get mcpServersEmpty;
+
+  /// No description provided for @mcpServerUrlLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'URL'**
+  String get mcpServerUrlLabel;
+
+  /// No description provided for @mcpServerIdLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'ID'**
+  String get mcpServerIdLabel;
+
+  /// No description provided for @mcpServerToolCountLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具数'**
+  String get mcpServerToolCountLabel;
+
+  /// No description provided for @mcpServerRegisteredLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'已写入 codex 配置'**
+  String get mcpServerRegisteredLabel;
+
+  /// No description provided for @mcpServerRegisteredYes.
+  ///
+  /// In zh, this message translates to:
+  /// **'是'**
+  String get mcpServerRegisteredYes;
+
+  /// No description provided for @mcpServerRegisteredNo.
+  ///
+  /// In zh, this message translates to:
+  /// **'否'**
+  String get mcpServerRegisteredNo;
+
+  /// No description provided for @mcpServerStatusDetailLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'错误信息'**
+  String get mcpServerStatusDetailLabel;
+
+  /// No description provided for @mcpStatusRunning.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行中'**
+  String get mcpStatusRunning;
+
+  /// No description provided for @mcpStatusStopped.
+  ///
+  /// In zh, this message translates to:
+  /// **'未启动'**
+  String get mcpStatusStopped;
+
+  /// No description provided for @mcpStatusError.
+  ///
+  /// In zh, this message translates to:
+  /// **'错误'**
+  String get mcpStatusError;
 }
 
 class _AppLocalizationsDelegate

@@ -598,4 +598,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String daysAgo(int n) {
     return '$n d ago';
   }
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get mcp => 'MCP';
+
+  @override
+  String get mcpServersTitle => 'MCP servers from shim';
+
+  @override
+  String get mcpServersHint =>
+      'These MCP servers are hosted inside the shim process and can be wired into codex via streamable_http so the LLM can query local data on demand.';
+
+  @override
+  String get mcpServersEmpty => 'No MCP servers enabled';
+
+  @override
+  String get mcpServerUrlLabel => 'URL';
+
+  @override
+  String get mcpServerIdLabel => 'ID';
+
+  @override
+  String get mcpServerToolCountLabel => 'Tools';
+
+  @override
+  String get mcpServerRegisteredLabel => 'Registered in codex';
+
+  @override
+  String get mcpServerRegisteredYes => 'Yes';
+
+  @override
+  String get mcpServerRegisteredNo => 'No';
+
+  @override
+  String get mcpServerStatusDetailLabel => 'Error';
+
+  @override
+  String get mcpStatusRunning => 'running';
+
+  @override
+  String get mcpStatusStopped => 'stopped';
+
+  @override
+  String get mcpStatusError => 'error';
 }

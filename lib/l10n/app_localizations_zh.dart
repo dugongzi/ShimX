@@ -589,4 +589,53 @@ class AppLocalizationsZh extends AppLocalizations {
   String daysAgo(int n) {
     return '$n 天前';
   }
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get copied => '已复制';
+
+  @override
+  String get mcp => 'MCP';
+
+  @override
+  String get mcpServersTitle => 'shim 提供的 MCP server';
+
+  @override
+  String get mcpServersHint =>
+      '这些 MCP server 由 shim 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。';
+
+  @override
+  String get mcpServersEmpty => '尚未启用任何 MCP server';
+
+  @override
+  String get mcpServerUrlLabel => 'URL';
+
+  @override
+  String get mcpServerIdLabel => 'ID';
+
+  @override
+  String get mcpServerToolCountLabel => '工具数';
+
+  @override
+  String get mcpServerRegisteredLabel => '已写入 codex 配置';
+
+  @override
+  String get mcpServerRegisteredYes => '是';
+
+  @override
+  String get mcpServerRegisteredNo => '否';
+
+  @override
+  String get mcpServerStatusDetailLabel => '错误信息';
+
+  @override
+  String get mcpStatusRunning => '运行中';
+
+  @override
+  String get mcpStatusStopped => '未启动';
+
+  @override
+  String get mcpStatusError => '错误';
 }

@@ -256,5 +256,21 @@
     "placeholders": {
       "n": {"type": "int"}
     }
-  }
+  },
+  "copy": "复制",
+  "copied": "已复制",
+  "mcp": "MCP",
+  "mcpServersTitle": "shim 提供的 MCP server",
+  "mcpServersHint": "这些 MCP server 由 shim 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。",
+  "mcpServersEmpty": "尚未启用任何 MCP server",
+  "mcpServerUrlLabel": "URL",
+  "mcpServerIdLabel": "ID",
+  "mcpServerToolCountLabel": "工具数",
+  "mcpServerRegisteredLabel": "已写入 codex 配置",
+  "mcpServerRegisteredYes": "是",
+  "mcpServerRegisteredNo": "否",
+  "mcpServerStatusDetailLabel": "错误信息",
+  "mcpStatusRunning": "运行中",
+  "mcpStatusStopped": "未启动",
+  "mcpStatusError": "错误"
 }

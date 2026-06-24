@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -103,12 +104,28 @@ class LocalProxyService {
   ProxyTarget? get target => _target;
 
   void setTarget(ProxyTarget target) {
+    final prev = _target;
     _target = target;
+    final unchanged = prev != null &&
+        prev.baseUrl == target.baseUrl &&
+        prev.model == target.model &&
+        prev.upstreamProtocol == target.upstreamProtocol &&
+        prev.providerId == target.providerId &&
+        prev.reasoningEffort == target.reasoningEffort;
+    if (unchanged) {
+      AppLogService.instance.debug(
+        'Proxy',
+        '代理目标无变化',
+        details:
+            'baseUrl=${target.baseUrl}\nmodel=${target.model ?? "(passthrough)"}\nprotocol=${target.upstreamProtocol}\nprovider=${target.providerId ?? "(none)"}',
+      );
+      return;
+    }
     AppLogService.instance.info(
       'Proxy',
       '已切换代理目标',
       details:
-          'baseUrl=${target.baseUrl}\nmodel=${target.model ?? "(passthrough)"}\nprotocol=${target.upstreamProtocol}\nprovider=${target.providerId ?? "(none)"}',
+          'baseUrl=${target.baseUrl}\nmodel=${target.model ?? "(passthrough)"}\nprotocol=${target.upstreamProtocol}\nprovider=${target.providerId ?? "(none)"}\nprev=${prev?.baseUrl ?? "(none)"} prevModel=${prev?.model ?? "(none)"} prevProvider=${prev?.providerId ?? "(none)"}',
     );
   }
 
@@ -225,10 +242,13 @@ class LocalProxyService {
 
   Future<void> _handleRequest(HttpRequest request) async {
     final target = _target;
+    // 调试用:把请求来源 + headers 关键字段记下,便于定位"谁在发请求"
+    final hdrSummary = _summarizeRequestHeaders(request);
     AppLogService.instance.info(
       'Proxy',
       '收到请求 ${request.method} ${request.uri}',
-      details: 'target=${target?.baseUrl}',
+      details:
+          'target=${target?.baseUrl}\n  origin=${request.connectionInfo?.remoteAddress.address}:${request.connectionInfo?.remotePort}\n  $hdrSummary',
     );
     if (target == null) {
       await _closeWithStatus(request.response, HttpStatus.serviceUnavailable);
@@ -264,6 +284,12 @@ class LocalProxyService {
       _applyProtocolHeaders(upstreamRequest, spec.headers);
 
       final bodyBytes = await _collectBody(request);
+      // 调试用:把原始请求 body 前 800 字节 dump 出来定位发起方
+      AppLogService.instance.info(
+        'Proxy',
+        '请求 body',
+        details: _summarizeBody(bodyBytes),
+      );
       final outBytes = convertLlmProtocolBody(
         bodyBytes,
         from: LlmProtocol.responses,
@@ -426,5 +452,140 @@ class LocalProxyService {
       default:
         return false;
     }
+  }
+
+  /// 把入站请求的关键 headers 拼成一行,便于在日志里识别"谁在发请求"。
+  /// 取 User-Agent / Origin / Referer / 各种 x-* 客户端标识。
+  String _summarizeRequestHeaders(HttpRequest request) {
+    final wanted = <String>[
+      'user-agent',
+      'origin',
+      'referer',
+      'host',
+      'x-forwarded-for',
+      'x-originator',
+      'x-client',
+      'x-session-id',
+      'x-request-id',
+      'session-id',
+      'mcp-session-id',
+    ];
+    final parts = <String>[];
+    for (final name in wanted) {
+      final value = request.headers.value(name);
+      if (value != null && value.isNotEmpty) {
+        parts.add('$name=${_clip(value, 120)}');
+      }
+    }
+    return parts.isEmpty ? '(no notable headers)' : parts.join(' | ');
+  }
+
+  /// body 摘要:解析 JSON 后只打印 model + input/messages 摘要,跳过固定的 instructions。
+  /// 让日志直接体现"这次请求究竟跟上次哪里不一样",好判断是不是 codex 重发同一个请求。
+  String _summarizeBody(List<int> bytes) {
+    if (bytes.isEmpty) return '(empty body)';
+    String text;
+    try {
+      text = utf8.decode(bytes, allowMalformed: true);
+    } catch (_) {
+      return 'bytes=${bytes.length} <binary>';
+    }
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(text);
+    } catch (_) {
+      // 非 JSON,退回原来的截断方案
+      return 'bytes=${bytes.length}\n  ${_clip(text, 800).replaceAll('\n', '\\n')}';
+    }
+    if (decoded is! Map) {
+      return 'bytes=${bytes.length} (non-object json)';
+    }
+    final buf = StringBuffer('bytes=${bytes.length}');
+    final model = decoded['model'];
+    if (model != null) buf.write('\n  model=$model');
+
+    // responses 协议:input 是 list of turns
+    final input = decoded['input'];
+    if (input is List) {
+      buf.write('\n  input.count=${input.length}');
+      // 只打最后 3 条(尾端才是新的)
+      final tail = input.length <= 3 ? input : input.sublist(input.length - 3);
+      for (var i = 0; i < tail.length; i++) {
+        final idx = input.length - tail.length + i;
+        buf.write('\n  input[$idx]=${_clip(_summarizeTurn(tail[i]), 400)}');
+      }
+    }
+
+    // messages 协议:messages 是 list of {role, content}
+    final messages = decoded['messages'];
+    if (messages is List) {
+      buf.write('\n  messages.count=${messages.length}');
+      final tail = messages.length <= 3
+          ? messages
+          : messages.sublist(messages.length - 3);
+      for (var i = 0; i < tail.length; i++) {
+        final idx = messages.length - tail.length + i;
+        buf.write('\n  messages[$idx]=${_clip(_summarizeTurn(tail[i]), 400)}');
+      }
+    }
+
+    // chat 协议同样走 messages 路径
+
+    return buf.toString();
+  }
+
+  /// 把单个 turn(input 元素或 message)压成一行摘要。
+  /// 关注 role / type / 文本内容 / function_call name + args 长度。
+  String _summarizeTurn(dynamic turn) {
+    if (turn is! Map) return jsonEncode(turn);
+    final role = turn['role'];
+    final type = turn['type'];
+    final parts = <String>[];
+    if (role != null) parts.add('role=$role');
+    if (type != null && type != role) parts.add('type=$type');
+
+    // function_call 类型:打 name + arguments 长度
+    if (type == 'function_call' || turn['name'] != null) {
+      final name = turn['name'];
+      final args = turn['arguments'];
+      if (name != null) parts.add('name=$name');
+      if (args is String) {
+        parts.add('args.len=${args.length}');
+      } else if (args != null) {
+        parts.add('args=${_clip(jsonEncode(args), 120)}');
+      }
+    }
+    if (type == 'function_call_output') {
+      final output = turn['output'];
+      if (output is String) {
+        parts.add('output.len=${output.length}');
+      }
+    }
+
+    // content 可能是 string 或 list of {type, text}
+    final content = turn['content'];
+    if (content is String) {
+      parts.add('content=${_clip(content.replaceAll('\n', '\\n'), 200)}');
+    } else if (content is List) {
+      final texts = <String>[];
+      for (final item in content) {
+        if (item is Map) {
+          final t = item['text'] ?? item['content'];
+          if (t is String) texts.add(t);
+        } else if (item is String) {
+          texts.add(item);
+        }
+      }
+      if (texts.isNotEmpty) {
+        parts.add('content=${_clip(texts.join(" | ").replaceAll('\n', '\\n'), 200)}');
+      }
+    }
+
+    return parts.join(' ');
+  }
+
+  String _clip(String s, int max) {
+    if (s.length <= max) return s;
+    return '${s.substring(0, max)}…(+${s.length - max})';
   }
 }

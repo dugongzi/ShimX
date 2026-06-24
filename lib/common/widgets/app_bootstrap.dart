@@ -1,6 +1,7 @@
 import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
 import 'package:shim/core/themes/app_theme.dart';
+import 'package:shim/features/mcp/presentation/providers/mcp_server_action_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shim/l10n/app_localizations.dart';
@@ -42,6 +43,8 @@ class AppBootstrap extends ConsumerWidget {
     final themeColor = ref.watch(themeColorProvider);
     // 启动时按持久化的代理开关自动接管（keepAlive，只触发一次）
     ref.watch(proxyAutoStartProvider);
+    // 启动时按持久化的 MCP 开关自动起本地 MCP server
+    ref.watch(mcpServerAutoStartProvider);
 
     return ScreenUtilInit(
       designSize: const Size(375, 812),

@@ -256,5 +256,21 @@
     "placeholders": {
       "n": {"type": "int"}
     }
-  }
+  },
+  "copy": "Copy",
+  "copied": "Copied",
+  "mcp": "MCP",
+  "mcpServersTitle": "MCP servers from shim",
+  "mcpServersHint": "These MCP servers are hosted inside the shim process and can be wired into codex via streamable_http so the LLM can query local data on demand.",
+  "mcpServersEmpty": "No MCP servers enabled",
+  "mcpServerUrlLabel": "URL",
+  "mcpServerIdLabel": "ID",
+  "mcpServerToolCountLabel": "Tools",
+  "mcpServerRegisteredLabel": "Registered in codex",
+  "mcpServerRegisteredYes": "Yes",
+  "mcpServerRegisteredNo": "No",
+  "mcpServerStatusDetailLabel": "Error",
+  "mcpStatusRunning": "running",
+  "mcpStatusStopped": "stopped",
+  "mcpStatusError": "error"
 }

@@ -104,8 +104,21 @@ void registerProviderActionBridgeRoutes(Ref ref) {
     if (id is! String || id.isEmpty) {
       throw ArgumentError('provider id is required');
     }
+    final prevSelected = await queryRepo.selectedId();
     await actionRepo.saveSelectedId(id);
-    AppLogService.instance.info('Provider', '选中供应商', details: id);
+    if (prevSelected == id) {
+      AppLogService.instance.debug(
+        'Provider',
+        '选中供应商(无变化)',
+        details: 'id=$id 调用方=${payload['__caller'] ?? '(unknown)'}',
+      );
+    } else {
+      AppLogService.instance.info(
+        'Provider',
+        '选中供应商',
+        details: 'id=$id prev=$prevSelected 调用方=${payload['__caller'] ?? '(unknown)'}',
+      );
+    }
     ref.invalidate(providerListProvider);
     await _syncRunningProxyTarget(ref);
 
@@ -124,17 +137,38 @@ void registerProviderActionBridgeRoutes(Ref ref) {
     final model = rawModel is String && rawModel.isNotEmpty ? rawModel : null;
     final providers = await queryRepo.listProviders();
     var found = false;
+    String? prevModel;
     final next = providers.map<ApiProvider>((provider) {
       if (provider.id != id) return provider;
       found = true;
+      prevModel = provider.selectedModel;
       return provider.copyWith(selectedModel: model);
     }).toList();
     if (!found) throw ArgumentError('provider not found: $id');
 
+    final prevSelected = await queryRepo.selectedId();
     await actionRepo.saveProviders(next);
-    AppLogService.instance.info('Provider', '切换模型', details: ' -> ');
+    if (prevModel == model) {
+      AppLogService.instance.debug(
+        'Provider',
+        '切换模型(无变化)',
+        details: 'id=$id model=${model ?? "(null)"} 调用方=${payload['__caller'] ?? '(unknown)'}',
+      );
+    } else {
+      AppLogService.instance.info(
+        'Provider',
+        '切换模型',
+        details: 'id=$id ${prevModel ?? "(null)"} -> ${model ?? "(null)"} 调用方=${payload['__caller'] ?? '(unknown)'}',
+      );
+    }
     await actionRepo.saveSelectedId(id);
-    AppLogService.instance.info('Provider', '选中供应商', details: id);
+    if (prevSelected != id) {
+      AppLogService.instance.info(
+        'Provider',
+        '选中供应商',
+        details: 'id=$id prev=$prevSelected (via select-model)',
+      );
+    }
     ref.invalidate(providerListProvider);
     await _syncRunningProxyTarget(ref);
 

@@ -5,6 +5,28 @@
 // @author      shim
 // ==/Shim==
 (() => {
+  // ========== 全脚本 once guard ==========
+  // 整个 codex_enhance.js 必须在同一个页面 context 里**只执行一次**。
+  //
+  // 重复执行的后果:
+  //   - 每个 ensureXxx 里的 addEventListener / MutationObserver 叠 N 份
+  //   - window.fetch / XMLHttpRequest hook 链叠 N 层
+  //   - 用户点一次按钮触发 N 次 handler → codex 自己看着像"狂发请求"
+  //
+  // 触发场景:用户点 shim 的"刷新 codex"或"注入"按钮,cdp_service 走
+  // Page.addScriptToEvaluateOnNewDocument(累积式注册,reload 时全部执行) +
+  // Runtime.evaluate(当前页立刻再来一次)。
+  //
+  // cdp_service 侧也做了去重(remove + add),这里再加一层 IIFE 级别的 once
+  // 是兜底,任何路径走来都只装一次。
+  if (window.__shimCodexEnhanceLoaded) {
+    if (typeof console !== 'undefined') {
+      console.log('[Shim] codex_enhance 已加载过,跳过重复执行');
+    }
+    return;
+  }
+  window.__shimCodexEnhanceLoaded = true;
+
   // ========== 阻断 Statsig 等被墙的请求,避免主页面 hydration 卡 10 秒 ==========
   // ab.chatgpt.com / chatgpt.com/ces 在国内不可达,Codex 启动会等到 10s 超时,
   // 表现为主页面一直 loading。这里直接让请求立即失败,SPA 拿到 error 会走 fallback。
@@ -1030,7 +1052,7 @@
         event.stopPropagation();
         event.stopImmediatePropagation();
         if (!provider?.id) return;
-        await selectProviderModel(provider.id, null);
+        await selectProviderModel(provider.id, null, 'click:clear-model-x');
       }, true);
       button.appendChild(clear);
     }
@@ -1363,7 +1385,7 @@
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        await selectProvider(provider.id);
+        await selectProvider(provider.id, 'click:provider-row');
       }, true);
 
       const name = document.createElement('span');
@@ -1426,7 +1448,7 @@
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
-            await selectProviderModel(provider.id, modelName);
+            await selectProviderModel(provider.id, modelName, 'click:model-row');
             if (!shouldShowShimReasoningEffort(modelName)) {
               dismissProviderPickerPopover();
             }
@@ -1765,8 +1787,10 @@
     return row;
   }
 
-  async function selectProvider(id) {
-    const res = await window.shim('/provider/select', { id });
+  async function selectProvider(id, caller) {
+    // caller: 'user-click' / 'auto' / etc. 仅用于 dart 端日志定位是哪段 JS 触发的
+    console.log('[ShimDbg] selectProvider', { id, caller, stack: new Error().stack });
+    const res = await window.shim('/provider/select', { id, __caller: caller || 'js:unknown' });
     if (!res || res.code !== 0) {
       showToast(`${S('switchProviderFailed', 'Switch provider failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
@@ -1783,8 +1807,9 @@
     refreshCurrentProvider();
   }
 
-  async function selectProviderModel(id, model) {
-    const res = await window.shim('/provider/select-model', { id, model });
+  async function selectProviderModel(id, model, caller) {
+    console.log('[ShimDbg] selectProviderModel', { id, model, caller, stack: new Error().stack });
+    const res = await window.shim('/provider/select-model', { id, model, __caller: caller || 'js:unknown' });
     if (!res || res.code !== 0) {
       showToast(`${S('switchModelFailed', 'Switch model failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;

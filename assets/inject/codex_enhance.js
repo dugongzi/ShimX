@@ -147,6 +147,8 @@
   const POPOVER_ID = '__shim_popover__';
   const PROVIDER_PICKER_ID = '__shim_provider_picker__';
   const PROVIDER_PICKER_POPOVER_ID = '__shim_provider_picker_popover__';
+  const THREAD_PREVIEW_ID = '__shim_thread_preview__';
+  const THREAD_PREVIEW_LENS_ID = '__shim_thread_preview_lens__';
 
   const BADGE_ANCHOR_SVG_D_PREFIX = 'M16.835 8.66301C16.835 7.71885';
   const SETTINGS_ANCHOR_SVG_D_PREFIX = 'M9.99944 7.24939';
@@ -1922,6 +1924,564 @@
     latest.insertBefore(buildProviderBadge(label), latest.firstChild);
   }
 
+  // ========== 当前对话预览:左侧消息 minimap ==========
+
+  const THREAD_PREVIEW_ITEM_ATTR = 'data-shim-thread-preview-key';
+  const THREAD_PREVIEW_ACTIVE_ATTR = 'data-shim-thread-preview-active';
+  const THREAD_PREVIEW_HIGHLIGHT_ATTR = 'data-shim-thread-preview-highlight';
+  const shimThreadPreviewState = {
+    signature: '',
+    scrollTarget: null,
+    scrollHandler: null,
+    activeFrame: 0,
+    resizeInstalled: false,
+    jumpTimer: 0,
+  };
+
+  function normalizePreviewText(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function cssEscapeValue(value) {
+    if (window.CSS && typeof window.CSS.escape === 'function') {
+      return window.CSS.escape(String(value));
+    }
+    return String(value).replace(/["\\]/g, '\\$&');
+  }
+
+  function isVisibleBox(rect) {
+    return rect && rect.width > 8 && rect.height > 8 &&
+      rect.bottom > 0 && rect.right > 0 &&
+      rect.top < window.innerHeight && rect.left < window.innerWidth;
+  }
+
+  function visibleTurns() {
+    return Array.from(document.querySelectorAll('[data-turn-key]')).filter((turn) => {
+      if (!(turn instanceof HTMLElement)) return false;
+      if (!turn.isConnected) return false;
+      const rect = turn.getBoundingClientRect();
+      if (rect.width <= 20 || rect.height <= 8) return false;
+      return normalizePreviewText(turn.textContent).length > 0;
+    });
+  }
+
+  function turnKey(turn, index) {
+    const raw = turn.getAttribute('data-turn-key') || '';
+    return raw || String(index);
+  }
+
+  function previewTextForTurn(turn) {
+    const clone = turn.cloneNode(true);
+    clone.querySelectorAll?.([
+      '.' + PROVIDER_BADGE_CLASS,
+      '[' + THREAD_PREVIEW_HIGHLIGHT_ATTR + ']',
+      '[aria-hidden="true"]',
+      'button',
+      'svg',
+      'script',
+      'style',
+    ].join(',')).forEach((node) => node.remove());
+    let text = normalizePreviewText(clone.textContent);
+    if (!text) text = S('threadPreviewEmptyMessage', 'Empty message');
+    return text.length > 160 ? text.slice(0, 157) + '...' : text;
+  }
+
+  function turnRole(turn, index, text) {
+    const roleNode = turn.matches?.('[data-message-author-role], [data-author-role], [data-role]')
+      ? turn
+      : turn.querySelector?.('[data-message-author-role], [data-author-role], [data-role]');
+    const rawRole = normalizePreviewText(
+      roleNode?.getAttribute('data-message-author-role') ||
+      roleNode?.getAttribute('data-author-role') ||
+      roleNode?.getAttribute('data-role') ||
+      turn.getAttribute('data-turn-role') ||
+      turn.getAttribute('data-role') ||
+      '',
+    ).toLowerCase();
+    const key = normalizePreviewText(turn.getAttribute('data-turn-key') || '').toLowerCase();
+    const sample = normalizePreviewText(text).toLowerCase();
+    const structural = `${rawRole} ${key}`;
+    if (/\b(tool|function|command|bash|shell|powershell|terminal|exec)\b/.test(structural) ||
+      /^(tool|function|command|bash|shell|powershell|terminal|exec|exit code|wall time|output)\b/.test(sample)) {
+      return 'tool';
+    }
+    if (/\b(user|human|you)\b/.test(structural)) return 'user';
+    if (/\b(assistant|ai|codex|agent)\b/.test(structural)) return 'assistant';
+    return index % 2 === 0 ? 'user' : 'assistant';
+  }
+
+  function rolePreviewMeta(role) {
+    if (role === 'tool') {
+      return {
+        icon: 'T',
+        label: S('threadPreviewToolRole', 'Tool'),
+        color: 'var(--token-text-secondary, var(--text-secondary, currentColor))',
+        background: 'var(--token-main-surface-tertiary, rgba(127, 127, 127, 0.14))',
+      };
+    }
+    if (role === 'user') {
+      return {
+        icon: 'U',
+        label: S('threadPreviewUserRole', 'User'),
+        color: 'var(--token-text-primary, currentColor)',
+        background: 'var(--token-main-surface-secondary, rgba(127, 127, 127, 0.12))',
+      };
+    }
+    return {
+      icon: 'A',
+      label: S('threadPreviewAssistantRole', 'Assistant'),
+      color: 'var(--token-text-secondary, var(--text-secondary, currentColor))',
+      background: 'transparent',
+    };
+  }
+
+  function previewGlyphForItem(item) {
+    const chars = Array.from(normalizePreviewText(item?.text || ''));
+    const first = chars.find((ch) => ch.trim().length > 0);
+    return first || '?';
+  }
+
+  function turnPreviewItems(turns) {
+    return turns.map((turn, index) => {
+      const text = previewTextForTurn(turn);
+      const role = turnRole(turn, index, text);
+      return {
+        key: turnKey(turn, index),
+        turn,
+        index,
+        role,
+        text,
+      };
+    });
+  }
+
+  function findScrollTarget(node) {
+    let cur = node?.parentElement || null;
+    while (cur && cur !== document.body && cur !== document.documentElement) {
+      const style = window.getComputedStyle(cur);
+      const overflow = `${style.overflowY} ${style.overflow}`;
+      if (/(auto|scroll|overlay)/.test(overflow) && cur.scrollHeight > cur.clientHeight + 12) {
+        return cur;
+      }
+      cur = cur.parentElement;
+    }
+    return window;
+  }
+
+  function navRightEdge() {
+    const nav = document.querySelector('nav[role="navigation"], aside');
+    const rect = nav?.getBoundingClientRect?.();
+    if (rect && rect.width > 20) return Math.max(0, rect.right);
+    return 0;
+  }
+
+  function messageContentLeft(turns, minLeft) {
+    const selectors = [
+      '[data-message-author-role]',
+      '.prose',
+      'article',
+      'p',
+      'pre',
+      'code',
+      'li',
+      'h1',
+      'h2',
+      'h3',
+      '[role="article"]',
+    ].join(',');
+    const candidates = [];
+    for (const turn of turns.slice(0, 20)) {
+      const nodes = [turn, ...Array.from(turn.querySelectorAll?.(selectors) || [])];
+      for (const node of nodes) {
+        if (!(node instanceof HTMLElement)) continue;
+        const text = normalizePreviewText(node.textContent);
+        if (text.length < 2) continue;
+        const rect = node.getBoundingClientRect();
+        if (!isVisibleBox(rect)) continue;
+        if (rect.left <= minLeft + 40) continue;
+        if (rect.width < 40 || rect.width > window.innerWidth * 0.86) continue;
+        candidates.push(rect.left);
+      }
+    }
+    if (!candidates.length) {
+      const rects = turns.map((turn) => turn.getBoundingClientRect()).filter(isVisibleBox);
+      if (!rects.length) return 0;
+      return Math.min(...rects.map((rect) => rect.left));
+    }
+    candidates.sort((a, b) => a - b);
+    return candidates[Math.floor(candidates.length * 0.2)];
+  }
+
+  function previewVerticalBounds(turns, scrollTarget) {
+    let top = 68;
+    let bottom = window.innerHeight - 112;
+    if (scrollTarget && scrollTarget !== window) {
+      const rect = scrollTarget.getBoundingClientRect();
+      if (isVisibleBox(rect)) {
+        top = Math.max(top, rect.top + 8);
+        bottom = Math.min(bottom, rect.bottom - 8);
+      }
+    }
+    const composer = document.querySelector('.composer-footer, form textarea')?.closest?.('form, .composer-footer') ||
+      document.querySelector('.composer-footer');
+    const composerRect = composer?.getBoundingClientRect?.();
+    if (composerRect && composerRect.top > top) {
+      bottom = Math.min(bottom, composerRect.top - 14);
+    }
+    const firstRect = turns[0]?.getBoundingClientRect?.();
+    if (firstRect && firstRect.top > 0 && firstRect.top < window.innerHeight * 0.45) {
+      top = Math.max(top, firstRect.top);
+    }
+    return { top, bottom };
+  }
+
+  function positionThreadPreview(panel, turns, scrollTarget) {
+    const navRight = navRightEdge();
+    const contentLeft = messageContentLeft(turns, navRight);
+    const available = contentLeft - navRight - 24;
+    const bounds = previewVerticalBounds(turns, scrollTarget);
+    const height = bounds.bottom - bounds.top;
+    if (!contentLeft || available < 42 || height < 120 || window.innerWidth < 900) {
+      panel.style.display = 'none';
+      hideThreadPreviewLens();
+      return false;
+    }
+    const width = 28;
+    const left = Math.max(navRight + 8, contentLeft - width - 12);
+    Object.assign(panel.style, {
+      display: 'flex',
+      position: 'fixed',
+      left: `${Math.round(left)}px`,
+      top: `${Math.round(bounds.top)}px`,
+      width: `${Math.round(width)}px`,
+      maxHeight: `${Math.round(height)}px`,
+      zIndex: '80',
+    });
+    return true;
+  }
+
+  function itemStyle(item, active) {
+    Object.assign(item.style, {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: active ? '22px' : '18px',
+      height: active ? '22px' : '18px',
+      minHeight: active ? '22px' : '18px',
+      padding: '0',
+      border: active
+        ? '1px solid var(--token-text-primary, currentColor)'
+        : '1px solid var(--token-border, rgba(127, 127, 127, 0.24))',
+      borderRadius: '999px',
+      background: active
+        ? 'var(--token-main-surface-secondary, rgba(127, 127, 127, 0.18))'
+        : 'transparent',
+      color: active
+        ? 'var(--token-text-primary, currentColor)'
+        : 'var(--token-text-secondary, var(--text-secondary, currentColor))',
+      cursor: 'pointer',
+      font: '800 9px/1 system-ui, -apple-system, sans-serif',
+      textAlign: 'center',
+      opacity: active ? '1' : '0.68',
+      transition: 'width 80ms ease, height 80ms ease, opacity 80ms ease, background 80ms ease, border-color 80ms ease',
+    });
+  }
+
+  function hideThreadPreviewLens() {
+    document.getElementById(THREAD_PREVIEW_LENS_ID)?.remove();
+  }
+
+  function showThreadPreviewLens(anchor, item) {
+    hideThreadPreviewLens();
+    const rect = anchor.getBoundingClientRect();
+    const meta = rolePreviewMeta(item.role);
+    const lens = document.createElement('div');
+    lens.id = THREAD_PREVIEW_LENS_ID;
+    lens.setAttribute('role', 'tooltip');
+    Object.assign(lens.style, {
+      position: 'fixed',
+      zIndex: '2147483000',
+      left: `${Math.round(rect.right + 10)}px`,
+      top: `${Math.round(rect.top + rect.height / 2)}px`,
+      transform: 'translateY(-50%)',
+      width: 'min(360px, calc(100vw - 48px))',
+      maxHeight: '156px',
+      overflow: 'hidden',
+      padding: '10px 12px',
+      borderRadius: '10px',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.28))',
+      background: 'var(--token-main-surface-primary, var(--token-sidebar-surface-primary, rgba(17, 24, 39, 0.96)))',
+      color: 'var(--token-text-primary, currentColor)',
+      boxShadow: 'var(--shadow-xl, 0 16px 44px rgba(0,0,0,0.28))',
+      backdropFilter: 'blur(10px)',
+      pointerEvents: 'none',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+    });
+    const header = document.createElement('div');
+    Object.assign(header.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '7px',
+      marginBottom: '6px',
+      fontSize: '11px',
+      fontWeight: '800',
+      color: 'var(--text-secondary, currentColor)',
+    });
+    const dot = document.createElement('span');
+    dot.textContent = previewGlyphForItem(item);
+    Object.assign(dot.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '18px',
+      height: '18px',
+      borderRadius: '6px',
+      background: meta.background,
+      color: meta.color,
+      fontSize: '10px',
+      lineHeight: '1',
+    });
+    const label = document.createElement('span');
+    label.textContent = `${meta.label} #${item.index + 1}`;
+    header.appendChild(dot);
+    header.appendChild(label);
+
+    const text = document.createElement('div');
+    text.textContent = item.text;
+    Object.assign(text.style, {
+      display: '-webkit-box',
+      WebkitBoxOrient: 'vertical',
+      WebkitLineClamp: '5',
+      overflow: 'hidden',
+      whiteSpace: 'normal',
+      overflowWrap: 'anywhere',
+      fontSize: '13px',
+      fontWeight: '500',
+      lineHeight: '1.45',
+    });
+    lens.appendChild(header);
+    lens.appendChild(text);
+    document.body.appendChild(lens);
+
+    const lensRect = lens.getBoundingClientRect();
+    let left = rect.right + 10;
+    if (left + lensRect.width > window.innerWidth - 10) {
+      left = rect.left - lensRect.width - 10;
+    }
+    let top = rect.top + rect.height / 2 - lensRect.height / 2;
+    top = Math.max(8, Math.min(window.innerHeight - lensRect.height - 8, top));
+    lens.style.left = `${Math.round(Math.max(8, left))}px`;
+    lens.style.top = `${Math.round(top)}px`;
+    lens.style.transform = 'none';
+  }
+
+  function buildThreadPreviewItem(item) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute(THREAD_PREVIEW_ITEM_ATTR, item.key);
+    button.setAttribute('aria-label', `${rolePreviewMeta(item.role).label}: ${item.text}`);
+    button.className = 'no-drag cursor-interaction';
+    itemStyle(button, false);
+
+    const meta = rolePreviewMeta(item.role);
+    const icon = document.createElement('span');
+    icon.textContent = previewGlyphForItem(item);
+    Object.assign(icon.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flex: '0 0 auto',
+      width: '100%',
+      height: '100%',
+      borderRadius: '999px',
+      background: meta.background,
+      color: meta.color,
+      fontSize: '9px',
+      fontWeight: '800',
+      lineHeight: '1',
+    });
+
+    button.appendChild(icon);
+    button.addEventListener('mouseenter', () => {
+      if (button.getAttribute(THREAD_PREVIEW_ACTIVE_ATTR) !== '1') {
+        button.style.background = 'var(--token-main-surface-secondary, rgba(127, 127, 127, 0.14))';
+        button.style.opacity = '1';
+        button.style.width = '22px';
+        button.style.height = '22px';
+      }
+      showThreadPreviewLens(button, item);
+    });
+    button.addEventListener('mouseleave', () => {
+      const active = button.getAttribute(THREAD_PREVIEW_ACTIVE_ATTR) === '1';
+      itemStyle(button, active);
+      hideThreadPreviewLens();
+    });
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      const target = document.querySelector(`[data-turn-key="${cssEscapeValue(item.key)}"]`);
+      if (!target) return;
+      target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'auto' });
+      flashThreadPreviewTarget(target);
+      requestAnimationFrame(() => updateThreadPreviewActive());
+    }, true);
+    return button;
+  }
+
+  function buildThreadPreviewPanel(items) {
+    const panel = document.createElement('div');
+    panel.id = THREAD_PREVIEW_ID;
+    panel.setAttribute('role', 'navigation');
+    panel.setAttribute('aria-label', S('threadPreviewAria', 'Conversation preview'));
+    Object.assign(panel.style, {
+      alignItems: 'center',
+      flexDirection: 'column',
+      gap: '5px',
+      padding: '7px 3px',
+      overflowX: 'hidden',
+      overflowY: 'auto',
+      overscrollBehavior: 'contain',
+      borderRadius: '999px',
+      background: 'var(--token-main-surface-secondary, transparent)',
+      boxShadow: 'inset 0 0 0 1px var(--token-border, rgba(127,127,127,0.18))',
+      backdropFilter: 'blur(6px)',
+      userSelect: 'none',
+      scrollbarWidth: 'none',
+    });
+    panel.style.msOverflowStyle = 'none';
+    panel.addEventListener('wheel', (event) => {
+      const atTop = panel.scrollTop === 0 && event.deltaY < 0;
+      const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1 && event.deltaY > 0;
+      if (!atTop && !atBottom) event.stopPropagation();
+    }, { passive: true });
+
+    const fragment = document.createDocumentFragment();
+    for (const item of items) {
+      fragment.appendChild(buildThreadPreviewItem(item));
+    }
+    panel.appendChild(fragment);
+    return panel;
+  }
+
+  function flashThreadPreviewTarget(target) {
+    if (!(target instanceof HTMLElement)) return;
+    target.setAttribute(THREAD_PREVIEW_HIGHLIGHT_ATTR, '1');
+    const previousOutline = target.style.outline;
+    const previousOutlineOffset = target.style.outlineOffset;
+    target.style.outline = '2px solid var(--token-text-secondary, currentColor)';
+    target.style.outlineOffset = '4px';
+    clearTimeout(shimThreadPreviewState.jumpTimer);
+    shimThreadPreviewState.jumpTimer = setTimeout(() => {
+      target.style.outline = previousOutline;
+      target.style.outlineOffset = previousOutlineOffset;
+      target.removeAttribute(THREAD_PREVIEW_HIGHLIGHT_ATTR);
+    }, 900);
+  }
+
+  function updateThreadPreviewActive() {
+    const panel = document.getElementById(THREAD_PREVIEW_ID);
+    if (!panel || panel.style.display === 'none') return;
+    const turns = visibleTurns();
+    if (!turns.length) return;
+    const scrollTarget = shimThreadPreviewState.scrollTarget || findScrollTarget(turns[0]);
+    let center = window.innerHeight / 2;
+    let viewportTop = 0;
+    let viewportBottom = window.innerHeight;
+    if (scrollTarget && scrollTarget !== window) {
+      const rect = scrollTarget.getBoundingClientRect();
+      center = rect.top + rect.height / 2;
+      viewportTop = rect.top;
+      viewportBottom = rect.bottom;
+    }
+
+    let activeKey = '';
+    let activeDistance = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < turns.length; i += 1) {
+      const rect = turns[i].getBoundingClientRect();
+      if (rect.bottom < viewportTop || rect.top > viewportBottom) continue;
+      const distance = Math.abs((rect.top + rect.bottom) / 2 - center);
+      if (distance < activeDistance) {
+        activeDistance = distance;
+        activeKey = turnKey(turns[i], i);
+      }
+    }
+    if (!activeKey) return;
+
+    const buttons = panel.querySelectorAll('[' + THREAD_PREVIEW_ITEM_ATTR + ']');
+    for (const button of buttons) {
+      const active = button.getAttribute(THREAD_PREVIEW_ITEM_ATTR) === activeKey;
+      button.setAttribute(THREAD_PREVIEW_ACTIVE_ATTR, active ? '1' : '0');
+      itemStyle(button, active);
+      if (active) {
+        const top = button.offsetTop;
+        const bottom = top + button.offsetHeight;
+        if (top < panel.scrollTop || bottom > panel.scrollTop + panel.clientHeight) {
+          panel.scrollTop = Math.max(0, top - panel.clientHeight / 2 + button.offsetHeight / 2);
+        }
+      }
+    }
+  }
+
+  function scheduleThreadPreviewActiveUpdate() {
+    if (shimThreadPreviewState.activeFrame) return;
+    shimThreadPreviewState.activeFrame = requestAnimationFrame(() => {
+      shimThreadPreviewState.activeFrame = 0;
+      updateThreadPreviewActive();
+    });
+  }
+
+  function attachThreadPreviewScrollSync(scrollTarget) {
+    if (shimThreadPreviewState.scrollTarget === scrollTarget && shimThreadPreviewState.scrollHandler) {
+      return;
+    }
+    if (shimThreadPreviewState.scrollTarget && shimThreadPreviewState.scrollHandler) {
+      shimThreadPreviewState.scrollTarget.removeEventListener?.('scroll', shimThreadPreviewState.scrollHandler);
+    }
+    shimThreadPreviewState.scrollTarget = scrollTarget;
+    shimThreadPreviewState.scrollHandler = scheduleThreadPreviewActiveUpdate;
+    scrollTarget.addEventListener?.('scroll', shimThreadPreviewState.scrollHandler, { passive: true });
+    if (!shimThreadPreviewState.resizeInstalled) {
+      shimThreadPreviewState.resizeInstalled = true;
+      window.addEventListener('resize', () => runEnsureAll('thread-preview-resize'), { passive: true });
+      window.addEventListener('scroll', scheduleThreadPreviewActiveUpdate, { passive: true });
+    }
+  }
+
+  function removeThreadPreview() {
+    document.getElementById(THREAD_PREVIEW_ID)?.remove();
+    hideThreadPreviewLens();
+    shimThreadPreviewState.signature = '';
+    if (shimThreadPreviewState.scrollTarget && shimThreadPreviewState.scrollHandler) {
+      shimThreadPreviewState.scrollTarget.removeEventListener?.('scroll', shimThreadPreviewState.scrollHandler);
+    }
+    shimThreadPreviewState.scrollTarget = null;
+    shimThreadPreviewState.scrollHandler = null;
+  }
+
+  function ensureThreadPreview() {
+    const turns = visibleTurns();
+    if (turns.length < 2) {
+      removeThreadPreview();
+      return;
+    }
+    const items = turnPreviewItems(turns);
+    const signature = items
+      .map((item) => `${item.key}:${item.role}:${item.text.slice(0, 80)}`)
+      .join('|');
+    const scrollTarget = findScrollTarget(turns[0]);
+    let panel = document.getElementById(THREAD_PREVIEW_ID);
+    if (!panel || shimThreadPreviewState.signature !== signature) {
+      panel?.remove();
+      panel = buildThreadPreviewPanel(items);
+      document.body.appendChild(panel);
+      shimThreadPreviewState.signature = signature;
+    }
+    const visible = positionThreadPreview(panel, turns, scrollTarget);
+    attachThreadPreviewScrollSync(scrollTarget);
+    if (visible) scheduleThreadPreviewActiveUpdate();
+  }
+
 
   // ========== Codex 插件运行时兼容 ==========
 
@@ -2463,6 +3023,7 @@
       menu: document.querySelectorAll('#' + MENU_ITEM_ID).length,
       picker: document.querySelectorAll('#' + PROVIDER_PICKER_ID).length,
       providerBadge: document.querySelectorAll('.' + PROVIDER_BADGE_CLASS).length,
+      threadPreview: document.querySelectorAll('#' + THREAD_PREVIEW_ID).length,
       delBtns: document.querySelectorAll('[data-shim-delete-added="1"]').length,
     };
   }
@@ -2500,11 +3061,8 @@
       'focus-visible:outline-token-border relative h-token-nav-row px-row-x py-row-y cursor-interaction shrink-0 items-center overflow-hidden rounded-lg text-left text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 gap-2 flex w-full hover:bg-token-list-hover-background';
     btn.innerHTML = `
       <div class="flex min-w-0 items-center text-base gap-2 flex-1 text-token-foreground">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="icon-xs">
-          <path d="M2.667 3.333A1.333 1.333 0 0 1 4 2h8a1.333 1.333 0 0 1 1.333 1.333v6.667A1.333 1.333 0 0 1 12 11.333H5.886l-2.553 2.553V3.333Z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
-          <circle cx="6" cy="7" r="0.8" fill="currentColor"/>
-          <circle cx="8" cy="7" r="0.8" fill="currentColor"/>
-          <circle cx="10" cy="7" r="0.8" fill="currentColor"/>
+        <svg width="16" height="16" viewBox="0 0 1024 1024" class="icon-xs" xmlns="http://www.w3.org/2000/svg">
+          <path d="M252.8 652.8l167.893333-94.293333 2.773334-8.106667-2.773334-4.48h-8.106666l-28.16-1.706667-96-2.56-83.2-3.413333-80.64-4.266667-20.266667-4.266666L85.333333 504.746667l1.92-12.586667 17.066667-11.52 24.32 2.133333 53.973333 3.626667 81.066667 5.546667 58.666667 3.413333 87.04 9.173333h13.866666l1.92-5.546666-4.693333-3.413334-3.626667-3.413333-83.84-56.746667-90.666666-60.16-47.573334-34.56-25.813333-17.493333-13.013333-16.426667-5.546667-35.84 23.253333-25.813333 31.36 2.133333 7.893334 2.133334 31.786666 24.32 67.84 52.48L401.066667 391.466667l13.013333 10.88 5.12-3.626667 0.64-2.56-5.76-9.813333-48.213333-87.04L314.453333 210.773333l-22.826666-36.693333-5.973334-21.973333a107.861333 107.861333 0 0 1-3.626666-26.026667l26.666666-36.053333L323.413333 85.333333l35.413334 4.693334 14.933333 13.013333 21.973333 50.346667 35.626667 79.36 55.253333 107.733333 16.213334 32 8.746666 29.653333 3.2 9.173334h5.546667v-5.12l4.48-60.8 8.32-74.453334 8.106667-96 2.773333-27.093333 13.44-32.426667 26.666667-17.493333 20.693333 10.026667 17.066667 24.32-2.346667 15.786666-10.24 65.92-19.84 103.253334-13.013333 69.12h7.466666l8.746667-8.746667 34.986667-46.506667 58.666666-73.386666 26.026667-29.226667 30.293333-32.213333 19.413334-15.36h36.693333l27.093333 40.106666-12.16 41.386667-37.76 48-31.36 40.533333-45.013333 60.586667-28.16 48.426667 2.56 3.84 6.613333-0.64 101.546667-21.546667 54.826667-10.026667 65.493333-11.306666 29.653333 13.866666 3.2 14.08-11.733333 28.8-69.973333 17.28-82.133334 16.426667-122.24 29.013333-1.493333 1.066667 1.706667 2.133333 55.04 5.12 23.466666 1.28h57.6l107.306667 7.893334 28.16 18.56 16.853333 22.613333-2.773333 17.28-43.306667 21.973333-58.24-13.866666-136.106666-32.426667-46.72-11.733333h-6.4v3.84l38.826666 37.973333 71.253334 64.426667 89.173333 82.986666 4.48 20.48-11.52 16.213334-12.16-1.706667-78.506667-58.88-30.293333-26.666667-68.48-57.6h-4.48v5.973334l15.786667 23.04 83.413333 125.226666 4.266667 38.4-5.973334 12.586667-21.546666 7.466667-23.68-4.266667-48.853334-68.48-50.346666-77.226667-40.533334-69.12-4.906666 2.773334-23.893334 258.133333-11.306666 13.226667-26.026667 10.026666-21.546667-16.426666-11.52-26.666667 11.52-52.48 13.866667-68.48 11.306667-54.4 10.24-67.626667 5.973333-22.4-0.426667-1.493333-4.906666 0.64-50.986667 69.973333-77.653333 104.746667-61.44 65.706667-14.72 5.76-25.386667-13.226667 2.346667-23.466667 14.293333-20.906666 84.906667-107.946667 51.2-66.986667 33.066666-38.613333v-5.546667h-2.133333l-225.493333 146.56-40.106667 5.12-17.28-16.213333 2.133333-26.666667 8.106667-8.746666 67.84-46.72h-0.213333l0.853333 0.853333z" fill="#D97757"/>
         </svg>
         <span class="truncate">${S('claudeBridgeNavLabel', 'Claude bridge')}</span>
         <span class="ml-auto opacity-60" data-claude-bridge-chevron>▸</span>
@@ -2897,11 +3455,13 @@
     const t5 = performance.now();
     ensureProviderBadge();
     const t6 = performance.now();
-    ensureCodexPluginFeatures();
+    ensureThreadPreview();
     const t7 = performance.now();
+    ensureCodexPluginFeatures();
+    const t8 = performance.now();
     ensureClaudeBridge();
     ensureClaudeBridgeChip();
-    const t8 = performance.now();
+    const t9 = performance.now();
 
     const after = __countDomBefore();
     const changed = JSON.stringify(before) !== JSON.stringify(after);
@@ -2915,9 +3475,10 @@
         picker: +(t4 - t3).toFixed(1),
         codexModel: +(t5 - t4).toFixed(1),
         providerBadge: +(t6 - t5).toFixed(1),
-        plugin: +(t7 - t6).toFixed(1),
-        claudeBridge: +(t8 - t7).toFixed(1),
-        total: +(t8 - t0).toFixed(1),
+        threadPreview: +(t7 - t6).toFixed(1),
+        plugin: +(t8 - t7).toFixed(1),
+        claudeBridge: +(t9 - t8).toFixed(1),
+        total: +(t9 - t0).toFixed(1),
       },
     });
   }
@@ -2945,6 +3506,8 @@
     '#' + POPOVER_ID,
     '#' + PROVIDER_PICKER_ID,
     '#' + PROVIDER_PICKER_POPOVER_ID,
+    '#' + THREAD_PREVIEW_ID,
+    '#' + THREAD_PREVIEW_LENS_ID,
     '#' + TOAST_CONTAINER_ID,
     '#' + CONFIRM_DIALOG_ID,
     '.' + PROVIDER_BADGE_CLASS,

@@ -90,6 +90,8 @@ class ClaudeBridgeBinding {
 /// llm_protocol_converter.dart; upstream route/header decisions belong to
 /// llm_protocol_proxy_spec.dart.
 class LocalProxyService {
+  static const _legacyClaudeBindingKey = '__legacy_claude_binding__';
+
   HttpServer? _server;
   StreamSubscription<HttpRequest>? _subscription;
   int? _port;
@@ -102,7 +104,8 @@ class LocalProxyService {
   final Map<String, ClaudeBridgeBinding> _claudeBindings = {};
 
   ClaudeBridgeBinding? claudeBindingFor(String codexThreadId) =>
-      _claudeBindings[codexThreadId];
+      _claudeBindings[codexThreadId] ??
+      _claudeBindings[_legacyClaudeBindingKey];
 
   Map<String, ClaudeBridgeBinding> get claudeBindingsSnapshot =>
       Map.unmodifiable(_claudeBindings);
@@ -121,7 +124,8 @@ class LocalProxyService {
   }
 
   void clearClaudeBinding({required String codexThreadId}) {
-    final removed = _claudeBindings.remove(codexThreadId);
+    final removed = _claudeBindings.remove(codexThreadId) ??
+        _claudeBindings.remove(_legacyClaudeBindingKey);
     if (removed != null) {
       AppLogService.instance.info(
         'ClaudeBridge',
@@ -129,6 +133,24 @@ class LocalProxyService {
         details: 'codexThread=$codexThreadId',
       );
     }
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.memberName == #setClaudeBinding &&
+        invocation.positionalArguments.length == 1 &&
+        invocation.positionalArguments.first is ClaudeBridgeBinding) {
+      final binding = invocation.positionalArguments.first as ClaudeBridgeBinding;
+      _claudeBindings[_legacyClaudeBindingKey] = binding;
+      AppLogService.instance.warning(
+        'ClaudeBridge',
+        '兼容旧版绑定调用',
+        details:
+            '旧 handler 调用了 setClaudeBinding(binding),请刷新/重启 shim 以恢复按 codex thread 隔离。claudeSession=${binding.sessionId}',
+      );
+      return null;
+    }
+    return super.noSuchMethod(invocation);
   }
 
   /// 由 ProbeService 注入。每条上游请求结束时通知它结果。

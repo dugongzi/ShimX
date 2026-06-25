@@ -65,6 +65,12 @@ Future<void> mcpServerAutoStart(Ref ref) async {
 /// 起 MCP server:注册 Claude 工具 + 起 HTTP 监听 + 写 codex config.toml。
 /// 已在运行时只补 config.toml 同步,幂等。
 Future<void> startMcpServer(Ref ref) async {
+  final actionRepo = ref.read(mcpServerActionRepositoryProvider);
+  await actionRepo.registerInCodex(
+    id: McpServerQueryDatasource.shimClaudeId,
+    url: McpServerQueryDatasource.shimClaudeUrl,
+  );
+
   final service = ref.read(mcpServiceProvider);
   if (service.isRunning) {
     AppLogService.instance.info('McpServer', '已在运行,跳过 start');
@@ -82,20 +88,18 @@ Future<void> startMcpServer(Ref ref) async {
     }
     ref.read(mcpServerRunningPortProvider).value = service.port;
   }
-  final actionRepo = ref.read(mcpServerActionRepositoryProvider);
-  await actionRepo.registerInCodex(
-    id: McpServerQueryDatasource.shimClaudeId,
-    url: McpServerQueryDatasource.shimClaudeUrl,
-  );
 }
 
 /// 停 MCP server:停 HTTP + 从 config.toml 移除。
 Future<void> stopMcpServer(Ref ref) async {
-  final service = ref.read(mcpServiceProvider);
-  await service.stop();
-  ref.read(mcpServerRunningPortProvider).value = null;
   final actionRepo = ref.read(mcpServerActionRepositoryProvider);
-  await actionRepo.unregisterFromCodex(
-    id: McpServerQueryDatasource.shimClaudeId,
-  );
+  try {
+    await actionRepo.unregisterFromCodex(
+      id: McpServerQueryDatasource.shimClaudeId,
+    );
+  } finally {
+    final service = ref.read(mcpServiceProvider);
+    await service.stop();
+    ref.read(mcpServerRunningPortProvider).value = null;
+  }
 }

@@ -263,6 +263,8 @@
   "mcpServersTitle": "shim 提供的 MCP server",
   "mcpServersHint": "这些 MCP server 由 shim 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。",
   "mcpServersEmpty": "尚未启用任何 MCP server",
+  "mcpShimClaudeName": "Claude 会话查询",
+  "mcpShimClaudeDescription": "把本地 Claude Code 会话作为 MCP 工具暴露给 Codex 的 LLM。",
   "mcpServerUrlLabel": "URL",
   "mcpServerIdLabel": "ID",
   "mcpServerToolCountLabel": "工具数",
@@ -272,5 +274,18 @@
   "mcpServerStatusDetailLabel": "错误信息",
   "mcpStatusRunning": "运行中",
   "mcpStatusStopped": "未启动",
-  "mcpStatusError": "错误"
+  "mcpStatusError": "错误",
+  "mcpCodexToolsTitle": "Codex 配置片段（高级）",
+  "mcpCodexToolsHint": "展示 config.toml 中的 MCP / Skill 片段；保存时只改动当前条目对应的 TOML 段。",
+  "mcpCodexToolsEmpty": "还没有 Codex 配置片段",
+  "mcpCodexToolAdd": "新增",
+  "mcpCodexToolFragmentLabel": "配置",
+  "mcpCodexToolFillRequiredToast": "请填写 ID 和配置",
+  "mcpCodexToolDialogTitleNew": "新增配置片段",
+  "mcpCodexToolDialogTitleEdit": "编辑配置片段",
+  "mcpCodexToolTypeLabel": "类型",
+  "mcpCodexToolIdHint": "例如 my_server",
+  "mcpCodexToolFragmentContentLabel": "配置内容",
+  "mcpCodexToolFragmentHelper": "只填写当前条目的字段内容；表头由 ID 自动写入",
+  "mcpCodexToolEnabledLabel": "启用片段"
 }

@@ -610,6 +610,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mcpServersEmpty => '尚未启用任何 MCP server';
 
   @override
+  String get mcpShimClaudeName => 'Claude 会话查询';
+
+  @override
+  String get mcpShimClaudeDescription =>
+      '把本地 Claude Code 会话作为 MCP 工具暴露给 Codex 的 LLM。';
+
+  @override
   String get mcpServerUrlLabel => 'URL';
 
   @override
@@ -638,4 +645,44 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mcpStatusError => '错误';
+
+  @override
+  String get mcpCodexToolsTitle => 'Codex 配置片段（高级）';
+
+  @override
+  String get mcpCodexToolsHint =>
+      '展示 config.toml 中的 MCP / Skill 片段；保存时只改动当前条目对应的 TOML 段。';
+
+  @override
+  String get mcpCodexToolsEmpty => '还没有 Codex 配置片段';
+
+  @override
+  String get mcpCodexToolAdd => '新增';
+
+  @override
+  String get mcpCodexToolFragmentLabel => '配置';
+
+  @override
+  String get mcpCodexToolFillRequiredToast => '请填写 ID 和配置';
+
+  @override
+  String get mcpCodexToolDialogTitleNew => '新增配置片段';
+
+  @override
+  String get mcpCodexToolDialogTitleEdit => '编辑配置片段';
+
+  @override
+  String get mcpCodexToolTypeLabel => '类型';
+
+  @override
+  String get mcpCodexToolIdHint => '例如 my_server';
+
+  @override
+  String get mcpCodexToolFragmentContentLabel => '配置内容';
+
+  @override
+  String get mcpCodexToolFragmentHelper => '只填写当前条目的字段内容；表头由 ID 自动写入';
+
+  @override
+  String get mcpCodexToolEnabledLabel => '启用片段';
 }

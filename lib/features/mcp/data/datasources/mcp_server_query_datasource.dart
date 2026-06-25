@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:shim/core/services/app_storage.dart';
 import 'package:shim/features/mcp/data/models/mcp_server_info_dto.dart';
 
-/// shim 内置 MCP server 的只读端:
+/// shim 内置 MCP server 的查询端:
 ///   - listServers:列出 shim 暴露的 MCP server 配置(现阶段硬编码 1 个 shim_claude)
 ///   - enabled:读持久化开关(默认 true,与设置首次同步)
 ///   - isRegisteredInCodex:扫 ~/.codex/config.toml 是否含 [mcp_servers.<id>] 段
@@ -28,8 +28,8 @@ class McpServerQueryDatasource {
     return [
       McpServerInfoDto(
         id: shimClaudeId,
-        name: 'Claude 会话查询',
-        description: '把本地 Claude Code 会话作为 MCP 工具暴露给 codex 的 LLM。',
+        name: shimClaudeId,
+        description: '',
         url: shimClaudeUrl,
         status: 'stopped',
         toolCount: 0,

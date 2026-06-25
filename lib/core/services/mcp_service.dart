@@ -39,9 +39,11 @@ class McpService {
   McpServer? _mcpServer;
   StreamableHTTPServerTransport? _transport;
   int? _port;
+  final Set<String> _registeredToolNames = {};
 
-  /// 待注册工具的列表(start 之前调用 [registerTool] 会暂存,start 时一并注入)。
-  final List<_PendingTool> _pendingTools = [];
+  /// 待注册工具表(start 之前调用 [registerTool] 会暂存,start 时一并注入)。
+  /// 按 name 去重,避免热重载或重启时重复注册同名工具。
+  final Map<String, _PendingTool> _pendingTools = {};
 
   bool get isRunning => _httpServer != null;
   int? get port => _port;
@@ -54,7 +56,8 @@ class McpService {
     required Future<CallToolResult> Function(
       Map<String, dynamic> args,
       RequestHandlerExtra extra,
-    ) callback,
+    )
+    callback,
   }) {
     final pending = _PendingTool(
       name: name,
@@ -62,10 +65,12 @@ class McpService {
       inputSchema: inputSchema,
       callback: callback,
     );
-    _pendingTools.add(pending);
+    _pendingTools[name] = pending;
     final live = _mcpServer;
     if (live != null) {
+      if (_registeredToolNames.contains(name)) return;
       _attachTool(live, pending);
+      _registeredToolNames.add(name);
     }
   }
 
@@ -85,13 +90,13 @@ class McpService {
     final mcpServer = McpServer(
       Implementation(name: 'shim', version: '1.0.0'),
       options: McpServerOptions(
-        capabilities: ServerCapabilities(
-          tools: ServerCapabilitiesTools(),
-        ),
+        capabilities: ServerCapabilities(tools: ServerCapabilitiesTools()),
       ),
     );
-    for (final t in _pendingTools) {
+    _registeredToolNames.clear();
+    for (final t in _pendingTools.values) {
       _attachTool(mcpServer, t);
+      _registeredToolNames.add(t.name);
     }
 
     final transport = StreamableHTTPServerTransport(
@@ -100,10 +105,7 @@ class McpService {
         eventStore: InMemoryEventStore(),
         enableDnsRebindingProtection: true,
         allowedHosts: {'127.0.0.1', 'localhost', '127.0.0.1:$port'},
-        allowedOrigins: {
-          'http://127.0.0.1:$port',
-          'http://localhost:$port',
-        },
+        allowedOrigins: {'http://127.0.0.1:$port', 'http://localhost:$port'},
       ),
     );
 
@@ -111,8 +113,10 @@ class McpService {
     // 不要在这里再手动调一次,否则会抛 'Transport already started'。
     await mcpServer.connect(transport);
 
-    final httpServer =
-        await HttpServer.bind(InternetAddress.loopbackIPv4, port);
+    final httpServer = await HttpServer.bind(
+      InternetAddress.loopbackIPv4,
+      port,
+    );
 
     _httpServer = httpServer;
     _mcpServer = mcpServer;
@@ -165,6 +169,7 @@ class McpService {
     _mcpServer = null;
     _transport = null;
     _port = null;
+    _registeredToolNames.clear();
 
     try {
       await transport?.close();
@@ -192,7 +197,8 @@ class _PendingTool {
   final Future<CallToolResult> Function(
     Map<String, dynamic> args,
     RequestHandlerExtra extra,
-  ) callback;
+  )
+  callback;
 }
 
 /// 把 Claude 会话查询能力以 MCP 工具形式挂到 [server]。
@@ -230,33 +236,38 @@ void registerClaudeSessionTools(
             TextContent(
               text: jsonEncode({
                 'projects': projects
-                    .map((p) => {
-                          'encodedDir': p.encodedDir,
-                          'cwd': p.cwd,
-                          'sessionCount': p.sessionCount,
-                          'lastActiveMs': p.lastActiveMs,
-                        })
+                    .map(
+                      (p) => {
+                        'encodedDir': p.encodedDir,
+                        'cwd': p.cwd,
+                        'sessionCount': p.sessionCount,
+                        'lastActiveMs': p.lastActiveMs,
+                      },
+                    )
                     .toList(),
               }),
             ),
           ],
         );
       }
-      final threads =
-          await queryRepository.listThreads(encodedDir: projectPath);
+      final threads = await queryRepository.listThreads(
+        encodedDir: projectPath,
+      );
       return CallToolResult(
         content: [
           TextContent(
             text: jsonEncode({
               'sessions': threads
-                  .map((t) => {
-                        'sessionId': t.sessionId,
-                        'jsonlPath': t.jsonlPath,
-                        'title': t.title,
-                        'cwd': t.cwd,
-                        'gitBranch': t.gitBranch,
-                        'updatedAtMs': t.updatedAtMs,
-                      })
+                  .map(
+                    (t) => {
+                      'sessionId': t.sessionId,
+                      'jsonlPath': t.jsonlPath,
+                      'title': t.title,
+                      'cwd': t.cwd,
+                      'gitBranch': t.gitBranch,
+                      'updatedAtMs': t.updatedAtMs,
+                    },
+                  )
                   .toList(),
             }),
           ),
@@ -274,7 +285,8 @@ void registerClaudeSessionTools(
     inputSchema: const JsonObject(
       properties: {
         'jsonl_path': JsonString(
-          description: 'Full path to the jsonl file (from list_claude_sessions).',
+          description:
+              'Full path to the jsonl file (from list_claude_sessions).',
         ),
         'offset': JsonInteger(
           description: 'Start index in the parsed message list. Default 0.',
@@ -293,9 +305,7 @@ void registerClaudeSessionTools(
       if (path.isEmpty) {
         return CallToolResult(
           isError: true,
-          content: const [
-            TextContent(text: 'jsonl_path is required'),
-          ],
+          content: const [TextContent(text: 'jsonl_path is required')],
         );
       }
       final detail = await exportRepository.loadThreadDetail(jsonlPath: path);
@@ -318,14 +328,16 @@ void registerClaudeSessionTools(
               'limit': limit,
               'hasMore': end < total,
               'messages': slice
-                  .map((m) => {
-                        'index': m.index,
-                        'timestamp': m.timestamp,
-                        'role': m.role,
-                        'kind': m.kind,
-                        'toolName': m.toolName,
-                        'text': m.text,
-                      })
+                  .map(
+                    (m) => {
+                      'index': m.index,
+                      'timestamp': m.timestamp,
+                      'role': m.role,
+                      'kind': m.kind,
+                      'toolName': m.toolName,
+                      'text': m.text,
+                    },
+                  )
                   .toList(),
             }),
           ),
@@ -367,17 +379,15 @@ void registerClaudeSessionTools(
       if (query.isEmpty) {
         return CallToolResult(
           isError: true,
-          content: const [
-            TextContent(text: 'query is required'),
-          ],
+          content: const [TextContent(text: 'query is required')],
         );
       }
 
       final projects = scopedProject == null || scopedProject.isEmpty
           ? await queryRepository.listProjects()
           : (await queryRepository.listProjects())
-              .where((p) => p.encodedDir == scopedProject)
-              .toList();
+                .where((p) => p.encodedDir == scopedProject)
+                .toList();
 
       final hits = <Map<String, dynamic>>[];
       outer:
@@ -386,7 +396,8 @@ void registerClaudeSessionTools(
           encodedDir: project.encodedDir,
         );
         for (final t in threads) {
-          final inMeta = t.title.toLowerCase().contains(query) ||
+          final inMeta =
+              t.title.toLowerCase().contains(query) ||
               t.cwd.toLowerCase().contains(query);
           String? snippet;
           if (inMeta) {

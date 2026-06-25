@@ -619,6 +619,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mcpServersEmpty => 'No MCP servers enabled';
 
   @override
+  String get mcpShimClaudeName => 'Claude session search';
+
+  @override
+  String get mcpShimClaudeDescription =>
+      'Expose local Claude Code sessions to the Codex LLM as MCP tools.';
+
+  @override
   String get mcpServerUrlLabel => 'URL';
 
   @override
@@ -647,4 +654,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mcpStatusError => 'error';
+
+  @override
+  String get mcpCodexToolsTitle => 'Codex config fragments (Advanced)';
+
+  @override
+  String get mcpCodexToolsHint =>
+      'Shows MCP / Skill fragments from config.toml. Saving only edits the TOML section for the current entry.';
+
+  @override
+  String get mcpCodexToolsEmpty => 'No Codex config fragments yet';
+
+  @override
+  String get mcpCodexToolAdd => 'Add';
+
+  @override
+  String get mcpCodexToolFragmentLabel => 'Config';
+
+  @override
+  String get mcpCodexToolFillRequiredToast => 'Fill ID and config';
+
+  @override
+  String get mcpCodexToolDialogTitleNew => 'Add config fragment';
+
+  @override
+  String get mcpCodexToolDialogTitleEdit => 'Edit config fragment';
+
+  @override
+  String get mcpCodexToolTypeLabel => 'Type';
+
+  @override
+  String get mcpCodexToolIdHint => 'e.g. my_server';
+
+  @override
+  String get mcpCodexToolFragmentContentLabel => 'Config content';
+
+  @override
+  String get mcpCodexToolFragmentHelper =>
+      'Enter only this entry\'s fields. The table header is written from the ID.';
+
+  @override
+  String get mcpCodexToolEnabledLabel => 'Enable fragment';
 }

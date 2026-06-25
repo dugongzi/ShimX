@@ -229,7 +229,10 @@ class _ReloadCodexIcon extends HookConsumerWidget {
                 ref.read(providerHealthRouteRegistrationProvider);
                 ref.read(autoSwitchRouteRegistrationProvider);
                 ref.read(providerActionRouteRegistrationProvider);
-                ref.read(claudeBridgeRouteRegistrationProvider);
+                registerClaudeBridgeRoutes(
+                  bridge: bridge,
+                  proxy: ref.read(localProxyServiceProvider),
+                );
 
                 await cdp.connect(debugPort);
                 await cdp.reloadPage();

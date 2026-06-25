@@ -1226,6 +1226,18 @@ abstract class AppLocalizations {
   /// **'尚未启用任何 MCP server'**
   String get mcpServersEmpty;
 
+  /// No description provided for @mcpShimClaudeName.
+  ///
+  /// In zh, this message translates to:
+  /// **'Claude 会话查询'**
+  String get mcpShimClaudeName;
+
+  /// No description provided for @mcpShimClaudeDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'把本地 Claude Code 会话作为 MCP 工具暴露给 Codex 的 LLM。'**
+  String get mcpShimClaudeDescription;
+
   /// No description provided for @mcpServerUrlLabel.
   ///
   /// In zh, this message translates to:
@@ -1285,6 +1297,84 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'错误'**
   String get mcpStatusError;
+
+  /// No description provided for @mcpCodexToolsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'Codex 配置片段（高级）'**
+  String get mcpCodexToolsTitle;
+
+  /// No description provided for @mcpCodexToolsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'展示 config.toml 中的 MCP / Skill 片段；保存时只改动当前条目对应的 TOML 段。'**
+  String get mcpCodexToolsHint;
+
+  /// No description provided for @mcpCodexToolsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有 Codex 配置片段'**
+  String get mcpCodexToolsEmpty;
+
+  /// No description provided for @mcpCodexToolAdd.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增'**
+  String get mcpCodexToolAdd;
+
+  /// No description provided for @mcpCodexToolFragmentLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置'**
+  String get mcpCodexToolFragmentLabel;
+
+  /// No description provided for @mcpCodexToolFillRequiredToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'请填写 ID 和配置'**
+  String get mcpCodexToolFillRequiredToast;
+
+  /// No description provided for @mcpCodexToolDialogTitleNew.
+  ///
+  /// In zh, this message translates to:
+  /// **'新增配置片段'**
+  String get mcpCodexToolDialogTitleNew;
+
+  /// No description provided for @mcpCodexToolDialogTitleEdit.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑配置片段'**
+  String get mcpCodexToolDialogTitleEdit;
+
+  /// No description provided for @mcpCodexToolTypeLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'类型'**
+  String get mcpCodexToolTypeLabel;
+
+  /// No description provided for @mcpCodexToolIdHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如 my_server'**
+  String get mcpCodexToolIdHint;
+
+  /// No description provided for @mcpCodexToolFragmentContentLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置内容'**
+  String get mcpCodexToolFragmentContentLabel;
+
+  /// No description provided for @mcpCodexToolFragmentHelper.
+  ///
+  /// In zh, this message translates to:
+  /// **'只填写当前条目的字段内容；表头由 ID 自动写入'**
+  String get mcpCodexToolFragmentHelper;
+
+  /// No description provided for @mcpCodexToolEnabledLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'启用片段'**
+  String get mcpCodexToolEnabledLabel;
 }
 
 class _AppLocalizationsDelegate

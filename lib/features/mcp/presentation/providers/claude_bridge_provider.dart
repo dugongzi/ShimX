@@ -17,9 +17,17 @@ part 'claude_bridge_provider.g.dart';
 /// 仅内存态,shim 重启清空。
 @Riverpod(keepAlive: true)
 bool claudeBridgeRouteRegistration(Ref ref) {
-  final bridge = ref.read(bridgeServiceProvider);
-  final proxy = ref.read(localProxyServiceProvider);
+  registerClaudeBridgeRoutes(
+    bridge: ref.read(bridgeServiceProvider),
+    proxy: ref.read(localProxyServiceProvider),
+  );
+  return true;
+}
 
+void registerClaudeBridgeRoutes({
+  required BridgeService bridge,
+  required LocalProxyService proxy,
+}) {
   bridge.register('/claude-bridge/bind', (payload) async {
     final codexThreadId = payload['codexThreadId'];
     if (codexThreadId is! String || codexThreadId.isEmpty) {
@@ -63,7 +71,6 @@ bool claudeBridgeRouteRegistration(Ref ref) {
   });
 
   AppLogService.instance.info('ClaudeBridge', '路由已注册');
-  return true;
 }
 
 Map<String, dynamic> _statePayload(LocalProxyService proxy, String codexThreadId) {

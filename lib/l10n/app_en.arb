@@ -263,6 +263,8 @@
   "mcpServersTitle": "MCP servers from shim",
   "mcpServersHint": "These MCP servers are hosted inside the shim process and can be wired into codex via streamable_http so the LLM can query local data on demand.",
   "mcpServersEmpty": "No MCP servers enabled",
+  "mcpShimClaudeName": "Claude session search",
+  "mcpShimClaudeDescription": "Expose local Claude Code sessions to the Codex LLM as MCP tools.",
   "mcpServerUrlLabel": "URL",
   "mcpServerIdLabel": "ID",
   "mcpServerToolCountLabel": "Tools",
@@ -272,5 +274,18 @@
   "mcpServerStatusDetailLabel": "Error",
   "mcpStatusRunning": "running",
   "mcpStatusStopped": "stopped",
-  "mcpStatusError": "error"
+  "mcpStatusError": "error",
+  "mcpCodexToolsTitle": "Codex config fragments (Advanced)",
+  "mcpCodexToolsHint": "Shows MCP / Skill fragments from config.toml. Saving only edits the TOML section for the current entry.",
+  "mcpCodexToolsEmpty": "No Codex config fragments yet",
+  "mcpCodexToolAdd": "Add",
+  "mcpCodexToolFragmentLabel": "Config",
+  "mcpCodexToolFillRequiredToast": "Fill ID and config",
+  "mcpCodexToolDialogTitleNew": "Add config fragment",
+  "mcpCodexToolDialogTitleEdit": "Edit config fragment",
+  "mcpCodexToolTypeLabel": "Type",
+  "mcpCodexToolIdHint": "e.g. my_server",
+  "mcpCodexToolFragmentContentLabel": "Config content",
+  "mcpCodexToolFragmentHelper": "Enter only this entry's fields. The table header is written from the ID.",
+  "mcpCodexToolEnabledLabel": "Enable fragment"
 }

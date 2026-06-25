@@ -78,8 +78,8 @@ class InjectActionDatasource {
   /// 在 page target 上拿到 devtoolsFrontendUrl，用于系统浏览器打开完整 DevTools。
   ///
   /// Chromium 默认返回的 URL 形如
-  ///   https://chrome-devtools-frontend.appspot.com/serve_rev/@<hash>/inspector.html?ws=127.0.0.1:<port>/...
-  /// appspot 在国内被墙,这里把 host 改写成 127.0.0.1:<port>,
+  ///   `https://chrome-devtools-frontend.appspot.com/serve_rev/@<hash>/inspector.html?ws=127.0.0.1:<port>/...`
+  /// appspot 在国内被墙,这里把 host 改写成 `127.0.0.1:<port>`,
   /// 用 Codex 自带的 DevTools 前端,完全走本地,不需要 VPN。
   Future<String?> findDevtoolsUrl(int debugPort) async {
     try {
@@ -93,10 +93,9 @@ class InjectActionDatasource {
         final wsUrl = target['webSocketDebuggerUrl'] as String?;
         final relative = target['devtoolsFrontendUrl'] as String?;
         if (wsUrl != null && wsUrl.isNotEmpty) {
-          final wsPath = Uri.parse(wsUrl).toString().replaceFirst(
-                RegExp(r'^wss?://'),
-                '',
-              );
+          final wsPath = Uri.parse(
+            wsUrl,
+          ).toString().replaceFirst(RegExp(r'^wss?://'), '');
           return 'http://127.0.0.1:$debugPort/devtools/inspector.html?ws=$wsPath';
         }
         if (relative != null && relative.isNotEmpty) {

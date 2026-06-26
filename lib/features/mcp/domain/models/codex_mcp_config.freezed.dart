@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'codex_tool.dart';
+part of 'codex_mcp_config.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,20 +12,20 @@ part of 'codex_tool.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$CodexTool {
+mixin _$CodexMcpConfig {
 
  String get id; String get kind; String get bodyText; bool get enabled; bool get managedByShim; bool get readOnly; String get name; String get description;
-/// Create a copy of CodexTool
+/// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$CodexToolCopyWith<CodexTool> get copyWith => _$CodexToolCopyWithImpl<CodexTool>(this as CodexTool, _$identity);
+$CodexMcpConfigCopyWith<CodexMcpConfig> get copyWith => _$CodexMcpConfigCopyWithImpl<CodexMcpConfig>(this as CodexMcpConfig, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexTool&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexMcpConfig&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
 }
 
 
@@ -34,15 +34,15 @@ int get hashCode => Object.hash(runtimeType,id,kind,bodyText,enabled,managedBySh
 
 @override
 String toString() {
-  return 'CodexTool(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShim: $managedByShim, readOnly: $readOnly, name: $name, description: $description)';
+  return 'CodexMcpConfig(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShim: $managedByShim, readOnly: $readOnly, name: $name, description: $description)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $CodexToolCopyWith<$Res>  {
-  factory $CodexToolCopyWith(CodexTool value, $Res Function(CodexTool) _then) = _$CodexToolCopyWithImpl;
+abstract mixin class $CodexMcpConfigCopyWith<$Res>  {
+  factory $CodexMcpConfigCopyWith(CodexMcpConfig value, $Res Function(CodexMcpConfig) _then) = _$CodexMcpConfigCopyWithImpl;
 @useResult
 $Res call({
  String id, String kind, String bodyText, bool enabled, bool managedByShim, bool readOnly, String name, String description
@@ -53,14 +53,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$CodexToolCopyWithImpl<$Res>
-    implements $CodexToolCopyWith<$Res> {
-  _$CodexToolCopyWithImpl(this._self, this._then);
+class _$CodexMcpConfigCopyWithImpl<$Res>
+    implements $CodexMcpConfigCopyWith<$Res> {
+  _$CodexMcpConfigCopyWithImpl(this._self, this._then);
 
-  final CodexTool _self;
-  final $Res Function(CodexTool) _then;
+  final CodexMcpConfig _self;
+  final $Res Function(CodexMcpConfig) _then;
 
-/// Create a copy of CodexTool
+/// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? bodyText = null,Object? enabled = null,Object? managedByShim = null,Object? readOnly = null,Object? name = null,Object? description = null,}) {
   return _then(_self.copyWith(
@@ -79,8 +79,8 @@ as String,
 }
 
 
-/// Adds pattern-matching-related methods to [CodexTool].
-extension CodexToolPatterns on CodexTool {
+/// Adds pattern-matching-related methods to [CodexMcpConfig].
+extension CodexMcpConfigPatterns on CodexMcpConfig {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -93,10 +93,10 @@ extension CodexToolPatterns on CodexTool {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CodexTool value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CodexMcpConfig value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _CodexTool() when $default != null:
+case _CodexMcpConfig() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -115,10 +115,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CodexTool value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CodexMcpConfig value)  $default,){
 final _that = this;
 switch (_that) {
-case _CodexTool():
+case _CodexMcpConfig():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -136,10 +136,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CodexTool value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CodexMcpConfig value)?  $default,){
 final _that = this;
 switch (_that) {
-case _CodexTool() when $default != null:
+case _CodexMcpConfig() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShim,  bool readOnly,  String name,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _CodexTool() when $default != null:
+case _CodexMcpConfig() when $default != null:
 return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShim,_that.readOnly,_that.name,_that.description);case _:
   return orElse();
 
@@ -180,7 +180,7 @@ return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedBy
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShim,  bool readOnly,  String name,  String description)  $default,) {final _that = this;
 switch (_that) {
-case _CodexTool():
+case _CodexMcpConfig():
 return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShim,_that.readOnly,_that.name,_that.description);case _:
   throw StateError('Unexpected subclass');
 
@@ -200,7 +200,7 @@ return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedBy
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShim,  bool readOnly,  String name,  String description)?  $default,) {final _that = this;
 switch (_that) {
-case _CodexTool() when $default != null:
+case _CodexMcpConfig() when $default != null:
 return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShim,_that.readOnly,_that.name,_that.description);case _:
   return null;
 
@@ -212,8 +212,8 @@ return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedBy
 /// @nodoc
 
 
-class _CodexTool extends CodexTool {
-  const _CodexTool({required this.id, required this.kind, required this.bodyText, required this.enabled, required this.managedByShim, required this.readOnly, this.name = '', this.description = ''}): super._();
+class _CodexMcpConfig extends CodexMcpConfig {
+  const _CodexMcpConfig({required this.id, required this.kind, required this.bodyText, required this.enabled, required this.managedByShim, required this.readOnly, this.name = '', this.description = ''}): super._();
   
 
 @override final  String id;
@@ -225,17 +225,17 @@ class _CodexTool extends CodexTool {
 @override@JsonKey() final  String name;
 @override@JsonKey() final  String description;
 
-/// Create a copy of CodexTool
+/// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$CodexToolCopyWith<_CodexTool> get copyWith => __$CodexToolCopyWithImpl<_CodexTool>(this, _$identity);
+_$CodexMcpConfigCopyWith<_CodexMcpConfig> get copyWith => __$CodexMcpConfigCopyWithImpl<_CodexMcpConfig>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexTool&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexMcpConfig&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
 }
 
 
@@ -244,15 +244,15 @@ int get hashCode => Object.hash(runtimeType,id,kind,bodyText,enabled,managedBySh
 
 @override
 String toString() {
-  return 'CodexTool(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShim: $managedByShim, readOnly: $readOnly, name: $name, description: $description)';
+  return 'CodexMcpConfig(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShim: $managedByShim, readOnly: $readOnly, name: $name, description: $description)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$CodexToolCopyWith<$Res> implements $CodexToolCopyWith<$Res> {
-  factory _$CodexToolCopyWith(_CodexTool value, $Res Function(_CodexTool) _then) = __$CodexToolCopyWithImpl;
+abstract mixin class _$CodexMcpConfigCopyWith<$Res> implements $CodexMcpConfigCopyWith<$Res> {
+  factory _$CodexMcpConfigCopyWith(_CodexMcpConfig value, $Res Function(_CodexMcpConfig) _then) = __$CodexMcpConfigCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String kind, String bodyText, bool enabled, bool managedByShim, bool readOnly, String name, String description
@@ -263,17 +263,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$CodexToolCopyWithImpl<$Res>
-    implements _$CodexToolCopyWith<$Res> {
-  __$CodexToolCopyWithImpl(this._self, this._then);
+class __$CodexMcpConfigCopyWithImpl<$Res>
+    implements _$CodexMcpConfigCopyWith<$Res> {
+  __$CodexMcpConfigCopyWithImpl(this._self, this._then);
 
-  final _CodexTool _self;
-  final $Res Function(_CodexTool) _then;
+  final _CodexMcpConfig _self;
+  final $Res Function(_CodexMcpConfig) _then;
 
-/// Create a copy of CodexTool
+/// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? bodyText = null,Object? enabled = null,Object? managedByShim = null,Object? readOnly = null,Object? name = null,Object? description = null,}) {
-  return _then(_CodexTool(
+  return _then(_CodexMcpConfig(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,bodyText: null == bodyText ? _self.bodyText : bodyText // ignore: cast_nullable_to_non_nullable

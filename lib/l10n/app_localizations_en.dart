@@ -656,43 +656,125 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mcpStatusError => 'error';
 
   @override
-  String get mcpCodexToolsTitle => 'Codex config fragments (Advanced)';
+  String get mcpConfigTitle => 'Codex MCP config (Advanced)';
 
   @override
-  String get mcpCodexToolsHint =>
-      'Shows MCP / Skill fragments from config.toml. Saving only edits the TOML section for the current entry.';
+  String get mcpConfigHint =>
+      'Shows [mcp_servers.*] from config.toml. Toggles and saves write config.toml and take effect in new Codex sessions.';
 
   @override
-  String get mcpCodexToolsEmpty => 'No Codex config fragments yet';
+  String get mcpConfigEmpty => 'No Codex MCP config yet';
 
   @override
-  String get mcpCodexToolAdd => 'Add';
+  String get mcpConfigAdd => 'Add';
 
   @override
-  String get mcpCodexToolFragmentLabel => 'Config';
+  String get mcpConfigBodyLabel => 'Config';
 
   @override
-  String get mcpCodexToolFillRequiredToast => 'Fill ID and config';
+  String get mcpConfigFillRequiredToast => 'Fill ID and config';
 
   @override
-  String get mcpCodexToolDialogTitleNew => 'Add config fragment';
+  String get mcpConfigDialogTitleNew => 'Add MCP config';
 
   @override
-  String get mcpCodexToolDialogTitleEdit => 'Edit config fragment';
+  String get mcpConfigDialogTitleEdit => 'Edit MCP config';
 
   @override
-  String get mcpCodexToolTypeLabel => 'Type';
+  String get mcpConfigIdHint => 'e.g. my_server';
 
   @override
-  String get mcpCodexToolIdHint => 'e.g. my_server';
+  String get mcpConfigBodyContentLabel => 'Config content';
 
   @override
-  String get mcpCodexToolFragmentContentLabel => 'Config content';
-
-  @override
-  String get mcpCodexToolFragmentHelper =>
+  String get mcpConfigBodyHelper =>
       'Enter only this entry\'s fields. The table header is written from the ID.';
 
   @override
-  String get mcpCodexToolEnabledLabel => 'Enable fragment';
+  String get mcpConfigEnabledLabel => 'Write to config.toml';
+
+  @override
+  String get skills => 'Skills';
+
+  @override
+  String get skillsTitle => 'Codex Skills';
+
+  @override
+  String get skillsHint =>
+      'Manage local Codex skills under ~/.codex/skills. Shim only deletes or overwrites skills imported into its registry.';
+
+  @override
+  String get skillsInstallFolder => 'Install folder';
+
+  @override
+  String get skillsInstallZip => 'Install ZIP';
+
+  @override
+  String get skillsManagedGroup => 'Managed by shim';
+
+  @override
+  String get skillsExternalGroup => 'External Codex Skills';
+
+  @override
+  String get skillsEmpty => 'No Codex Skills found';
+
+  @override
+  String get skillsManagedBadge => 'managed';
+
+  @override
+  String get skillsExternalBadge => 'external';
+
+  @override
+  String get skillsImportManaged => 'Import';
+
+  @override
+  String get skillsCopyPath => 'Copy path';
+
+  @override
+  String get skillsDelete => 'Delete';
+
+  @override
+  String get skillsPathLabel => 'Path';
+
+  @override
+  String get skillsHashLabel => 'Content hash';
+
+  @override
+  String get skillsInstallSuccess => 'Skill installed';
+
+  @override
+  String get skillsImportSuccess => 'Imported';
+
+  @override
+  String get skillsDeleteSuccess => 'Skill deleted';
+
+  @override
+  String skillsActionFailed(String message) {
+    return 'Action failed: $message';
+  }
+
+  @override
+  String get skillsOverwriteTitle => 'Overwrite Skill';
+
+  @override
+  String get skillsOverwriteMessage =>
+      'A shim-managed Skill with the same name already exists. Overwrite its directory?';
+
+  @override
+  String get skillsDeleteTitle => 'Delete Skill';
+
+  @override
+  String get skillsDeleteMessage => 'Delete this shim-managed Skill directory?';
+
+  @override
+  String get skillsZipChooseTitle => 'Choose Skill from ZIP';
+
+  @override
+  String get skillsNoFolderSelected => 'No folder selected';
+
+  @override
+  String get skillsNoZipSelected => 'No ZIP selected';
+
+  @override
+  String get skillsNoDescription => 'No description';
 }

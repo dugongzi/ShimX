@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'codex_tool_action_provider.dart';
+part of 'codex_mcp_config_action_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,83 +9,86 @@ part of 'codex_tool_action_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(codexToolActionRepository)
-const codexToolActionRepositoryProvider = CodexToolActionRepositoryProvider._();
+@ProviderFor(codexMcpConfigActionRepository)
+const codexMcpConfigActionRepositoryProvider =
+    CodexMcpConfigActionRepositoryProvider._();
 
-final class CodexToolActionRepositoryProvider
+final class CodexMcpConfigActionRepositoryProvider
     extends
         $FunctionalProvider<
-          CodexToolActionRepository,
-          CodexToolActionRepository,
-          CodexToolActionRepository
+          CodexMcpConfigActionRepository,
+          CodexMcpConfigActionRepository,
+          CodexMcpConfigActionRepository
         >
-    with $Provider<CodexToolActionRepository> {
-  const CodexToolActionRepositoryProvider._()
+    with $Provider<CodexMcpConfigActionRepository> {
+  const CodexMcpConfigActionRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'codexToolActionRepositoryProvider',
+        name: r'codexMcpConfigActionRepositoryProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$codexToolActionRepositoryHash();
+  String debugGetCreateSourceHash() => _$codexMcpConfigActionRepositoryHash();
 
   @$internal
   @override
-  $ProviderElement<CodexToolActionRepository> $createElement(
+  $ProviderElement<CodexMcpConfigActionRepository> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  CodexToolActionRepository create(Ref ref) {
-    return codexToolActionRepository(ref);
+  CodexMcpConfigActionRepository create(Ref ref) {
+    return codexMcpConfigActionRepository(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(CodexToolActionRepository value) {
+  Override overrideWithValue(CodexMcpConfigActionRepository value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<CodexToolActionRepository>(value),
+      providerOverride: $SyncValueProvider<CodexMcpConfigActionRepository>(
+        value,
+      ),
     );
   }
 }
 
-String _$codexToolActionRepositoryHash() =>
-    r'ea13053568314f9cd04b6a0787d80314bd16d2f4';
+String _$codexMcpConfigActionRepositoryHash() =>
+    r'aa63f4449a5e218c38912adb6603ec0595059244';
 
 /// keepAlive 保留 notifier 实例。UI 通过 `ref.read(...notifier)` 触发写入时,
 /// 没有 widget watch 这个 provider;若 auto-dispose,await 文件写入期间会释放 ref。
 
-@ProviderFor(CodexToolActions)
-const codexToolActionsProvider = CodexToolActionsProvider._();
+@ProviderFor(CodexMcpConfigActions)
+const codexMcpConfigActionsProvider = CodexMcpConfigActionsProvider._();
 
 /// keepAlive 保留 notifier 实例。UI 通过 `ref.read(...notifier)` 触发写入时,
 /// 没有 widget watch 这个 provider;若 auto-dispose,await 文件写入期间会释放 ref。
-final class CodexToolActionsProvider
-    extends $NotifierProvider<CodexToolActions, void> {
+final class CodexMcpConfigActionsProvider
+    extends $NotifierProvider<CodexMcpConfigActions, void> {
   /// keepAlive 保留 notifier 实例。UI 通过 `ref.read(...notifier)` 触发写入时,
   /// 没有 widget watch 这个 provider;若 auto-dispose,await 文件写入期间会释放 ref。
-  const CodexToolActionsProvider._()
+  const CodexMcpConfigActionsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'codexToolActionsProvider',
+        name: r'codexMcpConfigActionsProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$codexToolActionsHash();
+  String debugGetCreateSourceHash() => _$codexMcpConfigActionsHash();
 
   @$internal
   @override
-  CodexToolActions create() => CodexToolActions();
+  CodexMcpConfigActions create() => CodexMcpConfigActions();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(void value) {
@@ -96,12 +99,13 @@ final class CodexToolActionsProvider
   }
 }
 
-String _$codexToolActionsHash() => r'0d17afb2a9ee9fba5c78f950ad1e092f94c4f652';
+String _$codexMcpConfigActionsHash() =>
+    r'4a260bb533e823f35c399d9e13a969b11a496fd0';
 
 /// keepAlive 保留 notifier 实例。UI 通过 `ref.read(...notifier)` 触发写入时,
 /// 没有 widget watch 这个 provider;若 auto-dispose,await 文件写入期间会释放 ref。
 
-abstract class _$CodexToolActions extends $Notifier<void> {
+abstract class _$CodexMcpConfigActions extends $Notifier<void> {
   void build();
   @$mustCallSuper
   @override

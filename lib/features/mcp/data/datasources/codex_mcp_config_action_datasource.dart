@@ -3,49 +3,53 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/utils/codex_tool_toml_codec.dart';
-import 'package:shim/features/mcp/data/models/codex_tool_dto.dart';
+import 'package:shim/core/utils/codex_mcp_config_toml_codec.dart';
+import 'package:shim/features/mcp/data/models/codex_mcp_config_dto.dart';
 
-class CodexToolActionDatasource {
-  CodexToolActionDatasource({File? configFile}) : _configFile = configFile;
+class CodexMcpConfigActionDatasource {
+  CodexMcpConfigActionDatasource({File? configFile}) : _configFile = configFile;
 
   final File? _configFile;
 
-  Future<void> saveTool(CodexToolDto tool) async {
+  Future<void> saveConfig(CodexMcpConfigDto config) async {
     final file = _codexConfigFile();
     if (file == null) throw StateError('Cannot resolve user home directory');
     final current = await _read(file);
-    final next = upsertShimManagedCodexToolBlock(
+    final next = upsertShimManagedCodexMcpConfigBlock(
       current,
-      kind: tool.kind,
-      id: tool.id,
-      bodyText: setEnabledInCodexToolBody(tool.bodyText, tool.enabled),
+      kind: config.kind,
+      id: config.id,
+      bodyText: setEnabledInCodexMcpConfigBody(config.bodyText, config.enabled),
     );
     await _write(file, next);
     AppLogService.instance.info(
-      'CodexTool',
-      '配置片段已保存',
+      'CodexMcpConfig',
+      'MCP 配置已保存',
       details: _details(
         file: file,
-        kind: tool.kind,
-        id: tool.id,
-        extra: 'enabled=${tool.enabled}, changed=${current != next}',
+        kind: config.kind,
+        id: config.id,
+        extra: 'enabled=${config.enabled}, changed=${current != next}',
       ),
     );
   }
 
-  Future<void> deleteTool({required String kind, required String id}) async {
+  Future<void> deleteConfig({required String kind, required String id}) async {
     final file = _codexConfigFile();
     if (file == null) throw StateError('Cannot resolve user home directory');
     if (!await file.exists()) {
       throw StateError('Codex config.toml 不存在: ${file.path}');
     }
     final current = await _read(file);
-    final next = deleteShimManagedCodexToolBlock(current, kind: kind, id: id);
+    final next = deleteShimManagedCodexMcpConfigBlock(
+      current,
+      kind: kind,
+      id: id,
+    );
     await _write(file, next);
     AppLogService.instance.info(
-      'CodexTool',
-      '配置片段已删除',
+      'CodexMcpConfig',
+      'MCP 配置已删除',
       details: _details(
         file: file,
         kind: kind,
@@ -67,13 +71,13 @@ class CodexToolActionDatasource {
     }
 
     final current = await _read(file);
-    final before = _findTool(current, kind: kind, id: id);
+    final before = _findConfig(current, kind: kind, id: id);
     if (before == null) {
-      throw StateError('未找到配置片段: $id');
+      throw StateError('未找到 Codex MCP 配置: $id');
     }
     AppLogService.instance.info(
-      'CodexTool',
-      '开始切换配置片段',
+      'CodexMcpConfig',
+      '开始切换 MCP 配置',
       details: _details(
         file: file,
         kind: kind,
@@ -82,31 +86,31 @@ class CodexToolActionDatasource {
       ),
     );
 
-    final next = setShimManagedCodexToolEnabled(
+    final next = setShimManagedCodexMcpConfigEnabled(
       current,
       kind: kind,
       id: id,
       enabled: enabled,
     );
     if (next == current && before.enabled != enabled) {
-      throw StateError('配置片段开关写入没有产生文本变化: $id');
+      throw StateError('MCP 配置开关写入没有产生文本变化: $id');
     }
     await _write(file, next);
 
     final writtenText = await _read(file);
-    final after = _findTool(writtenText, kind: kind, id: id);
+    final after = _findConfig(writtenText, kind: kind, id: id);
     if (after == null) {
-      throw StateError('配置片段写入后丢失: $id');
+      throw StateError('MCP 配置写入后丢失: $id');
     }
     if (after.enabled != enabled) {
       throw StateError(
-        '配置片段写入后状态不一致: $id, expected=$enabled, actual=${after.enabled}',
+        'MCP 配置写入后状态不一致: $id, expected=$enabled, actual=${after.enabled}',
       );
     }
 
     AppLogService.instance.info(
-      'CodexTool',
-      '配置片段开关已写入',
+      'CodexMcpConfig',
+      'MCP 配置开关已写入',
       details: _details(
         file: file,
         kind: kind,
@@ -136,13 +140,13 @@ class CodexToolActionDatasource {
     return File(p.join(home, '.codex', 'config.toml'));
   }
 
-  CodexToolTomlFragment? _findTool(
+  CodexMcpConfigTomlFragment? _findConfig(
     String text, {
     required String kind,
     required String id,
   }) {
-    for (final tool in parseCodexTools(text)) {
-      if (tool.kind == kind && tool.id == id) return tool;
+    for (final config in parseCodexMcpConfigs(text)) {
+      if (config.kind == kind && config.id == id) return config;
     }
     return null;
   }

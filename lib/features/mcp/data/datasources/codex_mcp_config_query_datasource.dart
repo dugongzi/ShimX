@@ -2,25 +2,25 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/core/utils/codex_tool_toml_codec.dart';
+import 'package:shim/core/utils/codex_mcp_config_toml_codec.dart';
 import 'package:shim/features/mcp/data/datasources/mcp_server_query_datasource.dart';
-import 'package:shim/features/mcp/data/models/codex_tool_dto.dart';
+import 'package:shim/features/mcp/data/models/codex_mcp_config_dto.dart';
 
-class CodexToolQueryDatasource {
-  CodexToolQueryDatasource({File? configFile}) : _configFile = configFile;
+class CodexMcpConfigQueryDatasource {
+  CodexMcpConfigQueryDatasource({File? configFile}) : _configFile = configFile;
 
   final File? _configFile;
 
-  Future<List<CodexToolDto>> listTools() async {
+  Future<List<CodexMcpConfigDto>> listConfigs() async {
     final file = _codexConfigFile();
     if (file == null || !await file.exists()) return [];
-    final fragments = parseCodexTools(
+    final fragments = parseCodexMcpConfigs(
       await file.readAsString(encoding: utf8),
       excludedMcpId: McpServerQueryDatasource.shimClaudeId,
     );
     return fragments
         .map(
-          (fragment) => CodexToolDto(
+          (fragment) => CodexMcpConfigDto(
             id: fragment.id,
             kind: fragment.kind,
             bodyText: fragment.bodyText,

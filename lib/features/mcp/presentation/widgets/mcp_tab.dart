@@ -9,10 +9,10 @@ import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/mcp_service.dart';
-import 'package:shim/features/mcp/domain/models/codex_tool.dart';
+import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
 import 'package:shim/features/mcp/domain/models/mcp_server_info.dart';
-import 'package:shim/features/mcp/presentation/providers/codex_tool_action_provider.dart';
-import 'package:shim/features/mcp/presentation/providers/codex_tool_query_provider.dart';
+import 'package:shim/features/mcp/presentation/providers/codex_mcp_config_action_provider.dart';
+import 'package:shim/features/mcp/presentation/providers/codex_mcp_config_query_provider.dart';
 import 'package:shim/features/mcp/presentation/providers/mcp_server_action_provider.dart';
 import 'package:shim/features/mcp/presentation/providers/mcp_server_query_provider.dart';
 
@@ -88,7 +88,7 @@ class McpTab extends ConsumerWidget {
             },
           ),
           SizedBox(height: AppSizes.sectionGap),
-          const _CodexToolSection(),
+          const _CodexMcpConfigSection(),
         ],
       ),
     );
@@ -107,12 +107,12 @@ class McpTab extends ConsumerWidget {
   }
 }
 
-class _CodexToolSection extends ConsumerWidget {
-  const _CodexToolSection();
+class _CodexMcpConfigSection extends ConsumerWidget {
+  const _CodexMcpConfigSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(codexToolsProvider);
+    final async = ref.watch(codexMcpConfigsProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     final deletedToast = context.l10n.deletedToast;
@@ -122,15 +122,15 @@ class _CodexToolSection extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: SectionTitle(title: l10n.mcpCodexToolsTitle)),
+            Expanded(child: SectionTitle(title: l10n.mcpConfigTitle)),
             FilledButton.icon(
               onPressed: () => _showEditDialog(context, ref, null),
               icon: const Icon(Icons.add_rounded),
-              label: Text(l10n.mcpCodexToolAdd),
+              label: Text(l10n.mcpConfigAdd),
             ),
             IconButton(
               tooltip: context.l10n.refresh,
-              onPressed: () => ref.invalidate(codexToolsProvider),
+              onPressed: () => ref.invalidate(codexMcpConfigsProvider),
               icon: const Icon(Icons.refresh_rounded),
             ),
           ],
@@ -139,7 +139,7 @@ class _CodexToolSection extends ConsumerWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: AppSizes.itemGap),
           child: Text(
-            l10n.mcpCodexToolsHint,
+            l10n.mcpConfigHint,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -154,27 +154,27 @@ class _CodexToolSection extends ConsumerWidget {
           error: (error, _) => _ErrorBox(message: error.toString()),
           data: (configs) {
             if (configs.isEmpty) {
-              return _EmptyBox(message: l10n.mcpCodexToolsEmpty);
+              return _EmptyBox(message: l10n.mcpConfigEmpty);
             }
             return Column(
               children: [
-                for (final tool in configs) ...[
-                  _CodexToolCard(
-                    key: ValueKey('${tool.kind}:${tool.id}'),
-                    tool: tool,
-                    onEdit: () => _showEditDialog(context, ref, tool),
+                for (final config in configs) ...[
+                  _CodexMcpConfigCard(
+                    key: ValueKey('${config.kind}:${config.id}'),
+                    config: config,
+                    onEdit: () => _showEditDialog(context, ref, config),
                     onDelete: () async {
                       await ref
-                          .read(codexToolActionsProvider.notifier)
-                          .remove(kind: tool.kind, id: tool.id);
+                          .read(codexMcpConfigActionsProvider.notifier)
+                          .remove(kind: config.kind, id: config.id);
                       SmartDialog.showToast(deletedToast);
                     },
                     onToggle: (enabled) {
                       return ref
-                          .read(codexToolActionsProvider.notifier)
+                          .read(codexMcpConfigActionsProvider.notifier)
                           .setEnabled(
-                            kind: tool.kind,
-                            id: tool.id,
+                            kind: config.kind,
+                            id: config.id,
                             enabled: enabled,
                           );
                     },
@@ -192,59 +192,59 @@ class _CodexToolSection extends ConsumerWidget {
   void _showEditDialog(
     BuildContext context,
     WidgetRef ref,
-    CodexTool? existing,
+    CodexMcpConfig? existing,
   ) {
     SmartDialog.show(
-      builder: (_) => _CodexToolEditDialog(ref: ref, existing: existing),
+      builder: (_) => _CodexMcpConfigEditDialog(ref: ref, existing: existing),
     );
   }
 }
 
-class _CodexToolCard extends StatefulWidget {
-  const _CodexToolCard({
+class _CodexMcpConfigCard extends StatefulWidget {
+  const _CodexMcpConfigCard({
     super.key,
-    required this.tool,
+    required this.config,
     required this.onEdit,
     required this.onDelete,
     required this.onToggle,
   });
 
-  final CodexTool tool;
+  final CodexMcpConfig config;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final Future<void> Function(bool enabled) onToggle;
 
   @override
-  State<_CodexToolCard> createState() => _CodexToolCardState();
+  State<_CodexMcpConfigCard> createState() => _CodexMcpConfigCardState();
 }
 
-class _CodexToolCardState extends State<_CodexToolCard> {
+class _CodexMcpConfigCardState extends State<_CodexMcpConfigCard> {
   late bool _enabled;
   bool _toggling = false;
 
   @override
   void initState() {
     super.initState();
-    _enabled = widget.tool.enabled;
+    _enabled = widget.config.enabled;
   }
 
   @override
-  void didUpdateWidget(covariant _CodexToolCard oldWidget) {
+  void didUpdateWidget(covariant _CodexMcpConfigCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.tool.id != widget.tool.id ||
-        oldWidget.tool.kind != widget.tool.kind ||
-        oldWidget.tool.enabled != widget.tool.enabled) {
-      _enabled = widget.tool.enabled;
+    if (oldWidget.config.id != widget.config.id ||
+        oldWidget.config.kind != widget.config.kind ||
+        oldWidget.config.enabled != widget.config.enabled) {
+      _enabled = widget.config.enabled;
     }
   }
 
   Future<void> _toggle(bool enabled) async {
     final previous = _enabled;
     AppLogService.instance.info(
-      'CodexTool',
-      'UI 点击配置片段开关',
+      'CodexMcpConfig',
+      'UI 点击 MCP 配置开关',
       details:
-          'kind=${widget.tool.kind}\nid=${widget.tool.id}\nfrom=$previous\nto=$enabled',
+          'kind=${widget.config.kind}\nid=${widget.config.id}\nfrom=$previous\nto=$enabled',
     );
     setState(() {
       _enabled = enabled;
@@ -253,15 +253,16 @@ class _CodexToolCardState extends State<_CodexToolCard> {
     try {
       await widget.onToggle(enabled);
       AppLogService.instance.info(
-        'CodexTool',
-        'UI 配置片段开关完成',
-        details: 'kind=${widget.tool.kind}\nid=${widget.tool.id}\nto=$enabled',
+        'CodexMcpConfig',
+        'UI MCP 配置开关完成',
+        details:
+            'kind=${widget.config.kind}\nid=${widget.config.id}\nto=$enabled',
       );
     } catch (error) {
       AppLogService.instance.error(
-        'CodexTool',
-        'UI 配置片段开关失败',
-        details: 'kind=${widget.tool.kind}\nid=${widget.tool.id}\n$error',
+        'CodexMcpConfig',
+        'UI MCP 配置开关失败',
+        details: 'kind=${widget.config.kind}\nid=${widget.config.id}\n$error',
       );
       if (mounted) setState(() => _enabled = previous);
       SmartDialog.showToast(error.toString());
@@ -273,8 +274,8 @@ class _CodexToolCardState extends State<_CodexToolCard> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final tool = widget.tool;
-    final typeLabel = CodexToolKind.label(tool.kind);
+    final config = widget.config;
+    final typeLabel = CodexMcpConfigKind.label(config.kind);
 
     return SurfaceCard(
       child: Column(
@@ -283,29 +284,24 @@ class _CodexToolCardState extends State<_CodexToolCard> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _StatusBadge(
-                label: typeLabel,
-                color: tool.kind == CodexToolKind.mcpServer
-                    ? colorScheme.primary
-                    : colorScheme.tertiary,
-              ),
+              _StatusBadge(label: typeLabel, color: colorScheme.primary),
               SizedBox(width: 10.cw(min: 8, max: 12)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tool.name,
+                      config.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    if (tool.description.isNotEmpty) ...[
+                    if (config.description.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
-                        tool.description,
+                        config.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -332,11 +328,11 @@ class _CodexToolCardState extends State<_CodexToolCard> {
           SizedBox(height: AppSizes.itemGap),
           const Divider(height: 1),
           SizedBox(height: AppSizes.itemGap),
-          _InfoRow(label: 'ID', value: tool.id, copyable: true),
+          _InfoRow(label: 'ID', value: config.id, copyable: true),
           const SizedBox(height: 6),
           _InfoRow(
-            label: context.l10n.mcpCodexToolFragmentLabel,
-            value: tool.bodyText,
+            label: context.l10n.mcpConfigBodyLabel,
+            value: config.bodyText,
             copyable: true,
             maxLines: 6,
             valueColor: colorScheme.onSurfaceVariant,
@@ -347,20 +343,20 @@ class _CodexToolCardState extends State<_CodexToolCard> {
   }
 }
 
-class _CodexToolEditDialog extends StatefulWidget {
-  const _CodexToolEditDialog({required this.ref, required this.existing});
+class _CodexMcpConfigEditDialog extends StatefulWidget {
+  const _CodexMcpConfigEditDialog({required this.ref, required this.existing});
 
   final WidgetRef ref;
-  final CodexTool? existing;
+  final CodexMcpConfig? existing;
 
   @override
-  State<_CodexToolEditDialog> createState() => _CodexToolEditDialogState();
+  State<_CodexMcpConfigEditDialog> createState() =>
+      _CodexMcpConfigEditDialogState();
 }
 
-class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
+class _CodexMcpConfigEditDialogState extends State<_CodexMcpConfigEditDialog> {
   late final TextEditingController _idCtrl;
   late final TextEditingController _bodyCtrl;
-  late String _kind;
   late bool _enabled;
   bool _saving = false;
 
@@ -368,11 +364,10 @@ class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
   void initState() {
     super.initState();
     final existing = widget.existing;
-    _kind = existing?.kind ?? CodexToolKind.mcpServer;
     _enabled = existing?.enabled ?? true;
     _idCtrl = TextEditingController(text: existing?.id ?? '');
     _bodyCtrl = TextEditingController(
-      text: existing?.bodyText ?? _defaultBodyText(_kind),
+      text: existing?.bodyText ?? _defaultBodyText(),
     );
   }
 
@@ -389,17 +384,17 @@ class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
     final id = _idCtrl.text.trim();
     final bodyText = _bodyCtrl.text.trim();
     if (id.isEmpty || bodyText.isEmpty) {
-      SmartDialog.showToast(l10n.mcpCodexToolFillRequiredToast);
+      SmartDialog.showToast(l10n.mcpConfigFillRequiredToast);
       return;
     }
     setState(() => _saving = true);
     try {
       await widget.ref
-          .read(codexToolActionsProvider.notifier)
+          .read(codexMcpConfigActionsProvider.notifier)
           .save(
-            CodexTool(
+            CodexMcpConfig(
               id: id,
-              kind: _kind,
+              kind: CodexMcpConfigKind.mcpServer,
               name: id,
               description: _firstConfigLine(bodyText),
               bodyText: bodyText,
@@ -423,8 +418,8 @@ class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
     final existing = widget.existing;
     final l10n = context.l10n;
     final title = existing == null
-        ? l10n.mcpCodexToolDialogTitleNew
-        : l10n.mcpCodexToolDialogTitleEdit;
+        ? l10n.mcpConfigDialogTitleNew
+        : l10n.mcpConfigDialogTitleEdit;
 
     return Center(
       child: Padding(
@@ -463,45 +458,21 @@ class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
                     ],
                   ),
                   const SizedBox(height: 18),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 210,
-                        child: _DialogField(
-                          label: l10n.mcpCodexToolTypeLabel,
-                          child: _KindSelector(
-                            value: _kind,
-                            enabled: existing == null && !_saving,
-                            onChanged: (value) {
-                              setState(() {
-                                _kind = value;
-                                _bodyCtrl.text = _defaultBodyText(value);
-                              });
-                            },
-                          ),
-                        ),
+                  _DialogField(
+                    label: 'ID',
+                    child: TextField(
+                      controller: _idCtrl,
+                      enabled: existing == null && !_saving,
+                      style: const TextStyle(fontSize: 14),
+                      decoration: _dialogInputDecoration(
+                        context,
+                        hintText: l10n.mcpConfigIdHint,
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: _DialogField(
-                          label: 'ID',
-                          child: TextField(
-                            controller: _idCtrl,
-                            enabled: existing == null && !_saving,
-                            style: const TextStyle(fontSize: 14),
-                            decoration: _dialogInputDecoration(
-                              context,
-                              hintText: l10n.mcpCodexToolIdHint,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _DialogField(
-                    label: l10n.mcpCodexToolFragmentContentLabel,
+                    label: l10n.mcpConfigBodyContentLabel,
                     child: TextField(
                       controller: _bodyCtrl,
                       enabled: !_saving,
@@ -514,13 +485,13 @@ class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
                       ),
                       decoration: _dialogInputDecoration(
                         context,
-                        helperText: l10n.mcpCodexToolFragmentHelper,
+                        helperText: l10n.mcpConfigBodyHelper,
                       ),
                     ),
                   ),
                   const SizedBox(height: 14),
                   _EnabledToggle(
-                    label: l10n.mcpCodexToolEnabledLabel,
+                    label: l10n.mcpConfigEnabledLabel,
                     value: _enabled,
                     enabled: !_saving,
                     onChanged: (value) => setState(() => _enabled = value),
@@ -591,10 +562,7 @@ class _CodexToolEditDialogState extends State<_CodexToolEditDialog> {
     );
   }
 
-  String _defaultBodyText(String kind) {
-    if (kind == CodexToolKind.skill) {
-      return 'description = ""';
-    }
+  String _defaultBodyText() {
     return 'command = ""\nargs = []';
   }
 
@@ -628,92 +596,6 @@ class _DialogField extends StatelessWidget {
         const SizedBox(height: 7),
         child,
       ],
-    );
-  }
-}
-
-class _KindSelector extends StatelessWidget {
-  const _KindSelector({
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final String value;
-  final bool enabled;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      height: 46,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Row(
-        children: [
-          for (final kind in CodexToolKind.values)
-            Expanded(
-              child: _KindSelectorOption(
-                label: CodexToolKind.label(kind),
-                selected: value == kind,
-                enabled: enabled,
-                onTap: () => onChanged(kind),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _KindSelectorOption extends StatelessWidget {
-  const _KindSelectorOption({
-    required this.label,
-    required this.selected,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final foreground = selected
-        ? colorScheme.onPrimaryContainer
-        : colorScheme.onSurfaceVariant;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(6),
-      onTap: enabled ? onTap : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOut,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: selected ? colorScheme.primaryContainer : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: enabled
-                ? foreground
-                : colorScheme.onSurfaceVariant.withValues(alpha: 0.48),
-          ),
-        ),
-      ),
     );
   }
 }

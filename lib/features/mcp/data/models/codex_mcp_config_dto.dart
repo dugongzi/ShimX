@@ -1,29 +1,29 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/mcp/domain/models/codex_tool.dart';
+import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
 
-part 'codex_tool_dto.freezed.dart';
-part 'codex_tool_dto.g.dart';
+part 'codex_mcp_config_dto.freezed.dart';
+part 'codex_mcp_config_dto.g.dart';
 
 @freezed
-abstract class CodexToolDto with _$CodexToolDto {
-  const CodexToolDto._();
+abstract class CodexMcpConfigDto with _$CodexMcpConfigDto {
+  const CodexMcpConfigDto._();
 
-  const factory CodexToolDto({
+  const factory CodexMcpConfigDto({
     @Default('') String id,
-    @Default(CodexToolKind.mcpServer) String kind,
+    @Default(CodexMcpConfigKind.mcpServer) String kind,
     @Default('') String bodyText,
     @Default(true) bool enabled,
     @Default(false) bool managedByShim,
     @Default(true) bool readOnly,
     @Default('') String name,
     @Default('') String description,
-  }) = _CodexToolDto;
+  }) = _CodexMcpConfigDto;
 
-  factory CodexToolDto.fromJson(Map<String, Object?> json) =>
-      _$CodexToolDtoFromJson(json);
+  factory CodexMcpConfigDto.fromJson(Map<String, Object?> json) =>
+      _$CodexMcpConfigDtoFromJson(json);
 
-  factory CodexToolDto.fromEntity(CodexTool entity) {
-    return CodexToolDto(
+  factory CodexMcpConfigDto.fromEntity(CodexMcpConfig entity) {
+    return CodexMcpConfigDto(
       id: entity.id,
       kind: entity.kind,
       bodyText: entity.bodyText,
@@ -35,8 +35,8 @@ abstract class CodexToolDto with _$CodexToolDto {
     );
   }
 
-  CodexTool toEntity() {
-    return CodexTool(
+  CodexMcpConfig toEntity() {
+    return CodexMcpConfig(
       id: id,
       kind: kind,
       bodyText: bodyText,

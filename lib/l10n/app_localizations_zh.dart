@@ -647,42 +647,123 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mcpStatusError => '错误';
 
   @override
-  String get mcpCodexToolsTitle => 'Codex 配置片段（高级）';
+  String get mcpConfigTitle => 'Codex MCP 配置（高级）';
 
   @override
-  String get mcpCodexToolsHint =>
-      '展示 config.toml 中的 MCP / Skill 片段；保存时只改动当前条目对应的 TOML 段。';
+  String get mcpConfigHint =>
+      '展示 config.toml 中的 [mcp_servers.*]；开关和保存会写入 config.toml，并在新的 Codex 会话中生效。';
 
   @override
-  String get mcpCodexToolsEmpty => '还没有 Codex 配置片段';
+  String get mcpConfigEmpty => '还没有 Codex MCP 配置';
 
   @override
-  String get mcpCodexToolAdd => '新增';
+  String get mcpConfigAdd => '新增';
 
   @override
-  String get mcpCodexToolFragmentLabel => '配置';
+  String get mcpConfigBodyLabel => '配置';
 
   @override
-  String get mcpCodexToolFillRequiredToast => '请填写 ID 和配置';
+  String get mcpConfigFillRequiredToast => '请填写 ID 和配置';
 
   @override
-  String get mcpCodexToolDialogTitleNew => '新增配置片段';
+  String get mcpConfigDialogTitleNew => '新增 MCP 配置';
 
   @override
-  String get mcpCodexToolDialogTitleEdit => '编辑配置片段';
+  String get mcpConfigDialogTitleEdit => '编辑 MCP 配置';
 
   @override
-  String get mcpCodexToolTypeLabel => '类型';
+  String get mcpConfigIdHint => '例如 my_server';
 
   @override
-  String get mcpCodexToolIdHint => '例如 my_server';
+  String get mcpConfigBodyContentLabel => '配置内容';
 
   @override
-  String get mcpCodexToolFragmentContentLabel => '配置内容';
+  String get mcpConfigBodyHelper => '只填写当前条目的字段内容；表头由 ID 自动写入';
 
   @override
-  String get mcpCodexToolFragmentHelper => '只填写当前条目的字段内容；表头由 ID 自动写入';
+  String get mcpConfigEnabledLabel => '写入 config.toml';
 
   @override
-  String get mcpCodexToolEnabledLabel => '启用片段';
+  String get skills => 'Skills';
+
+  @override
+  String get skillsTitle => 'Codex Skills';
+
+  @override
+  String get skillsHint =>
+      '管理 ~/.codex/skills 下的本地 Codex Skill。shim 只会删除或覆盖已导入 registry 的 Skill。';
+
+  @override
+  String get skillsInstallFolder => '安装文件夹';
+
+  @override
+  String get skillsInstallZip => '安装 ZIP';
+
+  @override
+  String get skillsManagedGroup => 'shim 管理';
+
+  @override
+  String get skillsExternalGroup => '外部 Codex Skills';
+
+  @override
+  String get skillsEmpty => '还没有发现 Codex Skill';
+
+  @override
+  String get skillsManagedBadge => 'shim 管理';
+
+  @override
+  String get skillsExternalBadge => '外部';
+
+  @override
+  String get skillsImportManaged => '导入管理';
+
+  @override
+  String get skillsCopyPath => '复制路径';
+
+  @override
+  String get skillsDelete => '删除';
+
+  @override
+  String get skillsPathLabel => '路径';
+
+  @override
+  String get skillsHashLabel => '内容 Hash';
+
+  @override
+  String get skillsInstallSuccess => 'Skill 已安装';
+
+  @override
+  String get skillsImportSuccess => '已导入管理';
+
+  @override
+  String get skillsDeleteSuccess => 'Skill 已删除';
+
+  @override
+  String skillsActionFailed(String message) {
+    return '操作失败：$message';
+  }
+
+  @override
+  String get skillsOverwriteTitle => '覆盖 Skill';
+
+  @override
+  String get skillsOverwriteMessage => '同名 shim 管理 Skill 已存在，确认覆盖当前目录？';
+
+  @override
+  String get skillsDeleteTitle => '删除 Skill';
+
+  @override
+  String get skillsDeleteMessage => '确认删除这个 shim 管理的 Skill 目录？';
+
+  @override
+  String get skillsZipChooseTitle => '选择 ZIP 中的 Skill';
+
+  @override
+  String get skillsNoFolderSelected => '未选择文件夹';
+
+  @override
+  String get skillsNoZipSelected => '未选择 ZIP';
+
+  @override
+  String get skillsNoDescription => '无描述';
 }

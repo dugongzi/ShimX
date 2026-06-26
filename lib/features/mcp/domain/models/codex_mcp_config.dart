@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'codex_tool.freezed.dart';
+part 'codex_mcp_config.freezed.dart';
 
 @freezed
-abstract class CodexTool with _$CodexTool {
-  const CodexTool._();
+abstract class CodexMcpConfig with _$CodexMcpConfig {
+  const CodexMcpConfig._();
 
-  const factory CodexTool({
+  const factory CodexMcpConfig({
     required String id,
     required String kind,
     required String bodyText,
@@ -15,29 +15,26 @@ abstract class CodexTool with _$CodexTool {
     required bool readOnly,
     @Default('') String name,
     @Default('') String description,
-  }) = _CodexTool;
+  }) = _CodexMcpConfig;
 }
 
-class CodexToolKind {
-  const CodexToolKind._();
+class CodexMcpConfigKind {
+  const CodexMcpConfigKind._();
 
   static const mcpServer = 'mcpServer';
-  static const skill = 'skill';
 
-  static const values = [mcpServer, skill];
+  static const values = [mcpServer];
 
   static String tableName(String kind) {
     return switch (kind) {
       mcpServer => 'mcp_servers',
-      skill => 'skills',
-      _ => throw ArgumentError('Unsupported Codex tool kind: $kind'),
+      _ => throw ArgumentError('Unsupported Codex MCP config kind: $kind'),
     };
   }
 
   static String label(String kind) {
     return switch (kind) {
       mcpServer => 'MCP',
-      skill => 'Skill',
       _ => kind,
     };
   }
@@ -45,8 +42,9 @@ class CodexToolKind {
   static String fromTableName(String tableName) {
     return switch (tableName) {
       'mcp_servers' => mcpServer,
-      'skills' => skill,
-      _ => throw ArgumentError('Unsupported Codex tool table: $tableName'),
+      _ => throw ArgumentError(
+        'Unsupported Codex MCP config table: $tableName',
+      ),
     };
   }
 }

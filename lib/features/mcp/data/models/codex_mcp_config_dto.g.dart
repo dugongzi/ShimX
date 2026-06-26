@@ -1,15 +1,15 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'codex_tool_dto.dart';
+part of 'codex_mcp_config_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_CodexToolDto _$CodexToolDtoFromJson(Map<String, dynamic> json) =>
-    _CodexToolDto(
+_CodexMcpConfigDto _$CodexMcpConfigDtoFromJson(Map<String, dynamic> json) =>
+    _CodexMcpConfigDto(
       id: json['id'] as String? ?? '',
-      kind: json['kind'] as String? ?? CodexToolKind.mcpServer,
+      kind: json['kind'] as String? ?? CodexMcpConfigKind.mcpServer,
       bodyText: json['bodyText'] as String? ?? '',
       enabled: json['enabled'] as bool? ?? true,
       managedByShim: json['managedByShim'] as bool? ?? false,
@@ -18,7 +18,7 @@ _CodexToolDto _$CodexToolDtoFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String? ?? '',
     );
 
-Map<String, dynamic> _$CodexToolDtoToJson(_CodexToolDto instance) =>
+Map<String, dynamic> _$CodexMcpConfigDtoToJson(_CodexMcpConfigDto instance) =>
     <String, dynamic>{
       'id': instance.id,
       'kind': instance.kind,

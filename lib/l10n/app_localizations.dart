@@ -1298,83 +1298,239 @@ abstract class AppLocalizations {
   /// **'错误'**
   String get mcpStatusError;
 
-  /// No description provided for @mcpCodexToolsTitle.
+  /// No description provided for @mcpConfigTitle.
   ///
   /// In zh, this message translates to:
-  /// **'Codex 配置片段（高级）'**
-  String get mcpCodexToolsTitle;
+  /// **'Codex MCP 配置（高级）'**
+  String get mcpConfigTitle;
 
-  /// No description provided for @mcpCodexToolsHint.
+  /// No description provided for @mcpConfigHint.
   ///
   /// In zh, this message translates to:
-  /// **'展示 config.toml 中的 MCP / Skill 片段；保存时只改动当前条目对应的 TOML 段。'**
-  String get mcpCodexToolsHint;
+  /// **'展示 config.toml 中的 [mcp_servers.*]；开关和保存会写入 config.toml，并在新的 Codex 会话中生效。'**
+  String get mcpConfigHint;
 
-  /// No description provided for @mcpCodexToolsEmpty.
+  /// No description provided for @mcpConfigEmpty.
   ///
   /// In zh, this message translates to:
-  /// **'还没有 Codex 配置片段'**
-  String get mcpCodexToolsEmpty;
+  /// **'还没有 Codex MCP 配置'**
+  String get mcpConfigEmpty;
 
-  /// No description provided for @mcpCodexToolAdd.
+  /// No description provided for @mcpConfigAdd.
   ///
   /// In zh, this message translates to:
   /// **'新增'**
-  String get mcpCodexToolAdd;
+  String get mcpConfigAdd;
 
-  /// No description provided for @mcpCodexToolFragmentLabel.
+  /// No description provided for @mcpConfigBodyLabel.
   ///
   /// In zh, this message translates to:
   /// **'配置'**
-  String get mcpCodexToolFragmentLabel;
+  String get mcpConfigBodyLabel;
 
-  /// No description provided for @mcpCodexToolFillRequiredToast.
+  /// No description provided for @mcpConfigFillRequiredToast.
   ///
   /// In zh, this message translates to:
   /// **'请填写 ID 和配置'**
-  String get mcpCodexToolFillRequiredToast;
+  String get mcpConfigFillRequiredToast;
 
-  /// No description provided for @mcpCodexToolDialogTitleNew.
+  /// No description provided for @mcpConfigDialogTitleNew.
   ///
   /// In zh, this message translates to:
-  /// **'新增配置片段'**
-  String get mcpCodexToolDialogTitleNew;
+  /// **'新增 MCP 配置'**
+  String get mcpConfigDialogTitleNew;
 
-  /// No description provided for @mcpCodexToolDialogTitleEdit.
+  /// No description provided for @mcpConfigDialogTitleEdit.
   ///
   /// In zh, this message translates to:
-  /// **'编辑配置片段'**
-  String get mcpCodexToolDialogTitleEdit;
+  /// **'编辑 MCP 配置'**
+  String get mcpConfigDialogTitleEdit;
 
-  /// No description provided for @mcpCodexToolTypeLabel.
-  ///
-  /// In zh, this message translates to:
-  /// **'类型'**
-  String get mcpCodexToolTypeLabel;
-
-  /// No description provided for @mcpCodexToolIdHint.
+  /// No description provided for @mcpConfigIdHint.
   ///
   /// In zh, this message translates to:
   /// **'例如 my_server'**
-  String get mcpCodexToolIdHint;
+  String get mcpConfigIdHint;
 
-  /// No description provided for @mcpCodexToolFragmentContentLabel.
+  /// No description provided for @mcpConfigBodyContentLabel.
   ///
   /// In zh, this message translates to:
   /// **'配置内容'**
-  String get mcpCodexToolFragmentContentLabel;
+  String get mcpConfigBodyContentLabel;
 
-  /// No description provided for @mcpCodexToolFragmentHelper.
+  /// No description provided for @mcpConfigBodyHelper.
   ///
   /// In zh, this message translates to:
   /// **'只填写当前条目的字段内容；表头由 ID 自动写入'**
-  String get mcpCodexToolFragmentHelper;
+  String get mcpConfigBodyHelper;
 
-  /// No description provided for @mcpCodexToolEnabledLabel.
+  /// No description provided for @mcpConfigEnabledLabel.
   ///
   /// In zh, this message translates to:
-  /// **'启用片段'**
-  String get mcpCodexToolEnabledLabel;
+  /// **'写入 config.toml'**
+  String get mcpConfigEnabledLabel;
+
+  /// No description provided for @skills.
+  ///
+  /// In zh, this message translates to:
+  /// **'Skills'**
+  String get skills;
+
+  /// No description provided for @skillsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'Codex Skills'**
+  String get skillsTitle;
+
+  /// No description provided for @skillsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'管理 ~/.codex/skills 下的本地 Codex Skill。shim 只会删除或覆盖已导入 registry 的 Skill。'**
+  String get skillsHint;
+
+  /// No description provided for @skillsInstallFolder.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装文件夹'**
+  String get skillsInstallFolder;
+
+  /// No description provided for @skillsInstallZip.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装 ZIP'**
+  String get skillsInstallZip;
+
+  /// No description provided for @skillsManagedGroup.
+  ///
+  /// In zh, this message translates to:
+  /// **'shim 管理'**
+  String get skillsManagedGroup;
+
+  /// No description provided for @skillsExternalGroup.
+  ///
+  /// In zh, this message translates to:
+  /// **'外部 Codex Skills'**
+  String get skillsExternalGroup;
+
+  /// No description provided for @skillsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有发现 Codex Skill'**
+  String get skillsEmpty;
+
+  /// No description provided for @skillsManagedBadge.
+  ///
+  /// In zh, this message translates to:
+  /// **'shim 管理'**
+  String get skillsManagedBadge;
+
+  /// No description provided for @skillsExternalBadge.
+  ///
+  /// In zh, this message translates to:
+  /// **'外部'**
+  String get skillsExternalBadge;
+
+  /// No description provided for @skillsImportManaged.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入管理'**
+  String get skillsImportManaged;
+
+  /// No description provided for @skillsCopyPath.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制路径'**
+  String get skillsCopyPath;
+
+  /// No description provided for @skillsDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get skillsDelete;
+
+  /// No description provided for @skillsPathLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'路径'**
+  String get skillsPathLabel;
+
+  /// No description provided for @skillsHashLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'内容 Hash'**
+  String get skillsHashLabel;
+
+  /// No description provided for @skillsInstallSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'Skill 已安装'**
+  String get skillsInstallSuccess;
+
+  /// No description provided for @skillsImportSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已导入管理'**
+  String get skillsImportSuccess;
+
+  /// No description provided for @skillsDeleteSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'Skill 已删除'**
+  String get skillsDeleteSuccess;
+
+  /// No description provided for @skillsActionFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作失败：{message}'**
+  String skillsActionFailed(String message);
+
+  /// No description provided for @skillsOverwriteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'覆盖 Skill'**
+  String get skillsOverwriteTitle;
+
+  /// No description provided for @skillsOverwriteMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'同名 shim 管理 Skill 已存在，确认覆盖当前目录？'**
+  String get skillsOverwriteMessage;
+
+  /// No description provided for @skillsDeleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除 Skill'**
+  String get skillsDeleteTitle;
+
+  /// No description provided for @skillsDeleteMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认删除这个 shim 管理的 Skill 目录？'**
+  String get skillsDeleteMessage;
+
+  /// No description provided for @skillsZipChooseTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 ZIP 中的 Skill'**
+  String get skillsZipChooseTitle;
+
+  /// No description provided for @skillsNoFolderSelected.
+  ///
+  /// In zh, this message translates to:
+  /// **'未选择文件夹'**
+  String get skillsNoFolderSelected;
+
+  /// No description provided for @skillsNoZipSelected.
+  ///
+  /// In zh, this message translates to:
+  /// **'未选择 ZIP'**
+  String get skillsNoZipSelected;
+
+  /// No description provided for @skillsNoDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'无描述'**
+  String get skillsNoDescription;
 }
 
 class _AppLocalizationsDelegate

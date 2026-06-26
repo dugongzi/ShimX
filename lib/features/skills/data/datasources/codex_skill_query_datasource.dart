@@ -36,7 +36,7 @@ class CodexSkillQueryDatasource {
         final num value => value.toInt(),
         _ => 0,
       };
-      final contentHash = computeCodexSkillHash(entity);
+      final contentHash = await computeCodexSkillHashInBackground(entity);
       skills.add(
         CodexSkillDto(
           id: id,

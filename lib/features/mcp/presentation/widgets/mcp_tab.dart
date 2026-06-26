@@ -107,15 +107,25 @@ class McpTab extends ConsumerWidget {
   }
 }
 
-class _CodexMcpConfigSection extends ConsumerWidget {
+class _CodexMcpConfigSection extends ConsumerStatefulWidget {
   const _CodexMcpConfigSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_CodexMcpConfigSection> createState() =>
+      _CodexMcpConfigSectionState();
+}
+
+class _CodexMcpConfigSectionState
+    extends ConsumerState<_CodexMcpConfigSection> {
+  bool _working = false;
+
+  @override
+  Widget build(BuildContext context) {
     final async = ref.watch(codexMcpConfigsProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     final deletedToast = context.l10n.deletedToast;
+    final showProgress = _working || async.isRefreshing || async.isReloading;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,13 +134,15 @@ class _CodexMcpConfigSection extends ConsumerWidget {
           children: [
             Expanded(child: SectionTitle(title: l10n.mcpConfigTitle)),
             FilledButton.icon(
-              onPressed: () => _showEditDialog(context, ref, null),
+              onPressed: _working
+                  ? null
+                  : () => _showEditDialog(context, ref, null),
               icon: const Icon(Icons.add_rounded),
               label: Text(l10n.mcpConfigAdd),
             ),
             IconButton(
               tooltip: context.l10n.refresh,
-              onPressed: () => ref.invalidate(codexMcpConfigsProvider),
+              onPressed: _working ? null : _refreshConfigs,
               icon: const Icon(Icons.refresh_rounded),
             ),
           ],
@@ -144,6 +156,34 @@ class _CodexMcpConfigSection extends ConsumerWidget {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 160),
+          child: showProgress
+              ? Padding(
+                  key: const ValueKey('mcp-config-progress'),
+                  padding: EdgeInsets.only(
+                    left: AppSizes.itemGap,
+                    right: AppSizes.itemGap,
+                    top: AppSizes.itemGap,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const LinearProgressIndicator(minHeight: 2),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.mcpConfigInstalling,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(
+                  key: ValueKey('mcp-config-progress-empty'),
+                ),
         ),
         SizedBox(height: AppSizes.sectionGap),
         async.when(
@@ -164,19 +204,27 @@ class _CodexMcpConfigSection extends ConsumerWidget {
                     config: config,
                     onEdit: () => _showEditDialog(context, ref, config),
                     onDelete: () async {
-                      await ref
-                          .read(codexMcpConfigActionsProvider.notifier)
-                          .remove(kind: config.kind, id: config.id);
-                      SmartDialog.showToast(deletedToast);
+                      try {
+                        await _runConfigAction(
+                          () => ref
+                              .read(codexMcpConfigActionsProvider.notifier)
+                              .remove(kind: config.kind, id: config.id),
+                        );
+                        SmartDialog.showToast(deletedToast);
+                      } catch (error) {
+                        SmartDialog.showToast(error.toString());
+                      }
                     },
                     onToggle: (enabled) {
-                      return ref
-                          .read(codexMcpConfigActionsProvider.notifier)
-                          .setEnabled(
-                            kind: config.kind,
-                            id: config.id,
-                            enabled: enabled,
-                          );
+                      return _runConfigAction(
+                        () => ref
+                            .read(codexMcpConfigActionsProvider.notifier)
+                            .setEnabled(
+                              kind: config.kind,
+                              id: config.id,
+                              enabled: enabled,
+                            ),
+                      );
                     },
                   ),
                   SizedBox(height: AppSizes.itemGap),
@@ -187,6 +235,21 @@ class _CodexMcpConfigSection extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _refreshConfigs() {
+    return _runConfigAction(() async {});
+  }
+
+  Future<void> _runConfigAction(Future<void> Function() action) async {
+    setState(() => _working = true);
+    try {
+      await action();
+      ref.invalidate(codexMcpConfigsProvider);
+      await ref.read(codexMcpConfigsProvider.future);
+    } finally {
+      if (mounted) setState(() => _working = false);
+    }
   }
 
   void _showEditDialog(

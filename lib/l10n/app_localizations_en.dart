@@ -694,6 +694,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mcpConfigEnabledLabel => 'Write to config.toml';
 
   @override
+  String get mcpConfigInstalling => 'Installing MCP...';
+
+  @override
   String get skills => 'Skills';
 
   @override
@@ -777,4 +780,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get skillsNoDescription => 'No description';
+
+  @override
+  String get skillsRefreshing => 'Installing Skills...';
 }

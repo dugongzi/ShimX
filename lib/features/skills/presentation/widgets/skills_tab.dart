@@ -21,12 +21,19 @@ class SkillsTab extends ConsumerStatefulWidget {
 
 class _SkillsTabState extends ConsumerState<SkillsTab> {
   bool _working = false;
+  bool _refreshing = false;
   final Set<String> _busyIds = {};
 
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(codexSkillsProvider);
     final l10n = context.l10n;
+    final showProgress =
+        _working ||
+        _refreshing ||
+        _busyIds.isNotEmpty ||
+        async.isRefreshing ||
+        async.isReloading;
 
     return WorkspaceSurface(
       child: ListView(
@@ -49,7 +56,7 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
               ),
               IconButton(
                 tooltip: l10n.refresh,
-                onPressed: () => ref.invalidate(codexSkillsProvider),
+                onPressed: _refreshing ? null : _refreshSkills,
                 icon: const Icon(Icons.refresh_rounded),
               ),
             ],
@@ -63,6 +70,35 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
+          ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 160),
+            child: showProgress
+                ? Padding(
+                    key: const ValueKey('skills-progress'),
+                    padding: EdgeInsets.only(
+                      left: AppSizes.itemGap,
+                      right: AppSizes.itemGap,
+                      top: AppSizes.itemGap,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const LinearProgressIndicator(minHeight: 2),
+                        const SizedBox(height: 6),
+                        Text(
+                          l10n.skillsRefreshing,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(key: ValueKey('skills-progress-empty')),
           ),
           SizedBox(height: AppSizes.sectionGap),
           async.when(
@@ -186,6 +222,7 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
     setState(() => _working = true);
     try {
       await action(false);
+      await _waitForSkillsRefresh();
       SmartDialog.showToast(successToast);
     } catch (error) {
       if (!_isOverwriteRequired(error) || !mounted) {
@@ -199,6 +236,7 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
       if (!confirmed) return;
       try {
         await action(true);
+        await _waitForSkillsRefresh();
         SmartDialog.showToast(successToast);
       } catch (retryError) {
         _showError(retryError);
@@ -210,12 +248,12 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
 
   Future<void> _importSkill(CodexSkill skill) async {
     final successToast = context.l10n.skillsImportSuccess;
-    await _withBusy(skill.id, () async {
+    final success = await _withBusy(skill.id, () async {
       await ref
           .read(codexSkillActionsProvider.notifier)
           .importExisting(id: skill.id);
-      SmartDialog.showToast(successToast);
     });
+    if (success) SmartDialog.showToast(successToast);
   }
 
   Future<void> _deleteSkill(CodexSkill skill) async {
@@ -225,23 +263,42 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
       message: context.l10n.skillsDeleteMessage,
     );
     if (!confirmed) return;
-    await _withBusy(skill.id, () async {
+    final success = await _withBusy(skill.id, () async {
       await ref
           .read(codexSkillActionsProvider.notifier)
           .deleteManaged(id: skill.id);
-      SmartDialog.showToast(successToast);
     });
+    if (success) SmartDialog.showToast(successToast);
   }
 
-  Future<void> _withBusy(String id, Future<void> Function() action) async {
+  Future<bool> _withBusy(String id, Future<void> Function() action) async {
     setState(() => _busyIds.add(id));
     try {
       await action();
+      await _waitForSkillsRefresh();
+      return true;
     } catch (error) {
       _showError(error);
+      return false;
     } finally {
       if (mounted) setState(() => _busyIds.remove(id));
     }
+  }
+
+  Future<void> _refreshSkills() async {
+    setState(() => _refreshing = true);
+    try {
+      await _waitForSkillsRefresh();
+    } catch (error) {
+      _showError(error);
+    } finally {
+      if (mounted) setState(() => _refreshing = false);
+    }
+  }
+
+  Future<void> _waitForSkillsRefresh() async {
+    ref.invalidate(codexSkillsProvider);
+    await ref.read(codexSkillsProvider.future);
   }
 
   Future<T?> _guard<T>(Future<T> Function() action) async {

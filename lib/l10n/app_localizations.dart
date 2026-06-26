@@ -1370,6 +1370,12 @@ abstract class AppLocalizations {
   /// **'写入 config.toml'**
   String get mcpConfigEnabledLabel;
 
+  /// No description provided for @mcpConfigInstalling.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在安装 MCP...'**
+  String get mcpConfigInstalling;
+
   /// No description provided for @skills.
   ///
   /// In zh, this message translates to:
@@ -1531,6 +1537,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'无描述'**
   String get skillsNoDescription;
+
+  /// No description provided for @skillsRefreshing.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在安装 Skills...'**
+  String get skillsRefreshing;
 }
 
 class _AppLocalizationsDelegate

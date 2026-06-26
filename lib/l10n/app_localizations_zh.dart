@@ -684,6 +684,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mcpConfigEnabledLabel => '写入 config.toml';
 
   @override
+  String get mcpConfigInstalling => '正在安装 MCP...';
+
+  @override
   String get skills => 'Skills';
 
   @override
@@ -766,4 +769,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get skillsNoDescription => '无描述';
+
+  @override
+  String get skillsRefreshing => '正在安装 Skills...';
 }

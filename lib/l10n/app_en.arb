@@ -287,6 +287,7 @@
   "mcpConfigBodyContentLabel": "Config content",
   "mcpConfigBodyHelper": "Enter only this entry's fields. The table header is written from the ID.",
   "mcpConfigEnabledLabel": "Write to config.toml",
+  "mcpConfigInstalling": "Installing MCP...",
   "skills": "Skills",
   "skillsTitle": "Codex Skills",
   "skillsHint": "Manage local Codex skills under ~/.codex/skills. Shim only deletes or overwrites skills imported into its registry.",
@@ -318,5 +319,6 @@
   "skillsZipChooseTitle": "Choose Skill from ZIP",
   "skillsNoFolderSelected": "No folder selected",
   "skillsNoZipSelected": "No ZIP selected",
-  "skillsNoDescription": "No description"
+  "skillsNoDescription": "No description",
+  "skillsRefreshing": "Installing Skills..."
 }

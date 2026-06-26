@@ -287,6 +287,7 @@
   "mcpConfigBodyContentLabel": "配置内容",
   "mcpConfigBodyHelper": "只填写当前条目的字段内容；表头由 ID 自动写入",
   "mcpConfigEnabledLabel": "写入 config.toml",
+  "mcpConfigInstalling": "正在安装 MCP...",
   "skills": "Skills",
   "skillsTitle": "Codex Skills",
   "skillsHint": "管理 ~/.codex/skills 下的本地 Codex Skill。shim 只会删除或覆盖已导入 registry 的 Skill。",
@@ -318,5 +319,6 @@
   "skillsZipChooseTitle": "选择 ZIP 中的 Skill",
   "skillsNoFolderSelected": "未选择文件夹",
   "skillsNoZipSelected": "未选择 ZIP",
-  "skillsNoDescription": "无描述"
+  "skillsNoDescription": "无描述",
+  "skillsRefreshing": "正在安装 Skills..."
 }

@@ -172,11 +172,12 @@ class CodexSkillActionDatasource {
     required String sourcePath,
   }) async {
     final registry = await _registry.read();
+    final contentHash = await computeCodexSkillHashInBackground(target);
     registry[id] = {
       'installedAt': DateTime.now().millisecondsSinceEpoch,
       'sourceType': sourceType,
       'sourcePath': sourcePath,
-      'contentHash': computeCodexSkillHash(target),
+      'contentHash': contentHash,
     };
     await _registry.write(registry);
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -65,6 +66,11 @@ String computeCodexSkillHash(Directory dir) {
     bytes.add([0]);
   }
   return sha256.convert(bytes.takeBytes()).toString();
+}
+
+Future<String> computeCodexSkillHashInBackground(Directory dir) {
+  final path = dir.path;
+  return Isolate.run(() => computeCodexSkillHash(Directory(path)));
 }
 
 Future<void> copyDirectoryRecursive(

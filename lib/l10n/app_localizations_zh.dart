@@ -771,5 +771,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get skillsNoDescription => '无描述';
 
   @override
-  String get skillsRefreshing => '正在安装 Skills...';
+  String get skillsRefreshing => '正在刷新 Skills...';
+
+  @override
+  String get skillsInstalling => '正在安装 Skills...';
+
+  @override
+  String get skillsImporting => '正在导入 Skill...';
+
+  @override
+  String get skillsDeleting => '正在删除 Skill...';
 }

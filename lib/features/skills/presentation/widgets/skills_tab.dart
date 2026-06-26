@@ -11,6 +11,7 @@ import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/features/skills/domain/models/codex_skill.dart';
 import 'package:shim/features/skills/presentation/providers/codex_skill_action_provider.dart';
 import 'package:shim/features/skills/presentation/providers/codex_skill_query_provider.dart';
+import 'package:shim/l10n/app_localizations.dart';
 
 class SkillsTab extends ConsumerStatefulWidget {
   const SkillsTab({super.key});
@@ -19,9 +20,12 @@ class SkillsTab extends ConsumerStatefulWidget {
   ConsumerState<SkillsTab> createState() => _SkillsTabState();
 }
 
+enum _SkillProgressMode { install, refresh, import, delete }
+
 class _SkillsTabState extends ConsumerState<SkillsTab> {
   bool _working = false;
   bool _refreshing = false;
+  _SkillProgressMode? _progressMode;
   final Set<String> _busyIds = {};
 
   @override
@@ -87,7 +91,11 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
                         const LinearProgressIndicator(minHeight: 2),
                         const SizedBox(height: 6),
                         Text(
-                          l10n.skillsRefreshing,
+                          _progressText(
+                            l10n,
+                            asyncRefreshing:
+                                async.isRefreshing || async.isReloading,
+                          ),
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(
@@ -219,7 +227,10 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
     required String successToast,
     required Future<void> Function(bool overwriteManaged) action,
   }) async {
-    setState(() => _working = true);
+    setState(() {
+      _working = true;
+      _progressMode = _SkillProgressMode.install;
+    });
     try {
       await action(false);
       await _waitForSkillsRefresh();
@@ -242,17 +253,26 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
         _showError(retryError);
       }
     } finally {
-      if (mounted) setState(() => _working = false);
+      if (mounted) {
+        setState(() {
+          _working = false;
+          _progressMode = null;
+        });
+      }
     }
   }
 
   Future<void> _importSkill(CodexSkill skill) async {
     final successToast = context.l10n.skillsImportSuccess;
-    final success = await _withBusy(skill.id, () async {
-      await ref
-          .read(codexSkillActionsProvider.notifier)
-          .importExisting(id: skill.id);
-    });
+    final success = await _withBusy(
+      skill.id,
+      _SkillProgressMode.import,
+      () async {
+        await ref
+            .read(codexSkillActionsProvider.notifier)
+            .importExisting(id: skill.id);
+      },
+    );
     if (success) SmartDialog.showToast(successToast);
   }
 
@@ -263,16 +283,27 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
       message: context.l10n.skillsDeleteMessage,
     );
     if (!confirmed) return;
-    final success = await _withBusy(skill.id, () async {
-      await ref
-          .read(codexSkillActionsProvider.notifier)
-          .deleteManaged(id: skill.id);
-    });
+    final success = await _withBusy(
+      skill.id,
+      _SkillProgressMode.delete,
+      () async {
+        await ref
+            .read(codexSkillActionsProvider.notifier)
+            .deleteManaged(id: skill.id);
+      },
+    );
     if (success) SmartDialog.showToast(successToast);
   }
 
-  Future<bool> _withBusy(String id, Future<void> Function() action) async {
-    setState(() => _busyIds.add(id));
+  Future<bool> _withBusy(
+    String id,
+    _SkillProgressMode mode,
+    Future<void> Function() action,
+  ) async {
+    setState(() {
+      _busyIds.add(id);
+      _progressMode = mode;
+    });
     try {
       await action();
       await _waitForSkillsRefresh();
@@ -281,18 +312,31 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
       _showError(error);
       return false;
     } finally {
-      if (mounted) setState(() => _busyIds.remove(id));
+      if (mounted) {
+        setState(() {
+          _busyIds.remove(id);
+          if (_busyIds.isEmpty) _progressMode = null;
+        });
+      }
     }
   }
 
   Future<void> _refreshSkills() async {
-    setState(() => _refreshing = true);
+    setState(() {
+      _refreshing = true;
+      _progressMode = _SkillProgressMode.refresh;
+    });
     try {
       await _waitForSkillsRefresh();
     } catch (error) {
       _showError(error);
     } finally {
-      if (mounted) setState(() => _refreshing = false);
+      if (mounted) {
+        setState(() {
+          _refreshing = false;
+          _progressMode = null;
+        });
+      }
     }
   }
 
@@ -360,6 +404,18 @@ class _SkillsTabState extends ConsumerState<SkillsTab> {
 
   void _showError(Object error) {
     SmartDialog.showToast(context.l10n.skillsActionFailed(error.toString()));
+  }
+
+  String _progressText(AppLocalizations l10n, {required bool asyncRefreshing}) {
+    final mode = _progressMode;
+    if (mode == null && asyncRefreshing) return l10n.skillsRefreshing;
+    return switch (mode) {
+      _SkillProgressMode.install => l10n.skillsInstalling,
+      _SkillProgressMode.refresh => l10n.skillsRefreshing,
+      _SkillProgressMode.import => l10n.skillsImporting,
+      _SkillProgressMode.delete => l10n.skillsDeleting,
+      null => l10n.skillsRefreshing,
+    };
   }
 }
 

@@ -320,5 +320,8 @@
   "skillsNoFolderSelected": "No folder selected",
   "skillsNoZipSelected": "No ZIP selected",
   "skillsNoDescription": "No description",
-  "skillsRefreshing": "Installing Skills..."
+  "skillsRefreshing": "Refreshing Skills...",
+  "skillsInstalling": "Installing Skills...",
+  "skillsImporting": "Importing Skill...",
+  "skillsDeleting": "Deleting Skill..."
 }

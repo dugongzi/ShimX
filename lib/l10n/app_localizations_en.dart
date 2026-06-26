@@ -782,5 +782,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get skillsNoDescription => 'No description';
 
   @override
-  String get skillsRefreshing => 'Installing Skills...';
+  String get skillsRefreshing => 'Refreshing Skills...';
+
+  @override
+  String get skillsInstalling => 'Installing Skills...';
+
+  @override
+  String get skillsImporting => 'Importing Skill...';
+
+  @override
+  String get skillsDeleting => 'Deleting Skill...';
 }

@@ -1541,8 +1541,26 @@ abstract class AppLocalizations {
   /// No description provided for @skillsRefreshing.
   ///
   /// In zh, this message translates to:
-  /// **'正在安装 Skills...'**
+  /// **'正在刷新 Skills...'**
   String get skillsRefreshing;
+
+  /// No description provided for @skillsInstalling.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在安装 Skills...'**
+  String get skillsInstalling;
+
+  /// No description provided for @skillsImporting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在导入 Skill...'**
+  String get skillsImporting;
+
+  /// No description provided for @skillsDeleting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在删除 Skill...'**
+  String get skillsDeleting;
 }
 
 class _AppLocalizationsDelegate

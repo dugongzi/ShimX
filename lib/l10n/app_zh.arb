@@ -320,5 +320,8 @@
   "skillsNoFolderSelected": "未选择文件夹",
   "skillsNoZipSelected": "未选择 ZIP",
   "skillsNoDescription": "无描述",
-  "skillsRefreshing": "正在安装 Skills..."
+  "skillsRefreshing": "正在刷新 Skills...",
+  "skillsInstalling": "正在安装 Skills...",
+  "skillsImporting": "正在导入 Skill...",
+  "skillsDeleting": "正在删除 Skill..."
 }

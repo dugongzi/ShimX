@@ -1869,9 +1869,8 @@
     const topRow = document.createElement('div');
     Object.assign(topRow.style, {
       display: 'flex',
-      alignItems: 'flex-start',
-      justifyContent: 'space-between',
-      gap: '12px',
+      alignItems: 'center',
+      gap: '8px',
       minWidth: '0',
     });
 
@@ -1924,6 +1923,7 @@
 
     topRow.appendChild(titleWrap);
     topRow.appendChild(badge);
+    topRow.appendChild(buildThreadActionsOverflow(currentId, thread, !!currentBinding));
     card.appendChild(topRow);
 
     const idRow = document.createElement('div');
@@ -1982,160 +1982,52 @@
       card.appendChild(mapped);
     }
 
-    card.appendChild(buildCurrentThreadActions(currentId, thread, !!currentBinding));
     return card;
   }
 
-  // 当前对话卡底部的操作条: 导出 MD / 导出原始 / 解除映射(仅已绑定) / 删除对话
-  function buildCurrentThreadActions(threadId, thread, hasBinding) {
-    const row = document.createElement('div');
-    Object.assign(row.style, {
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      gap: '6px',
-      paddingTop: '4px',
-      borderTop: '1px solid var(--token-border, rgba(255,255,255,0.06))',
-      marginTop: '4px',
-    });
-    const ICON_EXPORT_MD = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2.5V6h3" stroke="currentColor" stroke-width="1.2"/></svg>';
-    const ICON_EXPORT_RAW = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h6l2 2v10H4z" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h4M6 12h3" stroke="currentColor" stroke-width="1.2"/></svg>';
-    const ICON_EXPORT_HTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2.5V6h3" stroke="currentColor" stroke-width="1.2"/><path d="M5 10l-1.2 1.2L5 12.4M11 10l1.2 1.2L11 12.4M8.5 9.6l-1 3.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    const ICON_UNBIND = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 8a3 3 0 1 0 0 0M11 8a3 3 0 1 0 0 0" stroke="currentColor" stroke-width="1.3"/><path d="M3 13l10-10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
-    const ICON_DELETE = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4h10M6 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M4.5 4l.7 9a1 1 0 0 0 1 .9h3.6a1 1 0 0 0 1-.9l.7-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
-    const ICON_IMPORT = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v8M4.5 7.5L8 11l3.5-3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  // ========== 当前对话卡: 操作菜单 ==========
+  // 之前一行 5 个按钮挤在卡片宽度里, 窄屏会被 wrap 成 2+2+1, 文字也被 ellipsis 吃光。
+  // 改成: 卡片标题行右上角一个 `⋯` 按钮, 点击弹出垂直菜单, 菜单宽度固定, 不受卡片宽度影响。
+  //
+  // 菜单项 (按出现顺序):
+  //   导出 Markdown / 导出原始 / 导出 HTML
+  //   ─────
+  //   导入对话 ▸  (悬停展开二级: .jsonl / .zip)
+  //   ─────
+  //   解除映射  (仅 hasBinding=true 时显示)
+  //   删除对话  (danger 色)
 
-    row.appendChild(buildThreadActionButton(ICON_EXPORT_MD, S('shimControlExportMarkdown', 'Export as Markdown'), 'neutral', () =>
-      exportThreadById(threadId, 'markdown'),
-    ));
-    row.appendChild(buildThreadActionButton(ICON_EXPORT_RAW, S('shimControlExportRaw', 'Export raw data'), 'neutral', () =>
-      exportThreadById(threadId, 'raws'),
-    ));
-    row.appendChild(buildThreadActionButton(ICON_EXPORT_HTML, S('shimControlExportHtml', 'Export HTML'), 'neutral', () =>
-      exportThreadById(threadId, 'html'),
-    ));
-    // 导入需要弹下拉菜单, 不走标准 buildThreadActionButton (它在点击瞬间转 spinner,
-    // 我们希望先弹菜单等用户选 jsonl/zip 才开始转)
-    row.appendChild(buildImportDropdownButton(ICON_IMPORT, threadId));
-    if (hasBinding) {
-      row.appendChild(buildThreadActionButton(ICON_UNBIND, S('shimControlUnbindCurrent', 'Remove mapping'), 'neutral', () =>
-        unbindMappingFromControlPanel({ codexThreadId: threadId }),
-      ));
-    }
-    row.appendChild(buildThreadActionButton(ICON_DELETE, S('shimControlDeleteThread', 'Delete thread'), 'danger', () =>
-      deleteThreadFromControlPanel(threadId, thread.label || ''),
-    ));
-    return row;
-  }
+  const THREAD_ACTIONS_MENU_ID = '__shim_thread_actions_menu__';
+  const EXPORT_MENU_ID = '__shim_export_menu__';
 
-  function buildThreadActionButton(iconHtml, label, kind, onClick) {
+  const ICON_EXPORT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10V2M4.5 6.5L8 3l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  const ICON_EXPORT_MD = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2.5V6h3" stroke="currentColor" stroke-width="1.2"/></svg>';
+  const ICON_EXPORT_RAW = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h6l2 2v10H4z" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h4M6 9h4M6 12h3" stroke="currentColor" stroke-width="1.2"/></svg>';
+  const ICON_EXPORT_HTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2.5V6h3" stroke="currentColor" stroke-width="1.2"/><path d="M5 10l-1.2 1.2L5 12.4M11 10l1.2 1.2L11 12.4M8.5 9.6l-1 3.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_UNBIND = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 8a3 3 0 1 0 0 0M11 8a3 3 0 1 0 0 0" stroke="currentColor" stroke-width="1.3"/><path d="M3 13l10-10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  const ICON_DELETE = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4h10M6 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M4.5 4l.7 9a1 1 0 0 0 1 .9h3.6a1 1 0 0 0 1-.9l.7-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  const ICON_IMPORT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v8M4.5 7.5L8 11l3.5-3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+
+  function buildThreadActionsOverflow(threadId, thread, hasBinding) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.setAttribute('title', label);
+    btn.setAttribute('aria-label', S('shimControlThreadActions', 'Conversation actions'));
+    btn.setAttribute('title', S('shimControlThreadActions', 'Conversation actions'));
     Object.assign(btn.style, {
+      flex: '0 0 auto',
       display: 'inline-flex',
       alignItems: 'center',
-      gap: '6px',
-      height: '26px',
-      padding: '0 10px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      justifyContent: 'center',
+      width: '28px',
+      height: '28px',
       borderRadius: '6px',
+      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.66))',
+      color: 'var(--token-text-secondary, rgba(255,255,255,0.7))',
       cursor: 'pointer',
-      fontSize: '11.5px',
-      fontWeight: '600',
       transition: 'background 140ms ease, color 140ms ease, border-color 140ms ease',
     });
-    const icon = document.createElement('span');
-    icon.innerHTML = iconHtml;
-    Object.assign(icon.style, { display: 'inline-flex', alignItems: 'center' });
-    const text = document.createElement('span');
-    text.textContent = label;
-    btn.appendChild(icon);
-    btn.appendChild(text);
-    const hoverBg = kind === 'danger' ? 'rgba(239,68,68,0.12)' : 'rgba(96,165,250,0.10)';
-    const hoverBorder = kind === 'danger' ? 'rgba(239,68,68,0.34)' : 'rgba(96,165,250,0.28)';
-    const hoverColor = kind === 'danger' ? '#fca5a5' : '#bfdbfe';
-    btn.addEventListener('mouseenter', () => {
-      btn.style.background = hoverBg;
-      btn.style.borderColor = hoverBorder;
-      btn.style.color = hoverColor;
-    });
-    btn.addEventListener('mouseleave', () => {
-      btn.style.background = 'transparent';
-      btn.style.borderColor = 'var(--token-border, rgba(255,255,255,0.08))';
-      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.66))';
-    });
-    btn.addEventListener('click', async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      if (btn.dataset.shimBusy === '1') return;
-      btn.dataset.shimBusy = '1';
-      btn.disabled = true;
-      btn.style.cursor = 'wait';
-      btn.style.opacity = '0.75';
-      // 把 icon 换成 spinner, 文本不动 - 这样按钮宽度不抖
-      const originalIcon = icon.innerHTML;
-      icon.innerHTML = '';
-      const spinner = document.createElement('span');
-      Object.assign(spinner.style, {
-        width: '11px',
-        height: '11px',
-        borderRadius: '999px',
-        border: '1.5px solid currentColor',
-        borderTopColor: 'transparent',
-        animation: 'shimBusySpin 0.85s linear infinite',
-        display: 'inline-block',
-      });
-      ensureBusyContainer(); // 确保 keyframe 已注入
-      icon.appendChild(spinner);
-      try {
-        await onClick();
-      } finally {
-        icon.innerHTML = originalIcon;
-        btn.dataset.shimBusy = '0';
-        btn.disabled = false;
-        btn.style.cursor = 'pointer';
-        btn.style.opacity = '1';
-      }
-    });
-    return btn;
-  }
-
-  // 导入按钮 + 下拉小菜单: 选 .jsonl 单文件 / .zip 项目包。
-  // 弹菜单时不 spin, 用户选了文件 RPC 真正开始才用 busy indicator。
-  function buildImportDropdownButton(iconHtml, threadId) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.setAttribute('title', S('shimControlImport', 'Import'));
-    btn.setAttribute('aria-label', S('shimControlImportAria', 'Import conversations'));
-    Object.assign(btn.style, {
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '6px',
-      height: '26px',
-      padding: '0 10px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
-      borderRadius: '6px',
-      background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.66))',
-      cursor: 'pointer',
-      fontSize: '11.5px',
-      fontWeight: '600',
-      transition: 'background 140ms ease, color 140ms ease, border-color 140ms ease',
-    });
-    const icon = document.createElement('span');
-    icon.innerHTML = iconHtml;
-    Object.assign(icon.style, { display: 'inline-flex', alignItems: 'center' });
-    const text = document.createElement('span');
-    text.textContent = S('shimControlImport', 'Import');
-    const caret = document.createElement('span');
-    caret.textContent = '▾';
-    caret.style.cssText = 'font-size:9px;opacity:0.6;';
-    btn.appendChild(icon);
-    btn.appendChild(text);
-    btn.appendChild(caret);
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="3.5" cy="8" r="1.1" fill="currentColor"/><circle cx="8" cy="8" r="1.1" fill="currentColor"/><circle cx="12.5" cy="8" r="1.1" fill="currentColor"/></svg>';
     btn.addEventListener('mouseenter', () => {
       btn.style.background = 'rgba(96,165,250,0.10)';
       btn.style.borderColor = 'rgba(96,165,250,0.28)';
@@ -2144,14 +2036,262 @@
     btn.addEventListener('mouseleave', () => {
       btn.style.background = 'transparent';
       btn.style.borderColor = 'var(--token-border, rgba(255,255,255,0.08))';
-      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.66))';
+      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.7))';
     });
-    btn.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      toggleImportMenu(btn, threadId);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleThreadActionsMenu(btn, threadId, thread, hasBinding);
     });
     return btn;
+  }
+
+  function dismissThreadActionsMenu() {
+    document.getElementById(THREAD_ACTIONS_MENU_ID)?.remove();
+    dismissExportMenu();
+    document.removeEventListener('mousedown', onThreadActionsMenuOutside, true);
+    document.removeEventListener('keydown', onThreadActionsMenuKey, true);
+  }
+  function onThreadActionsMenuOutside(e) {
+    const menu = document.getElementById(THREAD_ACTIONS_MENU_ID);
+    if (!menu || menu.contains(e.target)) return;
+    // 子菜单 (导入/导出) 也是浮层, 点它们不能关父菜单
+    const importMenu = document.getElementById(IMPORT_MENU_ID);
+    if (importMenu && importMenu.contains(e.target)) return;
+    const exportMenu = document.getElementById(EXPORT_MENU_ID);
+    if (exportMenu && exportMenu.contains(e.target)) return;
+    dismissThreadActionsMenu();
+  }
+  function onThreadActionsMenuKey(e) {
+    if (e.key === 'Escape') {
+      dismissThreadActionsMenu();
+      dismissImportMenu();
+      dismissExportMenu();
+    }
+  }
+
+  function dismissExportMenu() {
+    document.getElementById(EXPORT_MENU_ID)?.remove();
+  }
+
+  function toggleThreadActionsMenu(anchor, threadId, thread, hasBinding) {
+    if (document.getElementById(THREAD_ACTIONS_MENU_ID)) {
+      dismissThreadActionsMenu();
+      dismissImportMenu();
+      return;
+    }
+    const menu = document.createElement('div');
+    menu.id = THREAD_ACTIONS_MENU_ID;
+    Object.assign(menu.style, {
+      position: 'fixed',
+      zIndex: '2147483647',
+      width: '220px',
+      padding: '4px',
+      borderRadius: '10px',
+      background: 'var(--token-main-surface-primary, rgba(24,24,26,0.98))',
+      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.46)',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '12.5px',
+    });
+
+    // 导出对话 ▸  (二级菜单: Markdown / 原始 / HTML)
+    const exportItem = buildSubmenuMenuItem(ICON_EXPORT, S('shimControlExport', 'Export conversation'));
+    exportItem.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleExportSubmenu(exportItem, threadId);
+    });
+    menu.appendChild(exportItem);
+
+    menu.appendChild(buildMenuDivider());
+
+    // 导入对话 ▸  (二级菜单: .jsonl / .zip, 老逻辑)
+    const importItem = buildSubmenuMenuItem(ICON_IMPORT, S('shimControlImport', 'Import'));
+    importItem.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // 子菜单以 importItem 自己作为 anchor 弹出。
+      // toggleImportMenu 内部点子项后会 dismissImportMenu() 自己, 这里再额外把父菜单一并关掉,
+      // 避免导入开始后父菜单还挂在屏幕上。
+      const wasOpen = !!document.getElementById(IMPORT_MENU_ID);
+      toggleImportMenu(importItem, threadId);
+      if (!wasOpen) {
+        const importMenu = document.getElementById(IMPORT_MENU_ID);
+        importMenu?.addEventListener('click', () => {
+          // 用 mousedown 已经 stopPropagation, click 这里冒上来时菜单可能已经销毁
+          setTimeout(() => dismissThreadActionsMenu(), 0);
+        }, true);
+      }
+    });
+    menu.appendChild(importItem);
+
+    if (hasBinding) {
+      menu.appendChild(buildMenuDivider());
+      menu.appendChild(buildThreadMenuItem(ICON_UNBIND, S('shimControlUnbindCurrent', 'Remove mapping'), 'neutral', async () => {
+        dismissThreadActionsMenu();
+        await unbindMappingFromControlPanel({ codexThreadId: threadId });
+      }));
+    }
+
+    menu.appendChild(buildMenuDivider());
+    menu.appendChild(buildThreadMenuItem(ICON_DELETE, S('shimControlDeleteThread', 'Delete thread'), 'danger', async () => {
+      dismissThreadActionsMenu();
+      await deleteThreadFromControlPanel(threadId, thread.label || '');
+    }));
+
+    document.body.appendChild(menu);
+    // 定位: 按钮下方, 右对齐 (按钮在卡片右上角, 菜单往左展开更顺眼)
+    const r = anchor.getBoundingClientRect();
+    const mr = menu.getBoundingClientRect();
+    let left = r.right - mr.width;
+    let top = r.bottom + 4;
+    if (left < 8) left = 8;
+    if (top + mr.height > window.innerHeight - 8) top = r.top - mr.height - 4;
+    menu.style.left = `${left}px`;
+    menu.style.top = `${Math.max(8, top)}px`;
+
+    document.addEventListener('mousedown', onThreadActionsMenuOutside, true);
+    document.addEventListener('keydown', onThreadActionsMenuKey, true);
+  }
+
+  function buildMenuDivider() {
+    const div = document.createElement('div');
+    Object.assign(div.style, {
+      height: '1px',
+      background: 'var(--token-border, rgba(255,255,255,0.06))',
+      margin: '4px 6px',
+    });
+    return div;
+  }
+
+  // 父菜单里"有二级菜单"的项: 复用 buildThreadMenuItem (onClick=null) 再补一个 ▸ caret。
+  // 调用方自己绑 click 决定怎么弹子菜单。
+  function buildSubmenuMenuItem(iconHtml, label) {
+    const item = buildThreadMenuItem(iconHtml, label, 'neutral', null);
+    const caret = document.createElement('span');
+    caret.textContent = '▸';
+    caret.style.cssText = 'margin-left:auto;opacity:0.5;font-size:10px;flex:0 0 auto;';
+    item.appendChild(caret);
+    return item;
+  }
+
+  // 导出二级菜单: Markdown / 原始 / HTML, 跟 import 子菜单同一套布局风格。
+  // 点其中一项后两层菜单一起关。
+  function toggleExportSubmenu(anchor, threadId) {
+    if (document.getElementById(EXPORT_MENU_ID)) {
+      dismissExportMenu();
+      return;
+    }
+    const menu = document.createElement('div');
+    menu.id = EXPORT_MENU_ID;
+    Object.assign(menu.style, {
+      position: 'fixed',
+      zIndex: '2147483647',
+      width: '200px',
+      padding: '4px',
+      borderRadius: '10px',
+      background: 'var(--token-main-surface-primary, rgba(24,24,26,0.98))',
+      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.46)',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '12.5px',
+    });
+
+    const choose = async (format) => {
+      dismissThreadActionsMenu();
+      await exportThreadById(threadId, format);
+    };
+    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_MD, S('shimControlExportMarkdown', 'Export as Markdown'), 'neutral', () => choose('markdown')));
+    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_RAW, S('shimControlExportRaw', 'Export raw data'), 'neutral', () => choose('raws')));
+    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_HTML, S('shimControlExportHtml', 'Export HTML'), 'neutral', () => choose('html')));
+
+    document.body.appendChild(menu);
+    // 子菜单贴在 anchor 右边; 横向不够就退回到 anchor 下方右对齐。
+    const r = anchor.getBoundingClientRect();
+    const mr = menu.getBoundingClientRect();
+    let left = r.right + 4;
+    let top = r.top;
+    if (left + mr.width > window.innerWidth - 8) {
+      left = Math.max(8, r.right - mr.width);
+      top = r.bottom + 4;
+    }
+    if (top + mr.height > window.innerHeight - 8) {
+      top = Math.max(8, window.innerHeight - mr.height - 8);
+    }
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+  }
+
+  // 通用菜单项: icon + 文本, danger 项用红色 hover。
+  // onClick 传 null 时调用方负责自己绑 click (用于"导入"这种需要弹二级菜单的情况)。
+  function buildThreadMenuItem(iconHtml, label, kind, onClick) {
+    const item = document.createElement('button');
+    item.type = 'button';
+    Object.assign(item.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      width: '100%',
+      padding: '8px 10px',
+      border: '0',
+      borderRadius: '6px',
+      background: 'transparent',
+      color: kind === 'danger'
+        ? 'var(--token-text-primary, currentColor)'
+        : 'var(--token-text-primary, currentColor)',
+      cursor: 'pointer',
+      fontSize: '12.5px',
+      fontWeight: '500',
+      textAlign: 'left',
+      transition: 'background 140ms ease, color 140ms ease',
+    });
+    const icon = document.createElement('span');
+    icon.innerHTML = iconHtml;
+    Object.assign(icon.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '16px',
+      flex: '0 0 auto',
+      color: kind === 'danger'
+        ? 'var(--token-error, #f87171)'
+        : 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+    });
+    const text = document.createElement('span');
+    text.textContent = label;
+    Object.assign(text.style, {
+      flex: '1 1 auto',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    });
+    item.appendChild(icon);
+    item.appendChild(text);
+    const hoverBg = kind === 'danger' ? 'rgba(239,68,68,0.14)' : 'rgba(96,165,250,0.10)';
+    const hoverColor = kind === 'danger' ? '#fca5a5' : 'var(--token-text-primary, currentColor)';
+    item.addEventListener('mouseenter', () => {
+      item.style.background = hoverBg;
+      if (kind === 'danger') {
+        item.style.color = hoverColor;
+        icon.style.color = hoverColor;
+      }
+    });
+    item.addEventListener('mouseleave', () => {
+      item.style.background = 'transparent';
+      item.style.color = 'var(--token-text-primary, currentColor)';
+      icon.style.color = kind === 'danger'
+        ? 'var(--token-error, #f87171)'
+        : 'var(--token-text-secondary, rgba(255,255,255,0.62))';
+    });
+    if (onClick) {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      });
+    }
+    return item;
   }
 
   const IMPORT_MENU_ID = '__shim_import_menu__';
@@ -4878,7 +5018,13 @@
     const scanFlag = 'data-shim-plugin-ready';
     const installFlag = 'data-shim-install-ready';
     const logPrefix = '[ShimPlugin]';
-    const navSelector = 'nav[role="navigation"] button.h-token-nav-row.w-full';
+    // codex 老版本: nav[role="navigation"] button.h-token-nav-row.w-full
+    // codex 新版本: 去掉了 nav 包裹,行高换成 Tailwind 任意值 h-[var(--height-token-row)],
+    //              按钮在 div.flex.flex-col.gap-px 里。两种都接受,避免改一边漏一边。
+    const navSelector = [
+      'nav[role="navigation"] button.h-token-nav-row.w-full',
+      'div.flex.flex-col.gap-px > button.w-full[class*="h-[var(--height-token-row)]"]',
+    ].join(', ');
     const pluginIconPathPrefix = 'M7.94562 14.0277';
     const marketIds = new Set([
       'openai-bundled',
@@ -5224,9 +5370,13 @@
     }
 
     function pluginNavButtons() {
-      const byIcon = document
-        .querySelector(navSelector + ' svg path[d^="' + pluginIconPathPrefix + '"]')
-        ?.closest('button');
+      // navSelector 现在是逗号分隔的多签名,直接拼字符串会把后缀只作用到最后一段。
+      // 这里给每段都补上 svg path 后缀,等价于 (A svg path), (B svg path)。
+      const iconSelector = navSelector
+        .split(',')
+        .map((sel) => sel.trim() + ' svg path[d^="' + pluginIconPathPrefix + '"]')
+        .join(', ');
+      const byIcon = document.querySelector(iconSelector)?.closest('button');
       const candidates = Array.from(
         document.querySelectorAll(navSelector + ', nav button, aside button, [role="navigation"] button'),
       );
@@ -5420,12 +5570,25 @@
   const NAV_BTN_ID = '__shim_claude_bridge_nav__';
   const NAV_PANEL_ID = '__shim_claude_bridge_panel__';
 
-  // 找到 codex 自带 nav 按钮所在的列表容器(包含"插件"按钮的 .flex.flex-col.gap-px)。
+  // 找到 codex 自带 nav 按钮所在的列表容器(包含"新对话/搜索"按钮的 .flex.flex-col.gap-px)。
   // 我们把"Claude 桥"按钮追加到该容器末尾,折叠面板紧跟其后。
+  //
+  // 历史: codex 之前给行用 .h-token-nav-row,后来换成 Tailwind 任意值
+  // .h-[var(--height-token-row)],并去掉了外层 nav[role="navigation"]。
+  // 这里两个签名都接受,先用旧的找,找不到再退到新的;最后兜底用 gap-px 容器里
+  // 的 h-* 行作为锚点。
   function findCodexNavList() {
-    const sample = document.querySelector(
+    let sample = document.querySelector(
       'nav[role="navigation"] button.h-token-nav-row.w-full',
     );
+    if (!sample) {
+      sample = document.querySelector(
+        'div.flex.flex-col.gap-px > button.w-full[class*="h-[var(--height-token-row)]"]',
+      );
+    }
+    if (!sample) {
+      sample = document.querySelector('div.flex.flex-col.gap-px > button.w-full');
+    }
     if (!sample) return null;
     return sample.closest('div.flex.flex-col.gap-px') || sample.parentElement;
   }
@@ -5909,6 +6072,9 @@
     '[data-app-action-sidebar-thread-id]',
     'button[aria-label="归档对话"]',
     'nav[role="navigation"]',
+    // codex 新版 sidebar 没有 nav[role=navigation] 外壳了, 用 button 行高的 Tailwind
+    // 任意值类做兜底, 否则 sidebar 重新挂载时观察者不会触发, Shim 入口和 Claude 桥都重新注入失败。
+    'button[class*="h-[var(--height-token-row)]"]',
     '[data-codex-intelligence-trigger]',
     '[data-turn-key]',
     '[role="menu"]',

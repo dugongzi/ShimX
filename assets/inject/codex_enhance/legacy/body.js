@@ -1,31 +1,30 @@
 // ==Shim==
-// @name        Shim Injected Badge + Menu
-// @description 在 Codex 工具栏「请求批准」按钮右侧显示已注入徽章，并在设置菜单顶部插入 Shim 菜单项
-// @version     1.0.0
-// @author      shim
+// @name        Shim codex_enhance — legacy/body
+// @description 历史单文件主体 (原 codex_enhance.js L30-6551, 已切掉 i18n/provider 状态块和
+//              providerNameFromId — 它们移到 core/i18n)。
+//              下面的源码内部仍是一个 IIFE, 跟原文件等价运行。各 feature 之后会逐个剥离到
+//              features/<name>/, 剥完此文件就消失。
+// @layer       legacy
 // ==/Shim==
+
 (() => {
-  // ========== 全脚本 once guard ==========
-  // 整个 codex_enhance.js 必须在同一个页面 context 里**只执行一次**。
-  //
-  // 重复执行的后果:
-  //   - 每个 ensureXxx 里的 addEventListener / MutationObserver 叠 N 份
-  //   - window.fetch / XMLHttpRequest hook 链叠 N 层
-  //   - 用户点一次按钮触发 N 次 handler → codex 自己看着像"狂发请求"
-  //
-  // 触发场景:用户点 shim 的"刷新 codex"或"注入"按钮,cdp_service 走
-  // Page.addScriptToEvaluateOnNewDocument(累积式注册,reload 时全部执行) +
-  // Runtime.evaluate(当前页立刻再来一次)。
-  //
-  // cdp_service 侧也做了去重(remove + add),这里再加一层 IIFE 级别的 once
-  // 是兜底,任何路径走来都只装一次。
-  if (window.__shimCodexEnhanceLoaded) {
-    if (typeof console !== 'undefined') {
-      console.log('[Shim] codex_enhance 已加载过,跳过重复执行');
-    }
+  if (!window.__shimCodexEnhanceLoaded) return;
+  if (!window.__shimCodex || !window.__shimCodex.i18n) {
+    console.warn('[Shim] legacy/body: core/i18n 未就绪, 跳过');
     return;
   }
-  window.__shimCodexEnhanceLoaded = true;
+
+  const __ns = window.__shimCodex;
+  const __i18n = __ns.i18n;
+
+  // 把 core/i18n 上的导出 alias 成本地名, 让 6500 行源码原样运行
+  const S = __i18n.S;
+  const shimProviderState = __i18n.state; // 引用同一个对象, 整体赋值已改成 Object.assign
+  const refreshCurrentProvider = __i18n.refreshCurrentProvider;
+  const refreshProviderPickerState = __i18n.refreshProviderPickerState;
+  const scheduleProviderPickerRefresh = __i18n.scheduleProviderPickerRefresh;
+  const currentProvider = __i18n.currentProvider;
+  const providerNameFromId = __i18n.providerNameFromId;
 
   // ========== 阻断 Statsig 等被墙的请求,避免主页面 hydration 卡 10 秒 ==========
   // ab.chatgpt.com / chatgpt.com/ces 在国内不可达,Codex 启动会等到 10s 超时,
@@ -3299,69 +3298,6 @@
 
   const PROVIDER_BADGE_CLASS = '__shim_provider_badge__';
   // 当前供应商标签缓存（已含语言前缀，如「供应商：muxue」），由 bridge 拉取并定时刷新
-  let shimCurrentProviderLabel = null;
-  let shimProviderState = {
-    selectedId: null,
-    reasoningEffort: 'high',
-    providers: [],
-    labels: {},
-  };
-  let shimProviderRefreshInFlight = null;
-
-  // 取 dart 返回的本地化文案;万一没拉到走 fallback 不会留下中文。
-  function S(key, fallback) {
-    const v = shimProviderState.labels && shimProviderState.labels[key];
-    return v || fallback || '';
-  }
-
-  function refreshCurrentProvider() {
-    if (typeof window.shim !== 'function') return;
-    window.shim('/provider/current', {}).then((res) => {
-      if (res && res.code === 0 && res.data) {
-        shimCurrentProviderLabel = res.data.label ?? null;
-        ensureProviderBadge();
-      }
-    }).catch(() => {});
-  }
-
-  /// rebuildPopover=false 时不重建 popover 内容(避免用户点击按钮被销毁),
-  /// 但 picker 按钮和 Codex 原生选择器可见性依然刷新。
-  function refreshProviderPickerState(opts) {
-    if (typeof window.shim !== 'function') return;
-    const rebuildPopover = !opts || opts.rebuildPopover !== false;
-    if (shimProviderRefreshInFlight) return shimProviderRefreshInFlight;
-    shimProviderRefreshInFlight = window.shim('/provider/list', {}).then((res) => {
-      if (res && res.code === 0 && res.data) {
-        shimProviderState = {
-          selectedId: res.data.selectedId ?? null,
-          reasoningEffort: res.data.reasoningEffort || 'high',
-          providers: Array.isArray(res.data.providers) ? res.data.providers : [],
-          labels: res.data.labels || {},
-        };
-        updateProviderPickerButton();
-        if (rebuildPopover) updateProviderPickerPopover();
-        updateCodexModelSelectorVisibility();
-      }
-    }).catch(() => {}).finally(() => {
-      shimProviderRefreshInFlight = null;
-    });
-    return shimProviderRefreshInFlight;
-  }
-
-  function scheduleProviderPickerRefresh() {
-    const run = () => refreshProviderPickerState();
-    if (typeof window.requestIdleCallback === 'function') {
-      window.requestIdleCallback(run, { timeout: 600 });
-      return;
-    }
-    setTimeout(run, 80);
-  }
-
-  function currentProvider() {
-    return shimProviderState.providers.find(
-      (p) => p.id === shimProviderState.selectedId,
-    ) || null;
-  }
 
   function findProviderPickerAnchor() {
     const paths = document.querySelectorAll('svg path');
@@ -4280,12 +4216,12 @@
       showToast(`${S('switchProviderFailed', 'Switch provider failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
-    shimProviderState = {
+    Object.assign(shimProviderState, {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
       labels: res.data.labels || shimProviderState.labels || {},
-    };
+    });
     updateProviderPickerButton();
     updateProviderPickerPopover();
     updateCodexModelSelectorVisibility();
@@ -4299,12 +4235,12 @@
       showToast(`${S('switchModelFailed', 'Switch model failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
-    shimProviderState = {
+    Object.assign(shimProviderState, {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
       labels: res.data.labels || shimProviderState.labels || {},
-    };
+    });
     updateProviderPickerButton();
     updateProviderPickerPopover();
     updateCodexModelSelectorVisibility();
@@ -4320,12 +4256,12 @@
       showToast(`${S('switchEffortFailed', 'Switch reasoning failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
-    shimProviderState = {
+    Object.assign(shimProviderState, {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
       labels: res.data.labels || shimProviderState.labels || {},
-    };
+    });
     updateProviderPickerButton();
     updateProviderPickerPopover();
   }
@@ -4369,7 +4305,7 @@
   }
 
   function ensureProviderBadge() {
-    const label = shimCurrentProviderLabel;
+    const label = __i18n.currentProviderLabel;
     const turns = document.querySelectorAll('[data-turn-key]');
     const latest = turns.length ? turns[turns.length - 1] : null;
     const existing = document.querySelectorAll('.' + PROVIDER_BADGE_CLASS);
@@ -6550,11 +6486,12 @@
     }
   })();
 
-  function providerNameFromId(id) {
-    if (!id) return null;
-    const list = (shimProviderState && shimProviderState.providers) || [];
-    const p = list.find((x) => x.id === id);
-    return p?.name || null;
-  }
-
+  // 把 legacy 内部函数挂到 namespace, 让 core/i18n 的回调能找到。
+  // 之后 features/provider_picker 等剥离时, 这些挂载点会随之搬到对应分片里。
+  __ns.features.providerPicker = {
+    ensureBadge: ensureProviderBadge,
+    updateButton: updateProviderPickerButton,
+    updatePopover: updateProviderPickerPopover,
+    updateCodexModelSelectorVisibility,
+  };
 })();

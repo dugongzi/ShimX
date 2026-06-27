@@ -7,11 +7,25 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class InjectActionDatasource {
-  static const String _injectAssetPath = 'assets/inject/codex_enhance.js';
+  /// codex_enhance 改造为分层分片后, 注入脚本由多个 .js 文件按层顺序拼接而成。
+  /// core → ui → features → legacy → runtime, 层内按文件名字母序。
+  /// 这里写死的清单就是清晰架构本身的一部分 (不是 manifest 配置), 决定了每层
+  /// 哪些底层符号必须先于上层被声明。
+  ///
+  /// 顺序依赖: core/guard 必须最先 (它装 once guard 和 namespace 根),
+  /// core/i18n 必须在所有 features/legacy 之前 (S() / state 是底层),
+  /// runtime/* 必须最后 (启动调用要等所有 ensureXxx 都挂上 namespace)。
+  static const List<String> _injectShards = [
+    'assets/inject/codex_enhance/core/guard.js',
+    'assets/inject/codex_enhance/core/constants.js',
+    'assets/inject/codex_enhance/core/bridge.js',
+    'assets/inject/codex_enhance/core/i18n.js',
+    'assets/inject/codex_enhance/legacy/body.js',
+  ];
 
-  /// debug 模式下直接读这个源码文件，改完立刻生效（零重启）
-  static const String _devSourcePath =
-      r'F:\Programming_projects\FlutterProject\shim\assets\inject\codex_enhance.js';
+  /// debug 模式下直接读项目源码路径下的同名分片, 改完立刻生效 (零重启)。
+  static const String _devShardRoot =
+      r'F:\Programming_projects\FlutterProject\shim\';
 
   final Dio _dio;
 
@@ -62,17 +76,25 @@ class InjectActionDatasource {
     throw TimeoutException('No page target on port $debugPort');
   }
 
-  /// 加载注入脚本：
-  /// - debug 模式直接读项目源码下的 codex_enhance.js（改完立刻生效）
-  /// - release 模式读打包进 app 的 asset
+  /// 加载注入脚本: 按 _injectShards 顺序读取每个分片, 用空行拼接。
+  /// - debug 模式从项目源码目录读 (改完立刻生效, 零重启)
+  /// - release 模式从打包进 app 的 asset 读
+  /// 分片之间用 '\n\n' 隔开, 每片自带 once-guard, 拼接后整体仍是一个合法 JS 字符串。
   Future<String> loadInjectScript() async {
-    if (kDebugMode) {
-      final source = File(_devSourcePath);
-      if (await source.exists()) {
-        return source.readAsString();
+    final buffer = StringBuffer();
+    for (final shard in _injectShards) {
+      String? content;
+      if (kDebugMode) {
+        final devFile = File(_devShardRoot + shard.replaceAll('/', r'\'));
+        if (await devFile.exists()) {
+          content = await devFile.readAsString();
+        }
       }
+      content ??= await rootBundle.loadString(shard);
+      buffer.writeln(content);
+      buffer.writeln();
     }
-    return rootBundle.loadString(_injectAssetPath);
+    return buffer.toString();
   }
 
   /// 在 page target 上拿到 devtoolsFrontendUrl，用于系统浏览器打开完整 DevTools。

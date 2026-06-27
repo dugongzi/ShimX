@@ -5,6 +5,7 @@ import 'package:shim/core/services/codex_launcher_service.dart';
 import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_export_provider.dart';
+import 'package:shim/features/codex_session/presentation/providers/codex_session_import_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 import 'package:shim/features/home/data/datasources/inject_action_datasource.dart';
 import 'package:shim/features/home/data/repositories/inject_action_repository_impl.dart';
@@ -68,6 +69,7 @@ Future<void> injectToRunningPort(Ref ref, {required int debugPort}) async {
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
   ref.read(codexSessionExportRouteRegistrationProvider);
+  ref.read(codexSessionImportRouteRegistrationProvider);
   ref.read(claudeSessionRouteRegistrationProvider);
   ref.read(providerRouteRegistrationProvider);
   ref.read(providerHealthRouteRegistrationProvider);
@@ -96,6 +98,7 @@ Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
   ref.read(codexSessionRouteRegistrationProvider);
   ref.read(codexSessionActionRouteRegistrationProvider);
   ref.read(codexSessionExportRouteRegistrationProvider);
+  ref.read(codexSessionImportRouteRegistrationProvider);
   ref.read(claudeSessionRouteRegistrationProvider);
   ref.read(providerRouteRegistrationProvider);
   ref.read(providerHealthRouteRegistrationProvider);

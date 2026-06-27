@@ -2003,6 +2003,7 @@
     const ICON_EXPORT_HTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2.5V6h3" stroke="currentColor" stroke-width="1.2"/><path d="M5 10l-1.2 1.2L5 12.4M11 10l1.2 1.2L11 12.4M8.5 9.6l-1 3.2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     const ICON_UNBIND = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 8a3 3 0 1 0 0 0M11 8a3 3 0 1 0 0 0" stroke="currentColor" stroke-width="1.3"/><path d="M3 13l10-10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
     const ICON_DELETE = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4h10M6 4V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1M4.5 4l.7 9a1 1 0 0 0 1 .9h3.6a1 1 0 0 0 1-.9l.7-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+    const ICON_IMPORT = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v8M4.5 7.5L8 11l3.5-3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
 
     row.appendChild(buildThreadActionButton(ICON_EXPORT_MD, S('shimControlExportMarkdown', 'Export as Markdown'), 'neutral', () =>
       exportThreadById(threadId, 'markdown'),
@@ -2013,6 +2014,9 @@
     row.appendChild(buildThreadActionButton(ICON_EXPORT_HTML, S('shimControlExportHtml', 'Export HTML'), 'neutral', () =>
       exportThreadById(threadId, 'html'),
     ));
+    // 导入需要弹下拉菜单, 不走标准 buildThreadActionButton (它在点击瞬间转 spinner,
+    // 我们希望先弹菜单等用户选 jsonl/zip 才开始转)
+    row.appendChild(buildImportDropdownButton(ICON_IMPORT, threadId));
     if (hasBinding) {
       row.appendChild(buildThreadActionButton(ICON_UNBIND, S('shimControlUnbindCurrent', 'Remove mapping'), 'neutral', () =>
         unbindMappingFromControlPanel({ codexThreadId: threadId }),
@@ -2066,9 +2070,276 @@
     btn.addEventListener('click', async (event) => {
       event.preventDefault();
       event.stopPropagation();
-      await onClick();
+      if (btn.dataset.shimBusy === '1') return;
+      btn.dataset.shimBusy = '1';
+      btn.disabled = true;
+      btn.style.cursor = 'wait';
+      btn.style.opacity = '0.75';
+      // 把 icon 换成 spinner, 文本不动 - 这样按钮宽度不抖
+      const originalIcon = icon.innerHTML;
+      icon.innerHTML = '';
+      const spinner = document.createElement('span');
+      Object.assign(spinner.style, {
+        width: '11px',
+        height: '11px',
+        borderRadius: '999px',
+        border: '1.5px solid currentColor',
+        borderTopColor: 'transparent',
+        animation: 'shimBusySpin 0.85s linear infinite',
+        display: 'inline-block',
+      });
+      ensureBusyContainer(); // 确保 keyframe 已注入
+      icon.appendChild(spinner);
+      try {
+        await onClick();
+      } finally {
+        icon.innerHTML = originalIcon;
+        btn.dataset.shimBusy = '0';
+        btn.disabled = false;
+        btn.style.cursor = 'pointer';
+        btn.style.opacity = '1';
+      }
     });
     return btn;
+  }
+
+  // 导入按钮 + 下拉小菜单: 选 .jsonl 单文件 / .zip 项目包。
+  // 弹菜单时不 spin, 用户选了文件 RPC 真正开始才用 busy indicator。
+  function buildImportDropdownButton(iconHtml, threadId) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('title', S('shimControlImport', 'Import'));
+    btn.setAttribute('aria-label', S('shimControlImportAria', 'Import conversations'));
+    Object.assign(btn.style, {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '6px',
+      height: '26px',
+      padding: '0 10px',
+      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      borderRadius: '6px',
+      background: 'transparent',
+      color: 'var(--token-text-secondary, rgba(255,255,255,0.66))',
+      cursor: 'pointer',
+      fontSize: '11.5px',
+      fontWeight: '600',
+      transition: 'background 140ms ease, color 140ms ease, border-color 140ms ease',
+    });
+    const icon = document.createElement('span');
+    icon.innerHTML = iconHtml;
+    Object.assign(icon.style, { display: 'inline-flex', alignItems: 'center' });
+    const text = document.createElement('span');
+    text.textContent = S('shimControlImport', 'Import');
+    const caret = document.createElement('span');
+    caret.textContent = '▾';
+    caret.style.cssText = 'font-size:9px;opacity:0.6;';
+    btn.appendChild(icon);
+    btn.appendChild(text);
+    btn.appendChild(caret);
+    btn.addEventListener('mouseenter', () => {
+      btn.style.background = 'rgba(96,165,250,0.10)';
+      btn.style.borderColor = 'rgba(96,165,250,0.28)';
+      btn.style.color = '#bfdbfe';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.background = 'transparent';
+      btn.style.borderColor = 'var(--token-border, rgba(255,255,255,0.08))';
+      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.66))';
+    });
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleImportMenu(btn, threadId);
+    });
+    return btn;
+  }
+
+  const IMPORT_MENU_ID = '__shim_import_menu__';
+
+  function dismissImportMenu() {
+    document.getElementById(IMPORT_MENU_ID)?.remove();
+    document.removeEventListener('mousedown', onImportMenuOutside, true);
+    document.removeEventListener('keydown', onImportMenuKey, true);
+  }
+  function onImportMenuOutside(e) {
+    const menu = document.getElementById(IMPORT_MENU_ID);
+    if (!menu || menu.contains(e.target)) return;
+    dismissImportMenu();
+  }
+  function onImportMenuKey(e) {
+    if (e.key === 'Escape') dismissImportMenu();
+  }
+
+  function toggleImportMenu(anchor, threadId) {
+    if (document.getElementById(IMPORT_MENU_ID)) {
+      dismissImportMenu();
+      return;
+    }
+    // 当前 thread 所在项目的 cwd: 从 codex 侧栏 row 反查
+    const targetCwd = cwdForThreadId(threadId);
+
+    const menu = document.createElement('div');
+    menu.id = IMPORT_MENU_ID;
+    Object.assign(menu.style, {
+      position: 'fixed',
+      zIndex: '2147483647',
+      minWidth: '220px',
+      maxWidth: '300px',
+      padding: '4px',
+      borderRadius: '10px',
+      background: 'var(--token-main-surface-primary, rgba(24,24,26,0.98))',
+      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      boxShadow: '0 16px 40px rgba(0, 0, 0, 0.46)',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '12.5px',
+    });
+
+    menu.appendChild(buildImportMenuItem(S('shimControlImportJsonl', 'Import .jsonl'), async () => {
+      dismissImportMenu();
+      await runImportFile(targetCwd);
+    }));
+    menu.appendChild(buildImportMenuItem(S('shimControlImportZip', 'Import zip'), async () => {
+      dismissImportMenu();
+      await runImportBundle(targetCwd);
+    }));
+
+    // hint 行(说明会把导入归到当前项目 + 提示刷新)
+    if (targetCwd) {
+      const hint = document.createElement('div');
+      Object.assign(hint.style, {
+        padding: '6px 10px 4px',
+        color: 'var(--token-text-secondary, rgba(255,255,255,0.48))',
+        fontSize: '10.5px',
+        lineHeight: '1.4',
+        borderTop: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+        marginTop: '4px',
+      });
+      hint.textContent = `${S('shimControlImportToCurrent', 'Assign to current project')} · ${S('shimControlImportHint', 'Reload Codex to see imported threads in the sidebar')}`;
+      menu.appendChild(hint);
+    }
+
+    document.body.appendChild(menu);
+    // 定位: 在按钮下方
+    const r = anchor.getBoundingClientRect();
+    const mr = menu.getBoundingClientRect();
+    let left = r.left;
+    let top = r.bottom + 4;
+    if (left + mr.width > window.innerWidth - 8) left = window.innerWidth - mr.width - 8;
+    if (top + mr.height > window.innerHeight - 8) top = r.top - mr.height - 4;
+    menu.style.left = `${Math.max(8, left)}px`;
+    menu.style.top = `${Math.max(8, top)}px`;
+
+    document.addEventListener('mousedown', onImportMenuOutside, true);
+    document.addEventListener('keydown', onImportMenuKey, true);
+  }
+
+  function buildImportMenuItem(label, onClick) {
+    const item = document.createElement('button');
+    item.type = 'button';
+    Object.assign(item.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      width: '100%',
+      padding: '8px 10px',
+      border: '0',
+      borderRadius: '6px',
+      background: 'transparent',
+      color: 'var(--token-text-primary, currentColor)',
+      cursor: 'pointer',
+      fontSize: '12.5px',
+      fontWeight: '500',
+      textAlign: 'left',
+      transition: 'background 140ms ease',
+    });
+    item.textContent = label;
+    item.addEventListener('mouseenter', () => { item.style.background = 'rgba(255,255,255,0.06)'; });
+    item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick();
+    });
+    return item;
+  }
+
+  // 从 thread id 反查它在 codex 侧栏所在项目 row 上的 cwd。
+  // 任何一步失败就返回 ''(后端会保留 rollout 里的原始 cwd)。
+  function cwdForThreadId(threadId) {
+    if (!threadId) return '';
+    const row = document.querySelector(
+      `[data-app-action-sidebar-thread-id$=":${threadId}"], [data-app-action-sidebar-thread-id="${threadId}"]`,
+    );
+    if (!row) return '';
+    const projectRow = row.closest('[data-app-action-sidebar-project-row]');
+    if (!projectRow) {
+      // codex 不一定把 thread row 嵌在 project row 里, 可能用 list 同级。退而求其次找祖先项目 list:
+      const projectList = row.closest('[data-app-action-sidebar-project-list-id]');
+      if (projectList) {
+        return projectList.getAttribute('data-app-action-sidebar-project-list-id') || '';
+      }
+      return '';
+    }
+    return projectRow.getAttribute('data-app-action-sidebar-project-id') || '';
+  }
+
+  async function runImportFile(targetCwd) {
+    const busyToken = showBusyIndicator(S('shimControlImportBusyFile', 'Importing conversation…'));
+    try {
+      const res = await window.shim('/session/import', targetCwd ? { targetCwd } : {});
+      if (!res || res.code !== 0) {
+        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
+        return;
+      }
+      const data = res.data || {};
+      if (data.cancelled) return;
+      if (data.reason === 'empty-file') {
+        showToast(S('shimControlImportBadFile', 'File is invalid or empty'), 'warning');
+        return;
+      }
+      if (!data.ok) {
+        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.message || data.reason || ''}`, 'error');
+        return;
+      }
+      showToast(`${S('shimControlImportDone', 'Import succeeded')} · ${data.title || ''}`.trim(), 'success');
+    } catch (err) {
+      showToast(`${S('shimControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
+    } finally {
+      hideBusyIndicator(busyToken);
+    }
+  }
+
+  async function runImportBundle(targetCwd) {
+    const busyToken = showBusyIndicator(S('shimControlImportBusyZip', 'Importing project bundle…'));
+    try {
+      const res = await window.shim('/session/import-bundle', targetCwd ? { targetCwd } : {});
+      if (!res || res.code !== 0) {
+        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
+        return;
+      }
+      const data = res.data || {};
+      if (data.cancelled) return;
+      if (data.reason === 'no-jsonl-in-zip') {
+        showToast(S('shimControlImportEmpty', 'No .jsonl files inside the zip'), 'warning');
+        return;
+      }
+      if (data.reason === 'bad-zip') {
+        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.message || ''}`, 'error');
+        return;
+      }
+      if (!data.ok) {
+        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.reason || ''}`, 'error');
+        return;
+      }
+      const ok = data.count || 0;
+      const failed = data.failed || 0;
+      const tail = failed > 0 ? ` · ${failed} failed` : '';
+      showToast(`${S('shimControlImportDoneN', 'Imported')} · ${ok}${tail}`, 'success');
+    } catch (err) {
+      showToast(`${S('shimControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
+    } finally {
+      hideBusyIndicator(busyToken);
+    }
   }
 
   // 控制面板调用版的 export, 直接给 id, 不依赖 sidebar DOM row
@@ -2077,6 +2348,7 @@
       showToast(S('deleteSessionIdMissing', 'Session id not found'), 'error');
       return;
     }
+    const busyToken = showBusyIndicator(exportBusyLabel(format));
     try {
       const res = await window.shim('/session/export', { id, format });
       if (res?.code !== 0) {
@@ -2087,7 +2359,16 @@
       showToast(S('threadExportedToast', 'Exported'), 'success');
     } catch (err) {
       showToast(`${S('threadExportFailed', 'Export failed')}: ${err?.message || err}`, 'error');
+    } finally {
+      hideBusyIndicator(busyToken);
     }
+  }
+
+  function exportBusyLabel(format) {
+    if (format === 'markdown') return S('exportBusyMarkdown', 'Exporting Markdown…');
+    if (format === 'raws') return S('exportBusyRaws', 'Exporting raw data…');
+    if (format === 'html') return S('exportBusyHtml', 'Exporting HTML…');
+    return S('exportBusyMarkdown', 'Exporting Markdown…');
   }
 
   // 控制面板调用版的 delete, 走确认弹窗, 成功后让用户重新选择 (清掉 currentThread)
@@ -2335,6 +2616,188 @@
       toast.style.transform = 'translateY(-8px)';
       setTimeout(() => toast.remove(), 200);
     }, 3000);
+  }
+
+  // ========== 持久 Busy 指示器 (导出等长耗时任务用) ==========
+  //
+  // toast 3 秒自动消失, 不适合表示"正在进行中"。这个 indicator 显式 show/hide,
+  // 同时支持多个并发任务 (返回的 token 各自 hide, 全部 hide 后 indicator 才消失)。
+  //
+  // 视觉要求: 必须"显眼"。所以做了几件事:
+  //  - 全屏轻 dim 蒙层 (pointer-events:none, 不挡操作但视觉聚焦)
+  //  - 顶部居中大胶囊, 24px spinner + 14px 文本, 蓝色 ambient 光晕
+  //  - 卡片底部一条 indeterminate 进度条持续流动 (跟 spinner 双重确认 "在动")
+  //  - scale 弹入动效, 让出现有重量感
+
+  const BUSY_CONTAINER_ID = '__shim_busy_container__';
+  const BUSY_DIM_ID = '__shim_busy_dim__';
+  const BUSY_KEYFRAMES_ID = '__shim_busy_kf__';
+  const __shimBusyTasks = new Map(); // token -> { node }
+  let __shimBusyNextToken = 1;
+
+  function ensureBusyContainer() {
+    if (!document.getElementById(BUSY_KEYFRAMES_ID)) {
+      const style = document.createElement('style');
+      style.id = BUSY_KEYFRAMES_ID;
+      style.textContent = [
+        '@keyframes shimBusySpin{to{transform:rotate(360deg)}}',
+        '@keyframes shimBusyPulse{0%,100%{box-shadow:0 12px 36px rgba(0,0,0,0.45),0 0 0 1px rgba(96,165,250,0.32),0 0 28px rgba(96,165,250,0.30)}50%{box-shadow:0 12px 36px rgba(0,0,0,0.45),0 0 0 1px rgba(96,165,250,0.48),0 0 44px rgba(96,165,250,0.55)}}',
+        '@keyframes shimBusyBarSlide{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}',
+        '@keyframes shimBusyPop{0%{opacity:0;transform:translateY(-10px) scale(0.94)}60%{opacity:1;transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}',
+      ].join('\n');
+      document.head.appendChild(style);
+    }
+    let container = document.getElementById(BUSY_CONTAINER_ID);
+    if (container) return container;
+    container = document.createElement('div');
+    container.id = BUSY_CONTAINER_ID;
+    Object.assign(container.style, {
+      position: 'fixed',
+      top: '24px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: '2147483647',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '10px',
+      pointerEvents: 'none',
+    });
+    document.body.appendChild(container);
+    return container;
+  }
+
+  function ensureBusyDim() {
+    let dim = document.getElementById(BUSY_DIM_ID);
+    if (dim) return dim;
+    dim = document.createElement('div');
+    dim.id = BUSY_DIM_ID;
+    Object.assign(dim.style, {
+      position: 'fixed',
+      inset: '0',
+      zIndex: '2147483646', // 比 indicator 低 1
+      background: 'radial-gradient(circle at 50% 0%, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0) 100%)',
+      pointerEvents: 'none', // 不挡操作
+      opacity: '0',
+      transition: 'opacity 0.22s ease',
+    });
+    document.body.appendChild(dim);
+    requestAnimationFrame(() => { dim.style.opacity = '1'; });
+    return dim;
+  }
+
+  function removeBusyDimIfIdle() {
+    if (__shimBusyTasks.size > 0) return;
+    const dim = document.getElementById(BUSY_DIM_ID);
+    if (!dim) return;
+    dim.style.opacity = '0';
+    setTimeout(() => {
+      if (__shimBusyTasks.size === 0) dim.remove();
+    }, 220);
+  }
+
+  function showBusyIndicator(label) {
+    const container = ensureBusyContainer();
+    ensureBusyDim();
+    const node = document.createElement('div');
+    Object.assign(node.style, {
+      position: 'relative',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '14px',
+      minWidth: '260px',
+      maxWidth: '480px',
+      padding: '14px 22px 16px',
+      borderRadius: '14px',
+      background: 'linear-gradient(180deg, rgba(28,28,32,0.96), rgba(20,20,24,0.96))',
+      border: '1px solid rgba(96,165,250,0.30)',
+      color: '#f8fafc',
+      fontSize: '14px',
+      fontWeight: '600',
+      letterSpacing: '0.2px',
+      pointerEvents: 'auto',
+      overflow: 'hidden',
+      animation: 'shimBusyPop 260ms cubic-bezier(0.2,0.9,0.3,1.2) both, shimBusyPulse 2.2s ease-in-out 260ms infinite',
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
+    });
+
+    const spinner = document.createElement('span');
+    Object.assign(spinner.style, {
+      width: '24px',
+      height: '24px',
+      borderRadius: '999px',
+      border: '2.5px solid rgba(255,255,255,0.12)',
+      borderTopColor: '#60a5fa',
+      borderRightColor: 'rgba(96,165,250,0.55)',
+      animation: 'shimBusySpin 0.8s linear infinite',
+      flex: '0 0 auto',
+      boxShadow: '0 0 12px rgba(96,165,250,0.4)',
+    });
+
+    const text = document.createElement('span');
+    text.textContent = label || '';
+    Object.assign(text.style, {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      flex: '1 1 auto',
+      minWidth: '0',
+    });
+
+    // 卡片底部一条 indeterminate 进度条
+    const progressTrack = document.createElement('span');
+    Object.assign(progressTrack.style, {
+      position: 'absolute',
+      left: '0',
+      right: '0',
+      bottom: '0',
+      height: '3px',
+      background: 'rgba(255,255,255,0.05)',
+      overflow: 'hidden',
+    });
+    const progressBar = document.createElement('span');
+    Object.assign(progressBar.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '45%',
+      height: '100%',
+      background: 'linear-gradient(90deg, rgba(96,165,250,0), rgba(96,165,250,0.9), rgba(96,165,250,0))',
+      animation: 'shimBusyBarSlide 1.5s linear infinite',
+    });
+    progressTrack.appendChild(progressBar);
+
+    node.appendChild(spinner);
+    node.appendChild(text);
+    node.appendChild(progressTrack);
+    container.appendChild(node);
+
+    const token = __shimBusyNextToken++;
+    __shimBusyTasks.set(token, { node });
+    return token;
+  }
+
+  function hideBusyIndicator(token) {
+    const task = __shimBusyTasks.get(token);
+    if (!task) return;
+    __shimBusyTasks.delete(token);
+    task.node.style.transition = 'opacity 0.2s, transform 0.2s';
+    task.node.style.opacity = '0';
+    task.node.style.transform = 'translateY(-8px) scale(0.96)';
+    setTimeout(() => {
+      task.node.remove();
+      removeBusyDimIfIdle();
+    }, 220);
+  }
+
+  /// 包一段可能抛错的异步任务, 自动 show/hide indicator, 异常会再抛出。
+  async function withBusyIndicator(label, run) {
+    const token = showBusyIndicator(label);
+    try {
+      return await run();
+    } finally {
+      hideBusyIndicator(token);
+    }
   }
 
   // ========== 删除确认对话框（用 Codex 主题） ==========
@@ -2593,6 +3056,7 @@
       showToast(S('deleteSessionIdMissing', 'Session id not found'), 'error');
       return;
     }
+    const busyToken = showBusyIndicator(exportBusyLabel(format));
     try {
       const res = await window.shim('/session/export', { id, format });
       if (res?.code !== 0) {
@@ -2603,6 +3067,8 @@
       showToast(S('threadExportedToast', 'Exported'), 'success');
     } catch (err) {
       showToast(`${S('threadExportFailed', 'Export failed')}: ${err?.message || err}`, 'error');
+    } finally {
+      hideBusyIndicator(busyToken);
     }
   }
 
@@ -5632,9 +6098,48 @@
 
       // 找菜单里现有任意 menuitem 当样式模板
       const sampleItem = menu.querySelector('[role="menuitem"]');
-      const item = buildProjectExportMenuItem(cwd, label, sampleItem);
-      menu.insertBefore(item, menu.firstChild);
+      // 顺序: 导入 zip → 导出为 ▸ (导入在最上面, 跟"导出为"对称)
+      const exportItem = buildProjectExportMenuItem(cwd, label, sampleItem);
+      menu.insertBefore(exportItem, menu.firstChild);
+      const importItem = buildProjectImportMenuItem(cwd, label, sampleItem);
+      menu.insertBefore(importItem, menu.firstChild);
     }
+  }
+
+  // 项目菜单第一项: "导入 zip" - 点击直接弹文件选择器, 走 /session/import-bundle
+  function buildProjectImportMenuItem(cwd, label, sampleItem) {
+    const item = document.createElement('div');
+    item.setAttribute('role', 'menuitem');
+    item.setAttribute('tabindex', '-1');
+    item.setAttribute('data-orientation', 'vertical');
+    item.setAttribute('aria-label', S('projectMenuImportZipAria', 'Import all conversations from a zip into this project'));
+    if (sampleItem) {
+      item.className = sampleItem.className;
+    } else {
+      item.className =
+        'no-drag text-token-foreground outline-hidden rounded-lg px-[var(--padding-row-x)] py-[var(--padding-row-y)] text-sm group hover:bg-token-list-hover-background focus:bg-token-list-hover-background cursor-interaction flex flex-col';
+    }
+    const row = document.createElement('div');
+    row.className = 'flex w-full items-center gap-1.5';
+    const icon = document.createElement('span');
+    icon.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;opacity:0.75;';
+    // 箭头朝下 + 横线: 表示 "导入到本项目"
+    icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v8M4.5 7.5L8 11l3.5-3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+    const text = document.createElement('span');
+    text.className = 'flex-1 min-w-0 truncate';
+    text.textContent = S('projectMenuImportZip', 'Import zip');
+    row.appendChild(icon);
+    row.appendChild(text);
+    item.appendChild(row);
+
+    item.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // 关掉父 radix 菜单 (codex 自己监听 outside-click)
+      document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+      await runImportBundle(cwd);
+    });
+    return item;
   }
 
   // 项目菜单第一项: "导出为" + 右箭头, hover 弹子菜单(我们自己的浮层, 不嵌套 radix)
@@ -5807,7 +6312,7 @@
       showToast(S('projectMenuExportMissingCwd', 'Project path not detected'), 'error');
       return;
     }
-    showToast(S('projectMenuExportRunning', 'Packing export…'), 'info');
+    const busyToken = showBusyIndicator(S('exportBusyBundle', 'Packing export…'));
     try {
       const res = await window.shim('/session/export-bundle', { cwd, format });
       if (!res || res.code !== 0) {
@@ -5824,6 +6329,8 @@
       showToast(`${S('projectMenuExportDone', 'Exported')} · ${count}`, 'success');
     } catch (err) {
       showToast(`${S('projectMenuExportFailed', 'Export failed')}: ${err && err.message ? err.message : err}`, 'error');
+    } finally {
+      hideBusyIndicator(busyToken);
     }
   }
 

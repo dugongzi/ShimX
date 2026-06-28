@@ -27,8 +27,6 @@ class ProvidersTab extends ConsumerWidget {
         clipBehavior: Clip.none,
         padding: EdgeInsets.all(AppSizes.pagePadding),
         children: [
-          SectionTitle(title: l10n.autoSwitch),
-          SizedBox(height: AppSizes.sectionGap),
           const _AutoSwitchCard(),
           SizedBox(height: AppSizes.sectionGap),
           Row(
@@ -398,6 +396,19 @@ class _ProviderEditDialogState extends State<_ProviderEditDialog> {
 class _AutoSwitchCard extends ConsumerWidget {
   const _AutoSwitchCard();
 
+  String _strategyLabel(String key, BuildContext context) {
+    final l10n = context.l10n;
+    switch (key) {
+      case 'failover':
+        return l10n.autoSwitchStrategyFailover;
+      case 'fastest':
+        return l10n.autoSwitchStrategyFastest;
+      case 'manual':
+      default:
+        return l10n.autoSwitchStrategyManual;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -406,10 +417,107 @@ class _AutoSwitchCard extends ConsumerWidget {
     final l10n = context.l10n;
 
     return SurfaceCard(
-      padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      padding: EdgeInsets.symmetric(
+        horizontal: 14.cw(min: 12, max: 16),
+        vertical: 10.ch(min: 8, max: 12),
+      ),
+      child: Row(
         children: [
+          Icon(Icons.swap_horiz_rounded, color: colorScheme.primary),
+          SizedBox(width: 12.cw(min: 10, max: 14)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.autoSwitch,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 2.ch(min: 1, max: 4)),
+                Text(
+                  _strategyLabel(settings.strategy, context),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.autoSwitch,
+            onPressed: () => SmartDialog.show(
+              builder: (_) => _AutoSwitchDialog(ref: ref),
+            ),
+            icon: const Icon(Icons.tune_rounded),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AutoSwitchDialog extends ConsumerWidget {
+  const _AutoSwitchDialog({required this.ref});
+
+  final WidgetRef ref;
+
+  @override
+  Widget build(BuildContext context, WidgetRef _) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final asyncSettings = ref.watch(autoSwitchSettingsProvider);
+    final settings = asyncSettings.value ?? const AutoSwitchSettings();
+    final l10n = context.l10n;
+
+    return Dialog(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 460, maxHeight: 640),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(22, 22, 22, 14),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.autoSwitch,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => SmartDialog.dismiss(),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _buildSettingsRows(context, settings, colorScheme),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildSettingsRows(
+    BuildContext context,
+    AutoSwitchSettings settings,
+    ColorScheme colorScheme,
+  ) {
+    final l10n = context.l10n;
+    return [
           _AutoSwitchRowLabel(
             label: l10n.autoSwitchStrategy,
             help: l10n.autoSwitchStrategyHelp,
@@ -562,9 +670,7 @@ class _AutoSwitchCard extends ConsumerWidget {
               ],
             ),
           ),
-        ],
-      ),
-    );
+    ];
   }
 
   Future<void> _save(WidgetRef ref, AutoSwitchSettings next) async {

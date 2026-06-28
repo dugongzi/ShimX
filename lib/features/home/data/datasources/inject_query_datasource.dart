@@ -6,7 +6,7 @@ import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-class InjectActionDatasource {
+class InjectQueryDatasource {
   /// codex_enhance 改造为分层分片后, 注入脚本由多个 .js 文件按层顺序拼接而成。
   /// core → ui → features → runtime, 层内按文件名字母序。
   /// 这里写死的清单就是清晰架构本身的一部分 (不是 manifest 配置), 决定了每层
@@ -48,7 +48,7 @@ class InjectActionDatasource {
 
   final Dio _dio;
 
-  InjectActionDatasource() : _dio = _buildLoopbackDio();
+  InjectQueryDatasource() : _dio = _buildLoopbackDio();
 
   static Dio _buildLoopbackDio() {
     final dio = Dio(

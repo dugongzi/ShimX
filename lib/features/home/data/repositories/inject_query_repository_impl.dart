@@ -1,10 +1,10 @@
-import 'package:shim/features/home/data/datasources/inject_action_datasource.dart';
-import 'package:shim/features/home/domain/repositories/inject_action_repository.dart';
+import 'package:shim/features/home/data/datasources/inject_query_datasource.dart';
+import 'package:shim/features/home/domain/repositories/inject_query_repository.dart';
 
-class InjectActionRepositoryImpl implements InjectActionRepository {
-  final InjectActionDatasource _dataSource;
+class InjectQueryRepositoryImpl implements InjectQueryRepository {
+  final InjectQueryDatasource _dataSource;
 
-  InjectActionRepositoryImpl({required InjectActionDatasource dataSource})
+  InjectQueryRepositoryImpl({required InjectQueryDatasource dataSource})
       : _dataSource = dataSource;
 
   @override

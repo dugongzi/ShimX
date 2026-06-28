@@ -13,9 +13,7 @@ import 'package:shim/features/mcp/presentation/widgets/mcp_tab.dart';
 import 'package:shim/features/providers/presentation/widgets/providers_tab.dart';
 import 'package:shim/features/settings/presentation/widgets/settings_tab.dart';
 import 'package:shim/features/skills/presentation/widgets/skills_tab.dart';
-
 enum HomeTab { home, providers, sessions, mcp, skills, logs, settings }
-
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 

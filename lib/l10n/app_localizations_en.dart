@@ -561,6 +561,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get threadEmpty => 'Session has no messages';
 
   @override
+  String get threadMessageUser => 'User';
+
+  @override
+  String get threadMessageAssistant => 'Assistant';
+
+  @override
+  String get threadMessageToolCall => 'Tool call';
+
+  @override
+  String get threadMessageToolResult => 'Tool result';
+
+  @override
+  String get expand => 'Expand';
+
+  @override
+  String get collapse => 'Collapse';
+
+  @override
   String get sessionExport => 'Export';
 
   @override

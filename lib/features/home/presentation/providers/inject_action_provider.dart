@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/core/services/cdp_service.dart';
 import 'package:shim/core/services/codex_launcher_service.dart';
-import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
+import 'package:shim/features/claude_session/presentation/providers/claude_session_bridge_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_export_provider.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_import_provider.dart';

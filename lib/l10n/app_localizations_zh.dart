@@ -553,6 +553,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get threadEmpty => '会话内容为空';
 
   @override
+  String get threadMessageUser => '用户';
+
+  @override
+  String get threadMessageAssistant => '助手';
+
+  @override
+  String get threadMessageToolCall => '工具调用';
+
+  @override
+  String get threadMessageToolResult => '工具结果';
+
+  @override
+  String get expand => '展开';
+
+  @override
+  String get collapse => '收起';
+
+  @override
   String get sessionExport => '导出';
 
   @override

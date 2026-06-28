@@ -1,29 +1,16 @@
 import 'dart:io';
 
-import 'package:shim/features/claude_session/data/datasources/claude_session_export_datasource.dart';
 import 'package:shim/core/utils/claude_session_export_formatter.dart';
 import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
-import 'package:shim/features/claude_session/domain/repositories/claude_session_export_repository.dart';
 
-class ClaudeSessionExportRepositoryImpl
-    implements ClaudeSessionExportRepository {
-  final ClaudeSessionExportDatasource dataSource;
+/// 会话相关的写操作(导出落盘等)。读取/解析 jsonl 见 ClaudeSessionQueryDatasource。
+class ClaudeSessionActionDatasource {
+  ClaudeSessionActionDatasource({required this.formatter});
+
   final ClaudeSessionExportFormatter formatter;
 
-  ClaudeSessionExportRepositoryImpl({
-    required this.dataSource,
-    required this.formatter,
-  });
-
-  @override
-  Future<ClaudeThreadDetail> loadThreadDetail({
-    required String jsonlPath,
-  }) async {
-    final dto = await dataSource.loadDetail(jsonlPath: jsonlPath);
-    return dto.toEntity();
-  }
-
-  @override
+  /// 把已加载的 detail 按 format 输出到 outputPath。
+  /// format ∈ { markdown, raws }。raws 直接拷贝原 jsonl。
   Future<void> exportToFile({
     required ClaudeThreadDetail detail,
     required String format,

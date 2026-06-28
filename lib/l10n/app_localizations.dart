@@ -1130,6 +1130,42 @@ abstract class AppLocalizations {
   /// **'会话内容为空'**
   String get threadEmpty;
 
+  /// No description provided for @threadMessageUser.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户'**
+  String get threadMessageUser;
+
+  /// No description provided for @threadMessageAssistant.
+  ///
+  /// In zh, this message translates to:
+  /// **'助手'**
+  String get threadMessageAssistant;
+
+  /// No description provided for @threadMessageToolCall.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具调用'**
+  String get threadMessageToolCall;
+
+  /// No description provided for @threadMessageToolResult.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具结果'**
+  String get threadMessageToolResult;
+
+  /// No description provided for @expand.
+  ///
+  /// In zh, this message translates to:
+  /// **'展开'**
+  String get expand;
+
+  /// No description provided for @collapse.
+  ///
+  /// In zh, this message translates to:
+  /// **'收起'**
+  String get collapse;
+
   /// No description provided for @sessionExport.
   ///
   /// In zh, this message translates to:

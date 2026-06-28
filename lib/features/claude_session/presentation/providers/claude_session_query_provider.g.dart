@@ -190,59 +190,89 @@ final class ListClaudeThreadsFamily extends $Family
   String toString() => r'listClaudeThreadsProvider';
 }
 
-/// 把 Claude 会话查询路由注册到 bridge,供 codex_enhance.js 的侧栏折叠列表调用。
-///
-/// /claude-session/projects        → 列出全部 Claude Code 项目分组
-/// /claude-session/threads         → payload.encodedDir 必填,列该项目下会话
+/// 完整加载 jsonl 成 detail。详情视图 + 导出 + MCP search 共用。
 
-@ProviderFor(claudeSessionRouteRegistration)
-const claudeSessionRouteRegistrationProvider =
-    ClaudeSessionRouteRegistrationProvider._();
+@ProviderFor(claudeThreadDetail)
+const claudeThreadDetailProvider = ClaudeThreadDetailFamily._();
 
-/// 把 Claude 会话查询路由注册到 bridge,供 codex_enhance.js 的侧栏折叠列表调用。
-///
-/// /claude-session/projects        → 列出全部 Claude Code 项目分组
-/// /claude-session/threads         → payload.encodedDir 必填,列该项目下会话
+/// 完整加载 jsonl 成 detail。详情视图 + 导出 + MCP search 共用。
 
-final class ClaudeSessionRouteRegistrationProvider
-    extends $FunctionalProvider<bool, bool, bool>
-    with $Provider<bool> {
-  /// 把 Claude 会话查询路由注册到 bridge,供 codex_enhance.js 的侧栏折叠列表调用。
-  ///
-  /// /claude-session/projects        → 列出全部 Claude Code 项目分组
-  /// /claude-session/threads         → payload.encodedDir 必填,列该项目下会话
-  const ClaudeSessionRouteRegistrationProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'claudeSessionRouteRegistrationProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+final class ClaudeThreadDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ClaudeThreadDetail>,
+          ClaudeThreadDetail,
+          FutureOr<ClaudeThreadDetail>
+        >
+    with
+        $FutureModifier<ClaudeThreadDetail>,
+        $FutureProvider<ClaudeThreadDetail> {
+  /// 完整加载 jsonl 成 detail。详情视图 + 导出 + MCP search 共用。
+  const ClaudeThreadDetailProvider._({
+    required ClaudeThreadDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'claudeThreadDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
-  String debugGetCreateSourceHash() => _$claudeSessionRouteRegistrationHash();
+  String debugGetCreateSourceHash() => _$claudeThreadDetailHash();
+
+  @override
+  String toString() {
+    return r'claudeThreadDetailProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
-  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $FutureProviderElement<ClaudeThreadDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  bool create(Ref ref) {
-    return claudeSessionRouteRegistration(ref);
+  FutureOr<ClaudeThreadDetail> create(Ref ref) {
+    final argument = this.argument as String;
+    return claudeThreadDetail(ref, jsonlPath: argument);
   }
 
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
+  @override
+  bool operator ==(Object other) {
+    return other is ClaudeThreadDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$claudeSessionRouteRegistrationHash() =>
-    r'47179e0e53376e61f17a422f425c9bb723cf2f58';
+String _$claudeThreadDetailHash() =>
+    r'f98d1e0862c4d2a397c12da7c34526e7783dd179';
+
+/// 完整加载 jsonl 成 detail。详情视图 + 导出 + MCP search 共用。
+
+final class ClaudeThreadDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ClaudeThreadDetail>, String> {
+  const ClaudeThreadDetailFamily._()
+    : super(
+        retry: null,
+        name: r'claudeThreadDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 完整加载 jsonl 成 detail。详情视图 + 导出 + MCP search 共用。
+
+  ClaudeThreadDetailProvider call({required String jsonlPath}) =>
+      ClaudeThreadDetailProvider._(argument: jsonlPath, from: this);
+
+  @override
+  String toString() => r'claudeThreadDetailProvider';
+}

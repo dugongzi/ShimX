@@ -4,7 +4,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/app_storage.dart';
 import 'package:shim/core/services/mcp_service.dart';
-import 'package:shim/features/claude_session/presentation/providers/claude_session_export_provider.dart';
 import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
 import 'package:shim/features/mcp/data/datasources/mcp_server_action_datasource.dart';
 import 'package:shim/features/mcp/data/datasources/mcp_server_query_datasource.dart';
@@ -78,7 +77,6 @@ Future<void> startMcpServer(Ref ref) async {
     registerClaudeSessionTools(
       service,
       queryRepository: ref.read(claudeSessionQueryRepositoryProvider),
-      exportRepository: ref.read(claudeSessionExportRepositoryProvider),
     );
     try {
       await service.start(port: shimMcpServerPort);

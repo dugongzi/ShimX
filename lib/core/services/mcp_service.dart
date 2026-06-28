@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/features/claude_session/domain/repositories/claude_session_export_repository.dart';
 import 'package:shim/features/claude_session/domain/repositories/claude_session_query_repository.dart';
 
 final mcpServerRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
@@ -210,7 +209,6 @@ class _PendingTool {
 void registerClaudeSessionTools(
   McpService server, {
   required ClaudeSessionQueryRepository queryRepository,
-  required ClaudeSessionExportRepository exportRepository,
 }) {
   server.registerTool(
     name: 'list_claude_sessions',
@@ -308,7 +306,7 @@ void registerClaudeSessionTools(
           content: const [TextContent(text: 'jsonl_path is required')],
         );
       }
-      final detail = await exportRepository.loadThreadDetail(jsonlPath: path);
+      final detail = await queryRepository.loadThreadDetail(jsonlPath: path);
       final total = detail.messages.length;
       final end = (offset + limit).clamp(0, total);
       final slice = offset >= total
@@ -404,7 +402,7 @@ void registerClaudeSessionTools(
             snippet = t.title.isEmpty ? t.cwd : t.title;
           } else if (deep) {
             try {
-              final detail = await exportRepository.loadThreadDetail(
+              final detail = await queryRepository.loadThreadDetail(
                 jsonlPath: t.jsonlPath,
               );
               for (final m in detail.messages) {

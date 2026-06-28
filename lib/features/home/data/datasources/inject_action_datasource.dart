@@ -8,19 +8,38 @@ import 'package:flutter/services.dart';
 
 class InjectActionDatasource {
   /// codex_enhance 改造为分层分片后, 注入脚本由多个 .js 文件按层顺序拼接而成。
-  /// core → ui → features → legacy → runtime, 层内按文件名字母序。
+  /// core → ui → features → runtime, 层内按文件名字母序。
   /// 这里写死的清单就是清晰架构本身的一部分 (不是 manifest 配置), 决定了每层
   /// 哪些底层符号必须先于上层被声明。
   ///
   /// 顺序依赖: core/guard 必须最先 (它装 once guard 和 namespace 根),
-  /// core/i18n 必须在所有 features/legacy 之前 (S() / state 是底层),
+  /// core/i18n 必须在所有 features 之前 (S() / state 是底层),
   /// runtime/* 必须最后 (启动调用要等所有 ensureXxx 都挂上 namespace)。
   static const List<String> _injectShards = [
+    // core: once guard, 命名空间根, 常量池, RPC, i18n + provider 状态
     'assets/inject/codex_enhance/core/guard.js',
     'assets/inject/codex_enhance/core/constants.js',
     'assets/inject/codex_enhance/core/bridge.js',
     'assets/inject/codex_enhance/core/i18n.js',
-    'assets/inject/codex_enhance/legacy/body.js',
+    // ui: 跨 feature 复用的纯 UI 工具 (toast / busy / confirm / panel_utils)
+    'assets/inject/codex_enhance/ui/busy.js',
+    'assets/inject/codex_enhance/ui/confirm.js',
+    'assets/inject/codex_enhance/ui/panel_utils.js',
+    'assets/inject/codex_enhance/ui/toast.js',
+    // features: 各业务模块, 字母序无依赖关系
+    'assets/inject/codex_enhance/features/badge.js',
+    'assets/inject/codex_enhance/features/claude_bridge.js',
+    'assets/inject/codex_enhance/features/control_panel.js',
+    'assets/inject/codex_enhance/features/network_blocker.js',
+    'assets/inject/codex_enhance/features/project_menu_hook.js',
+    'assets/inject/codex_enhance/features/provider_picker.js',
+    'assets/inject/codex_enhance/features/shim_menu.js',
+    'assets/inject/codex_enhance/features/thread_preview.js',
+    'assets/inject/codex_enhance/features/thread_row.js',
+    // runtime: 插件兼容层 → scheduler 主循环 → bootstrap 启动序列
+    'assets/inject/codex_enhance/runtime/plugins.js',
+    'assets/inject/codex_enhance/runtime/scheduler.js',
+    'assets/inject/codex_enhance/runtime/bootstrap.js',
   ];
 
   /// debug 模式下直接读项目源码路径下的同名分片, 改完立刻生效 (零重启)。

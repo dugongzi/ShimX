@@ -85,7 +85,6 @@ flutter:
     - assets/inject/codex_enhance/core/
     - assets/inject/codex_enhance/ui/
     - assets/inject/codex_enhance/features/
-    - assets/inject/codex_enhance/legacy/
     - assets/inject/codex_enhance/runtime/
   fonts:
     - family: AliMama

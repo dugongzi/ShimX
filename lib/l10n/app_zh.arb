@@ -295,6 +295,7 @@
   "mcpConfigEmpty": "还没有 Codex MCP 配置",
   "mcpConfigAdd": "新增",
   "mcpConfigBodyLabel": "配置",
+  "mcpConfigIdLabel": "ID",
   "mcpConfigFillRequiredToast": "请填写 ID 和配置",
   "mcpConfigDialogTitleNew": "新增 MCP 配置",
   "mcpConfigDialogTitleEdit": "编辑 MCP 配置",

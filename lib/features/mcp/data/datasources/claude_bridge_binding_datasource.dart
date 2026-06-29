@@ -28,9 +28,9 @@ class ClaudeBridgeBindingDatasource {
       final codexThreadId = entry.key.toString();
       final value = entry.value;
       if (value is! Map) continue;
-      final dto = ClaudeBridgeBindingDto.fromJson(
-        codexThreadId,
-        Map<String, Object?>.from(value),
+      final dto = ClaudeBridgeBindingDto.fromStorageEntry(
+        codexThreadId: codexThreadId,
+        json: Map<String, Object?>.from(value),
       );
       if (dto.isValid) {
         result[codexThreadId] = dto;
@@ -41,7 +41,7 @@ class ClaudeBridgeBindingDatasource {
 
   Future<void> write(Map<String, ClaudeBridgeBindingDto> bindings) async {
     final encoded = jsonEncode(
-      bindings.map((key, value) => MapEntry(key, value.toJson())),
+      bindings.map((key, value) => MapEntry(key, value.toStorageJson())),
     );
     if (_memory != null) {
       _memory[claudeBridgeBindingStoreKey] = encoded;

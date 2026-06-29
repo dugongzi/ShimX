@@ -63,7 +63,7 @@ final class InjectToRunningPortProvider
 }
 
 String _$injectToRunningPortHash() =>
-    r'c7a5f8d7b8f5861571e4c2d3524df46e976d0668';
+    r'ac2d20bd85604bd5b50bc63a1cb22bd725831445';
 
 /// 直接注入到端口(要求端口上已经有 page),建立 CDP 长连接并安装 bridge + 脚本。
 
@@ -153,7 +153,7 @@ final class LaunchAndInjectProvider
   }
 }
 
-String _$launchAndInjectHash() => r'2ab6d1de68c04b7b8dab4504d573ecb7640964d5';
+String _$launchAndInjectHash() => r'2fa475cbb66f2a26f98b32b198286e472c5603da';
 
 /// 完整流程:
 /// - 端口活 → 直接连上现有 Codex 并注入
@@ -244,7 +244,7 @@ final class ReloadCodexAndReinjectProvider
 }
 
 String _$reloadCodexAndReinjectHash() =>
-    r'3aaa421a300e7e1eb8fbdcf0835169eff357c9f2';
+    r'fb3017741f15e3a6120a5c8ab766a3776489f478';
 
 /// 已注入状态下手动刷新 Codex 页面 + 重新装 bridge + 重跑脚本。
 /// 与 [injectToRunningPort] 区别:这里会先调用 `cdp.reloadPage()`,清掉旧 page 上的脚本副作用。

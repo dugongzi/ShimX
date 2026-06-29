@@ -695,6 +695,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mcpConfigBodyLabel => '配置';
 
   @override
+  String get mcpConfigIdLabel => 'ID';
+
+  @override
   String get mcpConfigFillRequiredToast => '请填写 ID 和配置';
 
   @override

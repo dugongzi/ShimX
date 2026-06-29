@@ -6,7 +6,8 @@ import 'package:shim/features/claude_session/presentation/providers/claude_sessi
 import 'package:shim/features/codex_session/presentation/providers/codex_session_bridge_provider.dart';
 import 'package:shim/features/home/presentation/providers/inject_query_provider.dart';
 import 'package:shim/features/logs/presentation/providers/logs_bridge_provider.dart';
-import 'package:shim/features/mcp/presentation/providers/claude_bridge_provider.dart';
+import 'package:shim/features/mcp/presentation/providers/claude_bridge_bridge_provider.dart';
+import 'package:shim/features/mcp/presentation/providers/claude_bridge_query_provider.dart';
 import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
@@ -27,6 +28,7 @@ void _registerAllBridgeRoutes(Ref ref) {
   ref.read(autoSwitchRouteRegistrationProvider);
   ref.read(providerActionRouteRegistrationProvider);
   ref.read(logsBridgeRouteRegistrationProvider);
+  ref.read(claudeBridgeRouteRegistrationProvider);
 }
 
 /// 直接注入到端口(要求端口上已经有 page),建立 CDP 长连接并安装 bridge + 脚本。
@@ -36,8 +38,7 @@ Future<void> injectToRunningPort(Ref ref, {required int debugPort}) async {
   final cdp = ref.read(cdpServiceProvider);
   final bridge = ref.read(bridgeServiceProvider);
   _registerAllBridgeRoutes(ref);
-  final claudeBridge = ref.read(claudeBridgeRouteControllerProvider);
-  await claudeBridge.ensureHydrated();
+  await ref.read(claudeBridgeQueryRepositoryProvider).ensureHydrated();
   final script = await repo.loadInjectScript();
   await cdp.connect(debugPort);
   await bridge.install(documentScripts: [script]);
@@ -56,8 +57,7 @@ Future<void> launchAndInject(Ref ref, {required int debugPort}) async {
   final bridge = ref.read(bridgeServiceProvider);
   final launcher = ref.read(codexLauncherServiceProvider);
   _registerAllBridgeRoutes(ref);
-  final claudeBridge = ref.read(claudeBridgeRouteControllerProvider);
-  await claudeBridge.ensureHydrated();
+  await ref.read(claudeBridgeQueryRepositoryProvider).ensureHydrated();
   if (!ref.mounted) return;
 
   // 接管开关开着 → 完整接管(起代理 + 改 config);否则释放。
@@ -85,8 +85,7 @@ Future<void> reloadCodexAndReinject(Ref ref, {required int debugPort}) async {
   final cdp = ref.read(cdpServiceProvider);
   final bridge = ref.read(bridgeServiceProvider);
   _registerAllBridgeRoutes(ref);
-  final claudeBridge = ref.read(claudeBridgeRouteControllerProvider);
-  await claudeBridge.ensureHydrated();
+  await ref.read(claudeBridgeQueryRepositoryProvider).ensureHydrated();
 
   await cdp.connect(debugPort);
   await cdp.reloadPage();

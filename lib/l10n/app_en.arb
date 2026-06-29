@@ -295,6 +295,7 @@
   "mcpConfigEmpty": "No Codex MCP config yet",
   "mcpConfigAdd": "Add",
   "mcpConfigBodyLabel": "Config",
+  "mcpConfigIdLabel": "ID",
   "mcpConfigFillRequiredToast": "Fill ID and config",
   "mcpConfigDialogTitleNew": "Add MCP config",
   "mcpConfigDialogTitleEdit": "Edit MCP config",

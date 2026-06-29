@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shim/core/services/local_proxy_service.dart';
 import 'package:shim/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
-import 'package:shim/features/mcp/presentation/providers/claude_bridge_provider.dart';
+import 'package:shim/features/mcp/data/datasources/claude_bridge_state_controller.dart';
 
 void main() {
   test(
@@ -11,7 +11,7 @@ void main() {
       final datasource = ClaudeBridgeBindingDatasource(memory: memory);
 
       final firstProxy = LocalProxyService();
-      final firstController = ClaudeBridgeRouteController(
+      final firstController = ClaudeBridgeStateController(
         proxy: firstProxy,
         datasource: datasource,
       );
@@ -27,7 +27,7 @@ void main() {
       await firstController.persist();
 
       final secondProxy = LocalProxyService();
-      final secondController = ClaudeBridgeRouteController(
+      final secondController = ClaudeBridgeStateController(
         proxy: secondProxy,
         datasource: datasource,
       );
@@ -42,7 +42,7 @@ void main() {
       await secondController.persist();
 
       final thirdProxy = LocalProxyService();
-      final thirdController = ClaudeBridgeRouteController(
+      final thirdController = ClaudeBridgeStateController(
         proxy: thirdProxy,
         datasource: datasource,
       );

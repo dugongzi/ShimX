@@ -1388,6 +1388,12 @@ abstract class AppLocalizations {
   /// **'配置'**
   String get mcpConfigBodyLabel;
 
+  /// No description provided for @mcpConfigIdLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'ID'**
+  String get mcpConfigIdLabel;
+
   /// No description provided for @mcpConfigFillRequiredToast.
   ///
   /// In zh, this message translates to:

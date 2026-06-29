@@ -704,6 +704,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mcpConfigBodyLabel => 'Config';
 
   @override
+  String get mcpConfigIdLabel => 'ID';
+
+  @override
   String get mcpConfigFillRequiredToast => 'Fill ID and config';
 
   @override

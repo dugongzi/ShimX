@@ -15,12 +15,12 @@ class ScriptListToolbar extends StatelessWidget {
   });
 
   final int selectedCount;
-  final VoidCallback onImport;
+  final VoidCallback? onImport;
   final VoidCallback? onSelectAll;
   final VoidCallback? onInvertSelection;
-  final VoidCallback onDeleteSelected;
-  final VoidCallback onEnableSelected;
-  final VoidCallback onDisableSelected;
+  final VoidCallback? onDeleteSelected;
+  final VoidCallback? onEnableSelected;
+  final VoidCallback? onDisableSelected;
 
   @override
   Widget build(BuildContext context) {

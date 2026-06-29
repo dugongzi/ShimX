@@ -57,63 +57,6 @@ final class ProviderActionRepositoryProvider
 String _$providerActionRepositoryHash() =>
     r'52fae25a25078a67d38c0aadcd1c47b3610796bd';
 
-/// 注册 JS 侧供应商/模型选择路由。
-///
-/// 通过 @Riverpod(keepAlive: true) 包一层 provider,任何持有 Ref 或 WidgetRef
-/// 的地方都可以 `ref.read(providerActionRouteRegistrationProvider)` 触发注册。
-
-@ProviderFor(providerActionRouteRegistration)
-const providerActionRouteRegistrationProvider =
-    ProviderActionRouteRegistrationProvider._();
-
-/// 注册 JS 侧供应商/模型选择路由。
-///
-/// 通过 @Riverpod(keepAlive: true) 包一层 provider,任何持有 Ref 或 WidgetRef
-/// 的地方都可以 `ref.read(providerActionRouteRegistrationProvider)` 触发注册。
-
-final class ProviderActionRouteRegistrationProvider
-    extends $FunctionalProvider<bool, bool, bool>
-    with $Provider<bool> {
-  /// 注册 JS 侧供应商/模型选择路由。
-  ///
-  /// 通过 @Riverpod(keepAlive: true) 包一层 provider,任何持有 Ref 或 WidgetRef
-  /// 的地方都可以 `ref.read(providerActionRouteRegistrationProvider)` 触发注册。
-  const ProviderActionRouteRegistrationProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'providerActionRouteRegistrationProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$providerActionRouteRegistrationHash();
-
-  @$internal
-  @override
-  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  bool create(Ref ref) {
-    return providerActionRouteRegistration(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
-  }
-}
-
-String _$providerActionRouteRegistrationHash() =>
-    r'6cf01c8d5d2bf6a95ee3d9f0e2e88ba3acdea05f';
-
 /// 供应商相关写操作的命令面板。
 ///
 /// 用 Notifier 而不是一堆 family-Future provider:
@@ -174,7 +117,7 @@ final class ProviderActionsProvider
   }
 }
 
-String _$providerActionsHash() => r'a0fd17bd2677a74878606206efdb800e1bbbc1a4';
+String _$providerActionsHash() => r'00d82ead20b02025e7871a11a427e0d8e891c450';
 
 /// 供应商相关写操作的命令面板。
 ///
@@ -204,44 +147,3 @@ abstract class _$ProviderActions extends $Notifier<void> {
     element.handleValue(ref, null);
   }
 }
-
-/// 启动时自动接管：app 起来就 watch 一次，按持久化的开关状态自动起代理。
-/// 开关开着且有选中供应商 → 起代理 + 设 target + 改 config.toml。
-
-@ProviderFor(proxyAutoStart)
-const proxyAutoStartProvider = ProxyAutoStartProvider._();
-
-/// 启动时自动接管：app 起来就 watch 一次，按持久化的开关状态自动起代理。
-/// 开关开着且有选中供应商 → 起代理 + 设 target + 改 config.toml。
-
-final class ProxyAutoStartProvider
-    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
-    with $FutureModifier<void>, $FutureProvider<void> {
-  /// 启动时自动接管：app 起来就 watch 一次，按持久化的开关状态自动起代理。
-  /// 开关开着且有选中供应商 → 起代理 + 设 target + 改 config.toml。
-  const ProxyAutoStartProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'proxyAutoStartProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$proxyAutoStartHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<void> create(Ref ref) {
-    return proxyAutoStart(ref);
-  }
-}
-
-String _$proxyAutoStartHash() => r'973f32c132a08a8c53a23a1c2ea3fe46ff9a1633';

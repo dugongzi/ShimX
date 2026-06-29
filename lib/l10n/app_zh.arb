@@ -318,6 +318,7 @@
   "skillsCopyPath": "复制路径",
   "skillsDelete": "删除",
   "skillsPathLabel": "路径",
+  "skillsIdLabel": "ID",
   "skillsHashLabel": "内容 Hash",
   "skillsInstallSuccess": "Skill 已安装",
   "skillsImportSuccess": "已导入管理",

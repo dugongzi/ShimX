@@ -775,6 +775,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get skillsPathLabel => 'Path';
 
   @override
+  String get skillsIdLabel => 'ID';
+
+  @override
   String get skillsHashLabel => 'Content hash';
 
   @override

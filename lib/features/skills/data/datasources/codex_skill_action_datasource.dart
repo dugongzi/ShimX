@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:shim/core/utils/codex_skill_file_utils.dart';
 import 'package:shim/features/skills/data/datasources/codex_skill_registry.dart';
 import 'package:shim/features/skills/domain/models/codex_skill.dart';
+import 'package:shim/features/skills/domain/models/skill_overwrite_required_exception.dart';
 
 class CodexSkillActionDatasource {
   CodexSkillActionDatasource({
@@ -161,7 +162,7 @@ class CodexSkillActionDatasource {
       throw StateError('同名外部 Skill 已存在，请先导入管理或换名: $id');
     }
     if (!overwriteManaged) {
-      throw StateError('同名 shim 管理 Skill 已存在，需要确认覆盖: $id');
+      throw SkillOverwriteRequiredException(id);
     }
   }
 

@@ -318,6 +318,7 @@
   "skillsCopyPath": "Copy path",
   "skillsDelete": "Delete",
   "skillsPathLabel": "Path",
+  "skillsIdLabel": "ID",
   "skillsHashLabel": "Content hash",
   "skillsInstallSuccess": "Skill installed",
   "skillsImportSuccess": "Imported",

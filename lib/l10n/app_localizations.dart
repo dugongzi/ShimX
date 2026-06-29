@@ -1526,6 +1526,12 @@ abstract class AppLocalizations {
   /// **'路径'**
   String get skillsPathLabel;
 
+  /// No description provided for @skillsIdLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'ID'**
+  String get skillsIdLabel;
+
   /// No description provided for @skillsHashLabel.
   ///
   /// In zh, this message translates to:

@@ -765,6 +765,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get skillsPathLabel => '路径';
 
   @override
+  String get skillsIdLabel => 'ID';
+
+  @override
   String get skillsHashLabel => '内容 Hash';
 
   @override

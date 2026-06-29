@@ -9,7 +9,8 @@ import 'package:shim/features/logs/presentation/providers/logs_bridge_provider.d
 import 'package:shim/features/mcp/presentation/providers/claude_bridge_bridge_provider.dart';
 import 'package:shim/features/mcp/presentation/providers/claude_bridge_query_provider.dart';
 import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shim/core/services/takeover_service.dart';
+import 'package:shim/features/providers/presentation/providers/provider_action_bridge_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
 import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
 

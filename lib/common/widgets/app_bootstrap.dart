@@ -2,7 +2,7 @@ import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
 import 'package:shim/core/themes/app_theme.dart';
 import 'package:shim/features/mcp/presentation/providers/mcp_server_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shim/core/services/takeover_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shim/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

@@ -1,14 +1,14 @@
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/presentation/providers/script_query_provider.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_list_item.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_list_pagination.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_list_toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shim/core/constants/app_sizes.dart';
+import 'package:shim/features/scripts/domain/models/inject_script.dart';
+import 'package:shim/features/scripts/presentation/providers/script_action_provider.dart';
+import 'package:shim/features/scripts/presentation/providers/script_query_provider.dart';
+import 'package:shim/features/scripts/presentation/widgets/script_list_body.dart';
+import 'package:shim/features/scripts/presentation/widgets/script_list_pagination.dart';
+import 'package:shim/features/scripts/presentation/widgets/script_list_toolbar.dart';
 
 const _pageSize = 20;
 
@@ -35,11 +35,38 @@ class ScriptList extends HookConsumerWidget {
     final end = (start + _pageSize).clamp(0, scripts.length);
     final pageItems = scripts.sublist(start, end);
     final pageIds = pageItems.map((s) => s.id).toSet();
-    final selectedOnPage =
-        selected.value.where(pageIds.contains).length;
+    final selectedOnPage = selected.value.where(pageIds.contains).length;
 
-    void notImplemented() {
-      SmartDialog.showToast(context.l10n.notImplementedYet);
+    Future<void> handleImport() async {
+      try {
+        await ref.read(importScriptProvider.future);
+      } catch (e) {
+        SmartDialog.showToast(e.toString());
+      }
+    }
+
+    Future<void> handleDeleteSelected() async {
+      final ids = selected.value.where(pageIds.contains).toList();
+      if (ids.isEmpty) return;
+      try {
+        await ref.read(deleteScriptsProvider(ids: ids).future);
+        final next = {...selected.value}..removeAll(ids);
+        selected.value = next;
+      } catch (e) {
+        SmartDialog.showToast(e.toString());
+      }
+    }
+
+    Future<void> handleSetEnabled(bool enabled) async {
+      final ids = selected.value.where(pageIds.contains).toList();
+      if (ids.isEmpty) return;
+      try {
+        await ref.read(
+          setScriptsEnabledProvider(ids: ids, enabled: enabled).future,
+        );
+      } catch (e) {
+        SmartDialog.showToast(e.toString());
+      }
     }
 
     return Column(
@@ -47,7 +74,7 @@ class ScriptList extends HookConsumerWidget {
       children: [
         ScriptListToolbar(
           selectedCount: selectedOnPage,
-          onImport: notImplemented,
+          onImport: () => handleImport(),
           onSelectAll: pageItems.isEmpty
               ? null
               : () => selected.value = {...selected.value, ...pageIds},
@@ -64,13 +91,16 @@ class ScriptList extends HookConsumerWidget {
                   }
                   selected.value = next;
                 },
-          onDeleteSelected: notImplemented,
-          onEnableSelected: notImplemented,
-          onDisableSelected: notImplemented,
+          onDeleteSelected:
+              selectedOnPage == 0 ? null : () => handleDeleteSelected(),
+          onEnableSelected:
+              selectedOnPage == 0 ? null : () => handleSetEnabled(true),
+          onDisableSelected:
+              selectedOnPage == 0 ? null : () => handleSetEnabled(false),
         ),
         SizedBox(height: AppSizes.sectionGap),
         Expanded(
-          child: _Body(
+          child: ScriptListBody(
             scriptsAsync: scriptsAsync,
             pageItems: pageItems,
             selected: selected,
@@ -83,71 +113,6 @@ class ScriptList extends HookConsumerWidget {
           onPageSelected: (page) => currentPage.value = page,
         ),
       ],
-    );
-  }
-}
-
-class _Body extends StatelessWidget {
-  const _Body({
-    required this.scriptsAsync,
-    required this.pageItems,
-    required this.selected,
-  });
-
-  final AsyncValue<List<InjectScript>> scriptsAsync;
-  final List<InjectScript> pageItems;
-  final ValueNotifier<Set<String>> selected;
-
-  @override
-  Widget build(BuildContext context) {
-    if (scriptsAsync.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (scriptsAsync.hasError) {
-      return Center(child: Text(scriptsAsync.error.toString()));
-    }
-    if (pageItems.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.inventory_2_outlined,
-              size: 48,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            SizedBox(height: AppSizes.itemGap),
-            Text(
-              context.l10n.noScripts,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    return ListView.separated(
-      padding: EdgeInsets.zero,
-      itemCount: pageItems.length,
-      separatorBuilder: (_, __) => SizedBox(height: AppSizes.itemGap),
-      itemBuilder: (context, index) {
-        final script = pageItems[index];
-        final isSelected = selected.value.contains(script.id);
-        return ScriptListItem(
-          script: script,
-          selected: isSelected,
-          onSelectedChanged: (checked) {
-            final next = {...selected.value};
-            if (checked) {
-              next.add(script.id);
-            } else {
-              next.remove(script.id);
-            }
-            selected.value = next;
-          },
-        );
-      },
     );
   }
 }

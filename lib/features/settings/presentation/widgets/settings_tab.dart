@@ -1,23 +1,21 @@
-import 'package:shim/common/widgets/icon_badge.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/common/widgets/surface_card.dart';
+import 'package:shim/common/widgets/theme_color_swatch.dart';
 import 'package:shim/common/widgets/workspace_surface.dart';
+import 'package:shim/core/constants/app_links.dart';
 import 'package:shim/core/constants/app_sizes.dart';
+import 'package:shim/core/constants/theme_color_presets.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
 import 'package:shim/core/services/shortcut_service.dart';
-import 'package:shim/features/providers/domain/models/proxy_config.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shim/core/utils/theme_mode_label.dart';
+import 'package:shim/features/providers/presentation/widgets/proxy_card.dart';
+import 'package:shim/features/settings/presentation/widgets/app_version_line.dart';
+import 'package:shim/features/settings/presentation/widgets/setting_card.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-const _shimRepositoryUrl = 'https://github.com/dugongzi/Shim';
 
 class SettingsTab extends ConsumerWidget {
   const SettingsTab({super.key});
@@ -28,14 +26,6 @@ class SettingsTab extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final themeColor = ref.watch(themeColorProvider);
     final colorScheme = Theme.of(context).colorScheme;
-    const launchThemeColor = Color(0xFF7143FF);
-    final colors = [
-      launchThemeColor,
-      const Color(0xFF98D2D5),
-      const Color(0xFF6C8CFF),
-      const Color(0xFF27AE60),
-      const Color(0xFFE86F51),
-    ];
 
     return WorkspaceSurface(
       child: ListView(
@@ -117,21 +107,13 @@ class SettingsTab extends ConsumerWidget {
               spacing: AppSizes.itemGap,
               runSpacing: AppSizes.itemGap,
               children: [
-                for (final color in colors)
-                  ColorSwatch(
+                for (final color in themeColorPresets)
+                  ThemeColorSwatch(
                     color: color,
-                    gradient: color.toARGB32() == launchThemeColor.toARGB32()
-                        ? const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFF00DDF4),
-                              Color(0xFF2463FF),
-                              Color(0xFF7143FF),
-                              Color(0xFFE843FF),
-                            ],
-                          )
-                        : null,
+                    gradient:
+                        color.toARGB32() == launchThemeColor.toARGB32()
+                            ? launchThemeColorGradient
+                            : null,
                     selected: color.toARGB32() == themeColor.toARGB32(),
                     onTap: () {
                       ref
@@ -174,13 +156,13 @@ class SettingsTab extends ConsumerWidget {
           SettingCard(
             icon: Icons.code_rounded,
             title: context.l10n.openSourceRepository,
-            description: _shimRepositoryUrl,
+            description: shimRepositoryUrl,
             child: FilledButton.tonalIcon(
               onPressed: () async {
                 final l10n = context.l10n;
                 try {
                   await launchUrl(
-                    Uri.parse(_shimRepositoryUrl),
+                    Uri.parse(shimRepositoryUrl),
                     mode: LaunchMode.externalApplication,
                   );
                 } catch (e) {
@@ -194,280 +176,17 @@ class SettingsTab extends ConsumerWidget {
             ),
           ),
           SizedBox(height: AppSizes.itemGap),
-          const _ProxyCard(),
+          const ProxyCard(),
           SizedBox(height: AppSizes.sectionGap),
           Text(
             context.l10n.settingsPersistedDescription,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
+                  color: colorScheme.onSurfaceVariant,
+                ),
           ),
           SizedBox(height: AppSizes.itemGap),
-          const _AppVersionLine(),
+          const AppVersionLine(),
         ],
-      ),
-    );
-  }
-}
-
-class _AppVersionLine extends StatelessWidget {
-  const _AppVersionLine();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return FutureBuilder<PackageInfo>(
-      future: PackageInfo.fromPlatform(),
-      builder: (context, snapshot) {
-        final info = snapshot.data;
-        final text = info == null
-            ? 'Shim'
-            : 'Shim v${info.version} (${info.buildNumber})';
-        return Text(
-          text,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-        );
-      },
-    );
-  }
-}
-
-class _ProxyCard extends ConsumerStatefulWidget {
-  const _ProxyCard();
-
-  @override
-  ConsumerState<_ProxyCard> createState() => _ProxyCardState();
-}
-
-class _ProxyCardState extends ConsumerState<_ProxyCard> {
-  final TextEditingController _portController = TextEditingController();
-  int? _syncedPort;
-
-  @override
-  void dispose() {
-    _portController.dispose();
-    super.dispose();
-  }
-
-  void _syncControllerWithPort(int port) {
-    if (_syncedPort == port) return;
-    _syncedPort = port;
-    _portController.text = port.toString();
-  }
-
-  void _savePort() {
-    final parsed = int.tryParse(_portController.text);
-    if (parsed == null || parsed < 1 || parsed > 65535) return;
-    if (parsed == _syncedPort) return;
-    ref.read(providerActionsProvider.notifier).setProxyPort(parsed);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final proxyAsync = ref.watch(proxyConfigProvider);
-    final proxy = proxyAsync.value ?? const ProxyConfig();
-    final isLoading = proxyAsync.isLoading;
-    _syncControllerWithPort(proxy.port);
-
-    return SurfaceCard(
-      padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              IconBadge(icon: Icons.route_rounded),
-              SizedBox(width: 12.cw(min: 10, max: 14)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.proxy,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 4.ch(min: 3, max: 6)),
-                    Text(
-                      proxy.enabled
-                          ? l10n.proxyEnabledDescription(proxy.port)
-                          : l10n.proxyDisabledDescription,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: AppSizes.sectionGap),
-              Switch(
-                value: proxy.enabled,
-                onChanged: isLoading
-                    ? null
-                    : (value) {
-                        ref
-                            .read(providerActionsProvider.notifier)
-                            .setProxyEnabled(value);
-                      },
-              ),
-            ],
-          ),
-          if (proxy.enabled) ...[
-            SizedBox(height: 12.ch(min: 10, max: 14)),
-            Row(
-              children: [
-                SizedBox(
-                  width: 120,
-                  child: TextField(
-                    controller: _portController,
-                    enabled: !isLoading,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(
-                      isDense: true,
-                      prefixText: ':',
-                      labelText: l10n.proxyPort,
-                    ),
-                    onChanged: (_) => setState(() {}),
-                    onSubmitted: (_) => _savePort(),
-                  ),
-                ),
-                SizedBox(width: 12.cw(min: 8, max: 16)),
-                FilledButton.tonal(
-                  onPressed: isLoading ? null : _savePort,
-                  child: Text(l10n.providerSave),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-extension on ThemeMode {
-  String localizedName(BuildContext context) {
-    return switch (this) {
-      ThemeMode.system => context.l10n.systemTheme,
-      ThemeMode.light => context.l10n.lightTheme,
-      ThemeMode.dark => context.l10n.darkTheme,
-    };
-  }
-}
-
-class SettingCard extends StatelessWidget {
-  const SettingCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.child,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return SurfaceCard(
-      padding: EdgeInsets.all(14.cw(min: 12, max: 16)),
-      child: Row(
-        children: [
-          IconBadge(icon: icon),
-          SizedBox(width: 12.cw(min: 10, max: 14)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                SizedBox(height: 4.ch(min: 3, max: 6)),
-                Text(
-                  description,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: AppSizes.sectionGap),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-class ColorSwatch extends StatelessWidget {
-  const ColorSwatch({
-    super.key,
-    required this.color,
-    required this.selected,
-    required this.onTap,
-    this.gradient,
-  });
-
-  final Color color;
-  final bool selected;
-  final VoidCallback onTap;
-  final Gradient? gradient;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message:
-          '#${color.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}',
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: color,
-            gradient: gradient,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.white.withValues(alpha: selected ? 0.96 : 0.74),
-              width: selected ? 3 : 2,
-            ),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.36),
-                      blurRadius: 14,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                : null,
-          ),
-          child: selected
-              ? const Icon(Icons.check_rounded, color: Colors.white, size: 18)
-              : null,
-        ),
       ),
     );
   }

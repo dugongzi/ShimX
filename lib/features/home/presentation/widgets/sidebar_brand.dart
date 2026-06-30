@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
 
-/// 侧栏顶部品牌区:logo + 标题。
+/// 侧栏顶部品牌区:标题居中,wordmark 风格。
 class SidebarBrand extends StatelessWidget {
   const SidebarBrand({super.key, required this.title});
 
@@ -13,29 +12,31 @@ class SidebarBrand extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: AppSizes.itemGap,
-        vertical: AppSizes.itemGap,
+        vertical: AppSizes.itemGap + 6,
       ),
-      child: Row(
-        children: [
-          Image.asset(
-            'assets/images/icon.png',
-            width: 34.cr(min: 30, max: 38),
-            height: 34.cr(min: 30, max: 38),
-            fit: BoxFit.contain,
+      child: Center(
+        child: Text(
+          title.toUpperCase(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            // 绕开 AppFonts.primary(AliMama),改用 sans-serif
+            // 跨平台:Windows 用 Segoe UI,macOS 用 SF Pro,Linux 用 Roboto
+            fontFamilyFallback: const [
+              'Segoe UI',
+              'SF Pro Display',
+              'Roboto',
+              'sans-serif',
+            ],
+            fontFamily: null,
+            fontWeight: FontWeight.w900,
+            fontSize: 20,
+            letterSpacing: 6,
+            // 减薄 height,让 wordmark 更紧凑
+            height: 1.0,
           ),
-          SizedBox(width: 10.cw(min: 8, max: 12)),
-          Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w800),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

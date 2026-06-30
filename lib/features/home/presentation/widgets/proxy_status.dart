@@ -35,12 +35,14 @@ class ProxyStatus extends ConsumerWidget {
         return Container(
           padding: EdgeInsets.all(10.cw(min: 8, max: 12)),
           decoration: BoxDecoration(
-            color: colorScheme.surface.withValues(
-              alpha: context.isDark ? 0.10 : 0.42,
+            color: colorScheme.surfaceContainerHighest.withValues(
+              alpha: context.isDark ? 0.32 : 0.42,
             ),
             borderRadius: BorderRadius.circular(AppSizes.cardRadius),
             border: Border.all(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.22),
+              color: colorScheme.outlineVariant.withValues(
+                alpha: context.isDark ? 0.28 : 0.22,
+              ),
             ),
           ),
           child: Row(

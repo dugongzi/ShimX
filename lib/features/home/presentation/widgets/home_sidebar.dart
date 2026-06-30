@@ -63,12 +63,15 @@ class HomeSidebar extends StatelessWidget {
     );
 
     // 内容层:能纵向滚 + 横向溢出可见(让选中 tab 的 transform 探出右边界)
-    // 关键:CustomScrollView/Viewport/sliver 全链路 clipBehavior: Clip.none。
+    // 关键:CustomScrollView/Viewport/sliver 全链路 clipBehavior: Clip.none;
+    // ScrollConfiguration 关掉默认 Scrollbar,侧栏不显示滚动条。
     final content = Padding(
       padding: EdgeInsets.all(AppSizes.itemGap),
-      child: CustomScrollView(
-        clipBehavior: Clip.none,
-        slivers: [
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: CustomScrollView(
+          clipBehavior: Clip.none,
+          slivers: [
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,6 +101,7 @@ class HomeSidebar extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
 

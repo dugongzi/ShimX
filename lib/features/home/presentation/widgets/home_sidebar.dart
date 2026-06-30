@@ -20,10 +20,15 @@ class HomeSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = context.isDark;
-    final radius = BorderRadius.circular(AppSizes.cardRadius + 8);
+    // 主面板圆角:和 WorkspaceSurface 对齐(cardRadius+12),
+    // 让侧栏 / 内容区作为同级主面板,共同对比内部子卡(cardRadius+4)的更小圆角
+    final radius = BorderRadius.circular(AppSizes.cardRadius + 12);
 
+    // dark:比 WorkspaceSurface 更暗,做出主面板/工作区层级
+    // light:保留玻璃白(让背景渐变透过去),不强行"加暗"——
+    //   light 主次区分应靠"内容区更亮"实现,而不是"侧栏更脏"
     final fill = isDark
-        ? AppColors.darkSurface.withValues(alpha: 0.5)
+        ? AppColors.darkBgTop.withValues(alpha: 0.78)
         : colorScheme.surface.withValues(alpha: 0.76);
     final borderColor = isDark
         ? AppColors.darkOutline.withValues(alpha: 0.24)
@@ -57,21 +62,41 @@ class HomeSidebar extends StatelessWidget {
       ),
     );
 
-    // 内容层:纯 Column,无 Scroll 容器(viewport 会裁切 transform 溢出)
+    // 内容层:能纵向滚 + 横向溢出可见(让选中 tab 的 transform 探出右边界)
+    // 关键:CustomScrollView/Viewport/sliver 全链路 clipBehavior: Clip.none。
     final content = Padding(
       padding: EdgeInsets.all(AppSizes.itemGap),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SidebarBrand(title: title),
-          SizedBox(height: AppSizes.sectionGap),
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) SizedBox(height: AppSizes.itemGap),
-            children[i],
-          ],
-          const Spacer(),
-          SizedBox(height: AppSizes.sectionGap),
-          const SidebarSystemPanel(),
+      child: CustomScrollView(
+        clipBehavior: Clip.none,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SidebarBrand(title: title),
+                SizedBox(height: AppSizes.sectionGap),
+              ],
+            ),
+          ),
+          SliverList.separated(
+            itemCount: children.length,
+            separatorBuilder: (context, _) =>
+                SizedBox(height: AppSizes.itemGap),
+            itemBuilder: (context, index) => children[index],
+          ),
+          // 底部状态区:窗口够高时占满剩余空间贴底;够矮时只占自身高度,
+          // 整页纵向可滚,不再 RenderFlex overflow。
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(height: AppSizes.sectionGap),
+                const SidebarSystemPanel(),
+              ],
+            ),
+          ),
         ],
       ),
     );

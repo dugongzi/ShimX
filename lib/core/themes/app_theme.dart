@@ -44,7 +44,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: Colors.grey[100],
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: Colors.grey[100],
@@ -210,7 +210,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.darkSurface.withValues(alpha: 0.72),
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.darkSurfaceHigh.withValues(alpha: 0.55),
@@ -227,7 +227,7 @@ class AppTheme {
           fontWeight: FontWeight.bold,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
           side: BorderSide(color: AppColors.darkOutline.withValues(alpha: 0.22)),
         ),
         side: BorderSide.none,
@@ -241,19 +241,19 @@ class AppTheme {
           color: Colors.white.withValues(alpha: 0.38),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
             color: AppColors.darkOutline.withValues(alpha: 0.28),
           ),
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(
             color: AppColors.darkOutline.withValues(alpha: 0.28),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: seedColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -269,7 +269,7 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),
@@ -286,7 +286,7 @@ class AppTheme {
           backgroundColor: seedColor,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ),

@@ -24,7 +24,8 @@ class SurfaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = context.isDark;
-    final radius = BorderRadius.circular(AppSizes.cardRadius + 4);
+    // 子卡圆角:比主面板(cardRadius+12)明显小一档,层级感
+    final radius = BorderRadius.circular(AppSizes.cardRadius + 2);
 
     final fill = isDark
         ? AppColors.darkSurface.withValues(alpha: 0.78)

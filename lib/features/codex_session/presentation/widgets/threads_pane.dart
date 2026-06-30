@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shim/common/widgets/search_field.dart';
 import 'package:shim/common/widgets/session_empty_box.dart';
 import 'package:shim/common/widgets/session_error_box.dart';
 import 'package:shim/common/widgets/session_list_tile.dart';
@@ -9,8 +11,8 @@ import 'package:shim/core/utils/time_format.dart';
 import 'package:shim/features/codex_session/domain/models/codex_thread.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 
-/// 中间栏:列出当前选中 cwd 下的所有会话。cwdFilter 为 null 时显示空提示。
-class ThreadsPane extends ConsumerWidget {
+/// 中间栏:列出当前选中 cwd 下的所有会话,带顶部搜索框。
+class ThreadsPane extends HookConsumerWidget {
   const ThreadsPane({
     super.key,
     required this.cwdFilter,
@@ -27,6 +29,7 @@ class ThreadsPane extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final query = useState('');
     if (cwdFilter == null) {
       return SurfaceCard(
         child: Center(child: SessionEmptyBox(message: emptyHint)),
@@ -47,8 +50,8 @@ class ThreadsPane extends ConsumerWidget {
                   child: Text(
                     l10n.sessionsTitle,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -59,6 +62,13 @@ class ThreadsPane extends ConsumerWidget {
                   icon: const Icon(Icons.refresh_rounded),
                 ),
               ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: SearchField(
+              hint: l10n.searchHint,
+              onChanged: (v) => query.value = v,
             ),
           ),
           const Divider(height: 1),
@@ -72,12 +82,28 @@ class ThreadsPane extends ConsumerWidget {
               ),
               error: (e, _) => SessionErrorBox(message: e.toString()),
               data: (threads) {
-                final filtered = threads.where((t) {
+                final q = query.value.trim().toLowerCase();
+                final inCwd = threads.where((t) {
                   final key = t.cwd.isEmpty ? '(unknown)' : t.cwd;
                   return key == cwdFilter;
-                }).toList();
+                });
+                final filtered = q.isEmpty
+                    ? inCwd.toList()
+                    : inCwd
+                          .where(
+                            (t) =>
+                                t.title.toLowerCase().contains(q) ||
+                                t.preview.toLowerCase().contains(q) ||
+                                t.firstUserMessage.toLowerCase().contains(q) ||
+                                t.id.toLowerCase().contains(q),
+                          )
+                          .toList();
                 if (filtered.isEmpty) {
-                  return SessionEmptyBox(message: l10n.sessionsEmpty);
+                  return SessionEmptyBox(
+                    message: q.isEmpty
+                        ? l10n.sessionsEmpty
+                        : l10n.searchNoResults,
+                  );
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 8),

@@ -12,6 +12,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appName => 'Shim';
 
   @override
+  String get searchHint => '搜索';
+
+  @override
+  String get searchNoResults => '没有匹配的结果';
+
+  @override
   String get home => '首页';
 
   @override

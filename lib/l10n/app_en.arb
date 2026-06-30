@@ -1,6 +1,8 @@
 {
   "@@locale": "en",
   "appName": "Shim",
+  "searchHint": "Search",
+  "searchNoResults": "No results",
   "home": "Home",
   "settings": "Settings",
   "pageNotFound": "Page not found",

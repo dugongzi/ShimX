@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shim/common/widgets/search_field.dart';
 import 'package:shim/common/widgets/session_empty_box.dart';
 import 'package:shim/common/widgets/session_error_box.dart';
 import 'package:shim/common/widgets/session_list_tile.dart';
@@ -8,8 +10,8 @@ import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/utils/time_format.dart';
 import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 
-/// 左栏:按 cwd 分组的 codex 项目列表。
-class ProjectsPane extends ConsumerWidget {
+/// 左栏:按 cwd 分组的 codex 项目列表,带顶部搜索框。
+class ProjectsPane extends HookConsumerWidget {
   const ProjectsPane({
     super.key,
     required this.selectedCwd,
@@ -22,6 +24,7 @@ class ProjectsPane extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncProjects = ref.watch(listCodexProjectsProvider);
+    final query = useState('');
     final l10n = context.l10n;
 
     return SurfaceCard(
@@ -37,8 +40,8 @@ class ProjectsPane extends ConsumerWidget {
                   child: Text(
                     l10n.claudeProjects,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -49,6 +52,13 @@ class ProjectsPane extends ConsumerWidget {
                   icon: const Icon(Icons.refresh_rounded),
                 ),
               ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: SearchField(
+              hint: l10n.searchHint,
+              onChanged: (v) => query.value = v,
             ),
           ),
           const Divider(height: 1),
@@ -62,15 +72,25 @@ class ProjectsPane extends ConsumerWidget {
               ),
               error: (e, _) => SessionErrorBox(message: e.toString()),
               data: (projects) {
-                if (projects.isEmpty) {
-                  return SessionEmptyBox(message: l10n.sessionsEmpty);
+                final q = query.value.trim().toLowerCase();
+                final filtered = q.isEmpty
+                    ? projects
+                    : projects
+                          .where((p) => p.cwd.toLowerCase().contains(q))
+                          .toList();
+                if (filtered.isEmpty) {
+                  return SessionEmptyBox(
+                    message: q.isEmpty
+                        ? l10n.sessionsEmpty
+                        : l10n.searchNoResults,
+                  );
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: projects.length,
+                  itemCount: filtered.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 2),
                   itemBuilder: (context, i) {
-                    final g = projects[i];
+                    final g = filtered[i];
                     final isSelected = selectedCwd == g.cwd;
                     return SessionListTile(
                       title: _projectDisplayName(g.cwd),
@@ -90,7 +110,6 @@ class ProjectsPane extends ConsumerWidget {
   }
 }
 
-/// 取路径最后一段(项目名本身)
 String _projectDisplayName(String path) {
   if (path.isEmpty) return '(unknown)';
   final normalized = path.replaceAll('\\', '/');
@@ -99,7 +118,6 @@ String _projectDisplayName(String path) {
   return segments.last;
 }
 
-/// 取倒数第二段父目录,用作 subtitle 里的辨识提示
 String _projectParentHint(String path) {
   if (path.isEmpty) return '';
   final normalized = path.replaceAll('\\', '/');

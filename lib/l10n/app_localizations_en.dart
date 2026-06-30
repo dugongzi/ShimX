@@ -12,6 +12,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Shim';
 
   @override
+  String get searchHint => 'Search';
+
+  @override
+  String get searchNoResults => 'No results';
+
+  @override
   String get home => 'Home';
 
   @override

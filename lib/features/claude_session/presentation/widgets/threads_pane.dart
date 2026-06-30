@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shim/common/widgets/search_field.dart';
+import 'package:shim/common/widgets/session_empty_box.dart';
+import 'package:shim/common/widgets/session_error_box.dart';
+import 'package:shim/common/widgets/session_list_tile.dart';
 import 'package:shim/common/widgets/surface_card.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/utils/time_format.dart';
 import 'package:shim/features/claude_session/domain/models/claude_project.dart';
 import 'package:shim/features/claude_session/domain/models/claude_thread.dart';
 import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
-import 'package:shim/common/widgets/session_empty_box.dart';
-import 'package:shim/common/widgets/session_error_box.dart';
-import 'package:shim/common/widgets/session_list_tile.dart';
 
-/// 中间栏:列出当前选中项目下的所有会话。project 为 null 时显示空提示。
-class ThreadsPane extends ConsumerWidget {
+/// 中间栏:列出当前选中项目下的所有会话,带顶部搜索框。
+class ThreadsPane extends HookConsumerWidget {
   const ThreadsPane({
     super.key,
     required this.project,
@@ -28,6 +30,7 @@ class ThreadsPane extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final query = useState('');
     if (project == null) {
       return SurfaceCard(
         child: Center(child: SessionEmptyBox(message: emptyHint)),
@@ -50,8 +53,8 @@ class ThreadsPane extends ConsumerWidget {
                   child: Text(
                     l10n.sessionsTitle,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -66,6 +69,13 @@ class ThreadsPane extends ConsumerWidget {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: SearchField(
+              hint: l10n.searchHint,
+              onChanged: (v) => query.value = v,
+            ),
+          ),
           const Divider(height: 1),
           Expanded(
             child: asyncThreads.when(
@@ -77,15 +87,20 @@ class ThreadsPane extends ConsumerWidget {
               ),
               error: (e, _) => SessionErrorBox(message: e.toString()),
               data: (threads) {
-                if (threads.isEmpty) {
-                  return SessionEmptyBox(message: l10n.sessionsEmpty);
+                final filtered = _filterThreads(threads, query.value);
+                if (filtered.isEmpty) {
+                  return SessionEmptyBox(
+                    message: query.value.isEmpty
+                        ? l10n.sessionsEmpty
+                        : l10n.searchNoResults,
+                  );
                 }
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: threads.length,
+                  itemCount: filtered.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 2),
                   itemBuilder: (context, i) {
-                    final t = threads[i];
+                    final t = filtered[i];
                     final isSelected = selected?.sessionId == t.sessionId;
                     final title = t.title.isEmpty ? t.sessionId : t.title;
                     return SessionListTile(
@@ -103,4 +118,15 @@ class ThreadsPane extends ConsumerWidget {
       ),
     );
   }
+}
+
+List<ClaudeThread> _filterThreads(List<ClaudeThread> threads, String query) {
+  final q = query.trim().toLowerCase();
+  if (q.isEmpty) return threads;
+  return threads.where((t) {
+    return t.title.toLowerCase().contains(q) ||
+        t.preview.toLowerCase().contains(q) ||
+        t.sessionId.toLowerCase().contains(q) ||
+        t.gitBranch.toLowerCase().contains(q);
+  }).toList();
 }

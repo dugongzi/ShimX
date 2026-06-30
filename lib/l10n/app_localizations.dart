@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'Shim'**
   String get appName;
 
+  /// No description provided for @searchHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索'**
+  String get searchHint;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In zh, this message translates to:
+  /// **'没有匹配的结果'**
+  String get searchNoResults;
+
   /// No description provided for @home.
   ///
   /// In zh, this message translates to:

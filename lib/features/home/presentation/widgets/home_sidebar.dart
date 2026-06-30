@@ -22,7 +22,7 @@ class HomeSidebar extends StatelessWidget {
     final isDark = context.isDark;
     // 主面板圆角:和 WorkspaceSurface 对齐(cardRadius+12),
     // 让侧栏 / 内容区作为同级主面板,共同对比内部子卡(cardRadius+4)的更小圆角
-    final radius = BorderRadius.circular(AppSizes.cardRadius + 12);
+    final radius = BorderRadius.zero;
 
     // dark:比 WorkspaceSurface 更暗,做出主面板/工作区层级
     // light:保留玻璃白(让背景渐变透过去),不强行"加暗"——

@@ -101,35 +101,31 @@ class HomePage extends HookConsumerWidget {
       backgroundColor: colorScheme.surface,
       body: AppBackground(
         child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(AppSizes.pagePadding),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // 内容区:从侧栏右侧 + gap 开始
-                Positioned(
-                  left: sidebarWidth + gap,
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: tabContent,
+          // 去掉外层 pagePadding:侧栏贴左、内容区贴右、整体贴底。
+          // 只保留侧栏和内容区之间的 gap。
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                left: sidebarWidth + gap,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                child: tabContent,
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: sidebarWidth + sidebarOverhang,
+                child: OverflowBox(
+                  alignment: Alignment.centerLeft,
+                  maxWidth: double.infinity,
+                  minWidth: 0,
+                  child: SizedBox(width: sidebarWidth, child: sidebar),
                 ),
-                // 侧栏:visible width 仍为 sidebarWidth,但 Positioned
-                // 多给 28px 让选中 tab 的位移可见
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: sidebarWidth + sidebarOverhang,
-                  child: OverflowBox(
-                    alignment: Alignment.centerLeft,
-                    maxWidth: double.infinity,
-                    minWidth: 0,
-                    child: SizedBox(width: sidebarWidth, child: sidebar),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

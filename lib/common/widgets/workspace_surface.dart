@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ class WorkspaceSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = context.isDark;
-    final radius = BorderRadius.circular(AppSizes.cardRadius + 12);
+    final radius = BorderRadius.zero;
 
     final fill = isDark
         ? AppColors.darkSurface.withValues(alpha: 0.55)

@@ -6,10 +6,7 @@ class ScriptEditorEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    final fg = isDark
-        ? Colors.white.withValues(alpha: 0.4)
-        : Colors.black.withValues(alpha: 0.4);
+    final fg = Theme.of(context).colorScheme.onSurfaceVariant;
     final l10n = context.l10n;
     return Center(
       child: Column(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
 
 class ScriptEditorSidebarItem extends StatelessWidget {
   const ScriptEditorSidebarItem({
@@ -19,19 +18,16 @@ class ScriptEditorSidebarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
-    final fg = isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87;
-    final selectedBg = isDark
-        ? const Color(0xFF37373D)
-        : const Color(0xFFE4E6F1);
+    final colorScheme = Theme.of(context).colorScheme;
+    final fg = colorScheme.onSurface;
+    // 选中态用 seedColor 低饱和染底,呼应主题
+    final selectedBg = colorScheme.primary.withValues(alpha: 0.14);
 
     return Material(
       color: selected ? selectedBg : Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        hoverColor: isDark
-            ? Colors.white.withValues(alpha: 0.04)
-            : Colors.black.withValues(alpha: 0.04),
+        hoverColor: colorScheme.onSurface.withValues(alpha: 0.04),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(

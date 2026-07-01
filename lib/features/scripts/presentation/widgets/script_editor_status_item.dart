@@ -8,8 +8,8 @@ class ScriptEditorStatusItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.onPrimary,
         fontSize: 11,
         fontWeight: FontWeight.w500,
       ),

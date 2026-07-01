@@ -135,7 +135,7 @@ class ScriptList extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               _AccentFab(
-                icon: Icons.file_upload_outlined,
+                icon: Icons.file_download_outlined,
                 tooltip: context.l10n.importScript,
                 onTap: () => handleImport(),
               ),

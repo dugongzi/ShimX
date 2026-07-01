@@ -61,6 +61,7 @@ class _ScriptEditorCodeViewState extends State<ScriptEditorCodeView> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDark;
+    final colorScheme = Theme.of(context).colorScheme;
     return Shortcuts(
       shortcuts: const <ShortcutActivator, Intent>{
         SingleActivator(LogicalKeyboardKey.equal, control: true):
@@ -109,7 +110,7 @@ class _ScriptEditorCodeViewState extends State<ScriptEditorCodeView> {
                 _JsAutocompleteView(
                   notifier: notifier,
                   onSelected: onSelected,
-                  isDark: isDark,
+                  colorScheme: colorScheme,
                 ),
             promptsBuilder: DefaultCodeAutocompletePromptsBuilder(
               language: langJavascript,
@@ -131,9 +132,7 @@ class _ScriptEditorCodeViewState extends State<ScriptEditorCodeView> {
               style: CodeEditorStyle(
                 fontSize: _fontSize,
                 fontFamily: 'Courier',
-                backgroundColor: isDark
-                    ? const Color(0xFF1E1E1E)
-                    : const Color(0xFFFFFFFF),
+                backgroundColor: colorScheme.surface,
                 codeTheme: CodeHighlightTheme(
                   languages: {
                     'javascript': CodeHighlightThemeMode(mode: langJavascript),
@@ -180,7 +179,7 @@ class _JsAutocompleteView extends StatefulWidget
   const _JsAutocompleteView({
     required this.notifier,
     required this.onSelected,
-    required this.isDark,
+    required this.colorScheme,
   });
 
   static const double _itemHeight = 24;
@@ -189,7 +188,7 @@ class _JsAutocompleteView extends StatefulWidget
 
   final ValueNotifier<CodeAutocompleteEditingValue> notifier;
   final ValueChanged<CodeAutocompleteResult> onSelected;
-  final bool isDark;
+  final ColorScheme colorScheme;
 
   @override
   Size get preferredSize => Size(
@@ -242,16 +241,12 @@ class _JsAutocompleteViewState extends State<_JsAutocompleteView> {
     final prompts = widget.notifier.value.prompts;
     final input = widget.notifier.value.input;
     final selectedIndex = widget.notifier.value.index;
-    final bg = widget.isDark
-        ? const Color(0xFF252526)
-        : const Color(0xFFF3F3F3);
-    final border = widget.isDark
-        ? const Color(0xFF3C3C3C)
-        : const Color(0xFFCECECE);
-    final selectedBg = widget.isDark
-        ? const Color(0xFF094771)
-        : const Color(0xFF0060C0);
-    final baseColor = widget.isDark ? Colors.white : Colors.black87;
+    final scheme = widget.colorScheme;
+    final bg = scheme.surfaceContainerHigh;
+    final border = scheme.outlineVariant;
+    final selectedBg = scheme.primary;
+    final baseColor = scheme.onSurface;
+    final onSelectedFg = scheme.onPrimary;
 
     return Container(
       constraints: BoxConstraints.loose(widget.preferredSize),
@@ -270,10 +265,10 @@ class _JsAutocompleteViewState extends State<_JsAutocompleteView> {
         itemBuilder: (context, index) {
           final prompt = prompts[index];
           final isSelected = index == selectedIndex;
-          final fg = isSelected ? Colors.white : baseColor;
+          final fg = isSelected ? onSelectedFg : baseColor;
           final typeFg = isSelected
-              ? Colors.white70
-              : (widget.isDark ? Colors.white54 : Colors.black45);
+              ? onSelectedFg.withValues(alpha: 0.75)
+              : scheme.onSurfaceVariant;
           return InkWell(
             onTap: () => widget.onSelected(
               widget.notifier.value.copyWith(index: index).autocomplete,
@@ -341,7 +336,7 @@ class _JsAutocompleteViewState extends State<_JsAutocompleteView> {
     if (idx < 0) return TextSpan(text: word, style: style);
     final highlight = style.copyWith(
       fontWeight: FontWeight.bold,
-      color: widget.isDark ? Colors.orangeAccent : Colors.blue,
+      color: widget.colorScheme.secondary,
     );
     return TextSpan(
       children: [

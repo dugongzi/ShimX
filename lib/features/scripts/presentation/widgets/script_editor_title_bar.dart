@@ -20,11 +20,12 @@ class ScriptEditorTitleBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDark;
     final l10n = context.l10n;
-    final bg = isDark ? const Color(0xFF3C3C3C) : const Color(0xFFF3F3F3);
-    final fg = isDark ? Colors.white.withValues(alpha: 0.92) : Colors.black87;
-    final divider = isDark ? const Color(0xFF252526) : const Color(0xFFDDDDDD);
+    final colorScheme = Theme.of(context).colorScheme;
+    // seedColor 深染:略强于 sidebar,构成层次
+    final bg = colorScheme.surfaceContainerHigh;
+    final fg = colorScheme.onSurface;
+    final divider = colorScheme.outlineVariant;
 
     return Container(
       color: bg,

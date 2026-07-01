@@ -39,7 +39,8 @@ class ScriptEditorStatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const bg = Color(0xFF007ACC);
+    final colorScheme = Theme.of(context).colorScheme;
+    final bg = colorScheme.primary;
     final l10n = context.l10n;
 
     String? saveLabel;
@@ -101,6 +102,7 @@ class _OpenInspectorButton extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
     final isOpening = useState(false);
 
     Future<void> onTap() async {
@@ -127,19 +129,19 @@ class _OpenInspectorButton extends HookConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isOpening.value)
-                const SizedBox(
+                SizedBox(
                   width: 12,
                   height: 12,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: onPrimary,
                   ),
                 )
               else
-                const Icon(
+                Icon(
                   Icons.terminal_rounded,
                   size: 14,
-                  color: Colors.white,
+                  color: onPrimary,
                 ),
               const SizedBox(width: 4),
               ScriptEditorStatusItem(text: l10n.openInspector),
@@ -166,6 +168,7 @@ class _StatusSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
     return Tooltip(
       message: tooltip,
       child: Row(
@@ -181,10 +184,10 @@ class _StatusSwitch extends StatelessWidget {
                 value: value,
                 onChanged: onChanged,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                activeThumbColor: Colors.white,
-                activeTrackColor: Colors.white.withValues(alpha: 0.35),
-                inactiveThumbColor: Colors.white.withValues(alpha: 0.85),
-                inactiveTrackColor: Colors.white.withValues(alpha: 0.15),
+                activeThumbColor: onPrimary,
+                activeTrackColor: onPrimary.withValues(alpha: 0.35),
+                inactiveThumbColor: onPrimary.withValues(alpha: 0.85),
+                inactiveTrackColor: onPrimary.withValues(alpha: 0.15),
               ),
             ),
           ),

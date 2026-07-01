@@ -12,4 +12,10 @@ abstract class ScriptActionRepository {
     required Iterable<String> ids,
     required bool enabled,
   });
+
+  /// 覆盖写入脚本代码。文件不存在返回 false。下次注入时生效。
+  Future<bool> saveScript({required String id, required String code});
+
+  /// 创建新脚本文件,写入初始代码。返回最终文件名(id)。
+  Future<String> createScript({required String name, required String code});
 }

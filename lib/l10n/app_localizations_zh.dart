@@ -18,6 +18,86 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchNoResults => '没有匹配的结果';
 
   @override
+  String get save => '保存';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get back => '返回';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get create => '创建';
+
+  @override
+  String get run => '运行';
+
+  @override
+  String get newScript => '新建脚本';
+
+  @override
+  String get editScript => '编辑脚本';
+
+  @override
+  String get viewCode => '查看代码';
+
+  @override
+  String get editorLine => '行';
+
+  @override
+  String get editorColumn => '列';
+
+  @override
+  String get editorSavedLabel => '已保存';
+
+  @override
+  String get editorUnsavedLabel => '未保存';
+
+  @override
+  String get editorSavingLabel => '保存中...';
+
+  @override
+  String get noScriptSelected => '未选中脚本';
+
+  @override
+  String get noScriptSelectedHint => '在左侧选一个脚本,或点 + 新建';
+
+  @override
+  String get selectScriptFirst => '请先选中一个脚本';
+
+  @override
+  String get scriptNameHint => '文件名(自动补 .js)';
+
+  @override
+  String get scriptNameRequired => '请填写文件名';
+
+  @override
+  String get scriptNameExists => '同名脚本已存在';
+
+  @override
+  String get scriptNameInvalid => '文件名不能包含 \\ / : * ? \" < > |';
+
+  @override
+  String get scriptCreateSuccess => '已创建,下次注入生效';
+
+  @override
+  String get scriptSaveSuccess => '已保存,下次注入生效';
+
+  @override
+  String get scriptSaveFailed => '保存失败,文件不存在';
+
+  @override
+  String get scriptRunSuccess => '已重新注入';
+
+  @override
+  String scriptNotFound(String id) {
+    return '找不到脚本 $id';
+  }
+
+  @override
   String get home => '首页';
 
   @override
@@ -202,9 +282,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirm => '确认';
-
-  @override
-  String get cancel => '取消';
 
   @override
   String get settingsPersistedDescription =>

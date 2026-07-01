@@ -20,4 +20,12 @@ class ScriptActionRepositoryImpl implements ScriptActionRepository {
     required bool enabled,
   }) =>
       _dataSource.setEnabled(ids: ids, enabled: enabled);
+
+  @override
+  Future<bool> saveScript({required String id, required String code}) =>
+      _dataSource.saveScript(id: id, code: code);
+
+  @override
+  Future<String> createScript({required String name, required String code}) =>
+      _dataSource.createScript(name: name, code: code);
 }

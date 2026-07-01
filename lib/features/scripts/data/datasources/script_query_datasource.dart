@@ -41,7 +41,7 @@ class ScriptQueryDatasource {
     return result;
   }
 
-  Future<bool> isScriptEnabled(String id) async {
+  Future<bool> isScriptEnabled({required String id}) async {
     final value = await _appStorage.getBool(_enabledKey(id));
     return value ?? false;
   }

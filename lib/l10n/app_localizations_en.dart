@@ -18,6 +18,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchNoResults => 'No results';
 
   @override
+  String get save => 'Save';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get run => 'Run';
+
+  @override
+  String get newScript => 'New Script';
+
+  @override
+  String get editScript => 'Edit Script';
+
+  @override
+  String get viewCode => 'View Code';
+
+  @override
+  String get editorLine => 'Ln';
+
+  @override
+  String get editorColumn => 'Col';
+
+  @override
+  String get editorSavedLabel => 'Saved';
+
+  @override
+  String get editorUnsavedLabel => 'Unsaved';
+
+  @override
+  String get editorSavingLabel => 'Saving...';
+
+  @override
+  String get noScriptSelected => 'No script selected';
+
+  @override
+  String get noScriptSelectedHint =>
+      'Pick a script on the left, or click + to create one';
+
+  @override
+  String get selectScriptFirst => 'Select a script first';
+
+  @override
+  String get scriptNameHint => 'Filename (auto .js suffix)';
+
+  @override
+  String get scriptNameRequired => 'Filename required';
+
+  @override
+  String get scriptNameExists => 'A script with this name already exists';
+
+  @override
+  String get scriptNameInvalid => 'Filename cannot contain \\ / : * ? \" < > |';
+
+  @override
+  String get scriptCreateSuccess => 'Created — takes effect on next inject';
+
+  @override
+  String get scriptSaveSuccess => 'Saved — takes effect on next inject';
+
+  @override
+  String get scriptSaveFailed => 'Save failed, file not found';
+
+  @override
+  String get scriptRunSuccess => 'Reinjected';
+
+  @override
+  String scriptNotFound(String id) {
+    return 'Script $id not found';
+  }
+
+  @override
   String get home => 'Home';
 
   @override
@@ -204,9 +285,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
-
-  @override
-  String get cancel => 'Cancel';
 
   @override
   String get settingsPersistedDescription =>

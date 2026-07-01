@@ -6,6 +6,8 @@ import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/features/scripts/domain/models/inject_script.dart';
 import 'package:shim/features/scripts/presentation/providers/script_action_provider.dart';
 import 'package:shim/features/scripts/presentation/providers/script_query_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shim/core/routes/routes/scripts_route.dart';
 import 'package:shim/features/scripts/presentation/widgets/script_list_body.dart';
 import 'package:shim/features/scripts/presentation/widgets/script_list_pagination.dart';
 import 'package:shim/features/scripts/presentation/widgets/script_list_toolbar.dart';
@@ -40,6 +42,7 @@ class ScriptList extends HookConsumerWidget {
     Future<void> handleImport() async {
       try {
         await ref.read(importScriptProvider.future);
+        ref.invalidate(scriptsProvider);
       } catch (e) {
         SmartDialog.showToast(e.toString());
       }
@@ -50,6 +53,10 @@ class ScriptList extends HookConsumerWidget {
       if (ids.isEmpty) return;
       try {
         await ref.read(deleteScriptsProvider(ids: ids).future);
+        for (final id in ids) {
+          ref.invalidate(scriptEnabledProvider(id: id));
+        }
+        ref.invalidate(scriptsProvider);
         final next = {...selected.value}..removeAll(ids);
         selected.value = next;
       } catch (e) {
@@ -64,6 +71,9 @@ class ScriptList extends HookConsumerWidget {
         await ref.read(
           setScriptsEnabledProvider(ids: ids, enabled: enabled).future,
         );
+        for (final id in ids) {
+          ref.invalidate(scriptEnabledProvider(id: id));
+        }
       } catch (e) {
         SmartDialog.showToast(e.toString());
       }
@@ -75,6 +85,7 @@ class ScriptList extends HookConsumerWidget {
         ScriptListToolbar(
           selectedCount: selectedOnPage,
           onImport: () => handleImport(),
+          onCreate: () => context.push(ScriptsRoute.toEditorNew()),
           onSelectAll: pageItems.isEmpty
               ? null
               : () => selected.value = {...selected.value, ...pageIds},

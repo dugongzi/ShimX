@@ -7,6 +7,7 @@ class ScriptListToolbar extends StatelessWidget {
     super.key,
     required this.selectedCount,
     required this.onImport,
+    required this.onCreate,
     required this.onSelectAll,
     required this.onInvertSelection,
     required this.onDeleteSelected,
@@ -16,6 +17,7 @@ class ScriptListToolbar extends StatelessWidget {
 
   final int selectedCount;
   final VoidCallback? onImport;
+  final VoidCallback? onCreate;
   final VoidCallback? onSelectAll;
   final VoidCallback? onInvertSelection;
   final VoidCallback? onDeleteSelected;
@@ -29,6 +31,12 @@ class ScriptListToolbar extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        FilledButton.icon(
+          onPressed: onCreate,
+          icon: const Icon(Icons.add_rounded, size: 18),
+          label: Text(context.l10n.newScript),
+        ),
+        SizedBox(width: AppSizes.itemGap),
         FilledButton.tonalIcon(
           onPressed: onImport,
           icon: const Icon(Icons.file_upload_outlined, size: 18),

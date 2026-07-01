@@ -1,6 +1,8 @@
+import 'package:go_router/go_router.dart';
 import 'package:shim/common/widgets/surface_card.dart';
 import 'package:shim/core/constants/app_sizes.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shim/core/routes/routes/scripts_route.dart';
 import 'package:shim/features/scripts/domain/models/inject_script.dart';
 import 'package:flutter/material.dart';
 
@@ -70,6 +72,14 @@ class ScriptListItem extends StatelessWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
+          SizedBox(width: AppSizes.itemGap),
+          IconButton(
+            tooltip: context.l10n.editScript,
+            iconSize: 18,
+            visualDensity: VisualDensity.compact,
+            onPressed: () => context.push(ScriptsRoute.toEditor(script.id)),
+            icon: const Icon(Icons.code_rounded),
+          ),
         ],
       ),
     );

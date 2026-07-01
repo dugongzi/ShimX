@@ -60,6 +60,30 @@ class ScriptActionDatasource {
     await _appStorage.remove(_enabledKey(id));
   }
 
+  /// 覆盖写入脚本文件内容。id 即文件名,不存在时返回 false。
+  Future<bool> saveScript({required String id, required String code}) async {
+    final dir = await _scriptsDir();
+    final file = File(p.join(dir.path, id));
+    if (!await file.exists()) return false;
+    await file.writeAsString(code);
+    return true;
+  }
+
+  /// 创建新脚本文件。同名时附 `-2/-3` 后缀。返回最终文件名(id)。
+  Future<String> createScript({
+    required String name,
+    required String code,
+  }) async {
+    final dir = await _scriptsDir();
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    final safeName = name.endsWith('.js') ? name : '$name.js';
+    final targetName = await _uniqueTargetName(dir, safeName);
+    await File(p.join(dir.path, targetName)).writeAsString(code);
+    return targetName;
+  }
+
   Future<void> setEnabled({
     required Iterable<String> ids,
     required bool enabled,

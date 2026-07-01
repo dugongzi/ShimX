@@ -116,6 +116,162 @@ abstract class AppLocalizations {
   /// **'没有匹配的结果'**
   String get searchNoResults;
 
+  /// No description provided for @save.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get save;
+
+  /// No description provided for @close.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭'**
+  String get close;
+
+  /// No description provided for @back.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回'**
+  String get back;
+
+  /// No description provided for @cancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get cancel;
+
+  /// No description provided for @create.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建'**
+  String get create;
+
+  /// No description provided for @run.
+  ///
+  /// In zh, this message translates to:
+  /// **'运行'**
+  String get run;
+
+  /// No description provided for @newScript.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建脚本'**
+  String get newScript;
+
+  /// No description provided for @editScript.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑脚本'**
+  String get editScript;
+
+  /// No description provided for @viewCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看代码'**
+  String get viewCode;
+
+  /// No description provided for @editorLine.
+  ///
+  /// In zh, this message translates to:
+  /// **'行'**
+  String get editorLine;
+
+  /// No description provided for @editorColumn.
+  ///
+  /// In zh, this message translates to:
+  /// **'列'**
+  String get editorColumn;
+
+  /// No description provided for @editorSavedLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保存'**
+  String get editorSavedLabel;
+
+  /// No description provided for @editorUnsavedLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'未保存'**
+  String get editorUnsavedLabel;
+
+  /// No description provided for @editorSavingLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存中...'**
+  String get editorSavingLabel;
+
+  /// No description provided for @noScriptSelected.
+  ///
+  /// In zh, this message translates to:
+  /// **'未选中脚本'**
+  String get noScriptSelected;
+
+  /// No description provided for @noScriptSelectedHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'在左侧选一个脚本,或点 + 新建'**
+  String get noScriptSelectedHint;
+
+  /// No description provided for @selectScriptFirst.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先选中一个脚本'**
+  String get selectScriptFirst;
+
+  /// No description provided for @scriptNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件名(自动补 .js)'**
+  String get scriptNameHint;
+
+  /// No description provided for @scriptNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请填写文件名'**
+  String get scriptNameRequired;
+
+  /// No description provided for @scriptNameExists.
+  ///
+  /// In zh, this message translates to:
+  /// **'同名脚本已存在'**
+  String get scriptNameExists;
+
+  /// No description provided for @scriptNameInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件名不能包含 \\ / : * ? \" < > |'**
+  String get scriptNameInvalid;
+
+  /// No description provided for @scriptCreateSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已创建,下次注入生效'**
+  String get scriptCreateSuccess;
+
+  /// No description provided for @scriptSaveSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保存,下次注入生效'**
+  String get scriptSaveSuccess;
+
+  /// No description provided for @scriptSaveFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存失败,文件不存在'**
+  String get scriptSaveFailed;
+
+  /// No description provided for @scriptRunSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已重新注入'**
+  String get scriptRunSuccess;
+
+  /// No description provided for @scriptNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到脚本 {id}'**
+  String scriptNotFound(String id);
+
   /// No description provided for @home.
   ///
   /// In zh, this message translates to:
@@ -463,12 +619,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'确认'**
   String get confirm;
-
-  /// No description provided for @cancel.
-  ///
-  /// In zh, this message translates to:
-  /// **'取消'**
-  String get cancel;
 
   /// No description provided for @settingsPersistedDescription.
   ///

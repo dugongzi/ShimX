@@ -311,6 +311,7 @@ class ScriptEditorShell extends HookConsumerWidget {
                 onHotRunChanged: handleHotRunChanged,
                 reloadOnRun: reloadOnRun,
                 onReloadOnRunChanged: handleReloadOnRunChanged,
+                debugPort: _kDebugPort,
               ),
             ],
           ),

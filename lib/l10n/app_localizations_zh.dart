@@ -67,6 +67,12 @@ class AppLocalizationsZh extends AppLocalizations {
       '开启:运行按钮会重新加载 Codex 页面并重装脚本;关闭:仅重新注入,不刷新页面';
 
   @override
+  String get editorHotRun => '热运行';
+
+  @override
+  String get editorHotRunTooltip => '开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)';
+
+  @override
   String get noScriptSelected => '未选中脚本';
 
   @override

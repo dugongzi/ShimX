@@ -252,3 +252,41 @@ final class ReloadOnRunProvider
 }
 
 String _$reloadOnRunHash() => r'17d3dc3dd4e146592da77f8dbdef1b36c79045a4';
+
+/// 手动保存(Ctrl+S)后是否自动 Run(默认 false)。
+
+@ProviderFor(hotRun)
+const hotRunProvider = HotRunProvider._();
+
+/// 手动保存(Ctrl+S)后是否自动 Run(默认 false)。
+
+final class HotRunProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  /// 手动保存(Ctrl+S)后是否自动 Run(默认 false)。
+  const HotRunProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hotRunProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hotRunHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    return hotRun(ref);
+  }
+}
+
+String _$hotRunHash() => r'22567f46897117180ca73f8dddf433f90c451c88';

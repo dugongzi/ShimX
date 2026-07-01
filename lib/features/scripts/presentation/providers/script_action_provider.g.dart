@@ -530,3 +530,72 @@ final class SetReloadOnRunFamily extends $Family
   @override
   String toString() => r'setReloadOnRunProvider';
 }
+
+@ProviderFor(setHotRun)
+const setHotRunProvider = SetHotRunFamily._();
+
+final class SetHotRunProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  const SetHotRunProvider._({
+    required SetHotRunFamily super.from,
+    required bool super.argument,
+  }) : super(
+         retry: null,
+         name: r'setHotRunProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$setHotRunHash();
+
+  @override
+  String toString() {
+    return r'setHotRunProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    final argument = this.argument as bool;
+    return setHotRun(ref, value: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SetHotRunProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$setHotRunHash() => r'e7c5c3190394a9815ea447c1fa2476ab92f23e74';
+
+final class SetHotRunFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<void>, bool> {
+  const SetHotRunFamily._()
+    : super(
+        retry: null,
+        name: r'setHotRunProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SetHotRunProvider call({required bool value}) =>
+      SetHotRunProvider._(argument: value, from: this);
+
+  @override
+  String toString() => r'setHotRunProvider';
+}

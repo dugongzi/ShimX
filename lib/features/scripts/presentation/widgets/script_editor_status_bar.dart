@@ -12,6 +12,8 @@ class ScriptEditorStatusBar extends StatelessWidget {
     required this.dirty,
     required this.saving,
     required this.hasScript,
+    required this.hotRun,
+    required this.onHotRunChanged,
     required this.reloadOnRun,
     required this.onReloadOnRunChanged,
   });
@@ -24,6 +26,8 @@ class ScriptEditorStatusBar extends StatelessWidget {
   final bool dirty;
   final bool saving;
   final bool hasScript;
+  final bool hotRun;
+  final ValueChanged<bool> onHotRunChanged;
   final bool reloadOnRun;
   final ValueChanged<bool> onReloadOnRunChanged;
 
@@ -51,30 +55,18 @@ class ScriptEditorStatusBar extends StatelessWidget {
         children: [
           if (saveLabel != null) ScriptEditorStatusItem(text: saveLabel),
           const Spacer(),
-          Tooltip(
-            message: l10n.editorReloadOnRunTooltip,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ScriptEditorStatusItem(text: l10n.editorReloadOnRun),
-                const SizedBox(width: 6),
-                SizedBox(
-                  height: 18,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Switch(
-                      value: reloadOnRun,
-                      onChanged: onReloadOnRunChanged,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      activeThumbColor: Colors.white,
-                      activeTrackColor: Colors.white.withValues(alpha: 0.35),
-                      inactiveThumbColor: Colors.white.withValues(alpha: 0.85),
-                      inactiveTrackColor: Colors.white.withValues(alpha: 0.15),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          _StatusSwitch(
+            label: l10n.editorHotRun,
+            tooltip: l10n.editorHotRunTooltip,
+            value: hotRun,
+            onChanged: onHotRunChanged,
+          ),
+          const SizedBox(width: 12),
+          _StatusSwitch(
+            label: l10n.editorReloadOnRun,
+            tooltip: l10n.editorReloadOnRunTooltip,
+            value: reloadOnRun,
+            onChanged: onReloadOnRunChanged,
           ),
           const SizedBox(width: 16),
           if (line != null && column != null)
@@ -85,6 +77,49 @@ class ScriptEditorStatusBar extends StatelessWidget {
           ScriptEditorStatusItem(text: language),
           const SizedBox(width: 16),
           ScriptEditorStatusItem(text: encoding),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusSwitch extends StatelessWidget {
+  const _StatusSwitch({
+    required this.label,
+    required this.tooltip,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String tooltip;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ScriptEditorStatusItem(text: label),
+          const SizedBox(width: 6),
+          SizedBox(
+            height: 18,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Switch(
+                value: value,
+                onChanged: onChanged,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                activeThumbColor: Colors.white,
+                activeTrackColor: Colors.white.withValues(alpha: 0.35),
+                inactiveThumbColor: Colors.white.withValues(alpha: 0.85),
+                inactiveTrackColor: Colors.white.withValues(alpha: 0.15),
+              ),
+            ),
+          ),
         ],
       ),
     );

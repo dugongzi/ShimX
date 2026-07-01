@@ -67,6 +67,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'On: Run reloads the Codex page and reinstalls scripts. Off: reinject only, no page reload.';
 
   @override
+  String get editorHotRun => 'Hot Run';
+
+  @override
+  String get editorHotRunTooltip =>
+      'On: manual save (Ctrl+S) auto-runs the current script (does not apply to the 1s auto-save).';
+
+  @override
   String get noScriptSelected => 'No script selected';
 
   @override

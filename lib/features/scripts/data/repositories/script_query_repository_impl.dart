@@ -20,4 +20,7 @@ class ScriptQueryRepositoryImpl implements ScriptQueryRepository {
 
   @override
   Future<bool> isReloadOnRun() => _dataSource.isReloadOnRun();
+
+  @override
+  Future<bool> isHotRun() => _dataSource.isHotRun();
 }

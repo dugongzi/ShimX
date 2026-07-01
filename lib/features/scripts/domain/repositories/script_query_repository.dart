@@ -9,4 +9,7 @@ abstract class ScriptQueryRepository {
 
   /// 编辑器 Run 时是否同时刷新 Codex(默认 true)
   Future<bool> isReloadOnRun();
+
+  /// 手动保存后是否自动 Run(默认 false)
+  Future<bool> isHotRun();
 }

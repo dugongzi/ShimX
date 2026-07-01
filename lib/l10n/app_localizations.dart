@@ -212,6 +212,18 @@ abstract class AppLocalizations {
   /// **'开启:运行按钮会重新加载 Codex 页面并重装脚本;关闭:仅重新注入,不刷新页面'**
   String get editorReloadOnRunTooltip;
 
+  /// No description provided for @editorHotRun.
+  ///
+  /// In zh, this message translates to:
+  /// **'热运行'**
+  String get editorHotRun;
+
+  /// No description provided for @editorHotRunTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)'**
+  String get editorHotRunTooltip;
+
   /// No description provided for @noScriptSelected.
   ///
   /// In zh, this message translates to:

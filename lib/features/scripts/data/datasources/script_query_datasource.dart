@@ -52,7 +52,14 @@ class ScriptQueryDatasource {
     return value ?? true;
   }
 
+  /// 手动保存(Ctrl+S)后是否自动 Run。默认 false。
+  Future<bool> isHotRun() async {
+    final value = await _appStorage.getBool(_hotRunKey);
+    return value ?? false;
+  }
+
   static const _reloadOnRunKey = 'script_editor_reload_on_run';
+  static const _hotRunKey = 'script_editor_hot_run';
 
   static String _enabledKey(String id) => 'script_enabled:$id';
 

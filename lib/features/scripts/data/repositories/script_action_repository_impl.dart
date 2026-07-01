@@ -32,4 +32,8 @@ class ScriptActionRepositoryImpl implements ScriptActionRepository {
   @override
   Future<void> setReloadOnRun({required bool value}) =>
       _dataSource.setReloadOnRun(value: value);
+
+  @override
+  Future<void> setHotRun({required bool value}) =>
+      _dataSource.setHotRun(value: value);
 }

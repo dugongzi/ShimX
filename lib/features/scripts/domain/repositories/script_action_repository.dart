@@ -21,4 +21,7 @@ abstract class ScriptActionRepository {
 
   /// 编辑器 Run 时是否同时刷新 Codex 页面。
   Future<void> setReloadOnRun({required bool value});
+
+  /// 手动保存后是否自动 Run。
+  Future<void> setHotRun({required bool value});
 }

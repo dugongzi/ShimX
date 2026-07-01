@@ -97,6 +97,10 @@ class ScriptActionDatasource {
     await _appStorage.setBool('script_editor_reload_on_run', value);
   }
 
+  Future<void> setHotRun({required bool value}) async {
+    await _appStorage.setBool('script_editor_hot_run', value);
+  }
+
   Future<Directory> _scriptsDir() async {
     final support = await getApplicationSupportDirectory();
     return Directory(p.join(support.path, 'scripts'));

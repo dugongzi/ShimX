@@ -105,6 +105,8 @@ class ScriptEditorShell extends HookConsumerWidget {
     }, [controller]);
 
     // saveCurrent 是纯写盘 + invalidate,不弹 toast,让快捷键/自动保存/Run 共用。
+    // dirty 由 onCode 用「controller.text != initialCode」判定,initialCode 是
+    // useEffect 里的快照不会随保存刷新,所以这里成功后需要手动置 false。
     Future<bool> saveCurrent({bool silentOnMissing = false}) async {
       if (current == null) {
         if (!silentOnMissing) {
@@ -120,19 +122,46 @@ class ScriptEditorShell extends HookConsumerWidget {
         return false;
       }
       ref.invalidate(scriptsProvider);
+      dirty.value = false;
       return true;
     }
 
-    // 手动/快捷键触发的显式保存,无 toast(状态栏会显示 Saved)。
-    Future<void> handleSave() async {
-      if (saving.value || current == null || !dirty.value) return;
-      saving.value = true;
+    final hotRunAsync = ref.watch(hotRunProvider);
+    final hotRun = hotRunAsync.value ?? false;
+
+    Future<void> handleHotRunChanged(bool value) async {
       try {
-        await saveCurrent(silentOnMissing: true);
+        await ref.read(setHotRunProvider(value: value).future);
+        ref.invalidate(hotRunProvider);
       } catch (e) {
         SmartDialog.showToast(e.toString());
-      } finally {
-        saving.value = false;
+      }
+    }
+
+    // handleRun 由下方定义,handleSave 里通过闭包引用可能拿不到最新值;
+    // 用 ref cell 中转,让手动保存完成后能触发一次运行。
+    final runAfterSaveRef = useRef<Future<void> Function()?>(null);
+
+    // 手动/快捷键触发的显式保存,无 toast(状态栏会显示 Saved)。
+    // 热运行开启时,仅手动路径(triggerRun=true)保存后自动 Run;
+    // 1s 防抖自动保存传 triggerRun=false,避免每敲一下键就重跑。
+    // 无 dirty 时手动路径不写盘,但仍要触发热运行(用户按 Ctrl+S 就是想跑一次)。
+    Future<void> handleSave({bool triggerRun = true}) async {
+      if (saving.value || current == null) return;
+      if (dirty.value) {
+        saving.value = true;
+        try {
+          await saveCurrent(silentOnMissing: true);
+        } catch (e) {
+          SmartDialog.showToast(e.toString());
+        } finally {
+          saving.value = false;
+        }
+      } else if (!triggerRun) {
+        return;
+      }
+      if (triggerRun && hotRun) {
+        await runAfterSaveRef.value?.call();
       }
     }
 
@@ -143,7 +172,7 @@ class ScriptEditorShell extends HookConsumerWidget {
         if (!dirty.value) return;
         autoSaveTimer.value?.cancel();
         autoSaveTimer.value = Timer(const Duration(seconds: 1), () {
-          if (dirty.value && !saving.value) handleSave();
+          if (dirty.value && !saving.value) handleSave(triggerRun: false);
         });
       }
 
@@ -202,6 +231,9 @@ class ScriptEditorShell extends HookConsumerWidget {
       }
     }
 
+    // 让 handleSave 通过 ref 拿到最新的 handleRun 闭包。
+    runAfterSaveRef.value = handleRun;
+
     Future<void> handleNew() async {
       final existingNames = scripts.map((s) => s.id.toLowerCase()).toSet();
       final name = await NewScriptDialog.show(context, existingNames);
@@ -259,7 +291,10 @@ class ScriptEditorShell extends HookConsumerWidget {
                     Expanded(
                       child: current == null
                           ? const ScriptEditorEmptyView()
-                          : ScriptEditorCodeView(controller: controller),
+                          : ScriptEditorCodeView(
+                              controller: controller,
+                              onSave: handleSave,
+                            ),
                     ),
                   ],
                 ),
@@ -272,6 +307,8 @@ class ScriptEditorShell extends HookConsumerWidget {
                 dirty: dirty.value,
                 saving: saving.value,
                 hasScript: current != null,
+                hotRun: hotRun,
+                onHotRunChanged: handleHotRunChanged,
                 reloadOnRun: reloadOnRun,
                 onReloadOnRunChanged: handleReloadOnRunChanged,
               ),

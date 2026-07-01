@@ -34,3 +34,9 @@ Future<bool> scriptEnabled(Ref ref, {required String id}) async {
 Future<bool> reloadOnRun(Ref ref) async {
   return ref.read(scriptQueryRepositoryProvider).isReloadOnRun();
 }
+
+/// 手动保存(Ctrl+S)后是否自动 Run(默认 false)。
+@riverpod
+Future<bool> hotRun(Ref ref) async {
+  return ref.read(scriptQueryRepositoryProvider).isHotRun();
+}

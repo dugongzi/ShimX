@@ -19,6 +19,8 @@
   "editorSavingLabel": "保存中...",
   "editorReloadOnRun": "运行时刷新",
   "editorReloadOnRunTooltip": "开启:运行按钮会重新加载 Codex 页面并重装脚本;关闭:仅重新注入,不刷新页面",
+  "editorHotRun": "热运行",
+  "editorHotRunTooltip": "开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)",
   "noScriptSelected": "未选中脚本",
   "noScriptSelectedHint": "在左侧选一个脚本,或点 + 新建",
   "selectScriptFirst": "请先选中一个脚本",

@@ -19,6 +19,8 @@
   "editorSavingLabel": "Saving...",
   "editorReloadOnRun": "Reload on Run",
   "editorReloadOnRunTooltip": "On: Run reloads the Codex page and reinstalls scripts. Off: reinject only, no page reload.",
+  "editorHotRun": "Hot Run",
+  "editorHotRunTooltip": "On: manual save (Ctrl+S) auto-runs the current script (does not apply to the 1s auto-save).",
   "noScriptSelected": "No script selected",
   "noScriptSelectedHint": "Pick a script on the left, or click + to create one",
   "selectScriptFirst": "Select a script first",

@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @editorHotRunTooltip.
   ///
   /// In zh, this message translates to:
-  /// **'开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)'**
+  /// **'开启:手动保存(Ctrl/Cmd+S)后自动运行当前脚本(不含 1 秒自动保存)'**
   String get editorHotRunTooltip;
 
   /// No description provided for @editorExternalChangeTitle.

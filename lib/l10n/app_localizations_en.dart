@@ -71,7 +71,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editorHotRunTooltip =>
-      'On: manual save (Ctrl+S) auto-runs the current script (does not apply to the 1s auto-save).';
+      'On: manual save (Ctrl/Cmd+S) auto-runs the current script (does not apply to the 1s auto-save).';
 
   @override
   String get editorExternalChangeTitle => 'File changed on disk';

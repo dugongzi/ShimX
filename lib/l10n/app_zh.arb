@@ -20,7 +20,7 @@
   "editorReloadOnRun": "运行时刷新",
   "editorReloadOnRunTooltip": "开启:运行按钮会重新加载 Codex 页面并重装脚本;关闭:仅重新注入,不刷新页面",
   "editorHotRun": "热运行",
-  "editorHotRunTooltip": "开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)",
+  "editorHotRunTooltip": "开启:手动保存(Ctrl/Cmd+S)后自动运行当前脚本(不含 1 秒自动保存)",
   "editorExternalChangeTitle": "文件已被外部修改",
   "editorExternalChangeMessage": "「{id}」在磁盘上有新内容,但你有未保存的改动。要放弃当前修改并加载磁盘版本吗?",
   "@editorExternalChangeMessage": { "placeholders": { "id": { "type": "String" } } },

@@ -70,7 +70,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editorHotRun => '热运行';
 
   @override
-  String get editorHotRunTooltip => '开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)';
+  String get editorHotRunTooltip => '开启:手动保存(Ctrl/Cmd+S)后自动运行当前脚本(不含 1 秒自动保存)';
 
   @override
   String get editorExternalChangeTitle => '文件已被外部修改';

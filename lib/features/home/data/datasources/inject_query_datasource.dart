@@ -40,6 +40,9 @@ class InjectQueryDatasource {
     'assets/inject/codex_enhance/runtime/plugins.js',
     'assets/inject/codex_enhance/runtime/scheduler.js',
     'assets/inject/codex_enhance/runtime/bootstrap.js',
+    // 面向用户脚本的 SDK,必须排在 codex_enhance 全部装完之后,
+    // 用户脚本之前(inject_orchestrator 拼接顺序: [此脚本, ...用户脚本])。
+    'assets/inject/shim_api.js',
   ];
 
   /// debug 模式下直接读项目源码路径下的同名分片, 改完立刻生效 (零重启)。

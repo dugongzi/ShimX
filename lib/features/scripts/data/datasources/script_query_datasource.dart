@@ -73,4 +73,7 @@ class ScriptQueryDatasource {
     final support = await getApplicationSupportDirectory();
     return Directory(p.join(support.path, 'scripts'));
   }
+
+  /// 供外部 watcher 使用的脚本目录。目录不存在时不会主动创建。
+  Future<Directory> scriptsDir() => _scriptsDir();
 }

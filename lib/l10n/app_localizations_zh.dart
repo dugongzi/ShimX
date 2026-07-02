@@ -73,6 +73,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editorHotRunTooltip => '开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)';
 
   @override
+  String get editorExternalChangeTitle => '文件已被外部修改';
+
+  @override
+  String editorExternalChangeMessage(String id) {
+    return '「$id」在磁盘上有新内容,但你有未保存的改动。要放弃当前修改并加载磁盘版本吗?';
+  }
+
+  @override
+  String get editorExternalChangeReload => '加载磁盘版本';
+
+  @override
+  String get editorExternalChangeKeep => '保留我的修改';
+
+  @override
+  String editorExternalDeletedToast(String id) {
+    return '「$id」已被删除';
+  }
+
+  @override
   String get noScriptSelected => '未选中脚本';
 
   @override

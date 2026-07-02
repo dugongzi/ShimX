@@ -74,6 +74,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'On: manual save (Ctrl+S) auto-runs the current script (does not apply to the 1s auto-save).';
 
   @override
+  String get editorExternalChangeTitle => 'File changed on disk';
+
+  @override
+  String editorExternalChangeMessage(String id) {
+    return '\"$id\" was changed on disk, but you have unsaved edits. Discard your changes and load the disk version?';
+  }
+
+  @override
+  String get editorExternalChangeReload => 'Load disk version';
+
+  @override
+  String get editorExternalChangeKeep => 'Keep my edits';
+
+  @override
+  String editorExternalDeletedToast(String id) {
+    return '\"$id\" was deleted';
+  }
+
+  @override
   String get noScriptSelected => 'No script selected';
 
   @override

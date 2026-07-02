@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show File, FileSystemEvent, Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,6 +104,14 @@ class ScriptEditorShell extends HookConsumerWidget {
       return () => controller.removeListener(onCode);
     }, [controller]);
 
+    // 记录我们自己最后一次写盘的内容,watcher 触发时用来判断"是自己的回声还是外部改动"。
+    final lastSavedContent = useRef<String>(current?.code ?? '');
+    // 上一个 controller.id 变化时(切换脚本)重置基线。
+    useEffect(() {
+      lastSavedContent.value = current?.code ?? '';
+      return null;
+    }, [current?.id]);
+
     // saveCurrent 是纯写盘 + invalidate,不弹 toast,让快捷键/自动保存/Run 共用。
     // dirty 由 onCode 用「controller.text != initialCode」判定,initialCode 是
     // useEffect 里的快照不会随保存刷新,所以这里成功后需要手动置 false。
@@ -114,8 +122,9 @@ class ScriptEditorShell extends HookConsumerWidget {
         }
         return false;
       }
+      final code = controller.text;
       final ok = await ref.read(
-        saveScriptProvider(id: current.id, code: controller.text).future,
+        saveScriptProvider(id: current.id, code: code).future,
       );
       if (!ok) {
         if (!silentOnMissing) SmartDialog.showToast(l10n.scriptSaveFailed);
@@ -123,6 +132,7 @@ class ScriptEditorShell extends HookConsumerWidget {
       }
       ref.invalidate(scriptsProvider);
       dirty.value = false;
+      lastSavedContent.value = code;
       return true;
     }
 
@@ -182,6 +192,92 @@ class ScriptEditorShell extends HookConsumerWidget {
         autoSaveTimer.value?.cancel();
       };
     }, [dirty, current?.id]);
+
+    // 外部编辑器改动 watcher。事件抖动大,300ms 防抖后统一处理。
+    final externalDebounce = useRef<Timer?>(null);
+    final externalHandling = useRef<bool>(false);
+    useEffect(() {
+      return () => externalDebounce.value?.cancel();
+    }, const []);
+
+    Future<void> checkExternalChange() async {
+      if (externalHandling.value) return;
+      final script = current;
+      if (script == null) return;
+      externalHandling.value = true;
+      try {
+        final file = File(script.filePath);
+        if (!await file.exists()) {
+          SmartDialog.showToast(
+            l10n.editorExternalDeletedToast(script.id),
+          );
+          ref.invalidate(scriptsProvider);
+          return;
+        }
+        final diskCode = await file.readAsString();
+        if (diskCode == controller.text) {
+          // 内容一致(或就是我们自己刚保存的),什么都不做。
+          lastSavedContent.value = diskCode;
+          return;
+        }
+        if (diskCode == lastSavedContent.value) {
+          // 磁盘 == 我们上次已知内容,说明只是别处元数据事件,忽略。
+          return;
+        }
+        if (!dirty.value) {
+          // 用户没本地改动,静默拉最新。
+          controller.text = diskCode;
+          lastSavedContent.value = diskCode;
+          dirty.value = false;
+          ref.invalidate(scriptsProvider);
+          return;
+        }
+        // 有本地改动 + 磁盘不同,弹选择框。
+        final ctx = context;
+        if (!ctx.mounted) return;
+        final choice = await SmartDialog.show<bool>(
+          builder: (dialogCtx) => AlertDialog(
+            title: Text(l10n.editorExternalChangeTitle),
+            content: Text(l10n.editorExternalChangeMessage(script.id)),
+            actions: [
+              TextButton(
+                onPressed: () => SmartDialog.dismiss(result: false),
+                child: Text(l10n.editorExternalChangeKeep),
+              ),
+              FilledButton(
+                onPressed: () => SmartDialog.dismiss(result: true),
+                child: Text(l10n.editorExternalChangeReload),
+              ),
+            ],
+          ),
+        );
+        if (choice == true) {
+          controller.text = diskCode;
+          lastSavedContent.value = diskCode;
+          dirty.value = false;
+          ref.invalidate(scriptsProvider);
+        } else {
+          // 用户选择保留,记下磁盘版本免得反复弹窗;下次保存会覆盖磁盘。
+          lastSavedContent.value = diskCode;
+        }
+      } catch (_) {
+        // 读盘/watch 出错静默,别打扰用户。
+      } finally {
+        externalHandling.value = false;
+      }
+    }
+
+    ref.listen<AsyncValue<FileSystemEvent>>(
+      scriptsDirWatchProvider,
+      (previous, next) {
+        if (!next.hasValue) return;
+        externalDebounce.value?.cancel();
+        externalDebounce.value = Timer(
+          const Duration(milliseconds: 300),
+          checkExternalChange,
+        );
+      },
+    );
 
     final reloadOnRunAsync = ref.watch(reloadOnRunProvider);
     final reloadOnRun = reloadOnRunAsync.value ?? true;

@@ -224,6 +224,36 @@ abstract class AppLocalizations {
   /// **'开启:Ctrl+S 手动保存后自动运行当前脚本(不含 1 秒自动保存)'**
   String get editorHotRunTooltip;
 
+  /// No description provided for @editorExternalChangeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'文件已被外部修改'**
+  String get editorExternalChangeTitle;
+
+  /// No description provided for @editorExternalChangeMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'「{id}」在磁盘上有新内容,但你有未保存的改动。要放弃当前修改并加载磁盘版本吗?'**
+  String editorExternalChangeMessage(String id);
+
+  /// No description provided for @editorExternalChangeReload.
+  ///
+  /// In zh, this message translates to:
+  /// **'加载磁盘版本'**
+  String get editorExternalChangeReload;
+
+  /// No description provided for @editorExternalChangeKeep.
+  ///
+  /// In zh, this message translates to:
+  /// **'保留我的修改'**
+  String get editorExternalChangeKeep;
+
+  /// No description provided for @editorExternalDeletedToast.
+  ///
+  /// In zh, this message translates to:
+  /// **'「{id}」已被删除'**
+  String editorExternalDeletedToast(String id);
+
   /// No description provided for @noScriptSelected.
   ///
   /// In zh, this message translates to:

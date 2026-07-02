@@ -290,3 +290,53 @@ final class HotRunProvider
 }
 
 String _$hotRunHash() => r'22567f46897117180ca73f8dddf433f90c451c88';
+
+/// watch 脚本目录的文件系统事件。用于让 UI 感知外部编辑器改动。
+/// 磁盘无该目录时静默不发,一旦目录出现或被删又建都会自动重订阅。
+/// 事件不带具体路径含义(平台差异大),订阅方拿到就 invalidate + 对比 mtime/内容。
+
+@ProviderFor(scriptsDirWatch)
+const scriptsDirWatchProvider = ScriptsDirWatchProvider._();
+
+/// watch 脚本目录的文件系统事件。用于让 UI 感知外部编辑器改动。
+/// 磁盘无该目录时静默不发,一旦目录出现或被删又建都会自动重订阅。
+/// 事件不带具体路径含义(平台差异大),订阅方拿到就 invalidate + 对比 mtime/内容。
+
+final class ScriptsDirWatchProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<FileSystemEvent>,
+          FileSystemEvent,
+          Stream<FileSystemEvent>
+        >
+    with $FutureModifier<FileSystemEvent>, $StreamProvider<FileSystemEvent> {
+  /// watch 脚本目录的文件系统事件。用于让 UI 感知外部编辑器改动。
+  /// 磁盘无该目录时静默不发,一旦目录出现或被删又建都会自动重订阅。
+  /// 事件不带具体路径含义(平台差异大),订阅方拿到就 invalidate + 对比 mtime/内容。
+  const ScriptsDirWatchProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'scriptsDirWatchProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$scriptsDirWatchHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<FileSystemEvent> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<FileSystemEvent> create(Ref ref) {
+    return scriptsDirWatch(ref);
+  }
+}
+
+String _$scriptsDirWatchHash() => r'089568f9c16ba28b27987e3661b8b6b17e1d4c58';

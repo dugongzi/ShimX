@@ -38,6 +38,7 @@
       badge: null,
       shimMenu: null,
       pluginMenu: null,
+      pluginPanel: null,
       controlPanel: null,
       providerPicker: null,
       autoSwitch: null,

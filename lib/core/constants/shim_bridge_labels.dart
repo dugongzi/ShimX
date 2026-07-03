@@ -175,6 +175,21 @@ const Map<String, String> shimBridgeLabelsZh = {
   'shimControlImportEmpty': '压缩包内未找到 .jsonl 文件',
   'shimControlImportBadFile': '文件无效或为空',
   'shimControlImportHint': '导入后 Codex 需要刷新页面才能在侧栏看到',
+
+  'pluginMenuLabel': '插件',
+  'pluginPanelTitle': '插件解锁',
+  'pluginPanelClose': '关闭',
+  'pluginPanelStatusLabel': '状态',
+  'pluginPanelStatusIdle': '未启用',
+  'pluginPanelIntroTitle': '选择数据来源',
+  'pluginPanelIntroDesc': '官方 curated 插件集需要一份插件快照。选择合适的方式获取:',
+  'pluginPanelActionGithubTitle': '从 GitHub 拉取',
+  'pluginPanelActionGithubDesc': '从 openai/plugins 仓库下载最新快照(需网络可达 github.com)',
+  'pluginPanelActionLocalTitle': '选择本地 zip 或目录',
+  'pluginPanelActionLocalDesc': '已经手动准备好插件快照的用这个,零联网',
+  'pluginPanelFooterHint': '操作会写入 codex 的 config.toml,重启 codex 后生效。',
+  'pluginPanelComingSoon': '插件功能开发中',
+  'pluginPanelNotReady': '插件面板未就绪',
 };
 
 const Map<String, String> shimBridgeLabelsEn = {
@@ -361,6 +376,25 @@ const Map<String, String> shimBridgeLabelsEn = {
   'shimControlImportBadFile': 'File is invalid or empty',
   'shimControlImportHint':
       'Reload Codex to see imported threads in the sidebar',
+
+  'pluginMenuLabel': 'Plugins',
+  'pluginPanelTitle': 'Unlock plugins',
+  'pluginPanelClose': 'Close',
+  'pluginPanelStatusLabel': 'Status',
+  'pluginPanelStatusIdle': 'Not installed',
+  'pluginPanelIntroTitle': 'Pick a data source',
+  'pluginPanelIntroDesc':
+      'The official curated plugin set needs a snapshot. Choose how to get it:',
+  'pluginPanelActionGithubTitle': 'Fetch from GitHub',
+  'pluginPanelActionGithubDesc':
+      'Download the latest snapshot from openai/plugins (needs access to github.com)',
+  'pluginPanelActionLocalTitle': 'Pick a local zip or folder',
+  'pluginPanelActionLocalDesc':
+      'Use this when you already have a snapshot ready — no network required',
+  'pluginPanelFooterHint':
+      "This writes codex's config.toml. Restart codex for changes to take effect.",
+  'pluginPanelComingSoon': 'Plugin support is under development',
+  'pluginPanelNotReady': 'Plugin panel not ready',
 };
 
 Map<String, String> shimBridgeLabels({required bool isZh}) =>

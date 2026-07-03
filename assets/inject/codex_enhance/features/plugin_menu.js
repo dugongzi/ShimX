@@ -10,6 +10,7 @@
   if (!window.__shimCodexEnhanceLoaded) return;
   const ns = window.__shimCodex;
   const ids = ns.ids;
+  const S = (k, f) => ns.i18n.S(k, f);
 
   function findAnchor() {
     // shim 菜单项存在 → 挂它下面;否则挂 claude 面板/按钮下面(fallback)
@@ -20,14 +21,14 @@
     return document.getElementById(ids.navBtn);
   }
 
-  function handleClick() {
-    // 占位实现:点击弹 toast。真接入插件解锁流程时,替换成:
-    //   ns.features.pluginPanel.togglePopover(item)
-    //   或调 ns.bridge.call('/plugin/xxx', {...})
-    const toast = ns.ui && ns.ui.toast;
-    if (toast && typeof toast.show === 'function') {
-      toast.show('插件功能开发中', 'info');
+  function handleClick(anchor) {
+    const panel = ns.features.pluginPanel;
+    if (panel && typeof panel.togglePopover === 'function') {
+      panel.togglePopover(anchor);
+      return;
     }
+    // 兜底:panel 分片没加载时,弹 toast 让用户知道点了
+    ns.ui?.toast?.show?.(S('pluginPanelNotReady', 'Plugin panel not ready'), 'error');
   }
 
   function buildItem() {
@@ -47,7 +48,7 @@
 
     const label = document.createElement('span');
     label.className = 'flex-1 min-w-0 truncate';
-    label.textContent = '插件';
+    label.textContent = S('pluginMenuLabel', 'Plugins');
 
     row.appendChild(iconWrap);
     row.appendChild(label);
@@ -56,7 +57,7 @@
     item.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      handleClick();
+      handleClick(item);
     });
     item.addEventListener('mouseenter', () => {
       item.setAttribute('data-highlighted', '');

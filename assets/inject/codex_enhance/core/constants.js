@@ -28,6 +28,7 @@
     navPanel: '__shim_claude_bridge_panel__',
     claudeBridgeChip: '__shim_claude_bridge_chip__',
     pluginMenuItem: '__shim_plugin_menu_item__',
+    pluginPanel: '__shim_plugin_panel__',
 
     providerBadgeClass: '__shim_provider_badge__',
     deleteButtonFlag: 'data-shim-delete-added',
@@ -58,6 +59,7 @@
       '#__shim_injected_badge__',
       '#__shim_menu_item__',
       '#__shim_plugin_menu_item__',
+      '#__shim_plugin_panel__',
       '#__shim_popover__',
       '#__shim_provider_picker__',
       '#__shim_provider_picker_popover__',

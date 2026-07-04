@@ -8,6 +8,7 @@ import 'package:shim/features/home/presentation/providers/inject_query_provider.
 import 'package:shim/features/logs/presentation/providers/logs_bridge_provider.dart';
 import 'package:shim/features/mcp/presentation/providers/claude_bridge_bridge_provider.dart';
 import 'package:shim/features/mcp/presentation/providers/claude_bridge_query_provider.dart';
+import 'package:shim/features/plugins/presentation/providers/plugin_bridge_provider.dart';
 import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
 import 'package:shim/core/services/takeover_service.dart';
 import 'package:shim/features/providers/presentation/providers/provider_action_bridge_provider.dart';
@@ -55,6 +56,7 @@ void _registerAllBridgeRoutes(Ref ref) {
   ref.read(providerActionRouteRegistrationProvider);
   ref.read(logsBridgeRouteRegistrationProvider);
   ref.read(claudeBridgeRouteRegistrationProvider);
+  ref.read(pluginBridgeRouteRegistrationProvider);
 }
 
 /// 直接注入到端口(要求端口上已经有 page),建立 CDP 长连接并安装 bridge + 脚本。

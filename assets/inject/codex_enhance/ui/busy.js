@@ -153,8 +153,24 @@
     container.appendChild(node);
 
     const token = nextToken++;
-    busyTasks.set(token, { node });
+    busyTasks.set(token, { node, text, progressBar });
     return token;
+  }
+
+  /// 已 show() 的 busy 卡片:更新文案 / 切换到 determinate 进度条。
+  /// - label 可选; percent (0-100) 传了就把底部条切成实际百分比,不再无限滑动。
+  ///   percent 传 null 或不传就保留原有滑动动画。
+  function update(token, opts) {
+    const task = busyTasks.get(token);
+    if (!task) return;
+    if (opts && typeof opts.label === 'string') {
+      task.text.textContent = opts.label;
+    }
+    if (opts && typeof opts.percent === 'number' && task.progressBar) {
+      const clamped = Math.max(0, Math.min(100, opts.percent));
+      task.progressBar.style.animation = 'none';
+      task.progressBar.style.width = clamped + '%';
+    }
   }
 
   function hide(token) {
@@ -179,5 +195,5 @@
     }
   }
 
-  window.__shimCodex.ui.busy = { show, hide, withBusy };
+  window.__shimCodex.ui.busy = { show, hide, update, withBusy };
 })();

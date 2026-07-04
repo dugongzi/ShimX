@@ -190,6 +190,14 @@ const Map<String, String> shimBridgeLabelsZh = {
   'pluginPanelFooterHint': '操作会写入 codex 的 config.toml,重启 codex 后生效。',
   'pluginPanelComingSoon': '插件功能开发中',
   'pluginPanelNotReady': '插件面板未就绪',
+  'pluginPanelStatusInstalled': '已安装',
+  'pluginPanelStatusPartial': '已下载但未配置 config.toml',
+  'pluginPanelStatusPluginCount': '插件数',
+  'pluginPanelBusyGithub': '正在从 GitHub 下载并安装…',
+  'pluginPanelInstallSuccess': '安装成功,重启 codex 生效',
+  'pluginPanelInstallFailed': '安装失败',
+  'pluginPanelStatusFailed': '读取状态失败',
+  'pluginPanelLocalNotYet': '本地导入待 shim 主界面开发中',
 };
 
 const Map<String, String> shimBridgeLabelsEn = {
@@ -395,6 +403,14 @@ const Map<String, String> shimBridgeLabelsEn = {
       "This writes codex's config.toml. Restart codex for changes to take effect.",
   'pluginPanelComingSoon': 'Plugin support is under development',
   'pluginPanelNotReady': 'Plugin panel not ready',
+  'pluginPanelStatusInstalled': 'Installed',
+  'pluginPanelStatusPartial': 'Downloaded but config.toml not written',
+  'pluginPanelStatusPluginCount': 'Plugins',
+  'pluginPanelBusyGithub': 'Downloading and installing from GitHub…',
+  'pluginPanelInstallSuccess': 'Installed. Restart codex to take effect.',
+  'pluginPanelInstallFailed': 'Install failed',
+  'pluginPanelStatusFailed': 'Failed to read status',
+  'pluginPanelLocalNotYet': 'Local import comes from shim main UI (WIP)',
 };
 
 Map<String, String> shimBridgeLabels({required bool isZh}) =>

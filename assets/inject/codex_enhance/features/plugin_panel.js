@@ -78,6 +78,8 @@
     panel.appendChild(header);
   }
 
+  // 状态行的 dot / value / count 元素 refresh 时会更新,所以挂在 panel dataset 上
+  // 免得 refresh 每次都走 querySelector。
   function buildStatusRow(panel) {
     const row = document.createElement('div');
     Object.assign(row.style, {
@@ -100,6 +102,7 @@
     });
 
     const dot = document.createElement('span');
+    dot.setAttribute('data-shim-plugin-dot', '1');
     Object.assign(dot.style, {
       display: 'inline-block',
       width: '8px',
@@ -110,6 +113,7 @@
     });
 
     const value = document.createElement('span');
+    value.setAttribute('data-shim-plugin-status', '1');
     value.textContent = S('pluginPanelStatusIdle', 'Not installed');
     Object.assign(value.style, {
       fontSize: '13px',
@@ -117,10 +121,145 @@
       fontWeight: '500',
     });
 
+    const count = document.createElement('span');
+    count.setAttribute('data-shim-plugin-count', '1');
+    Object.assign(count.style, {
+      marginLeft: 'auto',
+      fontSize: '12px',
+      color: 'var(--token-text-secondary, rgba(255,255,255,0.6))',
+    });
+
     row.appendChild(label);
     row.appendChild(dot);
     row.appendChild(value);
+    row.appendChild(count);
     panel.appendChild(row);
+  }
+
+  // 根据 /plugin/status 返回值刷新状态行。
+  //   installed=false           → 灰点 + 未启用
+  //   installed=true & !configured → 橙点 + 已下载但未配置
+  //   installed=true & configured  → 绿点 + 已安装,右侧展示 「插件数 N」
+  function refreshStatus(panel, data) {
+    const dot = panel.querySelector('[data-shim-plugin-dot="1"]');
+    const value = panel.querySelector('[data-shim-plugin-status="1"]');
+    const count = panel.querySelector('[data-shim-plugin-count="1"]');
+    if (!dot || !value || !count) return;
+    if (!data) {
+      dot.style.background = '#ef4444';
+      value.textContent = S('pluginPanelStatusFailed', 'Failed to read status');
+      count.textContent = '';
+      return;
+    }
+    if (data.installed && data.configured) {
+      dot.style.background = '#22c55e';
+      value.textContent = S('pluginPanelStatusInstalled', 'Installed');
+      const n = Number(data.pluginCount) || 0;
+      count.textContent = `${S('pluginPanelStatusPluginCount', 'Plugins')}: ${n}`;
+    } else if (data.installed) {
+      dot.style.background = '#f59e0b';
+      value.textContent = S(
+        'pluginPanelStatusPartial',
+        'Downloaded but config.toml not written',
+      );
+      count.textContent = '';
+    } else {
+      dot.style.background = '#9ca3af';
+      value.textContent = S('pluginPanelStatusIdle', 'Not installed');
+      count.textContent = '';
+    }
+  }
+
+  async function loadStatus(panel) {
+    try {
+      const res = await ns.bridge.call('/plugin/status', {}, 5000);
+      if (res && res.ok) {
+        refreshStatus(panel, res.data);
+      } else {
+        refreshStatus(panel, null);
+      }
+    } catch (_) {
+      refreshStatus(panel, null);
+    }
+  }
+
+  function humanBytes(n) {
+    if (!Number.isFinite(n) || n <= 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let idx = 0;
+    let v = n;
+    while (v >= 1024 && idx < units.length - 1) {
+      v /= 1024;
+      idx++;
+    }
+    return `${v.toFixed(v >= 10 || idx === 0 ? 0 : 1)} ${units[idx]}`;
+  }
+
+  async function runInstallFromGithub(panel) {
+    if (panel.dataset.shimBusy === '1') return;
+    panel.dataset.shimBusy = '1';
+    const baseLabel = S(
+      'pluginPanelBusyGithub',
+      'Downloading and installing from GitHub…',
+    );
+    const busyToken = ns.ui?.busy?.show?.(baseLabel);
+
+    // 订阅 /plugin/download-progress 主动推送(Dart 侧 dio onReceiveProgress
+    // 经 200ms 节流后广播),refresh busy 卡片文案 + 底部进度条。
+    let progressSub = null;
+    if (typeof window.__shimOn === 'function' && busyToken != null) {
+      progressSub = window.__shimOn(
+        '/plugin/download-progress',
+        (payload) => {
+          if (!payload) return;
+          const received = Number(payload.received) || 0;
+          const total = Number(payload.total) || 0;
+          const percent = Number(payload.percent) || 0;
+          const detail = total > 0
+            ? `${humanBytes(received)} / ${humanBytes(total)} · ${percent}%`
+            : humanBytes(received);
+          ns.ui?.busy?.update?.(busyToken, {
+            label: `${baseLabel} ${detail}`,
+            percent: total > 0 ? percent : null,
+          });
+        },
+      );
+    }
+
+    try {
+      const res = await ns.bridge.call(
+        '/plugin/install-from-github',
+        {},
+        5 * 60 * 1000,
+      );
+      if (res && res.ok) {
+        refreshStatus(panel, res.data);
+        toast(
+          S('pluginPanelInstallSuccess', 'Installed. Restart codex to take effect.'),
+          'success',
+        );
+      } else {
+        toast(
+          `${S('pluginPanelInstallFailed', 'Install failed')}: ${(res && res.message) || ''}`,
+          'error',
+        );
+      }
+    } catch (e) {
+      toast(
+        `${S('pluginPanelInstallFailed', 'Install failed')}: ${(e && e.message) || String(e)}`,
+        'error',
+      );
+    } finally {
+      try {
+        if (progressSub && typeof progressSub.cancel === 'function') {
+          progressSub.cancel();
+        } else if (typeof progressSub === 'function') {
+          progressSub();
+        }
+      } catch (_) {}
+      if (busyToken != null) ns.ui?.busy?.hide?.(busyToken);
+      delete panel.dataset.shimBusy;
+    }
   }
 
   function escapeHtml(text) {
@@ -249,8 +388,7 @@
           'pluginPanelActionGithubDesc',
           'Download the latest snapshot from openai/plugins (needs access to github.com)',
         ),
-        onClick: () =>
-          toast(S('pluginPanelComingSoon', 'Plugin support is under development'), 'info'),
+        onClick: () => runInstallFromGithub(panel),
       }),
     );
 
@@ -266,7 +404,10 @@
           'Use this when you already have a snapshot ready — no network required',
         ),
         onClick: () =>
-          toast(S('pluginPanelComingSoon', 'Plugin support is under development'), 'info'),
+          toast(
+            S('pluginPanelLocalNotYet', 'Local import comes from shim main UI (WIP)'),
+            'info',
+          ),
       }),
     );
 
@@ -381,6 +522,8 @@
     positionPopover(panel, anchor);
     document.addEventListener('mousedown', onPopoverOutside, true);
     document.addEventListener('keydown', onPopoverKey, true);
+    // 打开就异步拉一次真实状态。桥没就绪时静默,refreshStatus 会显示灰点未启用。
+    loadStatus(panel);
   }
 
   ns.features.pluginPanel = { togglePopover, dismissPopover };

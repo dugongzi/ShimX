@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:shim/core/services/app_log_service.dart';
 import 'package:shim/core/services/bridge_service.dart';
+import 'package:shim/features/plugins/data/datasources/plugin_action_datasource.dart';
 import 'package:shim/features/plugins/domain/models/plugin_marketplace_status.dart';
 import 'package:shim/features/plugins/domain/repositories/plugin_action_repository.dart';
 import 'package:shim/features/plugins/domain/repositories/plugin_query_repository.dart';
@@ -64,12 +65,23 @@ void _registerPluginBridgeRoutes({
     return _statusJson(status);
   });
 
-  bridge.register('/plugin/install-from-github', (_) async {
+  bridge.register('/plugin/install-from-remote', (payload) async {
+    final source = payload['source'];
+    final url = _resolveMirrorUrl(source);
+    if (url == null) {
+      throw StateError('unknown mirror source: $source');
+    }
     final throttle = _ProgressThrottle(bridge);
-    final status = await actionRepository.installFromGithub(
+    final status = await actionRepository.installFromRemoteZip(
+      url: url,
       onProgress: throttle.push,
     );
     return _statusJson(status);
+  });
+
+  bridge.register('/plugin/pick-local-zip', (_) async {
+    final path = await actionRepository.pickLocalZipPath();
+    return {'zipPath': path};
   });
 
   bridge.register('/plugin/install-from-local', (payload) async {
@@ -87,6 +99,19 @@ void _registerPluginBridgeRoutes({
   });
 
   AppLogService.instance.info('Plugin', '路由已注册');
+}
+
+/// 镜像枚举字符串 → 具体 URL。URL 定在 data 层常量,前端只传 short name。
+String? _resolveMirrorUrl(dynamic source) {
+  final s = source is String ? source : '';
+  switch (s) {
+    case 'jihulab':
+      return PluginActionDatasource.kJihulabZipUrl;
+    case 'github':
+      return PluginActionDatasource.kGithubZipUrl;
+    default:
+      return null;
+  }
 }
 
 Map<String, dynamic> _statusJson(PluginMarketplaceStatus status) => {

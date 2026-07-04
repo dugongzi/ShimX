@@ -183,22 +183,27 @@ const Map<String, String> shimBridgeLabelsZh = {
   'pluginPanelStatusIdle': '未启用',
   'pluginPanelIntroTitle': '选择数据来源',
   'pluginPanelIntroDesc': '官方 curated 插件集需要一份插件快照。选择合适的方式获取:',
+  'pluginPanelActionJihulabTitle': '从极狐 GitLab 拉取(国内推荐)',
+  'pluginPanelActionJihulabDesc': '走 jihulab.com 镜像,国内速度更稳,内容与 openai/plugins 保持同步',
   'pluginPanelActionGithubTitle': '从 GitHub 拉取',
   'pluginPanelActionGithubDesc': '从 openai/plugins 仓库下载最新快照(需网络可达 github.com)',
-  'pluginPanelActionLocalTitle': '选择本地 zip 或目录',
+  'pluginPanelActionLocalTitle': '选择本地 zip',
   'pluginPanelActionLocalDesc': '已经手动准备好插件快照的用这个,零联网',
+  'pluginPanelLocalCanceled': '未选择文件',
   'pluginPanelFooterHint': '操作会写入 codex 的 config.toml,重启 codex 后生效。',
   'pluginPanelComingSoon': '插件功能开发中',
   'pluginPanelNotReady': '插件面板未就绪',
   'pluginPanelStatusInstalled': '已安装',
   'pluginPanelStatusPartial': '已下载但未配置 config.toml',
   'pluginPanelStatusPluginCount': '插件数',
-  'pluginPanelBusyGithub': '正在从 GitHub 下载并安装…',
+  'pluginPanelBusyDownload': '正在下载并安装…',
+  'pluginPanelBusyLocal': '正在解压并安装本地 zip…',
   'pluginPanelInstallSuccess': '安装成功,重启 codex 生效',
   'pluginPanelInstallFailed': '安装失败',
   'pluginPanelStatusFailed': '读取状态失败',
   'pluginPanelLocalNotYet': '本地导入待 shim 主界面开发中',
 };
+
 
 const Map<String, String> shimBridgeLabelsEn = {
   'deleteHeading': 'Delete thread',
@@ -393,12 +398,16 @@ const Map<String, String> shimBridgeLabelsEn = {
   'pluginPanelIntroTitle': 'Pick a data source',
   'pluginPanelIntroDesc':
       'The official curated plugin set needs a snapshot. Choose how to get it:',
+  'pluginPanelActionJihulabTitle': 'Fetch from JihuLab (China mirror)',
+  'pluginPanelActionJihulabDesc':
+      'Uses the jihulab.com mirror, faster from mainland China. Kept in sync with openai/plugins.',
   'pluginPanelActionGithubTitle': 'Fetch from GitHub',
   'pluginPanelActionGithubDesc':
       'Download the latest snapshot from openai/plugins (needs access to github.com)',
-  'pluginPanelActionLocalTitle': 'Pick a local zip or folder',
+  'pluginPanelActionLocalTitle': 'Pick a local zip',
   'pluginPanelActionLocalDesc':
       'Use this when you already have a snapshot ready — no network required',
+  'pluginPanelLocalCanceled': 'No file selected',
   'pluginPanelFooterHint':
       "This writes codex's config.toml. Restart codex for changes to take effect.",
   'pluginPanelComingSoon': 'Plugin support is under development',
@@ -406,7 +415,8 @@ const Map<String, String> shimBridgeLabelsEn = {
   'pluginPanelStatusInstalled': 'Installed',
   'pluginPanelStatusPartial': 'Downloaded but config.toml not written',
   'pluginPanelStatusPluginCount': 'Plugins',
-  'pluginPanelBusyGithub': 'Downloading and installing from GitHub…',
+  'pluginPanelBusyDownload': 'Downloading and installing…',
+  'pluginPanelBusyLocal': 'Extracting and installing local zip…',
   'pluginPanelInstallSuccess': 'Installed. Restart codex to take effect.',
   'pluginPanelInstallFailed': 'Install failed',
   'pluginPanelStatusFailed': 'Failed to read status',

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:shim/features/plugins/data/datasources/plugin_marketplace_paths.dart';
@@ -22,8 +23,15 @@ class PluginActionDatasource {
   final Dio _dio;
   final PluginQueryDatasource _query;
 
-  static const _openaiPluginsZipUrl =
+  /// 已知的远端 zip 镜像。JS 侧面板给用户选,dart 侧只按 [url] 拉。
+  /// 有的镜像 zip 里第一层是 `plugins-main/`,有的是 `codex-plugins-main/`;
+  /// [stripFirstSegment] 一律为 true(下面 install 里已经默认处理 wrapping),
+  /// 遇到无 wrapping 的 zip 会自动 fallback 一次。
+  static const kGithubZipUrl =
       'https://codeload.github.com/openai/plugins/zip/refs/heads/main';
+  static const kJihulabZipUrl =
+      'https://jihulab.com/dugongzi1/plugins/-/archive/main/plugins-main.zip';
+
   static const _downloadLimitBytes = 128 * 1024 * 1024;
 
   static Dio _buildHttpDio() {
@@ -36,15 +44,25 @@ class PluginActionDatasource {
     );
   }
 
+  /// 从给定的 zip 直链拉 openai/plugins 快照并安装。
+  ///
   /// [onProgress] 收到 (received, total)。total<=0 表示服务器没给
   /// content-length,只能显示已下载字节。dio 内部约 8KB 一次回调,
-  /// 用调方自己节流即可(避免打断 UI 每帧几十次刷新)。
-  Future<PluginMarketplaceStatusDto> installFromGithub({
+  /// 调用方自己节流(避免打断 UI 每帧几十次刷新)。
+  Future<PluginMarketplaceStatusDto> installFromRemoteZip({
+    required String url,
     void Function(int received, int total)? onProgress,
   }) async {
-    final bytes = await _downloadOpenaiPluginsZip(onProgress: onProgress);
-    await _installZipBytes(bytes, stripFirstSegment: true);
-    _writeMarketplaceConfig();
+    final bytes = await _downloadZip(url, onProgress: onProgress);
+    // 大多数镜像 (github codeload / gitlab / 极狐) zip 第一层是 `<name>-<branch>/`,
+    // 需要 strip;个别用户自制 zip 已经把根内容放到最顶层,strip 会导致空目录
+    // 校验失败,那时回退再解一次(不 strip)。
+    try {
+      await _unpackBundleArchive(bytes, stripFirstSegment: true);
+    } on _BundleShapeException {
+      await _unpackBundleArchive(bytes, stripFirstSegment: false);
+    }
+    _registerBundleInConfig();
     return _query.readMarketplaceStatus();
   }
 
@@ -55,12 +73,23 @@ class PluginActionDatasource {
     }
     final bytes = await file.readAsBytes();
     try {
-      await _installZipBytes(bytes, stripFirstSegment: false);
-    } on _MarketplaceValidationException {
-      await _installZipBytes(bytes, stripFirstSegment: true);
+      await _unpackBundleArchive(bytes, stripFirstSegment: false);
+    } on _BundleShapeException {
+      await _unpackBundleArchive(bytes, stripFirstSegment: true);
     }
-    _writeMarketplaceConfig();
+    _registerBundleInConfig();
     return _query.readMarketplaceStatus();
+  }
+
+  /// 弹 shim 主界面 file picker 选一个 .zip,返回绝对路径。用户取消返回 null。
+  Future<String?> pickLocalZipPath() async {
+    final picked = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Pick openai/plugins zip',
+      type: FileType.custom,
+      allowedExtensions: ['zip'],
+    );
+    if (picked == null || picked.files.isEmpty) return null;
+    return picked.files.single.path;
   }
 
   Future<PluginMarketplaceStatusDto> installFromLocalDir(
@@ -73,18 +102,19 @@ class PluginActionDatasource {
       throw StateError('目录里没有 .agents/plugins/marketplace.json');
     }
     final destination = PluginMarketplacePaths.curatedRoot();
-    await _swapDirectory(source: source, destination: destination);
-    _writeMarketplaceConfig();
+    await _promoteStagingIntoPlace(source: source, destination: destination);
+    _registerBundleInConfig();
     return _query.readMarketplaceStatus();
   }
 
   // ---------- 内部 ----------
 
-  Future<List<int>> _downloadOpenaiPluginsZip({
+  Future<List<int>> _downloadZip(
+    String url, {
     void Function(int received, int total)? onProgress,
   }) async {
     final response = await _dio.get<List<int>>(
-      _openaiPluginsZipUrl,
+      url,
       options: Options(
         headers: {'Accept': 'application/zip'},
         responseType: ResponseType.bytes,
@@ -95,15 +125,15 @@ class PluginActionDatasource {
     );
     final data = response.data ?? const <int>[];
     if (data.isEmpty) {
-      throw StateError('openai/plugins zip 下载为空');
+      throw StateError('zip 下载为空');
     }
     if (data.length > _downloadLimitBytes) {
-      throw StateError('openai/plugins zip 超过大小上限');
+      throw StateError('zip 超过大小上限');
     }
     return data;
   }
 
-  Future<void> _installZipBytes(
+  Future<void> _unpackBundleArchive(
     List<int> bytes, {
     required bool stripFirstSegment,
   }) async {
@@ -122,7 +152,7 @@ class PluginActionDatasource {
 
     try {
       for (final entry in archive) {
-        final relative = _relativeSafePath(
+        final relative = _sanitizeArchivePath(
           entry.name,
           stripFirstSegment: stripFirstSegment,
         );
@@ -136,8 +166,8 @@ class PluginActionDatasource {
           Directory(outPath).createSync(recursive: true);
         }
       }
-      _validateMarketplaceRoot(staging);
-      await _swapDirectory(source: staging, destination: destination);
+      _assertCuratedBundle(staging);
+      await _promoteStagingIntoPlace(source: staging, destination: destination);
     } catch (_) {
       if (staging.existsSync()) {
         try {
@@ -149,7 +179,7 @@ class PluginActionDatasource {
   }
 
   /// zip entry 名字归一化 + 越权防护。返回 null 表示应跳过。
-  String? _relativeSafePath(
+  String? _sanitizeArchivePath(
     String rawName, {
     required bool stripFirstSegment,
   }) {
@@ -167,34 +197,34 @@ class PluginActionDatasource {
     return effective.join(Platform.pathSeparator);
   }
 
-  void _validateMarketplaceRoot(Directory root) {
+  void _assertCuratedBundle(Directory root) {
     final marketplaceFile = PluginMarketplacePaths.marketplaceJson(root);
     if (!marketplaceFile.existsSync()) {
-      throw const _MarketplaceValidationException(
+      throw const _BundleShapeException(
           '缺少 .agents/plugins/marketplace.json');
     }
     dynamic parsed;
     try {
       parsed = jsonDecode(marketplaceFile.readAsStringSync());
     } catch (e) {
-      throw _MarketplaceValidationException('marketplace.json 解析失败: $e');
+      throw _BundleShapeException('marketplace.json 解析失败: $e');
     }
     if (parsed is! Map ||
         parsed['name'] != PluginMarketplacePaths.curatedName) {
-      throw const _MarketplaceValidationException(
+      throw const _BundleShapeException(
           'marketplace.json 里 name 不是 openai-curated');
     }
     final plugins = parsed['plugins'];
     if (plugins is! List || plugins.isEmpty) {
-      throw const _MarketplaceValidationException(
+      throw const _BundleShapeException(
           'marketplace.json 里 plugins 为空');
     }
     if (!PluginMarketplacePaths.pluginsSubdir(root).existsSync()) {
-      throw const _MarketplaceValidationException('缺少 plugins/ 目录');
+      throw const _BundleShapeException('缺少 plugins/ 目录');
     }
   }
 
-  Future<void> _swapDirectory({
+  Future<void> _promoteStagingIntoPlace({
     required Directory source,
     required Directory destination,
   }) async {
@@ -211,14 +241,14 @@ class PluginActionDatasource {
         destination.renameSync(backup.path);
       } catch (_) {
         // Windows 上偶尔 rename 失败(权限/占用),兜底复制 + 递归删除
-        _copyDirectory(destination, backup);
+        _deepCopyTree(destination, backup);
         destination.deleteSync(recursive: true);
       }
     }
     try {
       source.renameSync(destination.path);
     } catch (_) {
-      _copyDirectory(source, destination);
+      _deepCopyTree(source, destination);
       try {
         source.deleteSync(recursive: true);
       } catch (_) {}
@@ -230,7 +260,7 @@ class PluginActionDatasource {
     }
   }
 
-  void _copyDirectory(Directory src, Directory dst) {
+  void _deepCopyTree(Directory src, Directory dst) {
     if (!dst.existsSync()) dst.createSync(recursive: true);
     for (final entity in src.listSync(recursive: true, followLinks: false)) {
       final relative = p.relative(entity.path, from: src.path);
@@ -244,7 +274,7 @@ class PluginActionDatasource {
     }
   }
 
-  void _writeMarketplaceConfig() {
+  void _registerBundleInConfig() {
     final root = PluginMarketplacePaths.curatedRoot().path;
     final doc = PluginMarketplacePaths.readConfigDoc();
     final marketplaces = doc['marketplaces'] is Map
@@ -263,9 +293,9 @@ class PluginActionDatasource {
   }
 }
 
-class _MarketplaceValidationException implements Exception {
-  const _MarketplaceValidationException(this.message);
+class _BundleShapeException implements Exception {
+  const _BundleShapeException(this.message);
   final String message;
   @override
-  String toString() => 'MarketplaceValidationException: $message';
+  String toString() => 'BundleShapeException: $message';
 }

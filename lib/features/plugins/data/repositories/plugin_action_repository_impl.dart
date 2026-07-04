@@ -8,12 +8,19 @@ class PluginActionRepositoryImpl implements PluginActionRepository {
   final PluginActionDatasource dataSource;
 
   @override
-  Future<PluginMarketplaceStatus> installFromGithub({
+  Future<PluginMarketplaceStatus> installFromRemoteZip({
+    required String url,
     void Function(int received, int total)? onProgress,
   }) async {
-    return (await dataSource.installFromGithub(onProgress: onProgress))
+    return (await dataSource.installFromRemoteZip(
+      url: url,
+      onProgress: onProgress,
+    ))
         .toEntity();
   }
+
+  @override
+  Future<String?> pickLocalZipPath() => dataSource.pickLocalZipPath();
 
   @override
   Future<PluginMarketplaceStatus> installFromLocalZip({

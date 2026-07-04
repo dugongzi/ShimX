@@ -195,17 +195,17 @@
     return `${v.toFixed(v >= 10 || idx === 0 ? 0 : 1)} ${units[idx]}`;
   }
 
-  async function runInstallFromGithub(panel) {
+  // 通用远端安装:source ∈ {'jihulab', 'github'} 由 dart 侧枚举成实际 URL。
+  // busy 卡片 + 200ms 节流的下载进度事件都跟老逻辑一致。
+  async function runInstallFromRemote(panel, source) {
     if (panel.dataset.shimBusy === '1') return;
     panel.dataset.shimBusy = '1';
     const baseLabel = S(
-      'pluginPanelBusyGithub',
-      'Downloading and installing from GitHub…',
+      'pluginPanelBusyDownload',
+      'Downloading and installing…',
     );
     const busyToken = ns.ui?.busy?.show?.(baseLabel);
 
-    // 订阅 /plugin/download-progress 主动推送(Dart 侧 dio onReceiveProgress
-    // 经 200ms 节流后广播),refresh busy 卡片文案 + 底部进度条。
     let progressSub = null;
     if (typeof window.__shimOn === 'function' && busyToken != null) {
       progressSub = window.__shimOn(
@@ -228,22 +228,11 @@
 
     try {
       const res = await ns.bridge.call(
-        '/plugin/install-from-github',
-        {},
+        '/plugin/install-from-remote',
+        { source },
         5 * 60 * 1000,
       );
-      if (res && res.ok) {
-        refreshStatus(panel, res.data);
-        toast(
-          S('pluginPanelInstallSuccess', 'Installed. Restart codex to take effect.'),
-          'success',
-        );
-      } else {
-        toast(
-          `${S('pluginPanelInstallFailed', 'Install failed')}: ${(res && res.message) || ''}`,
-          'error',
-        );
-      }
+      finalizeInstall(panel, res);
     } catch (e) {
       toast(
         `${S('pluginPanelInstallFailed', 'Install failed')}: ${(e && e.message) || String(e)}`,
@@ -259,6 +248,65 @@
       } catch (_) {}
       if (busyToken != null) ns.ui?.busy?.hide?.(busyToken);
       delete panel.dataset.shimBusy;
+    }
+  }
+
+  // 本地 zip 两步走:
+  //   1) /plugin/pick-local-zip → dart 侧弹 file_picker,返回 { zipPath }
+  //   2) /plugin/install-from-local {zipPath} → 解压 + 写 config
+  // 取消 file picker 静默返回,不弹错误。
+  async function runInstallFromLocalZip(panel) {
+    if (panel.dataset.shimBusy === '1') return;
+    let pickRes;
+    try {
+      pickRes = await ns.bridge.call('/plugin/pick-local-zip', {}, 5 * 60 * 1000);
+    } catch (e) {
+      toast(
+        `${S('pluginPanelInstallFailed', 'Install failed')}: ${(e && e.message) || String(e)}`,
+        'error',
+      );
+      return;
+    }
+    const zipPath = pickRes && pickRes.ok ? pickRes.data && pickRes.data.zipPath : null;
+    if (!zipPath) {
+      toast(S('pluginPanelLocalCanceled', 'No file selected'), 'info');
+      return;
+    }
+
+    panel.dataset.shimBusy = '1';
+    const busyToken = ns.ui?.busy?.show?.(
+      S('pluginPanelBusyLocal', 'Extracting and installing local zip…'),
+    );
+    try {
+      const res = await ns.bridge.call(
+        '/plugin/install-from-local',
+        { zipPath },
+        5 * 60 * 1000,
+      );
+      finalizeInstall(panel, res);
+    } catch (e) {
+      toast(
+        `${S('pluginPanelInstallFailed', 'Install failed')}: ${(e && e.message) || String(e)}`,
+        'error',
+      );
+    } finally {
+      if (busyToken != null) ns.ui?.busy?.hide?.(busyToken);
+      delete panel.dataset.shimBusy;
+    }
+  }
+
+  function finalizeInstall(panel, res) {
+    if (res && res.ok) {
+      refreshStatus(panel, res.data);
+      toast(
+        S('pluginPanelInstallSuccess', 'Installed. Restart codex to take effect.'),
+        'success',
+      );
+    } else {
+      toast(
+        `${S('pluginPanelInstallFailed', 'Install failed')}: ${(res && res.message) || ''}`,
+        'error',
+      );
     }
   }
 
@@ -377,7 +425,22 @@
       flex: '0 0 auto',
     });
 
-    // GitHub 拉取
+    // 极狐 GitLab (jihulab.com) — 国内推荐
+    const iconJihulab =
+      '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15L3 6l1.6-4.9L8 9l3.4-7.9L13 6z"/></svg>';
+    wrap.appendChild(
+      buildActionCard({
+        icon: iconJihulab,
+        title: S('pluginPanelActionJihulabTitle', 'Fetch from JihuLab (China mirror)'),
+        desc: S(
+          'pluginPanelActionJihulabDesc',
+          'Uses the jihulab.com mirror, faster from mainland China. Kept in sync with openai/plugins.',
+        ),
+        onClick: () => runInstallFromRemote(panel, 'jihulab'),
+      }),
+    );
+
+    // GitHub 官方源
     const iconGithub =
       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.35c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.16-.89-1.16-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.66.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.96 0-.88.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.11 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11.51.56.82 1.27.82 2.15 0 3.08-1.87 3.76-3.66 3.96.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>';
     wrap.appendChild(
@@ -388,7 +451,7 @@
           'pluginPanelActionGithubDesc',
           'Download the latest snapshot from openai/plugins (needs access to github.com)',
         ),
-        onClick: () => runInstallFromGithub(panel),
+        onClick: () => runInstallFromRemote(panel, 'github'),
       }),
     );
 
@@ -398,16 +461,12 @@
     wrap.appendChild(
       buildActionCard({
         icon: iconFolder,
-        title: S('pluginPanelActionLocalTitle', 'Pick a local zip or folder'),
+        title: S('pluginPanelActionLocalTitle', 'Pick a local zip'),
         desc: S(
           'pluginPanelActionLocalDesc',
           'Use this when you already have a snapshot ready — no network required',
         ),
-        onClick: () =>
-          toast(
-            S('pluginPanelLocalNotYet', 'Local import comes from shim main UI (WIP)'),
-            'info',
-          ),
+        onClick: () => runInstallFromLocalZip(panel),
       }),
     );
 

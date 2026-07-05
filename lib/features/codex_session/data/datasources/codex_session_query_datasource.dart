@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:shim/features/codex_session/data/models/codex_bucket_dto.dart';
 import 'package:shim/features/codex_session/data/models/codex_project_dto.dart';
 import 'package:shim/features/codex_session/data/models/codex_thread_detail_dto.dart';
 import 'package:shim/features/codex_session/data/models/codex_thread_dto.dart';
@@ -245,6 +246,82 @@ class CodexSessionQueryDatasource {
       }
     }
     return messages;
+  }
+
+  /// 按 `model_provider` 分组,做成首页"桶"列表。
+  /// null / 空串归一到 `''`(UI 层单独处理成"(未指定)")。
+  Future<List<CodexBucketDto>> listBuckets() async {
+    final dbPath = _codexDbPath();
+    if (!File(dbPath).existsSync()) {
+      throw StateError('Codex database not found: $dbPath');
+    }
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        '''
+        SELECT COALESCE(model_provider, '') AS bucket_key,
+               COUNT(*) AS session_count,
+               MAX(updated_at_ms) AS last_active_ms
+        FROM threads
+        WHERE archived = 0
+        GROUP BY bucket_key
+        ORDER BY last_active_ms DESC
+        ''',
+      );
+      return rows.map((row) {
+        return CodexBucketDto.fromJson({
+          'bucket': row['bucket_key'] ?? '',
+          'sessionCount': row['session_count'] ?? 0,
+          'lastActiveMs': row['last_active_ms'] ?? 0,
+        });
+      }).toList();
+    } finally {
+      db.dispose();
+    }
+  }
+
+  /// 单个桶下的会话列表。参数 `bucket` 是 `model_provider` 字段值,
+  /// 传空串会命中 model_provider 为 NULL 或 '' 的行(桶名统一到 '')。
+  Future<List<CodexThreadDto>> listThreadsByBucket({
+    required String bucket,
+    int limit = 30,
+    int offset = 0,
+  }) async {
+    final dbPath = _codexDbPath();
+    if (!File(dbPath).existsSync()) {
+      throw StateError('Codex database not found: $dbPath');
+    }
+    final db = sqlite3.open(dbPath, mode: OpenMode.readOnly);
+    try {
+      final rows = db.select(
+        '''
+        SELECT id, title, preview, first_user_message, cwd,
+               archived, updated_at_ms, created_at_ms, tokens_used,
+               COALESCE(model_provider, '') AS mp
+        FROM threads
+        WHERE archived = 0 AND COALESCE(model_provider, '') = ?
+        ORDER BY updated_at_ms DESC
+        LIMIT ? OFFSET ?
+        ''',
+        [bucket, limit, offset],
+      );
+      return rows.map((row) {
+        return CodexThreadDto.fromJson({
+          'id': row['id'] ?? '',
+          'title': row['title'] ?? '',
+          'preview': row['preview'] ?? '',
+          'firstUserMessage': row['first_user_message'] ?? '',
+          'cwd': row['cwd'] ?? '',
+          'archived': row['archived'] ?? 0,
+          'updatedAtMs': row['updated_at_ms'] ?? 0,
+          'createdAtMs': row['created_at_ms'] ?? 0,
+          'tokensUsed': row['tokens_used'] ?? 0,
+          'modelProvider': row['mp'] ?? '',
+        });
+      }).toList();
+    } finally {
+      db.dispose();
+    }
   }
 
   String _codexDbPath() {

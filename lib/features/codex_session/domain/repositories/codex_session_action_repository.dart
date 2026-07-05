@@ -47,4 +47,12 @@ abstract class CodexSessionActionRepository {
   /// 弹文件选择器(一个 .zip)→ 解压内部所有 .jsonl 批量导入。
   /// 用户取消返回 null;zip 内无 jsonl 时返回 (ok: 0, failed: 0, imported: const []).
   Future<CodexImportBundleResult?> importBundle({String? targetCwd});
+
+  // bucket move
+
+  /// 把 [threadIds] 里的会话都移动到 [targetBucket]。返回实际 UPDATE 的行数。
+  Future<int> moveThreadsToBucket({
+    required List<String> threadIds,
+    required String targetBucket,
+  });
 }

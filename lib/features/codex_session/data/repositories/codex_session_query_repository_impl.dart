@@ -1,4 +1,5 @@
 import 'package:shim/features/codex_session/data/datasources/codex_session_query_datasource.dart';
+import 'package:shim/features/codex_session/domain/models/codex_bucket.dart';
 import 'package:shim/features/codex_session/domain/models/codex_project.dart';
 import 'package:shim/features/codex_session/domain/models/codex_thread.dart';
 import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
@@ -30,5 +31,25 @@ class CodexSessionQueryRepositoryImpl implements CodexSessionQueryRepository {
   Future<CodexThreadDetail> loadThreadDetail({required String id}) async {
     final dto = await dataSource.loadDetail(id: id);
     return dto.toEntity();
+  }
+
+  @override
+  Future<List<CodexBucket>> listBuckets() async {
+    final dtos = await dataSource.listBuckets();
+    return dtos.map((d) => d.toEntity()).toList();
+  }
+
+  @override
+  Future<List<CodexThread>> listThreadsByBucket({
+    required String bucket,
+    int limit = 30,
+    int offset = 0,
+  }) async {
+    final dtos = await dataSource.listThreadsByBucket(
+      bucket: bucket,
+      limit: limit,
+      offset: offset,
+    );
+    return dtos.map((d) => d.toEntity()).toList();
   }
 }

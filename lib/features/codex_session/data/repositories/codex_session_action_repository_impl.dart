@@ -76,4 +76,15 @@ class CodexSessionActionRepositoryImpl implements CodexSessionActionRepository {
   Future<CodexImportBundleResult?> importBundle({String? targetCwd}) {
     return dataSource.pickAndImportBundle(targetCwd: targetCwd);
   }
+
+  @override
+  Future<int> moveThreadsToBucket({
+    required List<String> threadIds,
+    required String targetBucket,
+  }) {
+    return dataSource.moveThreadsToBucket(
+      threadIds: threadIds,
+      targetBucket: targetBucket,
+    );
+  }
 }

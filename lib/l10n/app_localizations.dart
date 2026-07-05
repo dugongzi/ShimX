@@ -1334,6 +1334,288 @@ abstract class AppLocalizations {
   /// **'Codex'**
   String get sessionTabCodex;
 
+  /// No description provided for @sessionTabHome.
+  ///
+  /// In zh, this message translates to:
+  /// **'首页'**
+  String get sessionTabHome;
+
+  /// No description provided for @sessionTabBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份'**
+  String get sessionTabBackup;
+
+  /// No description provided for @sessionCurrentBucket.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前 codex 桶'**
+  String get sessionCurrentBucket;
+
+  /// No description provided for @sessionSwitchBucket.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换桶'**
+  String get sessionSwitchBucket;
+
+  /// No description provided for @sessionSwitchToShim.
+  ///
+  /// In zh, this message translates to:
+  /// **'切到 shim'**
+  String get sessionSwitchToShim;
+
+  /// No description provided for @sessionRefresh.
+  ///
+  /// In zh, this message translates to:
+  /// **'刷新'**
+  String get sessionRefresh;
+
+  /// No description provided for @sessionBucketLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'桶'**
+  String get sessionBucketLabel;
+
+  /// No description provided for @sessionSelectAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全选'**
+  String get sessionSelectAll;
+
+  /// No description provided for @sessionSelectedCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'已选 {n} 条'**
+  String sessionSelectedCount(int n);
+
+  /// No description provided for @sessionMoveTo.
+  ///
+  /// In zh, this message translates to:
+  /// **'移动到'**
+  String get sessionMoveTo;
+
+  /// No description provided for @sessionExecute.
+  ///
+  /// In zh, this message translates to:
+  /// **'执行'**
+  String get sessionExecute;
+
+  /// No description provided for @sessionBackupSelected.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份选中'**
+  String get sessionBackupSelected;
+
+  /// No description provided for @sessionMergeAllToShim.
+  ///
+  /// In zh, this message translates to:
+  /// **'统一对话'**
+  String get sessionMergeAllToShim;
+
+  /// No description provided for @sessionMergeAllToShimTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'codex 的会话按 model_provider(桶)分组显示。切换供应商时侧栏只显示当前桶,其它桶里的历史看不到。\n此操作把所有非 shim 桶里的会话都改成 shim 桶,并把 codex 的默认桶切到 shim。之后不管你用哪个供应商,侧栏都能看到全部历史。'**
+  String get sessionMergeAllToShimTooltip;
+
+  /// No description provided for @sessionSwitchBucketTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 codex 侧栏当前显示哪个桶的会话。桶名就是每条会话记录里的 model_provider 字段,不同供应商生成的会话会落到不同桶。切桶只影响侧栏筛选,不会改动会话内容。'**
+  String get sessionSwitchBucketTooltip;
+
+  /// No description provided for @sessionBackupSelectedTooltip.
+  ///
+  /// In zh, this message translates to:
+  /// **'把选中的会话打包保存到 shim 备份目录,同时记录每条会话原本所属的桶。之后可在「备份」tab 里逐条或整批恢复到原桶。'**
+  String get sessionBackupSelectedTooltip;
+
+  /// No description provided for @sessionMoveSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已移动 {n} 条到「{bucket}」'**
+  String sessionMoveSuccess(int n, String bucket);
+
+  /// No description provided for @sessionMoveFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'移动失败: {error}'**
+  String sessionMoveFailed(String error);
+
+  /// No description provided for @sessionBackupSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已备份 {n} 条'**
+  String sessionBackupSuccess(int n);
+
+  /// No description provided for @sessionBackupFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份失败: {error}'**
+  String sessionBackupFailed(String error);
+
+  /// No description provided for @sessionEmptyBucket.
+  ///
+  /// In zh, this message translates to:
+  /// **'(空)'**
+  String get sessionEmptyBucket;
+
+  /// No description provided for @sessionLoadMore.
+  ///
+  /// In zh, this message translates to:
+  /// **'加载更多'**
+  String get sessionLoadMore;
+
+  /// No description provided for @sessionNoSelection.
+  ///
+  /// In zh, this message translates to:
+  /// **'未选择会话'**
+  String get sessionNoSelection;
+
+  /// No description provided for @sessionSwitchBucketSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已切换到「{bucket}」桶'**
+  String sessionSwitchBucketSuccess(String bucket);
+
+  /// No description provided for @sessionSwitchBucketFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'切换失败: {error}'**
+  String sessionSwitchBucketFailed(String error);
+
+  /// No description provided for @sessionMergeConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认合并?'**
+  String get sessionMergeConfirmTitle;
+
+  /// No description provided for @sessionMergeConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'将把除 shim 桶外所有会话全部移动到 shim 桶,该操作不会自动备份。'**
+  String get sessionMergeConfirmBody;
+
+  /// No description provided for @sessionMergeConfirmOk.
+  ///
+  /// In zh, this message translates to:
+  /// **'合并'**
+  String get sessionMergeConfirmOk;
+
+  /// No description provided for @sessionMergeProgressTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在合并到 shim 桶'**
+  String get sessionMergeProgressTitle;
+
+  /// No description provided for @sessionMergeProgressBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'{done} / {total} 条'**
+  String sessionMergeProgressBody(int done, int total);
+
+  /// No description provided for @sessionBackupLibrary.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份库'**
+  String get sessionBackupLibrary;
+
+  /// No description provided for @sessionBackupCountLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'{n} 条备份'**
+  String sessionBackupCountLabel(int n);
+
+  /// No description provided for @sessionBackupFromBucket.
+  ///
+  /// In zh, this message translates to:
+  /// **'来自「{bucket}」'**
+  String sessionBackupFromBucket(String bucket);
+
+  /// No description provided for @sessionBackupThreadCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{n} 条会话'**
+  String sessionBackupThreadCount(int n);
+
+  /// No description provided for @sessionRestoreOne.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复'**
+  String get sessionRestoreOne;
+
+  /// No description provided for @sessionRestoreAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'一键恢复全部'**
+  String get sessionRestoreAll;
+
+  /// No description provided for @sessionDeleteBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此备份'**
+  String get sessionDeleteBackup;
+
+  /// No description provided for @sessionRestoreConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认恢复?'**
+  String get sessionRestoreConfirmTitle;
+
+  /// No description provided for @sessionRestoreConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'会用备份中的内容覆盖当前会话状态。'**
+  String get sessionRestoreConfirmBody;
+
+  /// No description provided for @sessionRestoreConfirmOk.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复'**
+  String get sessionRestoreConfirmOk;
+
+  /// No description provided for @sessionDeleteBackupConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除备份?'**
+  String get sessionDeleteBackupConfirmTitle;
+
+  /// No description provided for @sessionDeleteBackupConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'此操作不可撤销。'**
+  String get sessionDeleteBackupConfirmBody;
+
+  /// No description provided for @sessionDeleteBackupConfirmOk.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get sessionDeleteBackupConfirmOk;
+
+  /// No description provided for @sessionRestoreSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已恢复 {n} 条'**
+  String sessionRestoreSuccess(int n);
+
+  /// No description provided for @sessionRestoreFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复失败: {error}'**
+  String sessionRestoreFailed(String error);
+
+  /// No description provided for @sessionDeleteBackupSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除备份'**
+  String get sessionDeleteBackupSuccess;
+
+  /// No description provided for @sessionBackupEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有备份'**
+  String get sessionBackupEmpty;
+
   /// No description provided for @sessionsTitle.
   ///
   /// In zh, this message translates to:

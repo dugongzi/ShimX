@@ -18,6 +18,7 @@ abstract class CodexThreadDto with _$CodexThreadDto {
     @Default(0) int updatedAtMs,
     @Default(0) int createdAtMs,
     @Default(0) int tokensUsed,
+    @Default('') String modelProvider,
   }) = _CodexThreadDto;
 
   factory CodexThreadDto.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +35,7 @@ abstract class CodexThreadDto with _$CodexThreadDto {
       updatedAtMs: updatedAtMs,
       createdAtMs: createdAtMs,
       tokensUsed: tokensUsed,
+      modelProvider: modelProvider,
     );
   }
 }

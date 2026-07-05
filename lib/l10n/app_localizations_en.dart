@@ -674,6 +674,178 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionTabCodex => 'Codex';
 
   @override
+  String get sessionTabHome => 'Home';
+
+  @override
+  String get sessionTabBackup => 'Backup';
+
+  @override
+  String get sessionCurrentBucket => 'Current codex bucket';
+
+  @override
+  String get sessionSwitchBucket => 'Switch bucket';
+
+  @override
+  String get sessionSwitchToShim => 'Switch to shim';
+
+  @override
+  String get sessionRefresh => 'Refresh';
+
+  @override
+  String get sessionBucketLabel => 'Bucket';
+
+  @override
+  String get sessionSelectAll => 'Select all';
+
+  @override
+  String sessionSelectedCount(int n) {
+    return '$n selected';
+  }
+
+  @override
+  String get sessionMoveTo => 'Move to';
+
+  @override
+  String get sessionExecute => 'Run';
+
+  @override
+  String get sessionBackupSelected => 'Back up selected';
+
+  @override
+  String get sessionMergeAllToShim => 'Unify threads';
+
+  @override
+  String get sessionMergeAllToShimTooltip =>
+      'codex groups threads by model_provider (bucket). When you switch provider, the sidebar only shows the current bucket — history in other buckets is hidden.\nThis moves every thread outside the shim bucket into it and points codex\'s default bucket to shim. Afterwards the sidebar shows all history regardless of which provider you use.';
+
+  @override
+  String get sessionSwitchBucketTooltip =>
+      'Pick which bucket codex\'s sidebar currently shows. A bucket name is the model_provider field on each thread — threads created under different providers fall into different buckets. Switching only changes sidebar filtering, thread content is not touched.';
+
+  @override
+  String get sessionBackupSelectedTooltip =>
+      'Zip the selected threads into shim\'s backup directory along with the original bucket for each. Later you can restore them individually or all at once from the Backup tab.';
+
+  @override
+  String sessionMoveSuccess(int n, String bucket) {
+    return 'Moved $n thread(s) to \"$bucket\"';
+  }
+
+  @override
+  String sessionMoveFailed(String error) {
+    return 'Move failed: $error';
+  }
+
+  @override
+  String sessionBackupSuccess(int n) {
+    return 'Backed up $n thread(s)';
+  }
+
+  @override
+  String sessionBackupFailed(String error) {
+    return 'Backup failed: $error';
+  }
+
+  @override
+  String get sessionEmptyBucket => '(empty)';
+
+  @override
+  String get sessionLoadMore => 'Load more';
+
+  @override
+  String get sessionNoSelection => 'No threads selected';
+
+  @override
+  String sessionSwitchBucketSuccess(String bucket) {
+    return 'Switched to \"$bucket\" bucket';
+  }
+
+  @override
+  String sessionSwitchBucketFailed(String error) {
+    return 'Switch failed: $error';
+  }
+
+  @override
+  String get sessionMergeConfirmTitle => 'Merge?';
+
+  @override
+  String get sessionMergeConfirmBody =>
+      'This moves every thread outside the shim bucket into it. It does not create a backup automatically.';
+
+  @override
+  String get sessionMergeConfirmOk => 'Merge';
+
+  @override
+  String get sessionMergeProgressTitle => 'Merging into shim bucket';
+
+  @override
+  String sessionMergeProgressBody(int done, int total) {
+    return '$done / $total';
+  }
+
+  @override
+  String get sessionBackupLibrary => 'Backup library';
+
+  @override
+  String sessionBackupCountLabel(int n) {
+    return '$n backup(s)';
+  }
+
+  @override
+  String sessionBackupFromBucket(String bucket) {
+    return 'From \"$bucket\"';
+  }
+
+  @override
+  String sessionBackupThreadCount(int n) {
+    return '$n thread(s)';
+  }
+
+  @override
+  String get sessionRestoreOne => 'Restore';
+
+  @override
+  String get sessionRestoreAll => 'Restore all';
+
+  @override
+  String get sessionDeleteBackup => 'Delete backup';
+
+  @override
+  String get sessionRestoreConfirmTitle => 'Restore?';
+
+  @override
+  String get sessionRestoreConfirmBody =>
+      'The backup content will overwrite the current thread state.';
+
+  @override
+  String get sessionRestoreConfirmOk => 'Restore';
+
+  @override
+  String get sessionDeleteBackupConfirmTitle => 'Delete backup?';
+
+  @override
+  String get sessionDeleteBackupConfirmBody => 'This cannot be undone.';
+
+  @override
+  String get sessionDeleteBackupConfirmOk => 'Delete';
+
+  @override
+  String sessionRestoreSuccess(int n) {
+    return 'Restored $n thread(s)';
+  }
+
+  @override
+  String sessionRestoreFailed(String error) {
+    return 'Restore failed: $error';
+  }
+
+  @override
+  String get sessionDeleteBackupSuccess => 'Backup deleted';
+
+  @override
+  String get sessionBackupEmpty => 'No backups yet';
+
+  @override
   String get sessionsTitle => 'Sessions';
 
   @override

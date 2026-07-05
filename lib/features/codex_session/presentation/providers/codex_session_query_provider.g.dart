@@ -266,3 +266,151 @@ final class CodexThreadDetailFamily extends $Family
   @override
   String toString() => r'codexThreadDetailProvider';
 }
+
+/// 首页顶部按桶分组的桶列表。
+
+@ProviderFor(codexBuckets)
+const codexBucketsProvider = CodexBucketsProvider._();
+
+/// 首页顶部按桶分组的桶列表。
+
+final class CodexBucketsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CodexBucket>>,
+          List<CodexBucket>,
+          FutureOr<List<CodexBucket>>
+        >
+    with
+        $FutureModifier<List<CodexBucket>>,
+        $FutureProvider<List<CodexBucket>> {
+  /// 首页顶部按桶分组的桶列表。
+  const CodexBucketsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'codexBucketsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$codexBucketsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CodexBucket>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CodexBucket>> create(Ref ref) {
+    return codexBuckets(ref);
+  }
+}
+
+String _$codexBucketsHash() => r'bd6336a4cae37ec946633e3d9a6dd8ce8d9e7d5d';
+
+/// 首页单桶的会话列表(family: bucket key + 分页)。
+
+@ProviderFor(codexBucketThreads)
+const codexBucketThreadsProvider = CodexBucketThreadsFamily._();
+
+/// 首页单桶的会话列表(family: bucket key + 分页)。
+
+final class CodexBucketThreadsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CodexThread>>,
+          List<CodexThread>,
+          FutureOr<List<CodexThread>>
+        >
+    with
+        $FutureModifier<List<CodexThread>>,
+        $FutureProvider<List<CodexThread>> {
+  /// 首页单桶的会话列表(family: bucket key + 分页)。
+  const CodexBucketThreadsProvider._({
+    required CodexBucketThreadsFamily super.from,
+    required ({String bucket, int limit, int offset}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'codexBucketThreadsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$codexBucketThreadsHash();
+
+  @override
+  String toString() {
+    return r'codexBucketThreadsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CodexThread>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CodexThread>> create(Ref ref) {
+    final argument = this.argument as ({String bucket, int limit, int offset});
+    return codexBucketThreads(
+      ref,
+      bucket: argument.bucket,
+      limit: argument.limit,
+      offset: argument.offset,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CodexBucketThreadsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$codexBucketThreadsHash() =>
+    r'9f03f72ced31b3f7f7ac45d922bf7a8febc50924';
+
+/// 首页单桶的会话列表(family: bucket key + 分页)。
+
+final class CodexBucketThreadsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<CodexThread>>,
+          ({String bucket, int limit, int offset})
+        > {
+  const CodexBucketThreadsFamily._()
+    : super(
+        retry: null,
+        name: r'codexBucketThreadsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 首页单桶的会话列表(family: bucket key + 分页)。
+
+  CodexBucketThreadsProvider call({
+    required String bucket,
+    int limit = 30,
+    int offset = 0,
+  }) => CodexBucketThreadsProvider._(
+    argument: (bucket: bucket, limit: limit, offset: offset),
+    from: this,
+  );
+
+  @override
+  String toString() => r'codexBucketThreadsProvider';
+}

@@ -17,6 +17,7 @@ _CodexThreadDto _$CodexThreadDtoFromJson(Map<String, dynamic> json) =>
       updatedAtMs: (json['updatedAtMs'] as num?)?.toInt() ?? 0,
       createdAtMs: (json['createdAtMs'] as num?)?.toInt() ?? 0,
       tokensUsed: (json['tokensUsed'] as num?)?.toInt() ?? 0,
+      modelProvider: json['modelProvider'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CodexThreadDtoToJson(_CodexThreadDto instance) =>
@@ -30,4 +31,5 @@ Map<String, dynamic> _$CodexThreadDtoToJson(_CodexThreadDto instance) =>
       'updatedAtMs': instance.updatedAtMs,
       'createdAtMs': instance.createdAtMs,
       'tokensUsed': instance.tokensUsed,
+      'modelProvider': instance.modelProvider,
     };

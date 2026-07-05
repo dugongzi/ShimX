@@ -16,5 +16,6 @@ abstract class CodexThread with _$CodexThread {
     required int updatedAtMs,
     required int createdAtMs,
     required int tokensUsed,
+    @Default('') String modelProvider,
   }) = _CodexThread;
 }

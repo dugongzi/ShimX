@@ -100,6 +100,112 @@ class CodexSessionActionDatasource {
     }
   }
 
+  // ──────────────────────────── bucket move ────────────────────────────
+
+  /// 把一批 thread 移动到目标桶(model_provider):
+  ///   1. sqlite: `UPDATE threads SET model_provider = ? WHERE id IN (...)`(事务)
+  ///   2. jsonl: 每条 rollout 找到 `session_meta` 那一行,rewrite payload.model_provider,
+  ///      tmp 文件写 → rename 覆盖(原子)。
+  /// jsonl 单条失败只 log,不回滚 sqlite —— codex 侧栏用 sqlite,jsonl 里的
+  /// meta 字段不影响侧栏显示。返回实际 UPDATE 的行数。
+  Future<int> moveThreadsToBucket({
+    required List<String> threadIds,
+    required String targetBucket,
+  }) async {
+    if (threadIds.isEmpty) return 0;
+    final dbPath = _codexDbPath();
+    if (!File(dbPath).existsSync()) {
+      throw StateError('Codex database not found: $dbPath');
+    }
+    final db = sqlite3.open(dbPath);
+    final rolloutPaths = <String>[];
+    var affected = 0;
+    try {
+      db.execute('BEGIN');
+      try {
+        // 拿到每条 thread 当前的 rollout_path,后面 jsonl 改写要用
+        final placeholders = List.filled(threadIds.length, '?').join(', ');
+        final rows = db.select(
+          'SELECT rollout_path FROM threads WHERE id IN ($placeholders)',
+          threadIds,
+        );
+        for (final row in rows) {
+          final rp = row['rollout_path'] as String?;
+          if (rp != null && rp.isNotEmpty) rolloutPaths.add(rp);
+        }
+
+        final stmt = db.prepare(
+          'UPDATE threads SET model_provider = ? WHERE id IN ($placeholders)',
+        );
+        try {
+          stmt.execute([targetBucket, ...threadIds]);
+        } finally {
+          stmt.dispose();
+        }
+        affected = db.updatedRows;
+        db.execute('COMMIT');
+      } catch (e) {
+        db.execute('ROLLBACK');
+        rethrow;
+      }
+    } finally {
+      db.dispose();
+    }
+
+    // sqlite 已经提交,jsonl 改写单独跑,失败静默(见方法头注释)
+    for (final path in rolloutPaths) {
+      try {
+        await _rewriteRolloutModelProvider(path, targetBucket);
+      } catch (_) {
+        // 单文件失败不影响其它
+      }
+    }
+    return affected;
+  }
+
+  /// rollout jsonl 里唯一一行 `type == "session_meta"` 里 payload.model_provider
+  /// rewrite 为新桶。tmp 写 → rename 覆盖(原子)。
+  Future<void> _rewriteRolloutModelProvider(
+    String jsonlPath,
+    String newProvider,
+  ) async {
+    final file = File(jsonlPath);
+    if (!await file.exists()) return;
+    final lines = await file.readAsLines();
+    var changed = false;
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (!line.contains('"session_meta"') ||
+          !line.contains('"model_provider"')) {
+        continue;
+      }
+      try {
+        final obj = jsonDecode(line);
+        if (obj is! Map) continue;
+        if (obj['type'] != 'session_meta') continue;
+        final payload = obj['payload'];
+        if (payload is! Map) continue;
+        if (payload['model_provider'] == newProvider) continue;
+        payload['model_provider'] = newProvider;
+        lines[i] = jsonEncode(obj);
+        changed = true;
+      } catch (_) {
+        // 单行解析失败略过
+      }
+    }
+    if (!changed) return;
+
+    final tmp = File('$jsonlPath.tmp');
+    await tmp.writeAsString('${lines.join('\n')}\n');
+    // Windows 上目标文件存在时 rename 会失败,兜底走 delete + rename
+    try {
+      await tmp.rename(jsonlPath);
+    } on FileSystemException {
+      if (await file.exists()) await file.delete();
+      await tmp.rename(jsonlPath);
+    }
+  }
+
   // ──────────────────────────── export ────────────────────────────
 
   /// 弹保存对话框 → 写文件。用户取消返回 null。

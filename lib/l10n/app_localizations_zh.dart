@@ -664,6 +664,177 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionTabCodex => 'Codex';
 
   @override
+  String get sessionTabHome => '首页';
+
+  @override
+  String get sessionTabBackup => '备份';
+
+  @override
+  String get sessionCurrentBucket => '当前 codex 桶';
+
+  @override
+  String get sessionSwitchBucket => '切换桶';
+
+  @override
+  String get sessionSwitchToShim => '切到 shim';
+
+  @override
+  String get sessionRefresh => '刷新';
+
+  @override
+  String get sessionBucketLabel => '桶';
+
+  @override
+  String get sessionSelectAll => '全选';
+
+  @override
+  String sessionSelectedCount(int n) {
+    return '已选 $n 条';
+  }
+
+  @override
+  String get sessionMoveTo => '移动到';
+
+  @override
+  String get sessionExecute => '执行';
+
+  @override
+  String get sessionBackupSelected => '备份选中';
+
+  @override
+  String get sessionMergeAllToShim => '统一对话';
+
+  @override
+  String get sessionMergeAllToShimTooltip =>
+      'codex 的会话按 model_provider(桶)分组显示。切换供应商时侧栏只显示当前桶,其它桶里的历史看不到。\n此操作把所有非 shim 桶里的会话都改成 shim 桶,并把 codex 的默认桶切到 shim。之后不管你用哪个供应商,侧栏都能看到全部历史。';
+
+  @override
+  String get sessionSwitchBucketTooltip =>
+      '选择 codex 侧栏当前显示哪个桶的会话。桶名就是每条会话记录里的 model_provider 字段,不同供应商生成的会话会落到不同桶。切桶只影响侧栏筛选,不会改动会话内容。';
+
+  @override
+  String get sessionBackupSelectedTooltip =>
+      '把选中的会话打包保存到 shim 备份目录,同时记录每条会话原本所属的桶。之后可在「备份」tab 里逐条或整批恢复到原桶。';
+
+  @override
+  String sessionMoveSuccess(int n, String bucket) {
+    return '已移动 $n 条到「$bucket」';
+  }
+
+  @override
+  String sessionMoveFailed(String error) {
+    return '移动失败: $error';
+  }
+
+  @override
+  String sessionBackupSuccess(int n) {
+    return '已备份 $n 条';
+  }
+
+  @override
+  String sessionBackupFailed(String error) {
+    return '备份失败: $error';
+  }
+
+  @override
+  String get sessionEmptyBucket => '(空)';
+
+  @override
+  String get sessionLoadMore => '加载更多';
+
+  @override
+  String get sessionNoSelection => '未选择会话';
+
+  @override
+  String sessionSwitchBucketSuccess(String bucket) {
+    return '已切换到「$bucket」桶';
+  }
+
+  @override
+  String sessionSwitchBucketFailed(String error) {
+    return '切换失败: $error';
+  }
+
+  @override
+  String get sessionMergeConfirmTitle => '确认合并?';
+
+  @override
+  String get sessionMergeConfirmBody =>
+      '将把除 shim 桶外所有会话全部移动到 shim 桶,该操作不会自动备份。';
+
+  @override
+  String get sessionMergeConfirmOk => '合并';
+
+  @override
+  String get sessionMergeProgressTitle => '正在合并到 shim 桶';
+
+  @override
+  String sessionMergeProgressBody(int done, int total) {
+    return '$done / $total 条';
+  }
+
+  @override
+  String get sessionBackupLibrary => '备份库';
+
+  @override
+  String sessionBackupCountLabel(int n) {
+    return '$n 条备份';
+  }
+
+  @override
+  String sessionBackupFromBucket(String bucket) {
+    return '来自「$bucket」';
+  }
+
+  @override
+  String sessionBackupThreadCount(int n) {
+    return '$n 条会话';
+  }
+
+  @override
+  String get sessionRestoreOne => '恢复';
+
+  @override
+  String get sessionRestoreAll => '一键恢复全部';
+
+  @override
+  String get sessionDeleteBackup => '删除此备份';
+
+  @override
+  String get sessionRestoreConfirmTitle => '确认恢复?';
+
+  @override
+  String get sessionRestoreConfirmBody => '会用备份中的内容覆盖当前会话状态。';
+
+  @override
+  String get sessionRestoreConfirmOk => '恢复';
+
+  @override
+  String get sessionDeleteBackupConfirmTitle => '删除备份?';
+
+  @override
+  String get sessionDeleteBackupConfirmBody => '此操作不可撤销。';
+
+  @override
+  String get sessionDeleteBackupConfirmOk => '删除';
+
+  @override
+  String sessionRestoreSuccess(int n) {
+    return '已恢复 $n 条';
+  }
+
+  @override
+  String sessionRestoreFailed(String error) {
+    return '恢复失败: $error';
+  }
+
+  @override
+  String get sessionDeleteBackupSuccess => '已删除备份';
+
+  @override
+  String get sessionBackupEmpty => '还没有备份';
+
+  @override
   String get sessionsTitle => '会话';
 
   @override

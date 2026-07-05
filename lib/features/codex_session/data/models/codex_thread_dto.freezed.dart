@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CodexThreadDto {
 
- String get id; String get title; String get preview; String get firstUserMessage; String get cwd; int get archived; int get updatedAtMs; int get createdAtMs; int get tokensUsed;
+ String get id; String get title; String get preview; String get firstUserMessage; String get cwd; int get archived; int get updatedAtMs; int get createdAtMs; int get tokensUsed; String get modelProvider;
 /// Create a copy of CodexThreadDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CodexThreadDtoCopyWith<CodexThreadDto> get copyWith => _$CodexThreadDtoCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexThreadDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.firstUserMessage, firstUserMessage) || other.firstUserMessage == firstUserMessage)&&(identical(other.cwd, cwd) || other.cwd == cwd)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.updatedAtMs, updatedAtMs) || other.updatedAtMs == updatedAtMs)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.tokensUsed, tokensUsed) || other.tokensUsed == tokensUsed));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexThreadDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.firstUserMessage, firstUserMessage) || other.firstUserMessage == firstUserMessage)&&(identical(other.cwd, cwd) || other.cwd == cwd)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.updatedAtMs, updatedAtMs) || other.updatedAtMs == updatedAtMs)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.tokensUsed, tokensUsed) || other.tokensUsed == tokensUsed)&&(identical(other.modelProvider, modelProvider) || other.modelProvider == modelProvider));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,preview,firstUserMessage,cwd,archived,updatedAtMs,createdAtMs,tokensUsed);
+int get hashCode => Object.hash(runtimeType,id,title,preview,firstUserMessage,cwd,archived,updatedAtMs,createdAtMs,tokensUsed,modelProvider);
 
 @override
 String toString() {
-  return 'CodexThreadDto(id: $id, title: $title, preview: $preview, firstUserMessage: $firstUserMessage, cwd: $cwd, archived: $archived, updatedAtMs: $updatedAtMs, createdAtMs: $createdAtMs, tokensUsed: $tokensUsed)';
+  return 'CodexThreadDto(id: $id, title: $title, preview: $preview, firstUserMessage: $firstUserMessage, cwd: $cwd, archived: $archived, updatedAtMs: $updatedAtMs, createdAtMs: $createdAtMs, tokensUsed: $tokensUsed, modelProvider: $modelProvider)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CodexThreadDtoCopyWith<$Res>  {
   factory $CodexThreadDtoCopyWith(CodexThreadDto value, $Res Function(CodexThreadDto) _then) = _$CodexThreadDtoCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String preview, String firstUserMessage, String cwd, int archived, int updatedAtMs, int createdAtMs, int tokensUsed
+ String id, String title, String preview, String firstUserMessage, String cwd, int archived, int updatedAtMs, int createdAtMs, int tokensUsed, String modelProvider
 });
 
 
@@ -65,7 +65,7 @@ class _$CodexThreadDtoCopyWithImpl<$Res>
 
 /// Create a copy of CodexThreadDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? preview = null,Object? firstUserMessage = null,Object? cwd = null,Object? archived = null,Object? updatedAtMs = null,Object? createdAtMs = null,Object? tokensUsed = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? preview = null,Object? firstUserMessage = null,Object? cwd = null,Object? archived = null,Object? updatedAtMs = null,Object? createdAtMs = null,Object? tokensUsed = null,Object? modelProvider = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,8 @@ as String,archived: null == archived ? _self.archived : archived // ignore: cast
 as int,updatedAtMs: null == updatedAtMs ? _self.updatedAtMs : updatedAtMs // ignore: cast_nullable_to_non_nullable
 as int,createdAtMs: null == createdAtMs ? _self.createdAtMs : createdAtMs // ignore: cast_nullable_to_non_nullable
 as int,tokensUsed: null == tokensUsed ? _self.tokensUsed : tokensUsed // ignore: cast_nullable_to_non_nullable
-as int,
+as int,modelProvider: null == modelProvider ? _self.modelProvider : modelProvider // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String preview,  String firstUserMessage,  String cwd,  int archived,  int updatedAtMs,  int createdAtMs,  int tokensUsed)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String preview,  String firstUserMessage,  String cwd,  int archived,  int updatedAtMs,  int createdAtMs,  int tokensUsed,  String modelProvider)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CodexThreadDto() when $default != null:
-return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.cwd,_that.archived,_that.updatedAtMs,_that.createdAtMs,_that.tokensUsed);case _:
+return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.cwd,_that.archived,_that.updatedAtMs,_that.createdAtMs,_that.tokensUsed,_that.modelProvider);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String preview,  String firstUserMessage,  String cwd,  int archived,  int updatedAtMs,  int createdAtMs,  int tokensUsed)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String preview,  String firstUserMessage,  String cwd,  int archived,  int updatedAtMs,  int createdAtMs,  int tokensUsed,  String modelProvider)  $default,) {final _that = this;
 switch (_that) {
 case _CodexThreadDto():
-return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.cwd,_that.archived,_that.updatedAtMs,_that.createdAtMs,_that.tokensUsed);case _:
+return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.cwd,_that.archived,_that.updatedAtMs,_that.createdAtMs,_that.tokensUsed,_that.modelProvider);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String preview,  String firstUserMessage,  String cwd,  int archived,  int updatedAtMs,  int createdAtMs,  int tokensUsed)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String preview,  String firstUserMessage,  String cwd,  int archived,  int updatedAtMs,  int createdAtMs,  int tokensUsed,  String modelProvider)?  $default,) {final _that = this;
 switch (_that) {
 case _CodexThreadDto() when $default != null:
-return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.cwd,_that.archived,_that.updatedAtMs,_that.createdAtMs,_that.tokensUsed);case _:
+return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.cwd,_that.archived,_that.updatedAtMs,_that.createdAtMs,_that.tokensUsed,_that.modelProvider);case _:
   return null;
 
 }
@@ -217,7 +218,7 @@ return $default(_that.id,_that.title,_that.preview,_that.firstUserMessage,_that.
 @JsonSerializable()
 
 class _CodexThreadDto extends CodexThreadDto {
-  const _CodexThreadDto({this.id = '', this.title = '', this.preview = '', this.firstUserMessage = '', this.cwd = '', this.archived = 0, this.updatedAtMs = 0, this.createdAtMs = 0, this.tokensUsed = 0}): super._();
+  const _CodexThreadDto({this.id = '', this.title = '', this.preview = '', this.firstUserMessage = '', this.cwd = '', this.archived = 0, this.updatedAtMs = 0, this.createdAtMs = 0, this.tokensUsed = 0, this.modelProvider = ''}): super._();
   factory _CodexThreadDto.fromJson(Map<String, dynamic> json) => _$CodexThreadDtoFromJson(json);
 
 @override@JsonKey() final  String id;
@@ -229,6 +230,7 @@ class _CodexThreadDto extends CodexThreadDto {
 @override@JsonKey() final  int updatedAtMs;
 @override@JsonKey() final  int createdAtMs;
 @override@JsonKey() final  int tokensUsed;
+@override@JsonKey() final  String modelProvider;
 
 /// Create a copy of CodexThreadDto
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexThreadDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.firstUserMessage, firstUserMessage) || other.firstUserMessage == firstUserMessage)&&(identical(other.cwd, cwd) || other.cwd == cwd)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.updatedAtMs, updatedAtMs) || other.updatedAtMs == updatedAtMs)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.tokensUsed, tokensUsed) || other.tokensUsed == tokensUsed));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexThreadDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.firstUserMessage, firstUserMessage) || other.firstUserMessage == firstUserMessage)&&(identical(other.cwd, cwd) || other.cwd == cwd)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.updatedAtMs, updatedAtMs) || other.updatedAtMs == updatedAtMs)&&(identical(other.createdAtMs, createdAtMs) || other.createdAtMs == createdAtMs)&&(identical(other.tokensUsed, tokensUsed) || other.tokensUsed == tokensUsed)&&(identical(other.modelProvider, modelProvider) || other.modelProvider == modelProvider));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,preview,firstUserMessage,cwd,archived,updatedAtMs,createdAtMs,tokensUsed);
+int get hashCode => Object.hash(runtimeType,id,title,preview,firstUserMessage,cwd,archived,updatedAtMs,createdAtMs,tokensUsed,modelProvider);
 
 @override
 String toString() {
-  return 'CodexThreadDto(id: $id, title: $title, preview: $preview, firstUserMessage: $firstUserMessage, cwd: $cwd, archived: $archived, updatedAtMs: $updatedAtMs, createdAtMs: $createdAtMs, tokensUsed: $tokensUsed)';
+  return 'CodexThreadDto(id: $id, title: $title, preview: $preview, firstUserMessage: $firstUserMessage, cwd: $cwd, archived: $archived, updatedAtMs: $updatedAtMs, createdAtMs: $createdAtMs, tokensUsed: $tokensUsed, modelProvider: $modelProvider)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$CodexThreadDtoCopyWith<$Res> implements $CodexThreadDtoCo
   factory _$CodexThreadDtoCopyWith(_CodexThreadDto value, $Res Function(_CodexThreadDto) _then) = __$CodexThreadDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String preview, String firstUserMessage, String cwd, int archived, int updatedAtMs, int createdAtMs, int tokensUsed
+ String id, String title, String preview, String firstUserMessage, String cwd, int archived, int updatedAtMs, int createdAtMs, int tokensUsed, String modelProvider
 });
 
 
@@ -280,7 +282,7 @@ class __$CodexThreadDtoCopyWithImpl<$Res>
 
 /// Create a copy of CodexThreadDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? preview = null,Object? firstUserMessage = null,Object? cwd = null,Object? archived = null,Object? updatedAtMs = null,Object? createdAtMs = null,Object? tokensUsed = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? preview = null,Object? firstUserMessage = null,Object? cwd = null,Object? archived = null,Object? updatedAtMs = null,Object? createdAtMs = null,Object? tokensUsed = null,Object? modelProvider = null,}) {
   return _then(_CodexThreadDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -291,7 +293,8 @@ as String,archived: null == archived ? _self.archived : archived // ignore: cast
 as int,updatedAtMs: null == updatedAtMs ? _self.updatedAtMs : updatedAtMs // ignore: cast_nullable_to_non_nullable
 as int,createdAtMs: null == createdAtMs ? _self.createdAtMs : createdAtMs // ignore: cast_nullable_to_non_nullable
 as int,tokensUsed: null == tokensUsed ? _self.tokensUsed : tokensUsed // ignore: cast_nullable_to_non_nullable
-as int,
+as int,modelProvider: null == modelProvider ? _self.modelProvider : modelProvider // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

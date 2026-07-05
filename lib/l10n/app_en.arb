@@ -453,5 +453,7 @@
   "toolFilterKeywordAdd": "Add",
   "toolFilterKeywordHint": "e.g. image_generation",
   "toolFilterKeywordEmpty": "Keyword cannot be empty",
-  "toolFilterKeywordDuplicate": "Keyword already in the list"
+  "toolFilterKeywordDuplicate": "Keyword already in the list",
+  "requiresOpenaiAuthTitle": "Use official login",
+  "requiresOpenaiAuthDescription": "Restart Codex to apply"
 }

@@ -2191,6 +2191,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'该关键词已在列表中'**
   String get toolFilterKeywordDuplicate;
+
+  /// No description provided for @requiresOpenaiAuthTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启官方登录'**
+  String get requiresOpenaiAuthTitle;
+
+  /// No description provided for @requiresOpenaiAuthDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'改动需重启 Codex'**
+  String get requiresOpenaiAuthDescription;
 }
 
 class _AppLocalizationsDelegate

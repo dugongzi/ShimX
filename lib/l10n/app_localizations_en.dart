@@ -1152,4 +1152,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolFilterKeywordDuplicate => 'Keyword already in the list';
+
+  @override
+  String get requiresOpenaiAuthTitle => 'Use official login';
+
+  @override
+  String get requiresOpenaiAuthDescription => 'Restart Codex to apply';
 }

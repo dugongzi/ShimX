@@ -453,5 +453,7 @@
   "toolFilterKeywordAdd": "添加",
   "toolFilterKeywordHint": "如 image_generation",
   "toolFilterKeywordEmpty": "关键词不能为空",
-  "toolFilterKeywordDuplicate": "该关键词已在列表中"
+  "toolFilterKeywordDuplicate": "该关键词已在列表中",
+  "requiresOpenaiAuthTitle": "开启官方登录",
+  "requiresOpenaiAuthDescription": "改动需重启 Codex"
 }

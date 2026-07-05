@@ -160,6 +160,7 @@ class ProviderActionDatasource {
     String? preserveText,
   }) async {
     final providerId = await _resolveProviderIdForTemplate(preserveText);
+    final requiresAuth = _extractRequiresOpenaiAuth(preserveText);
 
     final template = StringBuffer()
       ..writeln('model_provider = "$providerId"')
@@ -170,7 +171,7 @@ class ProviderActionDatasource {
       ..writeln('[model_providers.$providerId]')
       ..writeln('name = "$providerId"')
       ..writeln('wire_api = "responses"')
-      ..writeln('requires_openai_auth = true')
+      ..writeln('requires_openai_auth = $requiresAuth')
       ..writeln('base_url = "$localProxyUrl"')
       ..writeln();
 
@@ -223,6 +224,17 @@ class ProviderActionDatasource {
       final m = RegExp(r'''^\s*model_provider\s*=\s*["']([^"']+)["']''', multiLine: true).firstMatch(text);
       return m?.group(1);
     }
+  }
+
+  /// 从原 config.toml 文本里抓 requires_openai_auth 的当前值。
+  /// codex 装了这个文件一定存在,所以调用点直接用返回值不 fallback。
+  bool _extractRequiresOpenaiAuth(String? text) {
+    if (text == null || text.isEmpty) return true;
+    final m = RegExp(
+      r'^\s*requires_openai_auth\s*=\s*(true|false)',
+      multiLine: true,
+    ).firstMatch(text);
+    return m?.group(1) != 'false';
   }
 
   /// 从原文里剥掉跟 provider 相关的段(顶层 model_*、[model_providers.*]),

@@ -12,6 +12,7 @@ import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
 import 'package:shim/core/services/shortcut_service.dart';
 import 'package:shim/core/utils/theme_mode_label.dart';
+import 'package:shim/core/providers/requires_openai_auth_provider.dart';
 import 'package:shim/core/providers/tool_filter_keywords_provider.dart';
 import 'package:shim/features/providers/presentation/widgets/proxy_card.dart';
 import 'package:shim/features/settings/presentation/widgets/app_version_line.dart';
@@ -188,6 +189,18 @@ class SettingsTab extends ConsumerWidget {
               ),
               icon: const Icon(Icons.tune_rounded),
               label: Text(context.l10n.toolFilterKeywordsManage),
+            ),
+          ),
+          SizedBox(height: AppSizes.itemGap),
+          SettingCard(
+            icon: Icons.verified_user_rounded,
+            title: context.l10n.requiresOpenaiAuthTitle,
+            description: context.l10n.requiresOpenaiAuthDescription,
+            child: Switch(
+              value: ref.watch(requiresOpenaiAuthProvider),
+              onChanged: (v) => ref
+                  .read(requiresOpenaiAuthProvider.notifier)
+                  .set(v),
             ),
           ),
           SizedBox(height: AppSizes.itemGap),

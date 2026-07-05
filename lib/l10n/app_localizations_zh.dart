@@ -1137,4 +1137,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get toolFilterKeywordDuplicate => '该关键词已在列表中';
+
+  @override
+  String get requiresOpenaiAuthTitle => '开启官方登录';
+
+  @override
+  String get requiresOpenaiAuthDescription => '改动需重启 Codex';
 }

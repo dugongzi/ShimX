@@ -267,14 +267,15 @@
 
     const dialog = document.createElement('div');
     dialog.className =
-      'bg-token-dropdown-background text-token-foreground ring-token-border shadow-xl-spread backdrop-blur-sm';
+      'bg-token-dropdown-background/95 text-token-foreground ring-token-border shadow-xl-spread backdrop-blur-sm';
     Object.assign(dialog.style, {
       width: 'min(720px, calc(100vw - 40px))',
       maxHeight: 'calc(100vh - 80px)',
       padding: '20px 22px',
       borderRadius: '16px',
-      outline: '0.5px solid var(--token-border, rgba(0,0,0,0.08))',
-      boxShadow: '0 24px 64px rgba(0, 0, 0, 0.24)',
+      outline: '0.5px solid var(--token-border, rgba(127,127,127,0.08))',
+      boxShadow: '0 24px 64px rgba(0, 0, 0, 0.35)',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
       display: 'flex',
       flexDirection: 'column',
       gap: '14px',
@@ -299,21 +300,39 @@
       gap: '8px',
     });
 
+    // 按钮不依赖 codex 的 tailwind token(暗色下 bg-token-foreground 变纯黑、
+    // text-token-background 不生效会让按钮变没文字的黑椭圆),
+    // 全部内联样式对齐 shim popover 里的控件风格。
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
     cancelBtn.textContent = S('polishCancel', 'Cancel');
-    cancelBtn.className =
-      'border-token-border no-drag cursor-interaction flex items-center gap-1 border whitespace-nowrap select-none focus:outline-none rounded-full text-token-foreground hover:bg-token-list-hover-background px-3 py-1.5 text-sm';
+    cancelBtn.className = 'no-drag cursor-interaction';
+    Object.assign(cancelBtn.style, {
+      height: '30px',
+      padding: '0 14px',
+      border: '1px solid rgba(127, 127, 127, 0.30)',
+      borderRadius: '999px',
+      background: 'rgba(127, 127, 127, 0.10)',
+      color: 'inherit',
+      fontSize: '13px',
+      fontWeight: '600',
+      cursor: 'pointer',
+    });
 
-    // "替换"按钮走 codex 的主按钮 token(bg-token-foreground / text-token-background)
-    // 亮/暗色主题都会自动反色,不需要硬编码颜色
     const okBtn = document.createElement('button');
     okBtn.type = 'button';
     okBtn.textContent = S('polishReplace', 'Replace');
-    okBtn.className =
-      'no-drag cursor-interaction flex items-center gap-1 whitespace-nowrap select-none focus:outline-none rounded-full px-3 py-1.5 text-sm font-semibold bg-token-foreground text-token-background';
+    okBtn.className = 'no-drag cursor-interaction';
     Object.assign(okBtn.style, {
-      border: '0',
+      height: '30px',
+      padding: '0 16px',
+      border: '1px solid rgba(59, 130, 246, 0.55)',
+      borderRadius: '999px',
+      background: '#2563eb',
+      color: '#ffffff',
+      fontSize: '13px',
+      fontWeight: '700',
+      cursor: 'pointer',
     });
 
     actions.appendChild(cancelBtn);
@@ -367,7 +386,7 @@
     Object.assign(box.style, {
       padding: '12px 14px',
       borderRadius: '10px',
-      border: '1px solid var(--token-border, rgba(0,0,0,0.08))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.14))',
       fontSize: '13px',
       lineHeight: '1.55',
       whiteSpace: 'pre-wrap',

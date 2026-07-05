@@ -2143,6 +2143,54 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'正在删除 Skill...'**
   String get skillsDeleting;
+
+  /// No description provided for @toolFilterKeywordsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'工具过滤关键词'**
+  String get toolFilterKeywordsTitle;
+
+  /// No description provided for @toolFilterKeywordsDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'按关键词剔除请求里的工具项'**
+  String get toolFilterKeywordsDescription;
+
+  /// No description provided for @toolFilterKeywordsManage.
+  ///
+  /// In zh, this message translates to:
+  /// **'管理'**
+  String get toolFilterKeywordsManage;
+
+  /// No description provided for @toolFilterKeywordsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无关键词(空列表 = 不过滤任何工具)'**
+  String get toolFilterKeywordsEmpty;
+
+  /// No description provided for @toolFilterKeywordAdd.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加'**
+  String get toolFilterKeywordAdd;
+
+  /// No description provided for @toolFilterKeywordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'如 image_generation'**
+  String get toolFilterKeywordHint;
+
+  /// No description provided for @toolFilterKeywordEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'关键词不能为空'**
+  String get toolFilterKeywordEmpty;
+
+  /// No description provided for @toolFilterKeywordDuplicate.
+  ///
+  /// In zh, this message translates to:
+  /// **'该关键词已在列表中'**
+  String get toolFilterKeywordDuplicate;
 }
 
 class _AppLocalizationsDelegate

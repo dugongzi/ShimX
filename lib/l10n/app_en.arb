@@ -445,5 +445,13 @@
   "skillsRefreshing": "Refreshing Skills...",
   "skillsInstalling": "Installing Skills...",
   "skillsImporting": "Importing Skill...",
-  "skillsDeleting": "Deleting Skill..."
+  "skillsDeleting": "Deleting Skill...",
+  "toolFilterKeywordsTitle": "Tool filter keywords",
+  "toolFilterKeywordsDescription": "Strip request tools by keyword",
+  "toolFilterKeywordsManage": "Manage",
+  "toolFilterKeywordsEmpty": "No keywords (empty list = no filtering)",
+  "toolFilterKeywordAdd": "Add",
+  "toolFilterKeywordHint": "e.g. image_generation",
+  "toolFilterKeywordEmpty": "Keyword cannot be empty",
+  "toolFilterKeywordDuplicate": "Keyword already in the list"
 }

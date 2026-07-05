@@ -1127,4 +1127,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get skillsDeleting => 'Deleting Skill...';
+
+  @override
+  String get toolFilterKeywordsTitle => 'Tool filter keywords';
+
+  @override
+  String get toolFilterKeywordsDescription => 'Strip request tools by keyword';
+
+  @override
+  String get toolFilterKeywordsManage => 'Manage';
+
+  @override
+  String get toolFilterKeywordsEmpty =>
+      'No keywords (empty list = no filtering)';
+
+  @override
+  String get toolFilterKeywordAdd => 'Add';
+
+  @override
+  String get toolFilterKeywordHint => 'e.g. image_generation';
+
+  @override
+  String get toolFilterKeywordEmpty => 'Keyword cannot be empty';
+
+  @override
+  String get toolFilterKeywordDuplicate => 'Keyword already in the list';
 }

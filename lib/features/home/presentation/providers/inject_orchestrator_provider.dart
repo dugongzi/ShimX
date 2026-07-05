@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shim/core/providers/tool_filter_keywords_provider.dart';
 import 'package:shim/core/services/bridge_service.dart';
 import 'package:shim/core/services/cdp_service.dart';
 import 'package:shim/core/services/codex_launcher_service.dart';
@@ -59,6 +60,7 @@ void _registerAllBridgeRoutes(Ref ref) {
   ref.read(claudeBridgeRouteRegistrationProvider);
   ref.read(pluginBridgeRouteRegistrationProvider);
   ref.read(polishBridgeRouteRegistrationProvider);
+  ref.read(toolFilterRouteRegistrationProvider);
 }
 
 /// 直接注入到端口(要求端口上已经有 page),建立 CDP 长连接并安装 bridge + 脚本。

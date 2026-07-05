@@ -1113,4 +1113,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get skillsDeleting => '正在删除 Skill...';
+
+  @override
+  String get toolFilterKeywordsTitle => '工具过滤关键词';
+
+  @override
+  String get toolFilterKeywordsDescription => '按关键词剔除请求里的工具项';
+
+  @override
+  String get toolFilterKeywordsManage => '管理';
+
+  @override
+  String get toolFilterKeywordsEmpty => '暂无关键词(空列表 = 不过滤任何工具)';
+
+  @override
+  String get toolFilterKeywordAdd => '添加';
+
+  @override
+  String get toolFilterKeywordHint => '如 image_generation';
+
+  @override
+  String get toolFilterKeywordEmpty => '关键词不能为空';
+
+  @override
+  String get toolFilterKeywordDuplicate => '该关键词已在列表中';
 }

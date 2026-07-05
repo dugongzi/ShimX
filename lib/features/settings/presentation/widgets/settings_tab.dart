@@ -12,9 +12,11 @@ import 'package:shim/core/providers/locale_provider.dart';
 import 'package:shim/core/providers/theme_provider.dart';
 import 'package:shim/core/services/shortcut_service.dart';
 import 'package:shim/core/utils/theme_mode_label.dart';
+import 'package:shim/core/providers/tool_filter_keywords_provider.dart';
 import 'package:shim/features/providers/presentation/widgets/proxy_card.dart';
 import 'package:shim/features/settings/presentation/widgets/app_version_line.dart';
 import 'package:shim/features/settings/presentation/widgets/setting_card.dart';
+import 'package:shim/features/settings/presentation/widgets/tool_filter_keywords_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsTab extends ConsumerWidget {
@@ -176,6 +178,19 @@ class SettingsTab extends ConsumerWidget {
             ),
           ),
           SizedBox(height: AppSizes.itemGap),
+          SettingCard(
+            icon: Icons.filter_alt_rounded,
+            title: context.l10n.toolFilterKeywordsTitle,
+            description: _toolFilterKeywordsSummary(ref, context),
+            child: FilledButton.tonalIcon(
+              onPressed: () => SmartDialog.show(
+                builder: (_) => const ToolFilterKeywordsDialog(),
+              ),
+              icon: const Icon(Icons.tune_rounded),
+              label: Text(context.l10n.toolFilterKeywordsManage),
+            ),
+          ),
+          SizedBox(height: AppSizes.itemGap),
           const ProxyCard(),
           SizedBox(height: AppSizes.sectionGap),
           Text(
@@ -189,5 +204,13 @@ class SettingsTab extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _toolFilterKeywordsSummary(WidgetRef ref, BuildContext context) {
+    final list = ref.watch(toolFilterKeywordsProvider);
+    if (list.isEmpty) return context.l10n.toolFilterKeywordsEmpty;
+    return list
+        .map((k) => k.enabled ? k.keyword : '${k.keyword} (off)')
+        .join(', ');
   }
 }

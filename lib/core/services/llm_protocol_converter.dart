@@ -34,6 +34,7 @@ class LlmRequestConvertOptions {
     this.overrideModel,
     this.reasoningEffort,
     this.prependSystemMessage,
+    this.toolFilterKeywords = const <String>[],
   });
 
   final String? overrideModel;
@@ -42,6 +43,11 @@ class LlmRequestConvertOptions {
   /// 在 input 首部插一条 role=system 的 message,用于注入"接续 Claude 会话"等运行时指引。
   /// 空/null = 不插。
   final String? prependSystemMessage;
+
+  /// tools 数组过滤关键词。每一项若 `type` 或 `name` 命中,该项就被剔掉。
+  /// 参考 openai/codex#21952:codex app-server 在识别官方账号时会无条件塞
+  /// `{"type":"image_generation"}` 到 tools,导致不支持该工具的中转站 403。
+  final List<String> toolFilterKeywords;
 }
 
 List<int> convertLlmProtocolBody(
@@ -82,6 +88,29 @@ Map<String, Object?> _applyRequestOptionsToResponses(
   LlmRequestConvertOptions options,
 ) {
   final out = Map<String, Object?>.from(source);
+
+  // 关键词过滤:tools 里 type 或 name 命中关键词的项在转发前剔掉。
+  // 默认关键词由 UI 侧的 toolFilterKeywordsProvider 管理,可增删。
+  // 参考 openai/codex#21952:codex app-server 在识别官方账号时会无条件塞
+  // {"type":"image_generation"} 到 tools,导致不支持该工具的中转站 403。
+  final keywords = options.toolFilterKeywords;
+  if (keywords.isNotEmpty) {
+    final tools = out['tools'];
+    if (tools is List) {
+      final filtered = tools.where((t) {
+        if (t is! Map) return true;
+        final type = t['type'];
+        if (type is String && keywords.contains(type)) return false;
+        final name = t['name'];
+        if (name is String && keywords.contains(name)) return false;
+        return true;
+      }).toList();
+      if (filtered.length != tools.length) {
+        out['tools'] = filtered;
+      }
+    }
+  }
+
   final overrideModel = options.overrideModel;
   if (overrideModel != null && overrideModel.isNotEmpty) {
     out['model'] = overrideModel;

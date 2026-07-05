@@ -189,6 +189,19 @@ class LocalProxyService {
     );
   }
 
+  /// tools 数组过滤关键词。转发前 tools 里 type/name 命中的项会被剔掉。
+  /// 由 UI 侧的 toolFilterKeywordsProvider 推送,增删后立即生效。
+  List<String> _toolFilterKeywords = const <String>[];
+
+  void setToolFilterKeywords(List<String> keywords) {
+    _toolFilterKeywords = List.unmodifiable(keywords);
+    AppLogService.instance.info(
+      'Proxy',
+      '工具过滤关键词已更新',
+      details: keywords.isEmpty ? '(空)' : keywords.join(', '),
+    );
+  }
+
   bool get isRunning => _server != null;
   int? get port => _port;
   ProxyTarget? get target => _target;
@@ -399,6 +412,7 @@ class LocalProxyService {
           overrideModel: target.model,
           reasoningEffort: target.reasoningEffort,
           prependSystemMessage: injectedSystem,
+          toolFilterKeywords: _toolFilterKeywords,
         ),
       );
       if (injectedSystem != null) {

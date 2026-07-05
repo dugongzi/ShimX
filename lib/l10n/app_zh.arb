@@ -445,5 +445,13 @@
   "skillsRefreshing": "正在刷新 Skills...",
   "skillsInstalling": "正在安装 Skills...",
   "skillsImporting": "正在导入 Skill...",
-  "skillsDeleting": "正在删除 Skill..."
+  "skillsDeleting": "正在删除 Skill...",
+  "toolFilterKeywordsTitle": "工具过滤关键词",
+  "toolFilterKeywordsDescription": "按关键词剔除请求里的工具项",
+  "toolFilterKeywordsManage": "管理",
+  "toolFilterKeywordsEmpty": "暂无关键词(空列表 = 不过滤任何工具)",
+  "toolFilterKeywordAdd": "添加",
+  "toolFilterKeywordHint": "如 image_generation",
+  "toolFilterKeywordEmpty": "关键词不能为空",
+  "toolFilterKeywordDuplicate": "该关键词已在列表中"
 }

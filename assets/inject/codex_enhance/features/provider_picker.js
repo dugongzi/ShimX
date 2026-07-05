@@ -616,6 +616,7 @@
     }
 
     fragment.appendChild(buildAutoSwitchFooter());
+    fragment.appendChild(buildToolFilterFooter());
     popover.replaceChildren(fragment);
   }
 
@@ -938,6 +939,350 @@
     row.appendChild(valSpan);
     row.appendChild(btn('+', step, current >= max));
     return row;
+  }
+
+  // ========== 工具过滤关键词 ==========
+
+  let shimToolFilter = null; // { keywords: {keyword, enabled}[], labels: {...} }
+  let shimToolFilterExpanded = false;
+  let shimToolFilterPending = ''; // 输入框未提交的值,展开时保留
+
+  function ensureToolFilterLoaded() {
+    if (shimToolFilter || typeof window.shim !== 'function') return Promise.resolve();
+    return window.shim('/tool-filter/get', {}).then((res) => {
+      if (res && res.code === 0 && res.data) {
+        shimToolFilter = res.data;
+      }
+    }).catch(() => {});
+  }
+
+  function shimToolFilterLabels() {
+    return (shimToolFilter && shimToolFilter.labels) || {};
+  }
+
+  async function toolFilterAdd(keyword) {
+    const kw = String(keyword || '').trim();
+    if (!kw) {
+      const L = shimToolFilterLabels();
+      showToast(L.invalid || 'Keyword cannot be empty', 'error');
+      return;
+    }
+    if (Array.isArray(shimToolFilter?.keywords) && shimToolFilter.keywords.some((k) => k.keyword === kw)) {
+      const L = shimToolFilterLabels();
+      showToast(L.duplicate || 'Keyword already exists', 'error');
+      return;
+    }
+    try {
+      const res = await window.shim('/tool-filter/add', { keyword: kw });
+      if (res && res.code === 0 && res.data) {
+        shimToolFilter = res.data;
+        shimToolFilterPending = '';
+        updateProviderPickerPopover();
+      } else {
+        showToast(`${res?.message || S('unknownError', 'Unknown error')}`, 'error');
+      }
+    } catch (err) {
+      showToast(`${err?.message || err}`, 'error');
+    }
+  }
+
+  async function toolFilterRemove(keyword) {
+    try {
+      const res = await window.shim('/tool-filter/remove', { keyword });
+      if (res && res.code === 0 && res.data) {
+        shimToolFilter = res.data;
+        updateProviderPickerPopover();
+      } else {
+        showToast(`${res?.message || S('unknownError', 'Unknown error')}`, 'error');
+      }
+    } catch (err) {
+      showToast(`${err?.message || err}`, 'error');
+    }
+  }
+
+  async function toolFilterToggle(keyword, enabled) {
+    try {
+      const res = await window.shim('/tool-filter/toggle', { keyword, enabled });
+      if (res && res.code === 0 && res.data) {
+        shimToolFilter = res.data;
+        updateProviderPickerPopover();
+      } else {
+        showToast(`${res?.message || S('unknownError', 'Unknown error')}`, 'error');
+      }
+    } catch (err) {
+      showToast(`${err?.message || err}`, 'error');
+    }
+  }
+
+  function buildToolFilterFooter() {
+    const wrap = document.createElement('div');
+    Object.assign(wrap.style, {
+      marginTop: '8px',
+      borderTop: '1px solid var(--token-border, rgba(127,127,127,0.10))',
+      paddingTop: '8px',
+    });
+
+    const L = shimToolFilterLabels();
+    const header = document.createElement('button');
+    header.type = 'button';
+    header.className = 'no-drag cursor-interaction rounded-md hover:bg-token-list-hover-background';
+    Object.assign(header.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      width: '100%',
+      minHeight: '32px',
+      padding: '6px 8px',
+      border: '0',
+      background: 'transparent',
+      color: 'inherit',
+      textAlign: 'left',
+      fontSize: '12px',
+      fontWeight: '700',
+    });
+
+    const headerLabel = document.createElement('span');
+    headerLabel.textContent = '🧰 ' + (L.title || 'Tool filter');
+    headerLabel.style.flex = '1';
+
+    const summary = document.createElement('span');
+    summary.style.color = 'var(--text-secondary, currentColor)';
+    summary.style.fontWeight = '500';
+    summary.style.fontSize = '11px';
+    const keywords = Array.isArray(shimToolFilter?.keywords) ? shimToolFilter.keywords : null;
+    if (keywords === null) {
+      summary.textContent = '…';
+    } else if (!keywords.length) {
+      summary.textContent = L.empty || 'No keywords';
+    } else {
+      const active = keywords.filter((k) => k.enabled).length;
+      summary.textContent = active === keywords.length
+        ? `${keywords.length}`
+        : `${active}/${keywords.length}`;
+    }
+
+    const caret = document.createElement('span');
+    caret.textContent = shimToolFilterExpanded ? '▴' : '▾';
+    caret.style.fontSize = '10px';
+    caret.style.opacity = '0.6';
+
+    header.appendChild(headerLabel);
+    header.appendChild(summary);
+    header.appendChild(caret);
+    header.addEventListener('click', async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      shimToolFilterExpanded = !shimToolFilterExpanded;
+      if (shimToolFilterExpanded) await ensureToolFilterLoaded();
+      updateProviderPickerPopover();
+    }, true);
+    wrap.appendChild(header);
+
+    if (shimToolFilterExpanded && shimToolFilter) {
+      const body = document.createElement('div');
+      Object.assign(body.style, {
+        marginTop: '6px',
+        padding: '8px',
+        borderRadius: '8px',
+        background: 'rgba(127, 127, 127, 0.10)',
+      });
+
+      const desc = document.createElement('div');
+      desc.textContent = L.description || '';
+      Object.assign(desc.style, {
+        marginBottom: '8px',
+        fontSize: '11px',
+        lineHeight: '1.4',
+        color: 'var(--text-secondary, currentColor)',
+      });
+      body.appendChild(desc);
+
+      const addRow = document.createElement('div');
+      Object.assign(addRow.style, {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        marginBottom: '8px',
+      });
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = L.placeholder || 'e.g. image_generation';
+      input.value = shimToolFilterPending;
+      Object.assign(input.style, {
+        flex: '1',
+        minWidth: '0',
+        height: '28px',
+        padding: '0 8px',
+        border: '1px solid rgba(127, 127, 127, 0.30)',
+        borderRadius: '6px',
+        background: 'var(--token-main-surface-primary, rgba(255,255,255,0.04))',
+        color: 'inherit',
+        fontSize: '12px',
+        outline: 'none',
+      });
+      input.addEventListener('input', (event) => {
+        // 空格禁止
+        const cleaned = String(event.target.value || '').replace(/\s+/g, '');
+        if (cleaned !== event.target.value) event.target.value = cleaned;
+        shimToolFilterPending = cleaned;
+      });
+      input.addEventListener('keydown', async (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          event.stopPropagation();
+          await toolFilterAdd(event.target.value);
+        }
+      });
+      // 阻止 popover outside-click 把它当外部点击
+      input.addEventListener('pointerdown', (event) => event.stopPropagation(), true);
+      input.addEventListener('mousedown', (event) => event.stopPropagation(), true);
+
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.textContent = '+';
+      addBtn.setAttribute('aria-label', L.add || 'Add');
+      addBtn.setAttribute('title', L.add || 'Add');
+      Object.assign(addBtn.style, {
+        width: '28px',
+        height: '28px',
+        border: '1px solid rgba(59, 130, 246, 0.55)',
+        borderRadius: '6px',
+        background: 'rgba(59, 130, 246, 0.18)',
+        color: '#2563eb',
+        fontSize: '16px',
+        fontWeight: '700',
+        lineHeight: '1',
+        cursor: 'pointer',
+      });
+      addBtn.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        await toolFilterAdd(input.value);
+      }, true);
+
+      addRow.appendChild(input);
+      addRow.appendChild(addBtn);
+      body.appendChild(addRow);
+
+      const chips = document.createElement('div');
+      Object.assign(chips.style, {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '6px',
+      });
+
+      const list = Array.isArray(shimToolFilter.keywords) ? shimToolFilter.keywords : [];
+      if (!list.length) {
+        const empty = document.createElement('div');
+        empty.textContent = L.empty || 'No keywords';
+        Object.assign(empty.style, {
+          padding: '4px 0',
+          fontSize: '11px',
+          color: 'var(--text-secondary, currentColor)',
+        });
+        chips.appendChild(empty);
+      }
+      for (const entry of list) {
+        const enabled = entry.enabled !== false;
+        const kw = entry.keyword;
+        const chip = document.createElement('span');
+        Object.assign(chip.style, {
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          height: '24px',
+          padding: '0 6px 0 4px',
+          border: '1px solid rgba(127, 127, 127, 0.28)',
+          borderRadius: '999px',
+          background: enabled ? 'rgba(59, 130, 246, 0.14)' : 'rgba(127, 127, 127, 0.10)',
+          fontSize: '11px',
+          fontWeight: '600',
+          opacity: enabled ? '1' : '0.6',
+        });
+
+        // 迷你开关 (16x10 圆角轨道 + 8x8 圆点)
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.setAttribute('aria-label', enabled
+          ? (L.enabled || 'Enabled')
+          : (L.disabled || 'Disabled'));
+        toggle.setAttribute('title', enabled
+          ? (L.enabled || 'Enabled')
+          : (L.disabled || 'Disabled'));
+        Object.assign(toggle.style, {
+          position: 'relative',
+          width: '18px',
+          height: '10px',
+          border: '0',
+          borderRadius: '999px',
+          padding: '0',
+          background: enabled ? '#2563eb' : 'rgba(127, 127, 127, 0.45)',
+          cursor: 'pointer',
+          flex: '0 0 auto',
+        });
+        const knob = document.createElement('span');
+        Object.assign(knob.style, {
+          position: 'absolute',
+          top: '1px',
+          left: enabled ? '9px' : '1px',
+          width: '8px',
+          height: '8px',
+          borderRadius: '999px',
+          background: '#fff',
+          transition: 'left 0.12s ease',
+        });
+        toggle.appendChild(knob);
+        toggle.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          await toolFilterToggle(kw, !enabled);
+        }, true);
+        chip.appendChild(toggle);
+
+        const text = document.createElement('span');
+        text.textContent = kw;
+        Object.assign(text.style, {
+          textDecoration: enabled ? 'none' : 'line-through',
+        });
+        chip.appendChild(text);
+
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.textContent = '×';
+        del.setAttribute('aria-label', 'Remove');
+        Object.assign(del.style, {
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '16px',
+          height: '16px',
+          border: '0',
+          borderRadius: '999px',
+          background: 'transparent',
+          color: 'inherit',
+          fontSize: '14px',
+          fontWeight: '700',
+          lineHeight: '1',
+          cursor: 'pointer',
+        });
+        del.addEventListener('click', async (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          await toolFilterRemove(kw);
+        }, true);
+        chip.appendChild(del);
+        chips.appendChild(chip);
+      }
+      body.appendChild(chips);
+      wrap.appendChild(body);
+    }
+
+    return wrap;
   }
 
   async function selectProvider(id, caller) {

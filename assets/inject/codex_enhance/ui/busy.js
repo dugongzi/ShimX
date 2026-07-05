@@ -55,7 +55,7 @@
       position: 'fixed',
       inset: '0',
       zIndex: '2147483646', // 比 indicator 低 1
-      background: 'radial-gradient(circle at 50% 0%, rgba(0,0,0,0.34) 0%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0) 100%)',
+      background: 'radial-gradient(circle at 50% 0%, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.10) 50%, rgba(0,0,0,0) 100%)',
       pointerEvents: 'none', // 不挡操作
       opacity: '0',
       transition: 'opacity 0.22s ease',
@@ -88,9 +88,9 @@
       maxWidth: '480px',
       padding: '14px 22px 16px',
       borderRadius: '14px',
-      background: 'linear-gradient(180deg, rgba(28,28,32,0.96), rgba(20,20,24,0.96))',
+      background: 'var(--token-main-surface-primary, var(--token-dropdown-background, rgba(127,127,127,0.06)))',
       border: '1px solid rgba(96,165,250,0.30)',
-      color: '#f8fafc',
+      color: 'var(--token-text-primary, currentColor)',
       fontSize: '14px',
       fontWeight: '600',
       letterSpacing: '0.2px',
@@ -106,7 +106,7 @@
       width: '24px',
       height: '24px',
       borderRadius: '999px',
-      border: '2.5px solid rgba(255,255,255,0.12)',
+      border: '2.5px solid rgba(127,127,127,0.22)',
       borderTopColor: '#60a5fa',
       borderRightColor: 'rgba(96,165,250,0.55)',
       animation: 'shimBusySpin 0.8s linear infinite',
@@ -132,7 +132,7 @@
       right: '0',
       bottom: '0',
       height: '3px',
-      background: 'rgba(255,255,255,0.05)',
+      background: 'rgba(127,127,127,0.10)',
       overflow: 'hidden',
     });
     const progressBar = document.createElement('span');

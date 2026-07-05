@@ -222,7 +222,7 @@
       minWidth: '200px',
       padding: '4px',
       borderRadius: '10px',
-      outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+      outline: '0.5px solid var(--token-border, rgba(127,127,127,0.18))',
       boxShadow: '0 16px 42px rgba(0, 0, 0, 0.42)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '13px',
@@ -274,7 +274,7 @@
     });
     btn.textContent = label;
     btn.addEventListener('mouseenter', () => {
-      btn.style.background = 'rgba(255,255,255,0.06)';
+      btn.style.background = 'rgba(127,127,127,0.06)';
     });
     btn.addEventListener('mouseleave', () => {
       btn.style.background = 'transparent';

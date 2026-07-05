@@ -86,7 +86,7 @@
     const panel = document.createElement('div');
     panel.id = NAV_PANEL_ID;
     panel.style.cssText =
-      'margin: 4px 0 6px 12px; padding: 6px 0; border-left: 1px solid var(--token-border, rgba(255,255,255,0.12)); max-height: 50vh; overflow-y: auto; overscroll-behavior: contain;';
+      'margin: 4px 0 6px 12px; padding: 6px 0; border-left: 1px solid var(--token-border, rgba(127,127,127,0.22)); max-height: 50vh; overflow-y: auto; overscroll-behavior: contain;';
     // codex 的 sidebar 容器可能拦截 wheel 事件, 这里阻止冒泡, 保证内部能滚
     panel.addEventListener(
       'wheel',
@@ -362,7 +362,7 @@
       padding: '0 8px',
       borderRadius: '999px',
       background: 'rgba(59, 130, 246, 0.13)',
-      color: '#93c5fd',
+      color: '#2563eb',
       border: '1px solid rgba(59, 130, 246, 0.28)',
       fontSize: '12px',
       fontWeight: '600',

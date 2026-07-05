@@ -41,7 +41,7 @@
       fontSize: '13px',
       fontWeight: '500',
       maxWidth: '420px',
-      outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+      outline: '0.5px solid var(--token-border, rgba(127,127,127,0.18))',
       boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
       pointerEvents: 'auto',
       borderLeft: `3px solid ${

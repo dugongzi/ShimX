@@ -56,7 +56,7 @@
       minWidth: '180px',
       padding: '6px',
       borderRadius: '12px',
-      outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+      outline: '0.5px solid var(--token-border, rgba(127,127,127,0.08))',
       boxShadow: '0 16px 42px rgba(0, 0, 0, 0.35)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '13px',
@@ -128,7 +128,7 @@
       onClick: () => exportThread(row, 'html'),
     });
     const sep = document.createElement('div');
-    sep.style.cssText = 'height:1px;margin:4px 6px;background:var(--token-border,rgba(255,255,255,0.10));';
+    sep.style.cssText = 'height:1px;margin:4px 6px;background:var(--token-border,rgba(127,127,127,0.10));';
     menu.appendChild(sep);
     addItem({
       label: S('deleteOk', 'Delete'),

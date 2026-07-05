@@ -69,8 +69,8 @@
       minHeight: '0',
       padding: '0',
       borderRadius: '14px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
-      background: 'var(--token-main-surface-primary, var(--token-sidebar-surface-primary, rgba(20,20,22,0.985)))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
+      background: 'var(--token-main-surface-primary, var(--token-sidebar-surface-primary, rgba(127,127,127,0.06)))',
       boxShadow: '0 20px 60px rgba(0, 0, 0, 0.44)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '13px',
@@ -164,8 +164,8 @@
       flexDirection: 'column',
       padding: '20px 12px',
       gap: '2px',
-      borderRight: '1px solid var(--token-border, rgba(255,255,255,0.06))',
-      background: 'rgba(255,255,255,0.018)',
+      borderRight: '1px solid var(--token-border, rgba(127,127,127,0.06))',
+      background: 'rgba(127,127,127,0.018)',
       overflowY: 'auto',
     });
 
@@ -173,7 +173,7 @@
     navLabel.textContent = S('shimControlNavTitle', 'Sections');
     Object.assign(navLabel.style, {
       padding: '4px 10px 10px',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.42))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.42))',
       fontSize: '10px',
       fontWeight: '600',
       letterSpacing: '0.8px',
@@ -205,7 +205,7 @@
       background: active ? 'rgba(96,165,250,0.10)' : 'transparent',
       color: active
         ? 'var(--token-text-primary, currentColor)'
-        : 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+        : 'var(--token-text-secondary, rgba(127,127,127,0.62))',
       cursor: active ? 'default' : 'pointer',
       fontSize: '13px',
       fontWeight: active ? '600' : '500',
@@ -221,7 +221,7 @@
       width: '16px',
       height: '16px',
       flex: '0 0 auto',
-      color: active ? '#93c5fd' : 'currentColor',
+      color: active ? '#2563eb' : 'currentColor',
     });
     const text = document.createElement('span');
     text.textContent = label;
@@ -235,12 +235,12 @@
     item.appendChild(text);
     if (!active) {
       item.addEventListener('mouseenter', () => {
-        item.style.background = 'rgba(255,255,255,0.045)';
-        item.style.color = 'var(--token-text-primary, #f8fafc)';
+        item.style.background = 'rgba(127,127,127,0.045)';
+        item.style.color = 'var(--token-text-primary, currentColor)';
       });
       item.addEventListener('mouseleave', () => {
         item.style.background = 'transparent';
-        item.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.62))';
+        item.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.62))';
       });
       item.addEventListener('click', (event) => {
         event.preventDefault();
@@ -259,7 +259,7 @@
       justifyContent: 'space-between',
       gap: '12px',
       padding: '14px 20px',
-      borderBottom: '1px solid var(--token-border, rgba(255,255,255,0.06))',
+      borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.06))',
     });
 
     const titleWrap = document.createElement('div');
@@ -275,7 +275,7 @@
     Object.assign(dot.style, {
       width: '22px',
       height: '22px',
-      color: '#93c5fd',
+      color: '#2563eb',
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -343,17 +343,17 @@
       border: '0',
       borderRadius: '6px',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.62))',
       cursor: 'pointer',
       transition: 'background 140ms ease, color 140ms ease',
     });
     button.addEventListener('mouseenter', () => {
-      button.style.background = 'rgba(255,255,255,0.06)';
-      button.style.color = 'var(--token-text-primary, #f8fafc)';
+      button.style.background = 'rgba(127,127,127,0.06)';
+      button.style.color = 'var(--token-text-primary, currentColor)';
     });
     button.addEventListener('mouseleave', () => {
       button.style.background = 'transparent';
-      button.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.62))';
+      button.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.62))';
     });
     button.addEventListener('click', (event) => {
       event.preventDefault();
@@ -448,7 +448,7 @@
       minHeight: '200px',
       display: 'grid',
       placeItems: 'center',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       textAlign: 'center',
       padding: '24px',
     });
@@ -464,7 +464,7 @@
       width: '18px',
       height: '18px',
       borderRadius: '999px',
-      border: '2px solid rgba(255,255,255,0.10)',
+      border: '2px solid rgba(127,127,127,0.10)',
       borderTopColor: '#60a5fa',
       animation: 'shimSpin 0.9s linear infinite',
       marginBottom: '4px',
@@ -670,7 +670,7 @@
     Object.assign(header.style, {
       padding: '22px 28px 14px',
       flex: '0 0 auto',
-      borderBottom: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+      borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.05))',
     });
     const title = document.createElement('h2');
     title.textContent = S('shimControlOverviewTab', 'Data overview');
@@ -684,7 +684,7 @@
     const desc = document.createElement('div');
     desc.textContent = S('shimControlCheckingDescription', 'Collecting bridge, provider, failover, and binding status.');
     Object.assign(desc.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '12px',
       lineHeight: '1.5',
     });
@@ -738,8 +738,8 @@
       minWidth: '0',
       padding: '10px 12px',
       borderRadius: '10px',
-      background: 'rgba(255,255,255,0.028)',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+      background: 'rgba(127,127,127,0.028)',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.05))',
     });
     const dot = document.createElement('span');
     Object.assign(dot.style, {
@@ -762,7 +762,7 @@
     const labelEl = document.createElement('div');
     labelEl.textContent = label;
     Object.assign(labelEl.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '11px',
       fontWeight: '500',
       letterSpacing: '0.2px',
@@ -821,7 +821,7 @@
     sub.textContent = model.providerModel || S('shimControlProviderModelEmpty', 'Passthrough');
     sub.title = sub.textContent;
     Object.assign(sub.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.62))',
       fontSize: '13px',
       fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
       overflow: 'hidden',
@@ -857,7 +857,7 @@
       alignItems: 'baseline',
       gap: '12px 16px',
       paddingTop: '10px',
-      borderTop: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+      borderTop: '1px solid var(--token-border, rgba(127,127,127,0.05))',
     });
     for (const item of items) {
       const node = document.createElement('div');
@@ -870,7 +870,7 @@
       const label = document.createElement('span');
       label.textContent = item.label;
       Object.assign(label.style, {
-        color: 'var(--token-text-secondary, rgba(255,255,255,0.48))',
+        color: 'var(--token-text-secondary, rgba(127,127,127,0.48))',
         fontSize: '11px',
         fontWeight: '500',
         letterSpacing: '0.2px',
@@ -909,7 +909,7 @@
     const icon = document.createElement('div');
     icon.innerHTML = iconHtml;
     Object.assign(icon.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.32))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.32))',
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -924,7 +924,7 @@
     const d = document.createElement('div');
     d.textContent = description;
     Object.assign(d.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.48))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.48))',
       fontSize: '12px',
       lineHeight: '1.5',
       maxWidth: '260px',
@@ -970,7 +970,7 @@
     Object.assign(header.style, {
       padding: '22px 24px 14px',
       flex: '0 0 auto',
-      borderBottom: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+      borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.05))',
       display: 'flex',
       alignItems: 'flex-start',
       justifyContent: 'space-between',
@@ -996,7 +996,7 @@
     const desc = document.createElement('div');
     desc.textContent = S('shimControlLogsDescription', 'Recent log entries from the Shim backend, useful for diagnosing provider and binding issues.');
     Object.assign(desc.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '12px',
       lineHeight: '1.5',
     });
@@ -1023,8 +1023,8 @@
       display: 'inline-flex',
       padding: '3px',
       borderRadius: '8px',
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.06))',
+      background: 'rgba(127,127,127,0.04)',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.06))',
       gap: '2px',
     });
     const filters = [
@@ -1047,7 +1047,7 @@
     count.setAttribute('data-shim-logs-count', '1');
     count.textContent = `${shimControlLogsState.entries.length} ${S('shimControlLogsCount', 'entries')}`;
     Object.assign(count.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '12px',
       fontWeight: '500',
       fontFeatureSettings: '"tnum"',
@@ -1071,8 +1071,8 @@
       borderRadius: '6px',
       background: active ? 'rgba(96,165,250,0.18)' : 'transparent',
       color: active
-        ? '#bfdbfe'
-        : 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+        ? '#2563eb'
+        : 'var(--token-text-secondary, rgba(127,127,127,0.62))',
       cursor: active ? 'default' : 'pointer',
       fontSize: '12px',
       fontWeight: '600',
@@ -1081,12 +1081,12 @@
     });
     if (!active) {
       btn.addEventListener('mouseenter', () => {
-        btn.style.background = 'rgba(255,255,255,0.06)';
-        btn.style.color = 'var(--token-text-primary, #f8fafc)';
+        btn.style.background = 'rgba(127,127,127,0.06)';
+        btn.style.color = 'var(--token-text-primary, currentColor)';
       });
       btn.addEventListener('mouseleave', () => {
         btn.style.background = 'transparent';
-        btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.62))';
+        btn.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.62))';
       });
       btn.addEventListener('click', (event) => {
         event.preventDefault();
@@ -1105,10 +1105,10 @@
     btn.setAttribute('aria-label', S('shimControlLogsClearAria', 'Clear logs'));
     Object.assign(btn.style, {
       padding: '5px 10px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       borderRadius: '6px',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.62))',
       cursor: 'pointer',
       fontSize: '12px',
       fontWeight: '600',
@@ -1117,12 +1117,12 @@
     btn.addEventListener('mouseenter', () => {
       btn.style.background = 'rgba(239,68,68,0.10)';
       btn.style.borderColor = 'rgba(239,68,68,0.32)';
-      btn.style.color = '#fca5a5';
+      btn.style.color = '#dc2626';
     });
     btn.addEventListener('mouseleave', () => {
       btn.style.background = 'transparent';
-      btn.style.borderColor = 'var(--token-border, rgba(255,255,255,0.08))';
-      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.62))';
+      btn.style.borderColor = 'var(--token-border, rgba(127,127,127,0.08))';
+      btn.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.62))';
     });
     btn.addEventListener('click', async (event) => {
       event.preventDefault();
@@ -1192,8 +1192,8 @@
       gap: '6px',
       padding: '10px 12px',
       borderRadius: '8px',
-      background: 'rgba(255,255,255,0.022)',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+      background: 'rgba(127,127,127,0.022)',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.05))',
     });
     const top = document.createElement('div');
     Object.assign(top.style, {
@@ -1219,7 +1219,7 @@
     const time = document.createElement('span');
     time.textContent = formatLogTime(entry.timestamp);
     Object.assign(time.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '11px',
       fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
       fontFeatureSettings: '"tnum"',
@@ -1244,11 +1244,11 @@
       const details = document.createElement('div');
       details.textContent = entry.details;
       Object.assign(details.style, {
-        color: 'var(--token-text-secondary, rgba(255,255,255,0.58))',
+        color: 'var(--token-text-secondary, rgba(127,127,127,0.58))',
         fontSize: '12px',
         lineHeight: '1.5',
         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-        background: 'rgba(0,0,0,0.18)',
+        background: 'rgba(127,127,127,0.12)',
         borderRadius: '6px',
         padding: '6px 8px',
         whiteSpace: 'pre-wrap',
@@ -1284,15 +1284,15 @@
 
   function logLevelMeta(level) {
     if (level === 'error') {
-      return { label: 'ERROR', color: '#fca5a5', background: 'rgba(239,68,68,0.16)', border: 'rgba(239,68,68,0.36)' };
+      return { label: 'ERROR', color: '#dc2626', background: 'rgba(239,68,68,0.16)', border: 'rgba(239,68,68,0.36)' };
     }
     if (level === 'warning') {
-      return { label: 'WARN', color: '#fcd34d', background: 'rgba(245,158,11,0.16)', border: 'rgba(245,158,11,0.36)' };
+      return { label: 'WARN', color: '#b45309', background: 'rgba(245,158,11,0.16)', border: 'rgba(245,158,11,0.36)' };
     }
     if (level === 'debug') {
-      return { label: 'DEBUG', color: 'rgba(255,255,255,0.62)', background: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.10)' };
+      return { label: 'DEBUG', color: 'var(--text-token-secondary, currentColor)', background: 'rgba(127,127,127,0.08)', border: 'rgba(127,127,127,0.18)' };
     }
-    return { label: 'INFO', color: '#93c5fd', background: 'rgba(96,165,250,0.16)', border: 'rgba(96,165,250,0.36)' };
+    return { label: 'INFO', color: '#2563eb', background: 'rgba(96,165,250,0.16)', border: 'rgba(96,165,250,0.36)' };
   }
 
   function formatLogTime(iso) {
@@ -1377,7 +1377,7 @@
     hint.textContent = text || '';
     Object.assign(hint.style, {
       marginTop: '12px',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.42))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.42))',
       fontSize: '12px',
       lineHeight: '1.5',
     });
@@ -1394,8 +1394,8 @@
     Object.assign(heading.style, {
       marginBottom: '12px',
       paddingBottom: '8px',
-      borderBottom: '1px solid var(--token-border, rgba(255,255,255,0.06))',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.55))',
+      borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.06))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.55))',
       fontSize: '11px',
       fontWeight: '600',
       letterSpacing: '0.6px',
@@ -1459,8 +1459,8 @@
       gap: '10px',
       padding: '10px 12px',
       borderRadius: '8px',
-      background: current ? 'rgba(96,165,250,0.10)' : 'rgba(255,255,255,0.018)',
-      border: `1px solid ${current ? 'rgba(96,165,250,0.30)' : 'var(--token-border, rgba(255,255,255,0.05))'}`,
+      background: current ? 'rgba(96,165,250,0.10)' : 'rgba(127,127,127,0.018)',
+      border: `1px solid ${current ? 'rgba(96,165,250,0.30)' : 'var(--token-border, rgba(127,127,127,0.05))'}`,
       transition: 'background 140ms ease, border-color 140ms ease',
     });
     row.appendChild(buildRelationText(item.source || ''));
@@ -1470,7 +1470,7 @@
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: current ? '#60a5fa' : 'var(--token-text-secondary, rgba(255,255,255,0.32))',
+      color: current ? '#60a5fa' : 'var(--token-text-secondary, rgba(127,127,127,0.32))',
     });
     row.appendChild(arrow);
     row.appendChild(buildRelationText(item.target || ''));
@@ -1480,11 +1480,11 @@
 
     // hover 整行 → 解绑按钮浮现; 非当前行还顺带换底色
     row.addEventListener('mouseenter', () => {
-      if (!current) row.style.background = 'rgba(255,255,255,0.038)';
+      if (!current) row.style.background = 'rgba(127,127,127,0.038)';
       unbindBtn.style.opacity = '1';
     });
     row.addEventListener('mouseleave', () => {
-      if (!current) row.style.background = 'rgba(255,255,255,0.018)';
+      if (!current) row.style.background = 'rgba(127,127,127,0.018)';
       if (unbindBtn.dataset.shimBusy !== '1') unbindBtn.style.opacity = '0';
     });
     return row;
@@ -1505,18 +1505,18 @@
       border: '0',
       borderRadius: '5px',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       cursor: 'pointer',
       opacity: '0',
       transition: 'opacity 140ms ease, background 140ms ease, color 140ms ease',
     });
     btn.addEventListener('mouseenter', () => {
       btn.style.background = 'rgba(239,68,68,0.16)';
-      btn.style.color = '#fca5a5';
+      btn.style.color = '#dc2626';
     });
     btn.addEventListener('mouseleave', () => {
       btn.style.background = 'transparent';
-      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.5))';
+      btn.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.5))';
     });
     btn.addEventListener('click', async (event) => {
       event.preventDefault();
@@ -1587,9 +1587,9 @@
       padding: '16px 18px',
       borderRadius: '12px',
       background: tone === 'success'
-        ? 'linear-gradient(135deg, rgba(96,165,250,0.08), rgba(255,255,255,0.025))'
-        : 'rgba(255,255,255,0.032)',
-      border: `1px solid ${tone === 'success' ? 'rgba(96,165,250,0.22)' : 'var(--token-border, rgba(255,255,255,0.06))'}`,
+        ? 'linear-gradient(135deg, rgba(96,165,250,0.08), rgba(127,127,127,0.025))'
+        : 'rgba(127,127,127,0.032)',
+      border: `1px solid ${tone === 'success' ? 'rgba(96,165,250,0.22)' : 'var(--token-border, rgba(127,127,127,0.06))'}`,
     });
 
     const topRow = document.createElement('div');
@@ -1611,7 +1611,7 @@
     const label = document.createElement('div');
     label.textContent = S('shimControlCurrentThread', 'Current thread');
     Object.assign(label.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '11px',
       fontWeight: '500',
       letterSpacing: '0.4px',
@@ -1663,7 +1663,7 @@
     idText.textContent = shortThreadId(currentId);
     idText.title = currentId;
     Object.assign(idText.style, {
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.55))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.55))',
       fontSize: '12px',
       fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
       overflow: 'hidden',
@@ -1682,7 +1682,7 @@
         gap: '10px',
         padding: '10px 12px',
         borderRadius: '8px',
-        background: 'rgba(0,0,0,0.16)',
+        background: 'rgba(127,127,127,0.10)',
         minWidth: '0',
       });
       const arrow = document.createElement('span');
@@ -1747,9 +1747,9 @@
       width: '28px',
       height: '28px',
       borderRadius: '6px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.7))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.7))',
       cursor: 'pointer',
       transition: 'background 140ms ease, color 140ms ease, border-color 140ms ease',
     });
@@ -1757,12 +1757,12 @@
     btn.addEventListener('mouseenter', () => {
       btn.style.background = 'rgba(96,165,250,0.10)';
       btn.style.borderColor = 'rgba(96,165,250,0.28)';
-      btn.style.color = '#bfdbfe';
+      btn.style.color = '#2563eb';
     });
     btn.addEventListener('mouseleave', () => {
       btn.style.background = 'transparent';
-      btn.style.borderColor = 'var(--token-border, rgba(255,255,255,0.08))';
-      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.7))';
+      btn.style.borderColor = 'var(--token-border, rgba(127,127,127,0.08))';
+      btn.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.7))';
     });
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1814,8 +1814,8 @@
       width: '220px',
       padding: '4px',
       borderRadius: '10px',
-      background: 'var(--token-main-surface-primary, rgba(24,24,26,0.98))',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      background: 'var(--token-main-surface-primary, rgba(127,127,127,0.06))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       boxShadow: '0 16px 40px rgba(0, 0, 0, 0.46)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '12.5px',
@@ -1885,7 +1885,7 @@
     const div = document.createElement('div');
     Object.assign(div.style, {
       height: '1px',
-      background: 'var(--token-border, rgba(255,255,255,0.06))',
+      background: 'var(--token-border, rgba(127,127,127,0.06))',
       margin: '4px 6px',
     });
     return div;
@@ -1917,8 +1917,8 @@
       width: '200px',
       padding: '4px',
       borderRadius: '10px',
-      background: 'var(--token-main-surface-primary, rgba(24,24,26,0.98))',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      background: 'var(--token-main-surface-primary, rgba(127,127,127,0.06))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       boxShadow: '0 16px 40px rgba(0, 0, 0, 0.46)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '12.5px',
@@ -1981,8 +1981,8 @@
       width: '16px',
       flex: '0 0 auto',
       color: kind === 'danger'
-        ? 'var(--token-error, #f87171)'
-        : 'var(--token-text-secondary, rgba(255,255,255,0.62))',
+        ? 'var(--token-error, #dc2626)'
+        : 'var(--token-text-secondary, rgba(127,127,127,0.62))',
     });
     const text = document.createElement('span');
     text.textContent = label;
@@ -1995,7 +1995,7 @@
     item.appendChild(icon);
     item.appendChild(text);
     const hoverBg = kind === 'danger' ? 'rgba(239,68,68,0.14)' : 'rgba(96,165,250,0.10)';
-    const hoverColor = kind === 'danger' ? '#fca5a5' : 'var(--token-text-primary, currentColor)';
+    const hoverColor = kind === 'danger' ? '#dc2626' : 'var(--token-text-primary, currentColor)';
     item.addEventListener('mouseenter', () => {
       item.style.background = hoverBg;
       if (kind === 'danger') {
@@ -2007,8 +2007,8 @@
       item.style.background = 'transparent';
       item.style.color = 'var(--token-text-primary, currentColor)';
       icon.style.color = kind === 'danger'
-        ? 'var(--token-error, #f87171)'
-        : 'var(--token-text-secondary, rgba(255,255,255,0.62))';
+        ? 'var(--token-error, #dc2626)'
+        : 'var(--token-text-secondary, rgba(127,127,127,0.62))';
     });
     if (onClick) {
       item.addEventListener('click', (e) => {
@@ -2053,8 +2053,8 @@
       maxWidth: '300px',
       padding: '4px',
       borderRadius: '10px',
-      background: 'var(--token-main-surface-primary, rgba(24,24,26,0.98))',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      background: 'var(--token-main-surface-primary, rgba(127,127,127,0.06))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       boxShadow: '0 16px 40px rgba(0, 0, 0, 0.46)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '12.5px',
@@ -2074,10 +2074,10 @@
       const hint = document.createElement('div');
       Object.assign(hint.style, {
         padding: '6px 10px 4px',
-        color: 'var(--token-text-secondary, rgba(255,255,255,0.48))',
+        color: 'var(--token-text-secondary, rgba(127,127,127,0.48))',
         fontSize: '10.5px',
         lineHeight: '1.4',
-        borderTop: '1px solid var(--token-border, rgba(255,255,255,0.05))',
+        borderTop: '1px solid var(--token-border, rgba(127,127,127,0.05))',
         marginTop: '4px',
       });
       hint.textContent = `${S('shimControlImportToCurrent', 'Assign to current project')} · ${S('shimControlImportHint', 'Reload Codex to see imported threads in the sidebar')}`;
@@ -2119,7 +2119,7 @@
       transition: 'background 140ms ease',
     });
     item.textContent = label;
-    item.addEventListener('mouseenter', () => { item.style.background = 'rgba(255,255,255,0.06)'; });
+    item.addEventListener('mouseenter', () => { item.style.background = 'rgba(127,127,127,0.06)'; });
     item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
     item.addEventListener('click', (e) => {
       e.preventDefault();
@@ -2287,17 +2287,17 @@
       border: '0',
       borderRadius: '5px',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.5))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       cursor: 'pointer',
       transition: 'background 140ms ease, color 140ms ease',
     });
     btn.addEventListener('mouseenter', () => {
-      btn.style.background = 'rgba(255,255,255,0.06)';
-      btn.style.color = 'var(--token-text-primary, #f8fafc)';
+      btn.style.background = 'rgba(127,127,127,0.06)';
+      btn.style.color = 'var(--token-text-primary, currentColor)';
     });
     btn.addEventListener('mouseleave', () => {
       btn.style.background = 'transparent';
-      btn.style.color = 'var(--token-text-secondary, rgba(255,255,255,0.5))';
+      btn.style.color = 'var(--token-text-secondary, rgba(127,127,127,0.5))';
     });
     btn.addEventListener('click', (event) => {
       event.preventDefault();

@@ -38,7 +38,7 @@
         maxWidth: '420px',
         padding: '20px 22px',
         borderRadius: '16px',
-        outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+        outline: '0.5px solid var(--token-border, rgba(127,127,127,0.18))',
         boxShadow: '0 24px 64px rgba(0, 0, 0, 0.4)',
       });
 

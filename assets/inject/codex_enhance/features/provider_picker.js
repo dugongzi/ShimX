@@ -109,9 +109,9 @@
           ? 'rgba(59, 130, 246, 0.16)'
           : 'rgba(127, 127, 127, 0.14)',
       color: protocol === 'messages'
-        ? '#34d399'
+        ? '#059669'
         : protocol === 'chat'
-          ? '#60a5fa'
+          ? '#2563eb'
           : 'var(--text-secondary, currentColor)',
       fontSize: '11px',
       fontWeight: '700',
@@ -175,7 +175,7 @@
           padding: '2px 5px',
           borderRadius: '999px',
           background: 'rgba(59, 130, 246, 0.16)',
-          color: '#60a5fa',
+          color: '#2563eb',
           fontSize: '11px',
           fontWeight: '700',
           lineHeight: '1.2',
@@ -368,7 +368,7 @@
       overscrollBehavior: 'contain',
       padding: '6px',
       borderRadius: '12px',
-      outline: '0.5px solid var(--token-border, rgba(255,255,255,0.08))',
+      outline: '0.5px solid var(--token-border, rgba(127,127,127,0.08))',
       boxShadow: '0 16px 42px rgba(0, 0, 0, 0.35)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '13px',
@@ -491,10 +491,10 @@
     chip.textContent = ms;
     if (health.status === 'slow') {
       chip.style.background = 'rgba(234, 179, 8, 0.18)';
-      chip.style.color = '#eab308';
+      chip.style.color = '#b45309';
     } else {
       chip.style.background = 'rgba(59, 130, 246, 0.16)';
-      chip.style.color = '#93c5fd';
+      chip.style.color = '#2563eb';
     }
     return chip;
   }
@@ -525,7 +525,7 @@
         padding: '8px 10px',
         border: '0',
         background: provider.id === shimProviderState.selectedId
-          ? 'var(--token-main-surface-secondary, rgba(255,255,255,0.08))'
+          ? 'var(--token-main-surface-secondary, rgba(127,127,127,0.08))'
           : 'transparent',
         color: 'inherit',
         textAlign: 'left',
@@ -561,7 +561,7 @@
         Object.assign(modelList.style, {
           margin: '0 0 4px 14px',
           paddingLeft: '10px',
-          borderLeft: '1px solid var(--token-border, rgba(255,255,255,0.10))',
+          borderLeft: '1px solid var(--token-border, rgba(127,127,127,0.10))',
           maxHeight: '260px',
           overflowX: 'hidden',
           overflowY: 'auto',
@@ -588,7 +588,7 @@
             padding: '6px 8px',
             border: '0',
             background: modelName === provider.selectedModel
-              ? 'var(--token-main-surface-tertiary, rgba(255,255,255,0.10))'
+              ? 'var(--token-main-surface-tertiary, rgba(127,127,127,0.10))'
               : 'transparent',
             color: 'inherit',
             textAlign: 'left',
@@ -731,7 +731,7 @@
     const wrap = document.createElement('div');
     Object.assign(wrap.style, {
       marginTop: '8px',
-      borderTop: '1px solid var(--token-border, rgba(255,255,255,0.10))',
+      borderTop: '1px solid var(--token-border, rgba(127,127,127,0.10))',
       paddingTop: '8px',
     });
 

@@ -26,7 +26,7 @@
       alignItems: 'center',
       gap: '10px',
       padding: '14px 18px 12px',
-      borderBottom: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       flex: '0 0 auto',
     });
 
@@ -44,7 +44,7 @@
       flex: '1 1 auto',
       fontSize: '14px',
       fontWeight: '700',
-      color: 'var(--token-foreground, #f8fafc)',
+      color: 'var(--token-foreground, currentColor)',
     });
 
     const closeBtn = document.createElement('button');
@@ -61,11 +61,11 @@
       borderRadius: '6px',
       border: '0',
       background: 'transparent',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.7))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.7))',
       cursor: 'pointer',
     });
     closeBtn.addEventListener('mouseenter', () => {
-      closeBtn.style.background = 'rgba(255,255,255,0.08)';
+      closeBtn.style.background = 'rgba(127,127,127,0.08)';
     });
     closeBtn.addEventListener('mouseleave', () => {
       closeBtn.style.background = 'transparent';
@@ -87,8 +87,8 @@
       alignItems: 'center',
       gap: '10px',
       padding: '10px 18px',
-      borderBottom: '1px solid var(--token-border, rgba(255,255,255,0.06))',
-      background: 'rgba(255,255,255,0.02)',
+      borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.06))',
+      background: 'rgba(127,127,127,0.02)',
       flex: '0 0 auto',
     });
 
@@ -96,7 +96,7 @@
     label.textContent = S('pluginPanelStatusLabel', 'Status');
     Object.assign(label.style, {
       fontSize: '12px',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.6))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.6))',
       fontWeight: '600',
       letterSpacing: '0.3px',
     });
@@ -117,7 +117,7 @@
     value.textContent = S('pluginPanelStatusIdle', 'Not installed');
     Object.assign(value.style, {
       fontSize: '13px',
-      color: 'var(--token-foreground, #f8fafc)',
+      color: 'var(--token-foreground, currentColor)',
       fontWeight: '500',
     });
 
@@ -126,7 +126,7 @@
     Object.assign(count.style, {
       marginLeft: 'auto',
       fontSize: '12px',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.6))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.6))',
     });
 
     row.appendChild(label);
@@ -326,7 +326,7 @@
       padding: '14px 18px 6px',
       fontSize: '13px',
       lineHeight: '1.55',
-      color: 'var(--token-foreground, rgba(255,255,255,0.92))',
+      color: 'var(--token-foreground, rgba(127,127,127,0.92))',
     });
     const title = escapeHtml(S('pluginPanelIntroTitle', 'Pick a data source'));
     const desc = escapeHtml(
@@ -337,7 +337,7 @@
     );
     intro.innerHTML =
       `<div style="font-weight:600;margin-bottom:6px;">${title}</div>` +
-      `<div style="color:var(--token-text-secondary,rgba(255,255,255,0.6));">${desc}</div>`;
+      `<div style="color:var(--token-text-secondary,rgba(127,127,127,0.6));">${desc}</div>`;
     panel.appendChild(intro);
   }
 
@@ -351,20 +351,20 @@
       width: '100%',
       padding: '14px 16px',
       borderRadius: '10px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.10))',
-      background: 'rgba(255,255,255,0.03)',
-      color: 'var(--token-foreground, #f8fafc)',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.10))',
+      background: 'rgba(127,127,127,0.03)',
+      color: 'var(--token-foreground, currentColor)',
       cursor: 'pointer',
       textAlign: 'left',
       transition: 'background 0.15s, border-color 0.15s',
     });
     card.addEventListener('mouseenter', () => {
-      card.style.background = 'rgba(255,255,255,0.06)';
-      card.style.borderColor = 'var(--token-border, rgba(255,255,255,0.18))';
+      card.style.background = 'rgba(127,127,127,0.06)';
+      card.style.borderColor = 'var(--token-border, rgba(127,127,127,0.18))';
     });
     card.addEventListener('mouseleave', () => {
-      card.style.background = 'rgba(255,255,255,0.03)';
-      card.style.borderColor = 'var(--token-border, rgba(255,255,255,0.10))';
+      card.style.background = 'rgba(127,127,127,0.03)';
+      card.style.borderColor = 'var(--token-border, rgba(127,127,127,0.10))';
     });
 
     const iconWrap = document.createElement('span');
@@ -376,7 +376,7 @@
       height: '28px',
       borderRadius: '8px',
       background: 'rgba(0, 144, 253, 0.14)',
-      color: '#38bdf8',
+      color: '#2563eb',
       flex: '0 0 auto',
       marginTop: '1px',
     });
@@ -402,7 +402,7 @@
     desc.textContent = opts.desc;
     Object.assign(desc.style, {
       fontSize: '12px',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.6))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.6))',
       lineHeight: '1.5',
     });
 
@@ -479,8 +479,8 @@
       padding: '10px 18px 14px',
       fontSize: '12px',
       lineHeight: '1.55',
-      color: 'var(--token-text-secondary, rgba(255,255,255,0.55))',
-      borderTop: '1px solid var(--token-border, rgba(255,255,255,0.06))',
+      color: 'var(--token-text-secondary, rgba(127,127,127,0.55))',
+      borderTop: '1px solid var(--token-border, rgba(127,127,127,0.06))',
       flex: '0 0 auto',
     });
     // 文案里带一个高亮的 config.toml 片段。用户可翻译的部分做 %CONFIG% 占位,
@@ -490,7 +490,7 @@
       "This writes codex's %CONFIG%. Restart codex for changes to take effect.",
     );
     const badge =
-      '<code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:4px;">config.toml</code>';
+      '<code style="background:rgba(127,127,127,0.06);padding:1px 5px;border-radius:4px;">config.toml</code>';
     const parts = escapeHtml(raw).split('config.toml');
     const body = parts.length === 1 ? escapeHtml(raw) : parts.join(badge);
     foot.innerHTML = `<span style="color:#f59e0b;">ⓘ</span> ${body}`;
@@ -508,9 +508,9 @@
       width: 'min(460px, calc(100vw - 40px))',
       maxHeight: 'calc(100vh - 80px)',
       borderRadius: '14px',
-      border: '1px solid var(--token-border, rgba(255,255,255,0.08))',
+      border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
       background:
-        'var(--token-main-surface-primary, var(--token-sidebar-surface-primary, rgba(20,20,22,0.985)))',
+        'var(--token-main-surface-primary, var(--token-sidebar-surface-primary, rgba(127,127,127,0.06)))',
       boxShadow: '0 20px 60px rgba(0, 0, 0, 0.44)',
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: '13px',

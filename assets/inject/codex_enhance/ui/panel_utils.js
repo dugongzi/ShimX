@@ -12,28 +12,33 @@
   if (!window.__shimCodexEnhanceLoaded) return;
   const S = (k, f) => window.__shimCodex.i18n.S(k, f);
 
+  // 前景色: 亮/暗色模式都要有足够对比度的语义色。
+  // 蓝/黄/红/灰选深一档的值,浅色模式白底也读得清。
+  // default 走 codex token, 跟随主题的次级文字色。
   function statusToneColor(tone) {
-    if (tone === 'success') return '#93c5fd';
-    if (tone === 'warning') return '#f59e0b';
-    if (tone === 'error') return '#ef4444';
-    if (tone === 'info') return '#cbd5e1';
-    return 'var(--token-text-secondary, rgba(255,255,255,0.68))';
+    if (tone === 'success') return '#2563eb';
+    if (tone === 'warning') return '#b45309';
+    if (tone === 'error') return '#dc2626';
+    if (tone === 'info') return '#475569';
+    return 'var(--text-token-secondary, currentColor)';
   }
 
+  // 背景/边框: 半透明中灰 `rgba(127,127,127,...)` 亮暗通用,
+  // 语义色也统一改为半透明变体,亮色模式不刺眼、暗色模式也不至于消失。
   function statusToneSoftBackground(tone) {
     if (tone === 'success') return 'rgba(59,130,246,0.12)';
     if (tone === 'warning') return 'rgba(245,158,11,0.13)';
     if (tone === 'error') return 'rgba(239,68,68,0.13)';
-    if (tone === 'info') return 'rgba(148,163,184,0.12)';
-    return 'rgba(255,255,255,0.06)';
+    if (tone === 'info') return 'rgba(127,127,127,0.10)';
+    return 'rgba(127,127,127,0.08)';
   }
 
   function statusToneBorder(tone) {
     if (tone === 'success') return 'rgba(59,130,246,0.28)';
     if (tone === 'warning') return 'rgba(245,158,11,0.34)';
     if (tone === 'error') return 'rgba(239,68,68,0.34)';
-    if (tone === 'info') return 'rgba(148,163,184,0.22)';
-    return 'rgba(255,255,255,0.08)';
+    if (tone === 'info') return 'rgba(127,127,127,0.22)';
+    return 'rgba(127,127,127,0.18)';
   }
 
   function statusToneLabel(tone) {

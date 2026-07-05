@@ -208,6 +208,16 @@
       );
       return;
     }
+    // 没在 shim 选桶时,代理走 passthrough,body.model 会原样透传给上游,
+    // 而润色用的 'shim-polish' 是假名,上游必然 404。让用户先选一个。
+    const shimModel = ns.i18n?.currentProvider?.()?.selectedModel || '';
+    if (!shimModel) {
+      ns.ui?.toast?.show?.(
+        S('polishNoProvider', 'Pick a shim provider first to polish'),
+        'warning',
+      );
+      return;
+    }
     const busyToken = ns.ui?.busy?.show?.(S('polishBusy', 'Polishing…'));
     let res;
     try {

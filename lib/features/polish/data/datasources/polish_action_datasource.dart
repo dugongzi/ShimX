@@ -23,7 +23,11 @@ class PolishActionDatasource {
           ],
         },
       ],
-      'stream': false,
+      // 必须 stream:true。上游 (muxueai gpt-5.x) 非流式模式下 response.output[]
+      // 会把 assistant message 剥掉只剩 reasoning item; 流式模式下 assistant 明文
+      // 只出现在 response.output_text.delta 事件里,完成帧的 output[] 也没有 message。
+      // 所以只能累积 delta。
+      'stream': true,
     };
     final url = _joinPath(proxyBaseUrl, 'responses');
     final raw = await _postRaw(url, utf8.encode(jsonEncode(body)));

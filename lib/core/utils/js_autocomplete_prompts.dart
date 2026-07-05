@@ -127,6 +127,20 @@ const List<CodePrompt> kJsGlobalPrompts = [
     parameters: {'input': 'string'},
     optionalParameters: {'init': 'RequestInit'},
   ),
+  // shim 用户脚本 SDK,详见 assets/inject/shim_api.js
+  CodeFieldPrompt(word: 'shimApi', type: 'ShimApi'),
+  // 底层桥,shimApi 已经封装过,通常不用直接调
+  CodeFunctionPrompt(
+    word: 'shim',
+    type: 'Promise<any>',
+    parameters: {'path': 'string', 'payload': 'object'},
+  ),
+  CodeFunctionPrompt(
+    word: '__shimOn',
+    type: 'Subscription',
+    parameters: {'topic': 'string', 'callback': 'Function'},
+  ),
+  CodeFieldPrompt(word: '__shimCodex', type: 'CodexEnhance'),
 ];
 
 /// `foo.` 后的成员补全:按接收对象名映射。
@@ -294,6 +308,74 @@ const Map<String, List<CodePrompt>> kJsMemberPrompts = {
       word: 'race',
       type: 'Promise<any>',
       parameters: {'iterable': 'Promise[]'},
+    ),
+  ],
+  // shim 用户脚本 SDK。二级成员(如 shimApi.bridge.call)re_editor 追不到,
+  // 把 bridge 记成 field 让用户至少看得见入口,call 走 shim RPC。
+  'shimApi': [
+    CodeFieldPrompt(word: 'version', type: 'string'),
+    CodeFunctionPrompt(
+      word: 'ready',
+      type: 'Promise<boolean>',
+      optionalParameters: {'timeoutMs': 'number'},
+    ),
+    CodeFieldPrompt(word: 'bridge', type: 'ShimBridge'),
+    CodeFunctionPrompt(
+      word: 'toast',
+      type: 'void',
+      parameters: {'message': 'string'},
+      optionalParameters: {'kind': "'info'|'success'|'warn'|'error'"},
+    ),
+    CodeFunctionPrompt(
+      word: 'busy',
+      type: '{ done: () => void }',
+      optionalParameters: {'label': 'string'},
+    ),
+    CodeFunctionPrompt(
+      word: 'withBusy',
+      type: 'Promise<any>',
+      parameters: {'label': 'string', 'run': '() => Promise<any>'},
+    ),
+    CodeFunctionPrompt(
+      word: 'confirm',
+      type: 'Promise<boolean>',
+      parameters: {'options': 'ConfirmOptions'},
+    ),
+    CodeFunctionPrompt(
+      word: 'waitFor',
+      type: 'Promise<Element|null>',
+      parameters: {'selector': 'string'},
+      optionalParameters: {'opts': '{ timeout?: number, root?: ParentNode }'},
+    ),
+    CodeFunctionPrompt(
+      word: 'onMount',
+      type: '{ stop: () => void }',
+      parameters: {'selector': 'string', 'callback': '(el: Element) => void'},
+      optionalParameters: {'opts': '{ root?: ParentNode, once?: boolean }'},
+    ),
+    CodeFunctionPrompt(
+      word: 'observe',
+      type: '{ stop: () => void }',
+      parameters: {
+        'target': 'Node',
+        'callback': '(records: MutationRecord[]) => void',
+      },
+      optionalParameters: {'init': 'MutationObserverInit'},
+    ),
+    CodeFunctionPrompt(
+      word: 'onUrlChange',
+      type: '{ stop: () => void }',
+      parameters: {'callback': '(url: string) => void'},
+    ),
+    CodeFunctionPrompt(
+      word: 'onReady',
+      type: 'void',
+      parameters: {'callback': '() => void'},
+    ),
+    CodeFunctionPrompt(
+      word: 'subscribe',
+      type: '{ stop: () => void }',
+      parameters: {'topic': 'string', 'callback': '(payload: any) => void'},
     ),
   ],
 };

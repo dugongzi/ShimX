@@ -28,8 +28,8 @@ const _kNewScriptTemplate = '''// ==Shim==
 // @layer       user
 // ==/Shim==
 
-(() => {
-  if (!window.__shimCodex) return;
+(async () => {
+  if (!(await shimApi.ready())) return;
 
   // 在这里编写你的注入逻辑
   console.log('[MyScript] loaded');

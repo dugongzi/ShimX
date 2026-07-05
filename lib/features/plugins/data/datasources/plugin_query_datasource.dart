@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:shim/core/services/codex_paths.dart';
-import 'package:shim/features/plugins/data/datasources/plugin_marketplace_paths.dart';
+import 'package:shim/core/utils/plugin_marketplace_paths.dart';
 import 'package:shim/features/plugins/data/models/plugin_marketplace_status_dto.dart';
 
 /// 只读:汇总 curated marketplace 磁盘 + config 状态,产出 DTO。

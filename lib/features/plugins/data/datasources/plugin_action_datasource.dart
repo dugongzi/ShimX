@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 
-import 'package:shim/features/plugins/data/datasources/plugin_marketplace_paths.dart';
+import 'package:shim/core/utils/plugin_marketplace_paths.dart';
 import 'package:shim/features/plugins/data/datasources/plugin_query_datasource.dart';
 import 'package:shim/features/plugins/data/models/plugin_marketplace_status_dto.dart';
 

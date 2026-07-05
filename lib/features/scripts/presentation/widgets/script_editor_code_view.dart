@@ -9,6 +9,7 @@ import 'package:re_highlight/styles/vs.dart';
 import 'package:re_highlight/styles/vs2015.dart';
 import 'package:shim/core/extensions/context_extensions.dart';
 import 'package:shim/core/utils/js_autocomplete_prompts.dart';
+import 'package:shim/core/utils/js_code_formatter.dart';
 
 const double _kMinFontSize = 8;
 const double _kMaxFontSize = 40;
@@ -44,6 +45,15 @@ class _ScriptEditorCodeViewState extends State<ScriptEditorCodeView> {
   void _zoomIn() => _setFontSize(_fontSize + _kFontStep);
   void _zoomOut() => _setFontSize(_fontSize - _kFontStep);
   void _resetZoom() => _setFontSize(_kDefaultFontSize);
+
+  /// Ctrl+Alt+L / Cmd+Alt+L 触发。整段替换文本;selection 由 controller 内部
+  /// 夹到新长度,不额外还原(格式化后原光标位置意义有限)。
+  void _formatCode() {
+    final current = widget.controller.text;
+    final formatted = JsCodeFormatter.format(current);
+    if (formatted == current) return;
+    widget.controller.text = formatted;
+  }
 
   void _onPointerSignal(PointerSignalEvent event) {
     if (event is! PointerScrollEvent) return;
@@ -81,6 +91,10 @@ class _ScriptEditorCodeViewState extends State<ScriptEditorCodeView> {
         SingleActivator(LogicalKeyboardKey.minus, meta: true): _ZoomOutIntent(),
         SingleActivator(LogicalKeyboardKey.digit0, meta: true):
             _ZoomResetIntent(),
+        SingleActivator(LogicalKeyboardKey.keyL, control: true, alt: true):
+            _FormatIntent(),
+        SingleActivator(LogicalKeyboardKey.keyL, meta: true, alt: true):
+            _FormatIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -99,6 +113,12 @@ class _ScriptEditorCodeViewState extends State<ScriptEditorCodeView> {
           _ZoomResetIntent: CallbackAction<_ZoomResetIntent>(
             onInvoke: (_) {
               _resetZoom();
+              return null;
+            },
+          ),
+          _FormatIntent: CallbackAction<_FormatIntent>(
+            onInvoke: (_) {
+              _formatCode();
               return null;
             },
           ),
@@ -172,6 +192,10 @@ class _ZoomOutIntent extends Intent {
 
 class _ZoomResetIntent extends Intent {
   const _ZoomResetIntent();
+}
+
+class _FormatIntent extends Intent {
+  const _FormatIntent();
 }
 
 class _JsAutocompleteView extends StatefulWidget

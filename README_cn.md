@@ -20,6 +20,61 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
   <a href="README_en.md">English</a>
 </p>
 
+## 特色功能
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/shim_panel.png" alt="Shim 控制面板" />
+      <p><strong>Codex 内浮层控制面板</strong><br />注入后可在 Codex 页面内查看 Bridge 状态、当前供应商、自动切换策略和上下文映射。</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/provider_preview_1.png" alt="供应商与模型选择器" />
+      <p><strong>供应商 / 模型选择器</strong><br />在输入区旁直接切换供应商、模型、协议和思考深度,并查看实时延迟。</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/claude_bridge.png" alt="Claude Bridge" />
+      <p><strong>Claude Bridge</strong><br />把本地 Claude Code 会话绑定到 Codex thread,通过 MCP 读取历史上下文继续对话。</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/io_full_delete_session.png" alt="会话导入导出与删除" />
+      <p><strong>会话导入 / 导出 / 删除</strong><br />在 Codex 项目菜单中导入 JSONL/ZIP,导出 Markdown、HTML 或原始数据,并支持安全删除。</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/o_delete_session.png" alt="单条会话导出与删除" />
+      <p><strong>单条会话操作</strong><br />在 Codex 侧栏会话菜单中直接导出 Markdown、HTML、原始数据或删除当前会话。</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/providers_full.png" alt="自动切换与工具过滤" />
+      <p><strong>自动切换与工具过滤</strong><br />配置故障转移、最快优先、慢响应阈值、同家模型策略,并按关键词过滤工具。</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/script_edit.png" alt="用户脚本编辑器" />
+      <p><strong>用户脚本编辑器</strong><br />内置 JavaScript 编辑器,支持 metadata、自动保存、热运行、运行时刷新和控制台入口。</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/plugin_pull.png" alt="插件解锁" />
+      <p><strong>Codex 插件解锁</strong><br />从镜像、GitHub 或本地 ZIP 安装 curated plugin marketplace,并写入 Codex 配置。</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/scripts_layout.png" alt="用户脚本列表" />
+      <p><strong>脚本列表与批量管理</strong><br />在主窗口中查看脚本 metadata,并批量启用、禁用、删除或导入脚本。</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/setup.png" alt="Shim 设置页" />
+      <p><strong>桌面端设置中心</strong><br />统一管理语言、主题、主题色、快捷方式、工具过滤、官方登录和代理接管端口。</p>
+    </td>
+  </tr>
+</table>
+
 ## 核心能力
 
 ### Codex 页面注入

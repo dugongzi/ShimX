@@ -20,6 +20,61 @@ Repository: <https://github.com/dugongzi/Shim>
   <strong>English</strong>
 </p>
 
+## Feature Highlights
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/shim_panel.png" alt="Shim control panel" />
+      <p><strong>In-Codex Control Panel</strong><br />After injection, inspect Bridge state, the current provider, auto-switch strategy, and context bindings directly inside Codex.</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/provider_preview_1.png" alt="Provider and model picker" />
+      <p><strong>Provider / Model Picker</strong><br />Switch providers, models, protocols, and reasoning effort beside the composer, with live latency indicators.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/claude_bridge.png" alt="Claude Bridge" />
+      <p><strong>Claude Bridge</strong><br />Bind a local Claude Code session to a Codex thread and let MCP read its history as continuation context.</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/io_full_delete_session.png" alt="Session import export and delete" />
+      <p><strong>Session Import / Export / Delete</strong><br />Import JSONL/ZIP, export Markdown, HTML, or raw data, and safely delete sessions from the Codex project menu.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/o_delete_session.png" alt="Single session export and delete" />
+      <p><strong>Single-Session Actions</strong><br />Export Markdown, HTML, raw data, or delete the current session directly from the Codex sidebar thread menu.</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/providers_full.png" alt="Auto switch and tool filtering" />
+      <p><strong>Auto Switch And Tool Filtering</strong><br />Configure failover, fastest-first switching, slow-response thresholds, sibling fallback, and keyword-based tool filtering.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/script_edit.png" alt="User script editor" />
+      <p><strong>User Script Editor</strong><br />Built-in JavaScript editor with metadata, autosave, hot run, reload-on-run, and DevTools console access.</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/plugin_pull.png" alt="Plugin unlock" />
+      <p><strong>Codex Plugin Unlock</strong><br />Install the curated plugin marketplace from a mirror, GitHub, or local ZIP, then register it in Codex config.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/screenshots/scripts_layout.png" alt="User script list" />
+      <p><strong>Script List And Batch Management</strong><br />View script metadata in the main window and batch enable, disable, delete, or import scripts.</p>
+    </td>
+    <td width="50%">
+      <img src="assets/screenshots/setup.png" alt="Shim settings page" />
+      <p><strong>Desktop Settings Center</strong><br />Manage language, theme, theme color, shortcut, tool filtering, official login, and proxy takeover port in one place.</p>
+    </td>
+  </tr>
+</table>
+
 ## Core Capabilities
 
 ### Codex Page Injection

@@ -13,8 +13,6 @@
     popover: '__shim_popover__',
     providerPicker: '__shim_provider_picker__',
     providerPickerPopover: '__shim_provider_picker_popover__',
-    threadPreview: '__shim_thread_preview__',
-    threadPreviewLens: '__shim_thread_preview_lens__',
     toastContainer: '__shim_toast_container__',
     confirmDialog: '__shim_confirm_dialog__',
     threadMenu: '__shim_thread_menu__',
@@ -33,10 +31,6 @@
     providerBadgeClass: '__shim_provider_badge__',
     deleteButtonFlag: 'data-shim-delete-added',
     codexModelSelectorFlag: 'data-shim-hidden-codex-model-selector',
-
-    threadPreviewItemAttr: 'data-shim-thread-preview-key',
-    threadPreviewActiveAttr: 'data-shim-thread-preview-active',
-    threadPreviewHighlightAttr: 'data-shim-thread-preview-highlight',
 
     badgeAnchorSvgD: 'M16.835 8.66301C16.835 7.71885',
     sendButtonSvgD: 'M9.33467 16.6663V4.93978',
@@ -63,8 +57,6 @@
       '#__shim_popover__',
       '#__shim_provider_picker__',
       '#__shim_provider_picker_popover__',
-      '#__shim_thread_preview__',
-      '#__shim_thread_preview_lens__',
       '#__shim_toast_container__',
       '#__shim_confirm_dialog__',
       '.__shim_provider_badge__',

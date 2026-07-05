@@ -31,7 +31,6 @@
       menu: document.querySelectorAll('#' + ids.menuItem).length,
       picker: document.querySelectorAll('#' + ids.providerPicker).length,
       providerBadge: document.querySelectorAll('.' + ids.providerBadgeClass).length,
-      threadPreview: document.querySelectorAll('#' + ids.threadPreview).length,
       delBtns: document.querySelectorAll('[data-shim-delete-added="1"]').length,
     };
   }
@@ -61,8 +60,6 @@
     const t5 = performance.now();
     ns.features.providerPicker.ensureBadge();
     const t6 = performance.now();
-    ns.features.threadPreview.ensure();
-    const t7 = performance.now();
     ns.runtime.plugins.ensureFeatures();
     const t8 = performance.now();
     ns.features.claudeBridge.ensureChip();
@@ -80,8 +77,7 @@
         picker: +(t4 - t3).toFixed(1),
         codexModel: +(t5 - t4).toFixed(1),
         providerBadge: +(t6 - t5).toFixed(1),
-        threadPreview: +(t7 - t6).toFixed(1),
-        plugin: +(t8 - t7).toFixed(1),
+        plugin: +(t8 - t6).toFixed(1),
         claudeBridge: +(t9 - t8).toFixed(1),
         total: +(t9 - t0).toFixed(1),
       },
@@ -111,8 +107,6 @@
     '#' + ids.popover,
     '#' + ids.providerPicker,
     '#' + ids.providerPickerPopover,
-    '#' + ids.threadPreview,
-    '#' + ids.threadPreviewLens,
     '#' + ids.toastContainer,
     '#' + ids.confirmDialog,
     '.' + ids.providerBadgeClass,

@@ -43,7 +43,6 @@
       providerPicker: null,
       autoSwitch: null,
       threadRow: null,
-      threadPreview: null,
       claudeBridge: null,
       projectMenuHook: null,
     },

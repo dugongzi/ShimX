@@ -36,7 +36,6 @@ class InjectQueryDatasource {
     'assets/inject/codex_enhance/features/project_menu_hook.js',
     'assets/inject/codex_enhance/features/provider_picker.js',
     'assets/inject/codex_enhance/features/shim_menu.js',
-    'assets/inject/codex_enhance/features/thread_preview.js',
     'assets/inject/codex_enhance/features/thread_row.js',
     // runtime: 插件兼容层 → scheduler 主循环 → bootstrap 启动序列
     'assets/inject/codex_enhance/runtime/plugins.js',

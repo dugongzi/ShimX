@@ -271,7 +271,7 @@
     });
 
     const dot = document.createElement('span');
-    dot.innerHTML = SHIM_ICON_SVG;
+    dot.innerHTML = ids.shimIconSvg;
     Object.assign(dot.style, {
       width: '22px',
       height: '22px',

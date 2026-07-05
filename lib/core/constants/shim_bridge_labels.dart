@@ -202,6 +202,20 @@ const Map<String, String> shimBridgeLabelsZh = {
   'pluginPanelInstallFailed': '安装失败',
   'pluginPanelStatusFailed': '读取状态失败',
   'pluginPanelLocalNotYet': '本地导入待 shim 主界面开发中',
+
+  'polishTooltip': '润色输入框内容',
+  'polishStyleConcise': '更简洁',
+  'polishStyleFormal': '更正式',
+  'polishStyleCasual': '更口语',
+  'polishStyleDetailed': '更详细',
+  'polishEmptyInput': '请先在输入框输入文字',
+  'polishBusy': '润色中…',
+  'polishFailed': '润色失败',
+  'polishPreviewTitle': '润色预览',
+  'polishOriginal': '原文',
+  'polishPolished': '润色后',
+  'polishReplace': '替换',
+  'polishCancel': '取消',
 };
 
 
@@ -421,6 +435,20 @@ const Map<String, String> shimBridgeLabelsEn = {
   'pluginPanelInstallFailed': 'Install failed',
   'pluginPanelStatusFailed': 'Failed to read status',
   'pluginPanelLocalNotYet': 'Local import comes from shim main UI (WIP)',
+
+  'polishTooltip': 'Polish composer text',
+  'polishStyleConcise': 'More concise',
+  'polishStyleFormal': 'More formal',
+  'polishStyleCasual': 'More casual',
+  'polishStyleDetailed': 'More detailed',
+  'polishEmptyInput': 'Type something in the composer first',
+  'polishBusy': 'Polishing…',
+  'polishFailed': 'Polish failed',
+  'polishPreviewTitle': 'Polish preview',
+  'polishOriginal': 'Original',
+  'polishPolished': 'Polished',
+  'polishReplace': 'Replace',
+  'polishCancel': 'Cancel',
 };
 
 Map<String, String> shimBridgeLabels({required bool isZh}) =>

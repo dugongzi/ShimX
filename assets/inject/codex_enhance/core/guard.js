@@ -39,6 +39,7 @@
       shimMenu: null,
       pluginMenu: null,
       pluginPanel: null,
+      polishButton: null,
       controlPanel: null,
       providerPicker: null,
       autoSwitch: null,

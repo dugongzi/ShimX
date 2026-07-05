@@ -59,6 +59,7 @@
     ns.features.providerPicker.updateCodexModelSelectorVisibility();
     const t5 = performance.now();
     ns.features.providerPicker.ensureBadge();
+    ns.features.polishButton?.ensure?.();
     const t6 = performance.now();
     ns.runtime.plugins.ensureFeatures();
     const t8 = performance.now();

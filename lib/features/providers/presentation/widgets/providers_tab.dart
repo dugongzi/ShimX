@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
-import 'package:shim/features/providers/presentation/widgets/auto_switch_card.dart';
-import 'package:shim/features/providers/presentation/widgets/provider_card.dart';
-import 'package:shim/features/providers/presentation/widgets/provider_edit_dialog.dart';
+import 'package:shimx/common/widgets/section_title.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/features/providers/presentation/widgets/auto_switch_card.dart';
+import 'package:shimx/features/providers/presentation/widgets/provider_card.dart';
+import 'package:shimx/features/providers/presentation/widgets/provider_edit_dialog.dart';
 
 class ProvidersTab extends ConsumerWidget {
   const ProvidersTab({super.key});

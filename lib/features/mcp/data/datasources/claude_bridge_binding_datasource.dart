@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/mcp/data/models/claude_bridge_binding_dto.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/mcp/data/models/claude_bridge_binding_dto.dart';
 
 const claudeBridgeBindingStoreKey = 'claude_bridge_bindings_v1';
 

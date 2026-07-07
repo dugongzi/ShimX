@@ -1,4 +1,4 @@
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
 
 abstract class CodexMcpConfigActionRepository {
   Future<void> saveConfig(CodexMcpConfig config);

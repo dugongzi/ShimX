@@ -8,28 +8,28 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:re_editor/re_editor.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/home/presentation/providers/inject_orchestrator_provider.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/presentation/providers/script_action_provider.dart';
-import 'package:shim/features/scripts/presentation/providers/script_query_provider.dart';
-import 'package:shim/features/scripts/presentation/widgets/new_script_dialog.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_code_view.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_empty_view.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_sidebar.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_status_bar.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_title_bar.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/home/presentation/providers/inject_orchestrator_provider.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/presentation/providers/script_action_provider.dart';
+import 'package:shimx/features/scripts/presentation/providers/script_query_provider.dart';
+import 'package:shimx/features/scripts/presentation/widgets/new_script_dialog.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_code_view.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_empty_view.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_sidebar.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_status_bar.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_title_bar.dart';
 
-const _kNewScriptTemplate = '''// ==Shim==
+const _kNewScriptTemplate = '''// ==ShimX==
 // @name        My Script
 // @description 脚本描述
 // @version     1.0.0
 // @author
 // @layer       user
-// ==/Shim==
+// ==/ShimX==
 
 (async () => {
-  if (!(await shimApi.ready())) return;
+  if (!(await shimxApi.ready())) return;
 
   // 在这里编写你的注入逻辑
   console.log('[MyScript] loaded');

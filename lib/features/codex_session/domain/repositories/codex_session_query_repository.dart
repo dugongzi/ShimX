@@ -1,7 +1,7 @@
-import 'package:shim/features/codex_session/domain/models/codex_bucket.dart';
-import 'package:shim/features/codex_session/domain/models/codex_project.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_bucket.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_project.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
 
 abstract class CodexSessionQueryRepository {
   /// 列出未归档会话。

@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as p;
-import 'package:shim/core/utils/codex_skill_file_utils.dart';
-import 'package:shim/features/skills/data/datasources/codex_skill_registry.dart';
-import 'package:shim/features/skills/domain/models/codex_skill.dart';
-import 'package:shim/features/skills/domain/models/skill_overwrite_required_exception.dart';
+import 'package:shimx/core/utils/codex_skill_file_utils.dart';
+import 'package:shimx/features/skills/data/datasources/codex_skill_registry.dart';
+import 'package:shimx/features/skills/domain/models/codex_skill.dart';
+import 'package:shimx/features/skills/domain/models/skill_overwrite_required_exception.dart';
 
 class CodexSkillActionDatasource {
   CodexSkillActionDatasource({
@@ -79,7 +79,7 @@ class CodexSkillActionDatasource {
           ? p.basenameWithoutExtension(zipPath)
           : p.posix.basename(selected),
     );
-    final temp = await Directory.systemTemp.createTemp('shim_codex_skill_zip_');
+    final temp = await Directory.systemTemp.createTemp('shimx_codex_skill_zip_');
     try {
       final source = Directory(p.join(temp.path, id));
       await source.create(recursive: true);
@@ -132,7 +132,7 @@ class CodexSkillActionDatasource {
     final safeId = validateCodexSkillId(id);
     final registry = await _registry.read();
     if (!registry.containsKey(safeId)) {
-      throw StateError('只能删除 shim 管理的 Skill: $safeId');
+      throw StateError('只能删除 shimx 管理的 Skill: $safeId');
     }
     final target = await _targetDirectory(safeId);
     if (await target.exists()) {

@@ -11,7 +11,7 @@ abstract class CodexSkill with _$CodexSkill {
     required String name,
     required String description,
     required String path,
-    required bool managedByShim,
+    required bool managedByShimX,
     required bool readOnly,
     required bool hasSkillFile,
     required int installedAt,

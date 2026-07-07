@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/scripts/data/datasources/script_action_datasource.dart';
-import 'package:shim/features/scripts/data/repositories/script_action_repository_impl.dart';
-import 'package:shim/features/scripts/domain/repositories/script_action_repository.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/scripts/data/datasources/script_action_datasource.dart';
+import 'package:shimx/features/scripts/data/repositories/script_action_repository_impl.dart';
+import 'package:shimx/features/scripts/domain/repositories/script_action_repository.dart';
 
 part 'script_action_provider.g.dart';
 

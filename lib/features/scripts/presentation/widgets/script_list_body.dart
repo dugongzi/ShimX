@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_list_item.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_list_item.dart';
 
 /// 脚本列表主体:加载态 / 空态 / 列表三态切换。
 /// 由 [ScriptList] 外壳传入当前页数据 + 选中集合。

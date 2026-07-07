@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/utils/log_filter.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/utils/log_filter.dart';
 
 /// 日志等级过滤段控:全部 / Info / Warning / Error。
 class LogsFilterSegmented extends StatelessWidget {

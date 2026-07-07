@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:shim/common/pages/shortcut_launch_loading_page.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/providers/launch_args_provider.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/core/services/shortcut_service.dart';
-import 'package:shim/core/services/tray_service.dart';
-import 'package:shim/features/home/presentation/providers/inject_orchestrator_provider.dart';
+import 'package:shimx/common/pages/shortcut_launch_loading_page.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/providers/launch_args_provider.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/core/services/shortcut_service.dart';
+import 'package:shimx/core/services/tray_service.dart';
+import 'package:shimx/features/home/presentation/providers/inject_orchestrator_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';

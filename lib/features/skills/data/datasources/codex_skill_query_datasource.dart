@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/core/utils/codex_skill_file_utils.dart';
-import 'package:shim/features/skills/data/datasources/codex_skill_registry.dart';
-import 'package:shim/features/skills/data/models/codex_skill_dto.dart';
+import 'package:shimx/core/utils/codex_skill_file_utils.dart';
+import 'package:shimx/features/skills/data/datasources/codex_skill_registry.dart';
+import 'package:shimx/features/skills/data/models/codex_skill_dto.dart';
 
 class CodexSkillQueryDatasource {
   CodexSkillQueryDatasource({
@@ -43,7 +43,7 @@ class CodexSkillQueryDatasource {
           name: meta.name,
           description: meta.description,
           path: entity.path,
-          managedByShim: managed,
+          managedByShimX: managed,
           readOnly: !managed,
           hasSkillFile: hasSkillFile,
           installedAt: installedAt,
@@ -53,8 +53,8 @@ class CodexSkillQueryDatasource {
     }
 
     skills.sort((a, b) {
-      if (a.managedByShim != b.managedByShim) {
-        return a.managedByShim ? -1 : 1;
+      if (a.managedByShimX != b.managedByShimX) {
+        return a.managedByShimX ? -1 : 1;
       }
       return a.id.compareTo(b.id);
     });

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/features/home/presentation/widgets/inject_icon.dart';
-import 'package:shim/features/home/presentation/widgets/open_inspector_icon.dart';
-import 'package:shim/features/home/presentation/widgets/reload_codex_icon.dart';
+import 'package:shimx/features/home/presentation/widgets/inject_icon.dart';
+import 'package:shimx/features/home/presentation/widgets/open_inspector_icon.dart';
+import 'package:shimx/features/home/presentation/widgets/reload_codex_icon.dart';
 
 /// 侧栏底部一行三个动作图标:打开 inspector / 刷新 codex / 注入。
 /// 不再带自身装饰,容器由 SidebarSystemPanel 统一提供。

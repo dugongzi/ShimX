@@ -1,5 +1,5 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/claude_bridge
+// ==ShimX==
+// @name        ShimX codex_enhance — features/claude_bridge
 // @description Claude 桥功能合并:
 //              1) 侧栏 nav 列表里加一个折叠按钮 (展开 ~/.claude/projects/ 下的项目分组 + 会话)
 //              2) composer 旁挂一个"绑定状态 chip", 按 codex thread 维度记录绑定的 claude 会话
@@ -7,13 +7,13 @@
 //              点 chip × → /claude-bridge/unbind 解绑当前 codex thread
 //
 //              对外暴露 ensureNav / ensureChip / findNavList / currentCodexThreadId /
-//              applyStateForThread, 给 ensureAll / shim_menu / control_panel 用。
+//              applyStateForThread, 给 ensureAll / shimx_menu / control_panel 用。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
   const S = (k, f) => ns.i18n.S(k, f);
   const showToast = (msg, kind) => ns.ui.toast.show(msg, kind);
@@ -109,10 +109,10 @@
   }
 
   async function loadClaudeProjects() {
-    if (typeof window.shim !== 'function') {
-      throw new Error('shim bridge not ready');
+    if (typeof window.shimx !== 'function') {
+      throw new Error('shimx bridge not ready');
     }
-    const res = await window.shim('/claude-session/projects', {});
+    const res = await window.shimx('/claude-session/projects', {});
     if (!res || res.code !== 0) {
       throw new Error(res?.message || 'rpc error');
     }
@@ -120,7 +120,7 @@
   }
 
   async function loadClaudeThreads(encodedDir) {
-    const res = await window.shim('/claude-session/threads', { encodedDir });
+    const res = await window.shimx('/claude-session/threads', { encodedDir });
     if (!res || res.code !== 0) {
       throw new Error(res?.message || 'rpc error');
     }
@@ -228,7 +228,7 @@
         return;
       }
       try {
-        const res = await window.shim('/claude-bridge/bind', {
+        const res = await window.shimx('/claude-bridge/bind', {
           codexThreadId: codexThreadId,
           sessionId: thread.sessionId,
           jsonlPath: thread.jsonlPath,
@@ -283,10 +283,10 @@
 
   function fetchStateForThread(threadId) {
     if (!threadId) return Promise.resolve();
-    if (typeof window.shim !== 'function') return Promise.resolve();
+    if (typeof window.shimx !== 'function') return Promise.resolve();
     if (fetching.has(threadId)) return Promise.resolve();
     fetching.add(threadId);
-    return window.shim('/claude-bridge/state', { codexThreadId: threadId }).then((res) => {
+    return window.shimx('/claude-bridge/state', { codexThreadId: threadId }).then((res) => {
       if (res && res.code === 0 && res.data) {
         applyStateForThread(threadId, res.data);
         // 拉的就是当前显示的 thread → 刷 chip
@@ -331,7 +331,7 @@
     if (existing
         && existing.parentElement === anchor.group
         && lastRenderedThreadId === threadId) {
-      const labelEl = existing.querySelector('[data-shim-bridge-label]');
+      const labelEl = existing.querySelector('[data-shimx-bridge-label]');
       if (labelEl) {
         const title = state.title || state.sessionId || '';
         const expected = `${S('claudeBridgeChipPrefix', 'Claude:')} ${title}`;
@@ -353,7 +353,7 @@
   function buildClaudeBridgeChip(threadId, state) {
     const chip = document.createElement('span');
     chip.id = CLAUDE_BRIDGE_CHIP_ID;
-    chip.setAttribute('data-shim-bridge-thread', threadId);
+    chip.setAttribute('data-shimx-bridge-thread', threadId);
     Object.assign(chip.style, {
       display: 'inline-flex',
       alignItems: 'center',
@@ -372,7 +372,7 @@
     });
     const title = state.title || state.sessionId || '';
     const label = document.createElement('span');
-    label.setAttribute('data-shim-bridge-label', '1');
+    label.setAttribute('data-shimx-bridge-label', '1');
     label.textContent = `${S('claudeBridgeChipPrefix', 'Claude:')} ${title}`;
     Object.assign(label.style, {
       overflow: 'hidden',
@@ -408,7 +408,7 @@
     close.addEventListener('click', async (event) => {
       stopAll(event);
       try {
-        const res = await window.shim('/claude-bridge/unbind', {
+        const res = await window.shimx('/claude-bridge/unbind', {
           codexThreadId: threadId,
         });
         if (res && res.code === 0) {

@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/themes/app_colors.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 右侧工作区大面板:深色下走玻璃质感(BackdropFilter + 半透明蓝紫底)。

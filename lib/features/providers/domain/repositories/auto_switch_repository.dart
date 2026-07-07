@@ -1,4 +1,4 @@
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
 
 abstract class AutoSwitchRepository {
   /// 读取当前配置（未持久化过则返回 const AutoSwitchSettings()）

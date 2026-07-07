@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_action_provider.dart';
 
 /// 详情视图顶部:标题 + cwd 路径 + 右上角导出菜单。
 class ThreadDetailHeader extends ConsumerWidget {

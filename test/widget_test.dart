@@ -1,4 +1,4 @@
-import 'package:shim/main.dart';
+import 'package:shimx/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -7,6 +7,6 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: MainApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Shim'), findsWidgets);
+    expect(find.text('ShimX'), findsWidgets);
   });
 }

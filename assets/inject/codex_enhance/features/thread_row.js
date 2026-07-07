@@ -1,14 +1,14 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/thread_row
+// ==ShimX==
+// @name        ShimX codex_enhance — features/thread_row
 // @description Codex 侧栏对话行的 "⋯" 三点菜单 (导出 / 删除)。
 //              在每行原"归档"按钮旁追加一个三点按钮; 点开弹出我们自己的浮层菜单。
 //              对外: ensure() — 由 runtime/scheduler 在 ensureAll 里每轮调一次。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
   const S = (k, f) => ns.i18n.S(k, f);
   const toast = (msg, kind) => ns.ui.toast.show(msg, kind);
@@ -44,7 +44,7 @@
   }
 
   function openThreadMenu(anchorBtn, row) {
-    console.log('[ShimMenu] openThreadMenu');
+    console.log('[ShimXMenu] openThreadMenu');
     dismissThreadMenu();
     const menu = document.createElement('div');
     menu.id = THREAD_MENU_ID;
@@ -88,12 +88,12 @@
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-        console.log('[ShimMenu] item click', label);
+        console.log('[ShimXMenu] item click', label);
         dismissThreadMenu();
         try {
           await onClick();
         } catch (err) {
-          console.error('[ShimMenu] onClick error', err);
+          console.error('[ShimXMenu] onClick error', err);
         }
       };
       // mousedown/pointerdown 也得吞, 避免 onThreadMenuOutside 先把菜单关掉
@@ -167,7 +167,7 @@
     }
     const busyToken = busy.show(exportBusyLabel(format));
     try {
-      const res = await window.shim('/session/export', { id, format });
+      const res = await window.shimx('/session/export', { id, format });
       if (res?.code !== 0) {
         toast(`${S('threadExportFailed', 'Export failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
         return;
@@ -193,7 +193,7 @@
       return;
     }
     try {
-      const res = await window.shim('/session/delete', { id });
+      const res = await window.shimx('/session/delete', { id });
       if (res?.code !== 0) {
         toast(`${S('deleteFailed', 'Delete failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
         return;

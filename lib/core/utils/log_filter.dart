@@ -1,4 +1,4 @@
-import 'package:shim/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_log_service.dart';
 
 /// 日志列表的级别过滤选项。`info` 段包含 debug 级别(用户角度看 debug 也是普通信息)。
 enum LogFilter {

@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/utils/script_metadata_parser.dart';
-import 'package:shim/features/scripts/data/models/script_metadata_dto.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/domain/models/script_metadata.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/utils/script_metadata_parser.dart';
+import 'package:shimx/features/scripts/data/models/script_metadata_dto.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/domain/models/script_metadata.dart';
 
 class ScriptQueryDatasource {
   final AppStorage _appStorage;

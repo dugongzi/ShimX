@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shim/core/utils/codex_mcp_config_toml_codec.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/core/utils/codex_mcp_config_toml_codec.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
 
 void main() {
   group('codex mcp config toml codec', () {
@@ -14,11 +14,11 @@ model = "gpt-5"
 [mcp_servers.external]
 command = "npx"
 
-# shim-managed:start kind=mcp_servers id=managed_mcp
+# shimx-managed:start kind=mcp_servers id=managed_mcp
 [mcp_servers.managed_mcp]
 enabled = false
 command = "node"
-# shim-managed:end
+# shimx-managed:end
 
 ${'[skills'}.writer]
 description = "Write docs"
@@ -31,13 +31,13 @@ description = "Write docs"
           (config) => config.id == 'external',
         );
         expect(external.kind, CodexMcpConfigKind.mcpServer);
-        expect(external.managedByShim, isFalse);
+        expect(external.managedByShimX, isFalse);
         expect(external.readOnly, isFalse);
 
         final managed = configs.firstWhere(
           (config) => config.id == 'managed_mcp',
         );
-        expect(managed.managedByShim, isTrue);
+        expect(managed.managedByShimX, isTrue);
         expect(managed.readOnly, isFalse);
         expect(managed.enabled, isFalse);
         expect(managed.bodyText, contains('command = "node"'));
@@ -52,7 +52,7 @@ model = "gpt-5"
 trust_level = "trusted"
 ''';
 
-      final updated = upsertShimManagedCodexMcpConfigBlock(
+      final updated = upsertShimXManagedCodexMcpConfigBlock(
         original,
         kind: CodexMcpConfigKind.mcpServer,
         id: 'local_docs',
@@ -63,7 +63,7 @@ trust_level = "trusted"
       expect(updated, contains('[projects."/tmp/demo"]'));
       expect(
         updated,
-        contains('# shim-managed:start kind=mcp_servers id=local_docs'),
+        contains('# shimx-managed:start kind=mcp_servers id=local_docs'),
       );
       expect(updated, contains('[mcp_servers.local_docs]'));
       expect(updated, contains('command = "node"'));
@@ -72,16 +72,16 @@ trust_level = "trusted"
 
     test('replaces only the matching managed block', () {
       const original = '''
-# shim-managed:start kind=mcp_servers id=first
+# shimx-managed:start kind=mcp_servers id=first
 [mcp_servers.first]
 command = "old"
-# shim-managed:end
+# shimx-managed:end
 
 [mcp_servers.other]
 command = "keep"
 ''';
 
-      final updated = upsertShimManagedCodexMcpConfigBlock(
+      final updated = upsertShimXManagedCodexMcpConfigBlock(
         original,
         kind: CodexMcpConfigKind.mcpServer,
         id: 'first',
@@ -101,10 +101,10 @@ model = "gpt-5"
 
 ''';
       const block = '''
-# shim-managed:start kind=mcp_servers id=first
+# shimx-managed:start kind=mcp_servers id=first
 [mcp_servers.first]
 command = "old"
-# shim-managed:end
+# shimx-managed:end
 ''';
       const after = '''
 
@@ -112,7 +112,7 @@ command = "old"
 trust_level = "trusted"
 ''';
 
-      final updated = upsertShimManagedCodexMcpConfigBlock(
+      final updated = upsertShimXManagedCodexMcpConfigBlock(
         '$before$block$after',
         kind: CodexMcpConfigKind.mcpServer,
         id: 'first',
@@ -129,16 +129,16 @@ trust_level = "trusted"
       const original = '''
 model = "gpt-5"
 
-# shim-managed:start kind=mcp_servers id=writer
+# shimx-managed:start kind=mcp_servers id=writer
 [mcp_servers.writer]
 command = "draft"
-# shim-managed:end
+# shimx-managed:end
 
 [mcp_servers.external]
 command = "keep"
 ''';
 
-      final updated = deleteShimManagedCodexMcpConfigBlock(
+      final updated = deleteShimXManagedCodexMcpConfigBlock(
         original,
         kind: CodexMcpConfigKind.mcpServer,
         id: 'writer',
@@ -155,13 +155,13 @@ command = "keep"
 enabled = false
 command = "keep"
 
-# shim-managed:start kind=mcp_servers id=managed
+# shimx-managed:start kind=mcp_servers id=managed
 [mcp_servers.managed]
 command = "node"
-# shim-managed:end
+# shimx-managed:end
 ''';
 
-      final updated = setShimManagedCodexMcpConfigEnabled(
+      final updated = setShimXManagedCodexMcpConfigEnabled(
         original,
         kind: CodexMcpConfigKind.mcpServer,
         id: 'managed',
@@ -182,7 +182,7 @@ command = "npx"
 trust_level = "trusted"
 ''';
 
-      final updated = upsertShimManagedCodexMcpConfigBlock(
+      final updated = upsertShimXManagedCodexMcpConfigBlock(
         original,
         kind: CodexMcpConfigKind.mcpServer,
         id: 'external',
@@ -190,10 +190,10 @@ trust_level = "trusted"
       );
 
       expect(updated, contains('[mcp_servers.external]\ncommand = "node"'));
-      expect(updated, isNot(contains('shim-managed:start')));
+      expect(updated, isNot(contains('shimx-managed:start')));
       expect(updated, contains('[projects."/tmp/demo"]'));
 
-      final deleted = deleteShimManagedCodexMcpConfigBlock(
+      final deleted = deleteShimXManagedCodexMcpConfigBlock(
         updated,
         kind: CodexMcpConfigKind.mcpServer,
         id: 'external',
@@ -202,16 +202,16 @@ trust_level = "trusted"
       expect(deleted, contains('[projects."/tmp/demo"]'));
     });
 
-    test('skips shim_claude from advanced list', () {
+    test('skips shimx_claude from advanced list', () {
       const text = '''
-[mcp_servers.shim_claude]
+[mcp_servers.shimx_claude]
 url = "http://127.0.0.1:18787/mcp"
 
 [mcp_servers.external]
 command = "npx"
 ''';
 
-      final configs = parseCodexMcpConfigs(text, excludedMcpId: 'shim_claude');
+      final configs = parseCodexMcpConfigs(text, excludedMcpId: 'shimx_claude');
 
       expect(configs.map((config) => config.id), ['external']);
     });

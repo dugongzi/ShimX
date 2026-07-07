@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/provider_health_probe_service.dart';
-import 'package:shim/core/utils/model_family.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
-import 'package:shim/features/providers/domain/models/provider_health.dart';
-import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/provider_health_probe_service.dart';
+import 'package:shimx/core/utils/model_family.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_health_repository.dart';
 
 /// 决策器：看 health 快照 + 当前选中 + AutoSwitchSettings 决定要不要切。
 /// 切前 force probe 验证候选可用,切后再 force probe 确认新家;

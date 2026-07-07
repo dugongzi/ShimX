@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/providers/data/models/api_provider_dto.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/providers/data/models/api_provider_dto.dart';
 import 'package:toml/toml.dart';
 
 class ProviderActionDatasource {
@@ -24,7 +24,7 @@ class ProviderActionDatasource {
   /// 切换到 ChatGPT 官方登录时 Codex 会把 config.toml 几乎擦光、auth.json 改成 {},
   /// 用户原本写在里面的 [projects.*] / [mcp_servers] / model / sandbox_mode 等也会一起丢。
   /// 单存 base_url 字符串不够 —— 必须把"接管前的完整状态"整份留底。
-  static const _backupDirName = '.shim_takeover_backup';
+  static const _backupDirName = '.shimx_takeover_backup';
   static const _backupConfigName = 'config.toml.bak';
   static const _backupAuthName = 'auth.json.bak';
   static const _backupMetaName = 'meta.json';
@@ -154,7 +154,7 @@ class ProviderActionDatasource {
   /// - [preserveText] 不为空时,会把现有内容里的 [mcp_servers] / [projects.*] 等保留段
   ///   原样拼到模板下方,避免擦掉用户/Codex 自己的配置。
   /// - provider id 优先沿用:快照里的 model_provider → preserveText 里的 model_provider →
-  ///   "shim"。这样已有 thread 元数据里指名的 provider 不会变。
+  ///   "shimx"。这样已有 thread 元数据里指名的 provider 不会变。
   Future<void> _writeDefaultTemplate({
     required String localProxyUrl,
     String? preserveText,
@@ -192,7 +192,7 @@ class ProviderActionDatasource {
   }
 
   /// 决定写模板时用哪个 provider id。
-  /// 优先级:快照里的 model_provider → 当前文本里的 model_provider → "shim"。
+  /// 优先级:快照里的 model_provider → 当前文本里的 model_provider → "shimx"。
   /// 这样能继承用户原本的命名(比如旧 thread 里依赖的 "custom"),不破坏已有 thread 元数据。
   Future<String> _resolveProviderIdForTemplate(String? currentText) async {
     final fromSnapshot = await _readSnapshotProviderId();
@@ -201,7 +201,7 @@ class ProviderActionDatasource {
       final fromCurrent = _extractModelProviderId(currentText);
       if (fromCurrent != null && fromCurrent.isNotEmpty) return fromCurrent;
     }
-    return 'shim';
+    return 'shimx';
   }
 
   Future<String?> _readSnapshotProviderId() async {

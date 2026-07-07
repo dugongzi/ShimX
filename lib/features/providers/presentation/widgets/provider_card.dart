@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/presentation/widgets/weight_badge.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/presentation/widgets/weight_badge.dart';
 
 /// 单条供应商列表项:radio + 名称 + 权重徽章 + baseUrl + 编辑/删除按钮。
 class ProviderCard extends StatelessWidget {

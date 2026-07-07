@@ -1,14 +1,14 @@
-import 'package:shim/features/scripts/domain/models/script_metadata.dart';
+import 'package:shimx/features/scripts/domain/models/script_metadata.dart';
 
 /// 解析 userscript 风格注释头：
 ///
 /// ```
-/// // ==Shim==
+/// // ==ShimX==
 /// // @name        xxx
 /// // @description xxx
 /// // @version     1.0.0
 /// // @author      xxx
-/// // ==/Shim==
+/// // ==/ShimX==
 /// ```
 ///
 /// 没有头部则返回 null，由调用方用文件名 fallback。
@@ -20,10 +20,10 @@ ScriptMetadata? parseScriptMetadata(String code) {
   for (final raw in lines) {
     final line = raw.trim();
     if (!inBlock) {
-      if (line == '// ==Shim==') inBlock = true;
+      if (line == '// ==ShimX==') inBlock = true;
       continue;
     }
-    if (line == '// ==/Shim==') break;
+    if (line == '// ==/ShimX==') break;
     final match = _fieldPattern.firstMatch(line);
     if (match == null) continue;
     fields[match.group(1)!.toLowerCase()] = match.group(2)!.trim();

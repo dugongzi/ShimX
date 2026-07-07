@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/providers/tool_filter_keywords_provider.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/providers/tool_filter_keywords_provider.dart';
 
 /// 工具过滤关键词管理弹窗。
 ///

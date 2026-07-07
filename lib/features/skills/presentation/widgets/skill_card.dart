@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/skills/domain/models/codex_skill.dart';
-import 'package:shim/features/skills/presentation/widgets/skill_badge.dart';
-import 'package:shim/features/skills/presentation/widgets/skill_info_row.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/skills/domain/models/codex_skill.dart';
+import 'package:shimx/features/skills/presentation/widgets/skill_badge.dart';
+import 'package:shimx/features/skills/presentation/widgets/skill_info_row.dart';
 
 /// 单条 codex skill 卡片:左 badge + 标题/描述 + 右 进度/动作按钮 + ID/path/hash 信息。
 class SkillCard extends StatelessWidget {
@@ -25,7 +25,7 @@ class SkillCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = context.l10n;
-    final badgeColor = skill.managedByShim
+    final badgeColor = skill.managedByShimX
         ? colorScheme.primary
         : colorScheme.onSurfaceVariant;
 
@@ -37,7 +37,7 @@ class SkillCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SkillBadge(
-                label: skill.managedByShim
+                label: skill.managedByShimX
                     ? l10n.skillsManagedBadge
                     : l10n.skillsExternalBadge,
                 color: badgeColor,

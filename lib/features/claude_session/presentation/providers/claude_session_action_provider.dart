@@ -1,11 +1,11 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/utils/claude_session_export_formatter.dart';
-import 'package:shim/features/claude_session/data/datasources/claude_session_action_datasource.dart';
-import 'package:shim/features/claude_session/data/repositories/claude_session_action_repository_impl.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
-import 'package:shim/features/claude_session/domain/repositories/claude_session_action_repository.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/utils/claude_session_export_formatter.dart';
+import 'package:shimx/features/claude_session/data/datasources/claude_session_action_datasource.dart';
+import 'package:shimx/features/claude_session/data/repositories/claude_session_action_repository_impl.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/features/claude_session/domain/repositories/claude_session_action_repository.dart';
 
 part 'claude_session_action_provider.g.dart';
 

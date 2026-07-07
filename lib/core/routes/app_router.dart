@@ -1,6 +1,6 @@
-import 'package:shim/common/pages/error_page.dart';
-import 'package:shim/core/routes/routes/home_route.dart';
-import 'package:shim/core/routes/routes/scripts_route.dart';
+import 'package:shimx/common/pages/error_page.dart';
+import 'package:shimx/core/routes/routes/home_route.dart';
+import 'package:shimx/core/routes/routes/scripts_route.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

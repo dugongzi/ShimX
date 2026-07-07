@@ -1,20 +1,20 @@
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/mcp_service.dart';
-import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
-import 'package:shim/features/mcp/data/datasources/mcp_server_action_datasource.dart';
-import 'package:shim/features/mcp/data/datasources/mcp_server_query_datasource.dart';
-import 'package:shim/features/mcp/data/repositories/mcp_server_action_repository_impl.dart';
-import 'package:shim/features/mcp/domain/repositories/mcp_server_action_repository.dart';
-import 'package:shim/features/mcp/presentation/providers/mcp_server_query_provider.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/mcp_service.dart';
+import 'package:shimx/features/claude_session/presentation/providers/claude_session_query_provider.dart';
+import 'package:shimx/features/mcp/data/datasources/mcp_server_action_datasource.dart';
+import 'package:shimx/features/mcp/data/datasources/mcp_server_query_datasource.dart';
+import 'package:shimx/features/mcp/data/repositories/mcp_server_action_repository_impl.dart';
+import 'package:shimx/features/mcp/domain/repositories/mcp_server_action_repository.dart';
+import 'package:shimx/features/mcp/presentation/providers/mcp_server_query_provider.dart';
 
 part 'mcp_server_action_provider.g.dart';
 
-/// shim 内置 MCP server 监听端口。改值时一并改 [McpServerQueryDatasource.shimClaudeUrl] 协议。
-const int shimMcpServerPort = 18787;
+/// shimx 内置 MCP server 监听端口。改值时一并改 [McpServerQueryDatasource.shimxClaudeUrl] 协议。
+const int shimxMcpServerPort = 18787;
 
 @riverpod
 McpServerActionRepository mcpServerActionRepository(Ref ref) {
@@ -33,7 +33,7 @@ class McpServerActions extends _$McpServerActions {
   @override
   void build() {}
 
-  /// 开关 shim 内置 MCP server:
+  /// 开关 shimx 内置 MCP server:
   /// 开 → 注册工具 + 起 HTTP 监听 + 写 codex config.toml
   /// 关 → 停 HTTP + 从 config.toml 移除
   Future<void> setEnabled(bool enabled) async {
@@ -66,8 +66,8 @@ Future<void> mcpServerAutoStart(Ref ref) async {
 Future<void> startMcpServer(Ref ref) async {
   final actionRepo = ref.read(mcpServerActionRepositoryProvider);
   await actionRepo.registerInCodex(
-    id: McpServerQueryDatasource.shimClaudeId,
-    url: McpServerQueryDatasource.shimClaudeUrl,
+    id: McpServerQueryDatasource.shimxClaudeId,
+    url: McpServerQueryDatasource.shimxClaudeUrl,
   );
 
   final service = ref.read(mcpServiceProvider);
@@ -79,7 +79,7 @@ Future<void> startMcpServer(Ref ref) async {
       queryRepository: ref.read(claudeSessionQueryRepositoryProvider),
     );
     try {
-      await service.start(port: shimMcpServerPort);
+      await service.start(port: shimxMcpServerPort);
     } catch (e) {
       AppLogService.instance.error('McpServer', '启动失败', details: '$e');
       return;
@@ -93,7 +93,7 @@ Future<void> stopMcpServer(Ref ref) async {
   final actionRepo = ref.read(mcpServerActionRepositoryProvider);
   try {
     await actionRepo.unregisterFromCodex(
-      id: McpServerQueryDatasource.shimClaudeId,
+      id: McpServerQueryDatasource.shimxClaudeId,
     );
   } finally {
     final service = ref.read(mcpServiceProvider);

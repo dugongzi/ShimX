@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
-/// shim 暴露的 MCP server 运行态。
+/// shimx 暴露的 MCP server 运行态。
 /// 三态都是稳定字符串,与 ~/.codex/config.toml / bridge payload 协议保持一致(改名会破跨进程协议)。
 enum McpServerStatus {
   /// 进程内 HTTP server 已起,可被 codex 调用

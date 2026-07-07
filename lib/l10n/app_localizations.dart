@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In zh, this message translates to:
-  /// **'Shim'**
+  /// **'ShimX'**
   String get appName;
 
   /// No description provided for @searchHint.
@@ -371,13 +371,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeTitle.
   ///
   /// In zh, this message translates to:
-  /// **'Shim'**
+  /// **'ShimX'**
   String get homeTitle;
 
   /// No description provided for @welcome.
   ///
   /// In zh, this message translates to:
-  /// **'Shim'**
+  /// **'ShimX'**
   String get welcome;
 
   /// No description provided for @inject.
@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @injectPanelDescription.
   ///
   /// In zh, this message translates to:
-  /// **'将 Shim 的控制界面注入到目标环境，用于后续连接、调试和操作。'**
+  /// **'将 ShimX 的控制界面注入到目标环境，用于后续连接、调试和操作。'**
   String get injectPanelDescription;
 
   /// No description provided for @injectReadyStatus.
@@ -533,13 +533,13 @@ abstract class AppLocalizations {
   /// No description provided for @trayQuit.
   ///
   /// In zh, this message translates to:
-  /// **'退出 Shim'**
+  /// **'退出 ShimX'**
   String get trayQuit;
 
   /// No description provided for @trayTooltip.
   ///
   /// In zh, this message translates to:
-  /// **'Shim'**
+  /// **'ShimX'**
   String get trayTooltip;
 
   /// No description provided for @systemLanguage.
@@ -1178,143 +1178,143 @@ abstract class AppLocalizations {
   /// **'日志已复制'**
   String get logsCopiedToast;
 
-  /// No description provided for @shimDeleteThreadHeading.
+  /// No description provided for @shimxDeleteThreadHeading.
   ///
   /// In zh, this message translates to:
   /// **'删除对话'**
-  String get shimDeleteThreadHeading;
+  String get shimxDeleteThreadHeading;
 
-  /// No description provided for @shimDeleteThreadDelete.
+  /// No description provided for @shimxDeleteThreadDelete.
   ///
   /// In zh, this message translates to:
   /// **'删除'**
-  String get shimDeleteThreadDelete;
+  String get shimxDeleteThreadDelete;
 
-  /// No description provided for @shimDeleteThreadAria.
+  /// No description provided for @shimxDeleteThreadAria.
   ///
   /// In zh, this message translates to:
   /// **'删除对话'**
-  String get shimDeleteThreadAria;
+  String get shimxDeleteThreadAria;
 
-  /// No description provided for @shimDeleteThreadDefaultTitle.
+  /// No description provided for @shimxDeleteThreadDefaultTitle.
   ///
   /// In zh, this message translates to:
   /// **'此对话'**
-  String get shimDeleteThreadDefaultTitle;
+  String get shimxDeleteThreadDefaultTitle;
 
-  /// No description provided for @shimDeleteSessionIdMissing.
+  /// No description provided for @shimxDeleteSessionIdMissing.
   ///
   /// In zh, this message translates to:
   /// **'未找到会话 id'**
-  String get shimDeleteSessionIdMissing;
+  String get shimxDeleteSessionIdMissing;
 
-  /// No description provided for @shimDeleteFailed.
+  /// No description provided for @shimxDeleteFailed.
   ///
   /// In zh, this message translates to:
   /// **'删除失败'**
-  String get shimDeleteFailed;
+  String get shimxDeleteFailed;
 
-  /// No description provided for @shimDeleteSuccess.
+  /// No description provided for @shimxDeleteSuccess.
   ///
   /// In zh, this message translates to:
   /// **'已删除'**
-  String get shimDeleteSuccess;
+  String get shimxDeleteSuccess;
 
-  /// No description provided for @shimUnknownError.
+  /// No description provided for @shimxUnknownError.
   ///
   /// In zh, this message translates to:
   /// **'未知错误'**
-  String get shimUnknownError;
+  String get shimxUnknownError;
 
-  /// No description provided for @shimProviderFallbackName.
+  /// No description provided for @shimxProviderFallbackName.
   ///
   /// In zh, this message translates to:
   /// **'供应商'**
-  String get shimProviderFallbackName;
+  String get shimxProviderFallbackName;
 
-  /// No description provided for @shimClearModel.
+  /// No description provided for @shimxClearModel.
   ///
   /// In zh, this message translates to:
   /// **'清除模型'**
-  String get shimClearModel;
+  String get shimxClearModel;
 
-  /// No description provided for @shimEffortLow.
+  /// No description provided for @shimxEffortLow.
   ///
   /// In zh, this message translates to:
   /// **'低'**
-  String get shimEffortLow;
+  String get shimxEffortLow;
 
-  /// No description provided for @shimEffortMedium.
+  /// No description provided for @shimxEffortMedium.
   ///
   /// In zh, this message translates to:
   /// **'中'**
-  String get shimEffortMedium;
+  String get shimxEffortMedium;
 
-  /// No description provided for @shimEffortHigh.
+  /// No description provided for @shimxEffortHigh.
   ///
   /// In zh, this message translates to:
   /// **'高'**
-  String get shimEffortHigh;
+  String get shimxEffortHigh;
 
-  /// No description provided for @shimEffortXHigh.
+  /// No description provided for @shimxEffortXHigh.
   ///
   /// In zh, this message translates to:
   /// **'超高'**
-  String get shimEffortXHigh;
+  String get shimxEffortXHigh;
 
-  /// No description provided for @shimHealthTimeout.
+  /// No description provided for @shimxHealthTimeout.
   ///
   /// In zh, this message translates to:
   /// **'超时'**
-  String get shimHealthTimeout;
+  String get shimxHealthTimeout;
 
-  /// No description provided for @shimNoProviders.
+  /// No description provided for @shimxNoProviders.
   ///
   /// In zh, this message translates to:
   /// **'还没有导入供应商'**
-  String get shimNoProviders;
+  String get shimxNoProviders;
 
-  /// No description provided for @shimUnnamedProvider.
+  /// No description provided for @shimxUnnamedProvider.
   ///
   /// In zh, this message translates to:
   /// **'未命名供应商'**
-  String get shimUnnamedProvider;
+  String get shimxUnnamedProvider;
 
-  /// No description provided for @shimProviderNoModels.
+  /// No description provided for @shimxProviderNoModels.
   ///
   /// In zh, this message translates to:
   /// **'该供应商没有模型'**
-  String get shimProviderNoModels;
+  String get shimxProviderNoModels;
 
-  /// No description provided for @shimReasoningEffort.
+  /// No description provided for @shimxReasoningEffort.
   ///
   /// In zh, this message translates to:
   /// **'思考深度'**
-  String get shimReasoningEffort;
+  String get shimxReasoningEffort;
 
-  /// No description provided for @shimSaveFailed.
+  /// No description provided for @shimxSaveFailed.
   ///
   /// In zh, this message translates to:
   /// **'保存失败'**
-  String get shimSaveFailed;
+  String get shimxSaveFailed;
 
-  /// No description provided for @shimSwitchProviderFailed.
+  /// No description provided for @shimxSwitchProviderFailed.
   ///
   /// In zh, this message translates to:
   /// **'切换供应商失败'**
-  String get shimSwitchProviderFailed;
+  String get shimxSwitchProviderFailed;
 
-  /// No description provided for @shimSwitchModelFailed.
+  /// No description provided for @shimxSwitchModelFailed.
   ///
   /// In zh, this message translates to:
   /// **'切换模型失败'**
-  String get shimSwitchModelFailed;
+  String get shimxSwitchModelFailed;
 
-  /// No description provided for @shimSwitchEffortFailed.
+  /// No description provided for @shimxSwitchEffortFailed.
   ///
   /// In zh, this message translates to:
   /// **'切换思考深度失败'**
-  String get shimSwitchEffortFailed;
+  String get shimxSwitchEffortFailed;
 
   /// No description provided for @sessionManagement.
   ///
@@ -1358,11 +1358,11 @@ abstract class AppLocalizations {
   /// **'切换桶'**
   String get sessionSwitchBucket;
 
-  /// No description provided for @sessionSwitchToShim.
+  /// No description provided for @sessionSwitchToShimX.
   ///
   /// In zh, this message translates to:
-  /// **'切到 shim'**
-  String get sessionSwitchToShim;
+  /// **'切到 shimx'**
+  String get sessionSwitchToShimX;
 
   /// No description provided for @sessionRefresh.
   ///
@@ -1406,17 +1406,17 @@ abstract class AppLocalizations {
   /// **'备份选中'**
   String get sessionBackupSelected;
 
-  /// No description provided for @sessionMergeAllToShim.
+  /// No description provided for @sessionMergeAllToShimX.
   ///
   /// In zh, this message translates to:
   /// **'统一对话'**
-  String get sessionMergeAllToShim;
+  String get sessionMergeAllToShimX;
 
-  /// No description provided for @sessionMergeAllToShimTooltip.
+  /// No description provided for @sessionMergeAllToShimXTooltip.
   ///
   /// In zh, this message translates to:
-  /// **'codex 的会话按 model_provider(桶)分组显示。切换供应商时侧栏只显示当前桶,其它桶里的历史看不到。\n此操作把所有非 shim 桶里的会话都改成 shim 桶,并把 codex 的默认桶切到 shim。之后不管你用哪个供应商,侧栏都能看到全部历史。'**
-  String get sessionMergeAllToShimTooltip;
+  /// **'codex 的会话按 model_provider(桶)分组显示。切换供应商时侧栏只显示当前桶,其它桶里的历史看不到。\n此操作把所有非 shimx 桶里的会话都改成 shimx 桶,并把 codex 的默认桶切到 shimx。之后不管你用哪个供应商,侧栏都能看到全部历史。'**
+  String get sessionMergeAllToShimXTooltip;
 
   /// No description provided for @sessionSwitchBucketTooltip.
   ///
@@ -1427,7 +1427,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionBackupSelectedTooltip.
   ///
   /// In zh, this message translates to:
-  /// **'把选中的会话打包保存到 shim 备份目录,同时记录每条会话原本所属的桶。之后可在「备份」tab 里逐条或整批恢复到原桶。'**
+  /// **'把选中的会话打包保存到 shimx 备份目录,同时记录每条会话原本所属的桶。之后可在「备份」tab 里逐条或整批恢复到原桶。'**
   String get sessionBackupSelectedTooltip;
 
   /// No description provided for @sessionMoveSuccess.
@@ -1493,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionMergeConfirmBody.
   ///
   /// In zh, this message translates to:
-  /// **'将把除 shim 桶外所有会话全部移动到 shim 桶,该操作不会自动备份。'**
+  /// **'将把除 shimx 桶外所有会话全部移动到 shimx 桶,该操作不会自动备份。'**
   String get sessionMergeConfirmBody;
 
   /// No description provided for @sessionMergeConfirmOk.
@@ -1505,7 +1505,7 @@ abstract class AppLocalizations {
   /// No description provided for @sessionMergeProgressTitle.
   ///
   /// In zh, this message translates to:
-  /// **'正在合并到 shim 桶'**
+  /// **'正在合并到 shimx 桶'**
   String get sessionMergeProgressTitle;
 
   /// No description provided for @sessionMergeProgressBody.
@@ -1781,13 +1781,13 @@ abstract class AppLocalizations {
   /// No description provided for @mcpServersTitle.
   ///
   /// In zh, this message translates to:
-  /// **'shim 提供的 MCP server'**
+  /// **'shimx 提供的 MCP server'**
   String get mcpServersTitle;
 
   /// No description provided for @mcpServersHint.
   ///
   /// In zh, this message translates to:
-  /// **'这些 MCP server 由 shim 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。'**
+  /// **'这些 MCP server 由 shimx 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。'**
   String get mcpServersHint;
 
   /// No description provided for @mcpServersEmpty.
@@ -1796,17 +1796,17 @@ abstract class AppLocalizations {
   /// **'尚未启用任何 MCP server'**
   String get mcpServersEmpty;
 
-  /// No description provided for @mcpShimClaudeName.
+  /// No description provided for @mcpShimXClaudeName.
   ///
   /// In zh, this message translates to:
   /// **'Claude 会话查询'**
-  String get mcpShimClaudeName;
+  String get mcpShimXClaudeName;
 
-  /// No description provided for @mcpShimClaudeDescription.
+  /// No description provided for @mcpShimXClaudeDescription.
   ///
   /// In zh, this message translates to:
   /// **'把本地 Claude Code 会话作为 MCP 工具暴露给 Codex 的 LLM。'**
-  String get mcpShimClaudeDescription;
+  String get mcpShimXClaudeDescription;
 
   /// No description provided for @mcpServerUrlLabel.
   ///
@@ -1967,7 +1967,7 @@ abstract class AppLocalizations {
   /// No description provided for @skillsHint.
   ///
   /// In zh, this message translates to:
-  /// **'管理 ~/.codex/skills 下的本地 Codex Skill。shim 只会删除或覆盖已导入 registry 的 Skill。'**
+  /// **'管理 ~/.codex/skills 下的本地 Codex Skill。shimx 只会删除或覆盖已导入 registry 的 Skill。'**
   String get skillsHint;
 
   /// No description provided for @skillsInstallFolder.
@@ -1985,7 +1985,7 @@ abstract class AppLocalizations {
   /// No description provided for @skillsManagedGroup.
   ///
   /// In zh, this message translates to:
-  /// **'shim 管理'**
+  /// **'shimx 管理'**
   String get skillsManagedGroup;
 
   /// No description provided for @skillsExternalGroup.
@@ -2003,7 +2003,7 @@ abstract class AppLocalizations {
   /// No description provided for @skillsManagedBadge.
   ///
   /// In zh, this message translates to:
-  /// **'shim 管理'**
+  /// **'shimx 管理'**
   String get skillsManagedBadge;
 
   /// No description provided for @skillsExternalBadge.
@@ -2081,7 +2081,7 @@ abstract class AppLocalizations {
   /// No description provided for @skillsOverwriteMessage.
   ///
   /// In zh, this message translates to:
-  /// **'同名 shim 管理 Skill 已存在，确认覆盖当前目录？'**
+  /// **'同名 shimx 管理 Skill 已存在，确认覆盖当前目录？'**
   String get skillsOverwriteMessage;
 
   /// No description provided for @skillsDeleteTitle.
@@ -2093,7 +2093,7 @@ abstract class AppLocalizations {
   /// No description provided for @skillsDeleteMessage.
   ///
   /// In zh, this message translates to:
-  /// **'确认删除这个 shim 管理的 Skill 目录？'**
+  /// **'确认删除这个 shimx 管理的 Skill 目录？'**
   String get skillsDeleteMessage;
 
   /// No description provided for @skillsZipChooseTitle.

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shim/common/widgets/icon_badge.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/common/widgets/icon_badge.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 /// 设置 tab 通用条目卡:左 icon + 中标题/描述 + 右控件。
 class SettingCard extends StatelessWidget {

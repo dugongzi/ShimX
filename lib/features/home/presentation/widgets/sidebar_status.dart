@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/home/presentation/providers/inject_query_provider.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/home/presentation/providers/inject_query_provider.dart';
 
 /// 侧栏底部:Codex 调试端口连通状态(轮询)。
 /// 不带自身装饰,容器由父级提供;依赖 1s/10s 自动轮询,无手动刷新按钮。

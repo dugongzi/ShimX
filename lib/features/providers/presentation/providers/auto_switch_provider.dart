@@ -1,19 +1,19 @@
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/providers/locale_provider.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/auto_switch_service.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
-import 'package:shim/features/providers/data/datasources/auto_switch_datasource.dart';
-import 'package:shim/features/providers/data/repositories/auto_switch_repository_impl.dart';
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
-import 'package:shim/features/providers/domain/repositories/auto_switch_repository.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/providers/locale_provider.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/auto_switch_service.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
+import 'package:shimx/features/providers/data/datasources/auto_switch_datasource.dart';
+import 'package:shimx/features/providers/data/repositories/auto_switch_repository_impl.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/domain/repositories/auto_switch_repository.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_health_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 part 'auto_switch_provider.g.dart';
 

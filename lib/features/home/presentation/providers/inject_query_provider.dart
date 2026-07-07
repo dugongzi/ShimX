@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/features/home/data/datasources/inject_query_datasource.dart';
-import 'package:shim/features/home/data/repositories/inject_query_repository_impl.dart';
-import 'package:shim/features/home/domain/repositories/inject_query_repository.dart';
+import 'package:shimx/features/home/data/datasources/inject_query_datasource.dart';
+import 'package:shimx/features/home/data/repositories/inject_query_repository_impl.dart';
+import 'package:shimx/features/home/domain/repositories/inject_query_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'inject_query_provider.g.dart';

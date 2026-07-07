@@ -1,5 +1,5 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/network_blocker
+// ==ShimX==
+// @name        ShimX codex_enhance — features/network_blocker
 // @description 阻断 Statsig 等被墙的请求, 避免主页面 hydration 卡 10 秒。
 //              纯副作用模块, 只在加载时 hook 一次 fetch / XHR / sendBeacon,
 //              不对外暴露任何 API。
@@ -8,12 +8,12 @@
 //              表现为主页面一直 loading。这里直接让请求立即"成功", 返回看起来合法的空响应,
 //              避免触发 SPA 的 error 路径 (会重渲染整个页面)。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  if (window.__shimNetBlockerInstalled) return;
-  window.__shimNetBlockerInstalled = true;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  if (window.__shimxNetBlockerInstalled) return;
+  window.__shimxNetBlockerInstalled = true;
 
   const BLOCKED_HOSTS = [
     'ab.chatgpt.com',
@@ -51,12 +51,12 @@
   }
 
   const origFetch = window.fetch;
-  window.fetch = function shimBlockingFetch(input, init) {
+  window.fetch = function shimxBlockingFetch(input, init) {
     const url = typeof input === 'string' ? input : input?.url;
     if (isBlocked(url)) {
       blockedCount += 1;
       if (blockedCount <= 3) {
-        console.log('[ShimNetBlock] fetch faked', url);
+        console.log('[ShimXNetBlock] fetch faked', url);
       }
       const body = fakeStatsigBody(url);
       return Promise.resolve(new Response(body, {
@@ -72,22 +72,22 @@
   const origOpen = OrigXHR.prototype.open;
   const origSend = OrigXHR.prototype.send;
   const origSetReqHeader = OrigXHR.prototype.setRequestHeader;
-  OrigXHR.prototype.open = function shimBlockingOpen(method, url) {
-    this.__shimBlockedUrl = url;
-    this.__shimIsBlocked = isBlocked(url);
+  OrigXHR.prototype.open = function shimxBlockingOpen(method, url) {
+    this.__shimxBlockedUrl = url;
+    this.__shimxIsBlocked = isBlocked(url);
     return origOpen.apply(this, arguments);
   };
   OrigXHR.prototype.setRequestHeader = function (name, value) {
-    if (this.__shimIsBlocked) return; // 不真发, header 也别真写
+    if (this.__shimxIsBlocked) return; // 不真发, header 也别真写
     return origSetReqHeader.apply(this, arguments);
   };
-  OrigXHR.prototype.send = function shimBlockingSend() {
-    if (this.__shimIsBlocked) {
+  OrigXHR.prototype.send = function shimxBlockingSend() {
+    if (this.__shimxIsBlocked) {
       blockedCount += 1;
       if (blockedCount <= 3) {
-        console.log('[ShimNetBlock] xhr faked', this.__shimBlockedUrl);
+        console.log('[ShimXNetBlock] xhr faked', this.__shimxBlockedUrl);
       }
-      const body = fakeStatsigBody(this.__shimBlockedUrl);
+      const body = fakeStatsigBody(this.__shimxBlockedUrl);
       setTimeout(() => {
         try {
           Object.defineProperty(this, 'readyState', { value: 4, configurable: true });
@@ -95,7 +95,7 @@
           Object.defineProperty(this, 'statusText', { value: 'OK', configurable: true });
           Object.defineProperty(this, 'responseText', { value: body, configurable: true });
           Object.defineProperty(this, 'response', { value: body, configurable: true });
-          Object.defineProperty(this, 'responseURL', { value: this.__shimBlockedUrl, configurable: true });
+          Object.defineProperty(this, 'responseURL', { value: this.__shimxBlockedUrl, configurable: true });
           this.dispatchEvent(new Event('readystatechange'));
           this.dispatchEvent(new Event('load'));
           this.dispatchEvent(new Event('loadend'));
@@ -109,15 +109,15 @@
   // sendBeacon 也可能被 Statsig 用, 直接返回 true 装作发了
   const origBeacon = navigator.sendBeacon?.bind(navigator);
   if (origBeacon) {
-    navigator.sendBeacon = function shimBlockingBeacon(url, data) {
+    navigator.sendBeacon = function shimxBlockingBeacon(url, data) {
       if (isBlocked(url)) {
         blockedCount += 1;
-        if (blockedCount <= 3) console.log('[ShimNetBlock] beacon faked', url);
+        if (blockedCount <= 3) console.log('[ShimXNetBlock] beacon faked', url);
         return true;
       }
       return origBeacon(url, data);
     };
   }
 
-  console.log('[ShimNetBlock] installed (fake-success mode), targets:', BLOCKED_HOSTS.join(', '));
+  console.log('[ShimXNetBlock] installed (fake-success mode), targets:', BLOCKED_HOSTS.join(', '));
 })();

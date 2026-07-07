@@ -1,4 +1,4 @@
-import 'package:shim/core/constants/app_sizes.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 
 class ScriptListPagination extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
 
 abstract class ScriptQueryRepository {
   /// 列出用户脚本目录下所有脚本

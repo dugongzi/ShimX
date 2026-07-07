@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 class NewScriptDialog {
   NewScriptDialog._();

@@ -1,5 +1,5 @@
-import 'package:shim/features/mcp/data/datasources/claude_bridge_state_controller.dart';
-import 'package:shim/features/mcp/domain/repositories/claude_bridge_action_repository.dart';
+import 'package:shimx/features/mcp/data/datasources/claude_bridge_state_controller.dart';
+import 'package:shimx/features/mcp/domain/repositories/claude_bridge_action_repository.dart';
 
 class ClaudeBridgeActionRepositoryImpl implements ClaudeBridgeActionRepository {
   ClaudeBridgeActionRepositoryImpl({required this.controller});

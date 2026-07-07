@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
 
 part 'auto_switch_settings_dto.freezed.dart';
 part 'auto_switch_settings_dto.g.dart';

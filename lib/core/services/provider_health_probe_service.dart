@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/utils/model_family.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/models/provider_health.dart';
-import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/utils/model_family.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_health_repository.dart';
 
 /// 供应商测速调度器。跟 LocalProxyService 并列的运行时 service。
 ///

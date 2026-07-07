@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/features/logs/presentation/providers/logs_query_provider.dart';
-import 'package:shim/features/logs/presentation/widgets/log_entry_tile.dart';
-import 'package:shim/core/utils/log_filter.dart';
-import 'package:shim/features/logs/presentation/widgets/logs_filter_segmented.dart';
-import 'package:shim/features/logs/presentation/widgets/logs_toolbar.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/features/logs/presentation/providers/logs_query_provider.dart';
+import 'package:shimx/features/logs/presentation/widgets/log_entry_tile.dart';
+import 'package:shimx/core/utils/log_filter.dart';
+import 'package:shimx/features/logs/presentation/widgets/logs_filter_segmented.dart';
+import 'package:shimx/features/logs/presentation/widgets/logs_toolbar.dart';
 
 /// 主页 Logs tab:工具栏 + 等级过滤 + 列表(订阅 [AppLogService] ValueNotifier 实时更新)。
 class LogsTab extends HookConsumerWidget {

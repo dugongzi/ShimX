@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="assets/images/icon.png" width="96" alt="Shim icon" />
-  <h1>Shim</h1>
+  <img src="assets/images/icon.png" width="96" alt="ShimX icon" />
+  <h1>ShimX</h1>
   <p>A local enhancer for Codex Desktop</p>
   <p>
     <img src="https://img.shields.io/badge/license-GPLv3-b22222" alt="license GPLv3" />
@@ -11,9 +11,9 @@
   </p>
 </div>
 
-Shim is a local enhancer for Codex Desktop. It provides a Flutter-based desktop management UI, injects enhancements into the Codex page through Chrome DevTools Protocol, and runs local services for reverse proxying, MCP, session management, user scripts, Codex Skills, and Codex Plugins.
+ShimX is a local enhancer for Codex Desktop. It provides a Flutter-based desktop management UI, injects enhancements into the Codex page through Chrome DevTools Protocol, and runs local services for reverse proxying, MCP, session management, user scripts, Codex Skills, and Codex Plugins.
 
-Repository: <https://github.com/dugongzi/Shim>
+Repository: <https://github.com/dugongzi/ShimX>
 
 <p align="center">
   <a href="README_cn.md">简体中文</a> |
@@ -25,7 +25,7 @@ Repository: <https://github.com/dugongzi/Shim>
 <table>
   <tr>
     <td width="50%">
-      <img src="assets/screenshots/shim_panel.png" alt="Shim control panel" />
+      <img src="assets/screenshots/shimx_panel.png" alt="ShimX control panel" />
       <p><strong>In-Codex Control Panel</strong><br />After injection, inspect Bridge state, the current provider, auto-switch strategy, and context bindings directly inside Codex.</p>
     </td>
     <td width="50%">
@@ -69,7 +69,7 @@ Repository: <https://github.com/dugongzi/Shim>
       <p><strong>Script List And Batch Management</strong><br />View script metadata in the main window and batch enable, disable, delete, or import scripts.</p>
     </td>
     <td width="50%">
-      <img src="assets/screenshots/setup.png" alt="Shim settings page" />
+      <img src="assets/screenshots/setup.png" alt="ShimX settings page" />
       <p><strong>Desktop Settings Center</strong><br />Manage language, theme, theme color, shortcut, tool filtering, official login, and proxy takeover port in one place.</p>
     </td>
   </tr>
@@ -81,14 +81,14 @@ Repository: <https://github.com/dugongzi/Shim>
 
 - Launch or connect to Codex Desktop, using debug port `9229` by default.
 - Inject built-in `codex_enhance` scripts and enabled user scripts through CDP.
-- Add the Shim badge, sidebar entry, control panel, logs panel, plugin panel, provider/model picker, Claude Bridge, session export/delete actions, project menu enhancements, and prompt polish button to the Codex page.
-- The injected page communicates with Flutter through `window.shim(path, payload)`. User scripts can use `window.shimApi`. See [User Script Manual](docs/user_script_manual_en.md) / [用户脚本手册](docs/user_script_manual_zh.md).
+- Add the ShimX badge, sidebar entry, control panel, logs panel, plugin panel, provider/model picker, Claude Bridge, session export/delete actions, project menu enhancements, and prompt polish button to the Codex page.
+- The injected page communicates with Flutter through `window.shimx(path, payload)`. User scripts can use `window.shimxApi`. See [User Script Manual](docs/user_script_manual_en.md) / [用户脚本手册](docs/user_script_manual_zh.md).
 
 ### API Providers And Local Proxy
 
 - Manage multiple upstream providers, including name, Base URL, API Key, protocol, model list, selected model, and weights.
 - Support `responses`, `chat`, and `messages` upstream protocols, converting Codex Responses requests to the selected upstream protocol.
-- Run a local reverse proxy on `127.0.0.1:<port>`. When takeover is enabled, Shim rewrites the active `base_url` in Codex `~/.codex/config.toml` to the local proxy URL.
+- Run a local reverse proxy on `127.0.0.1:<port>`. When takeover is enabled, ShimX rewrites the active `base_url` in Codex `~/.codex/config.toml` to the local proxy URL.
 - Capture `config.toml` and `auth.json` snapshots before takeover, which helps recover from Codex official-login flows that may rewrite those files.
 - Support latency probing, provider health state, failure streaks, slow-response detection, tool-filter keywords, and reasoning effort overrides.
 - Auto-switch strategies include manual, failover, and fastest-first, with configurable scope, thresholds, cooldown, probe interval, slow-response thresholds, and same-provider sibling fallback.
@@ -102,7 +102,7 @@ Repository: <https://github.com/dugongzi/Shim>
   - Export as Markdown, HTML, or raw JSONL.
   - Import a single JSONL file or a ZIP bundle.
   - Delete sessions with a backup written before deletion.
-  - Move sessions to a target bucket, or merge all buckets into the `shim` bucket.
+  - Move sessions to a target bucket, or merge all buckets into the `shimx` bucket.
 - Claude Code sessions:
   - Read `~/.claude/projects/<encoded-cwd>/*.jsonl`.
   - Browse Claude Code history by project and session.
@@ -121,22 +121,22 @@ Repository: <https://github.com/dugongzi/Shim>
   - `read_claude_session`
   - `search_claude_session`
 - The MCP server can auto-start from persisted settings and can register/unregister itself in Codex `config.toml` under `[mcp_servers.*]`.
-- The advanced MCP config page can edit Shim-managed Codex MCP config blocks, including enable/disable, save, and delete actions.
+- The advanced MCP config page can edit ShimX-managed Codex MCP config blocks, including enable/disable, save, and delete actions.
 
 ### User Scripts
 
-- Manage `.js` scripts injected into the Codex page from the Shim home tab.
+- Manage `.js` scripts injected into the Codex page from the ShimX home tab.
 - Import, create, edit, delete, enable/disable, and batch-manage scripts.
 - Scripts are stored in the app support directory under `scripts/`.
 - The editor supports autosave, reload-on-run, hot run, manual access, and a Codex DevTools console entry.
-- Script metadata is parsed from the `// ==Shim==` block. Missing metadata falls back to the filename.
+- Script metadata is parsed from the `// ==ShimX==` block. Missing metadata falls back to the filename.
 
 ### Codex Skills
 
 - Scan and manage `~/.codex/skills`.
 - Install a Skill from a folder or ZIP file.
-- Import an existing Skill into Shim management.
-- Only Shim-managed Skills can be deleted, which avoids deleting external Skills by mistake.
+- Import an existing Skill into ShimX management.
+- Only ShimX-managed Skills can be deleted, which avoids deleting external Skills by mistake.
 - Installation records are stored in a local registry, with content hashes used for change detection.
 
 ### Codex Plugins
@@ -148,23 +148,23 @@ Repository: <https://github.com/dugongzi/Shim>
 
 ### Desktop Experience And Settings
 
-- System tray actions: show window, launch Codex and inject, quit Shim.
+- System tray actions: show window, launch Codex and inject, quit ShimX.
 - Closing the window hides it to the tray instead of quitting.
-- Create a desktop shortcut. The shortcut launches Shim with `--launch-codex`, automatically launches/injects Codex, then hides Shim to the tray.
+- Create a desktop shortcut. The shortcut launches ShimX with `--launch-codex`, automatically launches/injects Codex, then hides ShimX to the tray.
 - Support Simplified Chinese / English, system / light / dark theme, and theme color settings.
 - Open the source repository, create a shortcut, enable official-login config, and manage tool-filter keywords.
 - In-app logs support level filtering, copying, and clearing.
 
 ## How It Works
 
-Shim's runtime flow is:
+ShimX's runtime flow is:
 
 1. The Flutter app starts and initializes the window, tray, theme, localization, and persisted settings.
-2. If proxy or MCP switches are enabled, Shim starts the corresponding local services.
-3. When the user clicks inject or starts through the shortcut, Shim launches or connects to Codex Desktop and ensures the remote debug port is available.
-4. Shim connects to the Codex page through CDP, registers Dart-side bridge routes, and injects `bridge_bootstrap.js`, built-in enhancement scripts, and user scripts.
+2. If proxy or MCP switches are enabled, ShimX starts the corresponding local services.
+3. When the user clicks inject or starts through the shortcut, ShimX launches or connects to Codex Desktop and ensures the remote debug port is available.
+4. ShimX connects to the Codex page through CDP, registers Dart-side bridge routes, and injects `bridge_bootstrap.js`, built-in enhancement scripts, and user scripts.
 5. Injected scripts call Flutter-side features through the bridge, such as provider switching, session reading, export, logs, plugins, and Claude Bridge.
-6. When takeover is enabled, Codex requests go to the local Shim proxy first, then the proxy forwards them to the selected upstream provider using the selected protocol and model.
+6. When takeover is enabled, Codex requests go to the local ShimX proxy first, then the proxy forwards them to the selected upstream provider using the selected protocol and model.
 
 ## Project Structure
 
@@ -227,19 +227,19 @@ The project uses Riverpod Generator, Freezed, and JSON Serializable. During regu
 
 - Codex Home: `CODEX_HOME` first, otherwise `~/.codex`.
 - Codex config: `~/.codex/config.toml`.
-- Codex database: `~/.codex/state_5.sqlite`. Shim currently uses this database in Codex Home root, not `~/.codex/sqlite/state_5.sqlite`.
+- Codex database: `~/.codex/state_5.sqlite`. ShimX currently uses this database in Codex Home root, not `~/.codex/sqlite/state_5.sqlite`.
 - Codex session JSONL: `~/.codex/sessions/<yyyy>/<mm>/<dd>/rollout-*.jsonl`.
 - Claude Code sessions: `~/.claude/projects/**/*.jsonl`.
-- Shim user scripts: `<AppSupport>/scripts/`.
-- Shim Codex session backups: `<AppSupport>/codex_session_backups/`.
-- Takeover snapshot: `~/.codex/.shim_takeover_backup/`.
+- ShimX user scripts: `<AppSupport>/scripts/`.
+- ShimX Codex session backups: `<AppSupport>/codex_session_backups/`.
+- Takeover snapshot: `~/.codex/.shimx_takeover_backup/`.
 - Codex Skills: `~/.codex/skills/`.
 
 ## Notes
 
-- Shim modifies `~/.codex/config.toml` based on user actions, especially proxy takeover, MCP config, and plugin marketplace config. It is best to make such changes while Codex is idle.
+- ShimX modifies `~/.codex/config.toml` based on user actions, especially proxy takeover, MCP config, and plugin marketplace config. It is best to make such changes while Codex is idle.
 - Codex session delete, import, bucket move, and backup restore actions write `state_5.sqlite` and rollout JSONL files. The code uses backups and transactions where appropriate, but these operations should still be run while Codex is idle.
-- User scripts run inside the Codex page context. Avoid overriding `window.shimApi`, globally patching `fetch` / `XMLHttpRequest`, or modifying built-in prototypes.
+- User scripts run inside the Codex page context. Avoid overriding `window.shimxApi`, globally patching `fetch` / `XMLHttpRequest`, or modifying built-in prototypes.
 - The proxy only listens on loopback and is not exposed to the network.
 
 ## License

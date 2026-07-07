@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/features/claude_session/domain/repositories/claude_session_query_repository.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/features/claude_session/domain/repositories/claude_session_query_repository.dart';
 
 final mcpServerRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
   final notifier = ValueNotifier<int?>(null);
@@ -87,7 +87,7 @@ class McpService {
     await stop();
 
     final mcpServer = McpServer(
-      Implementation(name: 'shim', version: '1.0.0'),
+      Implementation(name: 'shimx', version: '1.0.0'),
       options: McpServerOptions(
         capabilities: ServerCapabilities(tools: ServerCapabilitiesTools()),
       ),

@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:shim/features/plugins/domain/models/plugin_marketplace_status.dart';
+import 'package:shimx/features/plugins/domain/models/plugin_marketplace_status.dart';
 
 part 'plugin_marketplace_status_dto.freezed.dart';
 part 'plugin_marketplace_status_dto.g.dart';

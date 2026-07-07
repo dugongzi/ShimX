@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_info_row.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_status_badge.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_info_row.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_status_badge.dart';
 
 /// codex MCP 配置的单条卡片:类型徽章 + 名称 + 开关 + 编辑/删除 + ID + body 预览。
 ///

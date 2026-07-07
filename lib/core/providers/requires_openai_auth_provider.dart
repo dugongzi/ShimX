@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/codex_paths.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/codex_paths.dart';
 
 part 'requires_openai_auth_provider.g.dart';
 

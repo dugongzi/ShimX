@@ -3,11 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/codex_backup/presentation/providers/codex_backup_action_provider.dart';
-import 'package:shim/features/codex_backup/presentation/providers/codex_backup_query_provider.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/codex_backup/presentation/providers/codex_backup_action_provider.dart';
+import 'package:shimx/features/codex_backup/presentation/providers/codex_backup_query_provider.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 
 const int _backupPageSize = 30;
 

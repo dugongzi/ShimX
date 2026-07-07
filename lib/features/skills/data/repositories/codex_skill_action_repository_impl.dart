@@ -1,5 +1,5 @@
-import 'package:shim/features/skills/data/datasources/codex_skill_action_datasource.dart';
-import 'package:shim/features/skills/domain/repositories/codex_skill_action_repository.dart';
+import 'package:shimx/features/skills/data/datasources/codex_skill_action_datasource.dart';
+import 'package:shimx/features/skills/domain/repositories/codex_skill_action_repository.dart';
 
 class CodexSkillActionRepositoryImpl implements CodexSkillActionRepository {
   CodexSkillActionRepositoryImpl({required this.dataSource});

@@ -1,5 +1,5 @@
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/themes/app_fonts.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/themes/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 

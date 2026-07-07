@@ -1,13 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/providers/locale_provider.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/features/providers/data/datasources/provider_query_datasource.dart';
-import 'package:shim/features/providers/data/repositories/provider_query_repository_impl.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/models/provider_list_state.dart';
-import 'package:shim/features/providers/domain/models/proxy_config.dart';
-import 'package:shim/features/providers/domain/repositories/provider_query_repository.dart';
+import 'package:shimx/core/providers/locale_provider.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/features/providers/data/datasources/provider_query_datasource.dart';
+import 'package:shimx/features/providers/data/repositories/provider_query_repository_impl.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/provider_list_state.dart';
+import 'package:shimx/features/providers/domain/models/proxy_config.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_query_repository.dart';
 
 part 'provider_query_provider.g.dart';
 
@@ -51,7 +51,7 @@ Future<List<String>> fetchProviderModels(
 ///
 /// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
 /// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
-/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 ShimX 本体设置，
 /// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
 @Riverpod(keepAlive: true)
 bool providerRouteRegistration(Ref ref) {

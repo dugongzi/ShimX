@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:shim/core/utils/claude_session_export_formatter.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/core/utils/claude_session_export_formatter.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
 
 /// 会话相关的写操作(导出落盘等)。读取/解析 jsonl 见 ClaudeSessionQueryDatasource。
 class ClaudeSessionActionDatasource {

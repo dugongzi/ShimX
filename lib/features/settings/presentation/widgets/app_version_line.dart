@@ -13,8 +13,8 @@ class AppVersionLine extends StatelessWidget {
       builder: (context, snapshot) {
         final info = snapshot.data;
         final text = info == null
-            ? 'Shim'
-            : 'Shim v${info.version} (${info.buildNumber})';
+            ? 'ShimX'
+            : 'ShimX v${info.version} (${info.buildNumber})';
         return Text(
           text,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(

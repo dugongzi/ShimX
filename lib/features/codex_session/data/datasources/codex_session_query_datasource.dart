@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/features/codex_session/data/models/codex_bucket_dto.dart';
-import 'package:shim/features/codex_session/data/models/codex_project_dto.dart';
-import 'package:shim/features/codex_session/data/models/codex_thread_detail_dto.dart';
-import 'package:shim/features/codex_session/data/models/codex_thread_dto.dart';
+import 'package:shimx/features/codex_session/data/models/codex_bucket_dto.dart';
+import 'package:shimx/features/codex_session/data/models/codex_project_dto.dart';
+import 'package:shimx/features/codex_session/data/models/codex_thread_detail_dto.dart';
+import 'package:shimx/features/codex_session/data/models/codex_thread_dto.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 class CodexSessionQueryDatasource {

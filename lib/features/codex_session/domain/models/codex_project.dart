@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'codex_project.freezed.dart';
 
 /// 一个 codex "项目" = 一组 cwd 相同的 codex thread。
-/// codex 自身没有项目的概念,这是 shim 层按 cwd 聚合做出来的左栏分组。
+/// codex 自身没有项目的概念,这是 shimx 层按 cwd 聚合做出来的左栏分组。
 @freezed
 abstract class CodexProject with _$CodexProject {
   const CodexProject._();

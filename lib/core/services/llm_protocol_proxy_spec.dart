@@ -1,4 +1,4 @@
-import 'package:shim/core/services/llm_protocol_converter.dart';
+import 'package:shimx/core/services/llm_protocol_converter.dart';
 
 enum LlmResponseStreamKind {
   passthrough,

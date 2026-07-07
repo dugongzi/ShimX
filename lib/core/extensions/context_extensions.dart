@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shim/l10n/app_localizations.dart';
+import 'package:shimx/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 extension BuildContextExtensions on BuildContext {

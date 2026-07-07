@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:shim/features/codex_backup/domain/models/codex_backup_entry.dart';
+import 'package:shimx/features/codex_backup/domain/models/codex_backup_entry.dart';
 
 part 'codex_backup_detail.freezed.dart';
 

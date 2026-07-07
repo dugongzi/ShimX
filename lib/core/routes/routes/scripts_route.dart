@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:shim/features/scripts/presentation/pages/script_editor_page.dart';
+import 'package:shimx/features/scripts/presentation/pages/script_editor_page.dart';
 
 class ScriptsRoute {
   ScriptsRoute._();

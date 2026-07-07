@@ -1,11 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/takeover_service.dart';
-import 'package:shim/features/providers/data/datasources/provider_action_datasource.dart';
-import 'package:shim/features/providers/data/repositories/provider_action_repository_impl.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/repositories/provider_action_repository.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/takeover_service.dart';
+import 'package:shimx/features/providers/data/datasources/provider_action_datasource.dart';
+import 'package:shimx/features/providers/data/repositories/provider_action_repository_impl.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_action_repository.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 part 'provider_action_provider.g.dart';
 

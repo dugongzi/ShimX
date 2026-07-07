@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/features/claude_session/presentation/providers/claude_session_query_provider.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/features/claude_session/presentation/providers/claude_session_query_provider.dart';
 
 part 'claude_session_bridge_provider.g.dart';
 

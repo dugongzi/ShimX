@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="shim"
+        android:label="shimx"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

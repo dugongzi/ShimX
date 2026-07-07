@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/providers/data/models/api_provider_dto.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/providers/data/models/api_provider_dto.dart';
 
 class ProviderQueryDatasource {
   ProviderQueryDatasource({required this.appStorage});

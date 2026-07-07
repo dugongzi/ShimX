@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:toml/toml.dart';
 
-import 'package:shim/core/services/codex_paths.dart';
+import 'package:shimx/core/services/codex_paths.dart';
 
 /// 只读:从 codex config.toml 里拿会话分桶相关的字段。
 class CodexConfigQueryDatasource {

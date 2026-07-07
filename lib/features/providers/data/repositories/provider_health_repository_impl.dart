@@ -1,6 +1,6 @@
-import 'package:shim/features/providers/data/datasources/provider_health_datasource.dart';
-import 'package:shim/features/providers/domain/models/provider_health.dart';
-import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
+import 'package:shimx/features/providers/data/datasources/provider_health_datasource.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_health_repository.dart';
 
 class ProviderHealthRepositoryImpl implements ProviderHealthRepository {
   final ProviderHealthDatasource dataSource;

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/constants/mcp_server_status.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/mcp_service.dart';
-import 'package:shim/features/mcp/domain/models/mcp_server_info.dart';
-import 'package:shim/features/mcp/presentation/providers/mcp_server_action_provider.dart';
-import 'package:shim/features/mcp/presentation/providers/mcp_server_query_provider.dart';
-import 'package:shim/features/mcp/presentation/widgets/codex_mcp_config_section.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_empty_box.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_error_box.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_server_card.dart';
+import 'package:shimx/common/widgets/section_title.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/constants/mcp_server_status.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/mcp_service.dart';
+import 'package:shimx/features/mcp/domain/models/mcp_server_info.dart';
+import 'package:shimx/features/mcp/presentation/providers/mcp_server_action_provider.dart';
+import 'package:shimx/features/mcp/presentation/providers/mcp_server_query_provider.dart';
+import 'package:shimx/features/mcp/presentation/widgets/codex_mcp_config_section.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_empty_box.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_error_box.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_server_card.dart';
 
-/// MCP tab 外壳:shim 自带 server 列表 + codex 端 MCP 配置区。
+/// MCP tab 外壳:shimx 自带 server 列表 + codex 端 MCP 配置区。
 class McpTab extends HookConsumerWidget {
   const McpTab({super.key});
 
@@ -95,16 +95,16 @@ class McpTab extends HookConsumerWidget {
     );
   }
 
-  /// 内置 shim_claude server 的 name/description 走 l10n;其它 server 透传。
+  /// 内置 shimx_claude server 的 name/description 走 l10n;其它 server 透传。
   McpServerInfo _localizedBuiltInServer(
     BuildContext context,
     McpServerInfo server,
   ) {
-    if (server.id != 'shim_claude') return server;
+    if (server.id != 'shimx_claude') return server;
     final l10n = context.l10n;
     return server.copyWith(
-      name: l10n.mcpShimClaudeName,
-      description: l10n.mcpShimClaudeDescription,
+      name: l10n.mcpShimXClaudeName,
+      description: l10n.mcpShimXClaudeDescription,
     );
   }
 }

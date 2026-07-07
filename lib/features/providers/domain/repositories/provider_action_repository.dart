@@ -1,4 +1,4 @@
-import 'package:shim/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
 
 abstract class ProviderActionRepository {
   /// 覆盖写全部供应商

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/features/home/presentation/widgets/inject_icon.dart';
-import 'package:shim/features/home/presentation/widgets/open_inspector_icon.dart';
-import 'package:shim/features/home/presentation/widgets/reload_codex_icon.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/features/home/presentation/widgets/inject_icon.dart';
+import 'package:shimx/features/home/presentation/widgets/open_inspector_icon.dart';
+import 'package:shimx/features/home/presentation/widgets/reload_codex_icon.dart';
 
-/// 侧栏顶部品牌区:SHIM wordmark + 下方一行小图标动作。
+/// 侧栏顶部品牌区:SHIMX wordmark + 下方一行小图标动作。
 class SidebarBrand extends StatelessWidget {
   const SidebarBrand({super.key, required this.title, this.debugPort = 9229});
 

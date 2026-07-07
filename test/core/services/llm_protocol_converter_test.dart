@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shim/core/services/llm_protocol_converter.dart';
+import 'package:shimx/core/services/llm_protocol_converter.dart';
 
 Map<String, Object?> decodeBody(List<int> body) {
   final Object? decoded = jsonDecode(utf8.decode(body));

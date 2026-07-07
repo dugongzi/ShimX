@@ -1,10 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:shim/features/codex_backup/data/datasources/codex_backup_query_datasource.dart';
-import 'package:shim/features/codex_backup/data/repositories/codex_backup_query_repository_impl.dart';
-import 'package:shim/features/codex_backup/domain/models/codex_backup.dart';
-import 'package:shim/features/codex_backup/domain/models/codex_backup_detail.dart';
-import 'package:shim/features/codex_backup/domain/repositories/codex_backup_query_repository.dart';
+import 'package:shimx/features/codex_backup/data/datasources/codex_backup_query_datasource.dart';
+import 'package:shimx/features/codex_backup/data/repositories/codex_backup_query_repository_impl.dart';
+import 'package:shimx/features/codex_backup/domain/models/codex_backup.dart';
+import 'package:shimx/features/codex_backup/domain/models/codex_backup_detail.dart';
+import 'package:shimx/features/codex_backup/domain/repositories/codex_backup_query_repository.dart';
 
 part 'codex_backup_query_provider.g.dart';
 

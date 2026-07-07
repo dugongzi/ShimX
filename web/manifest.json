@@ -1,11 +1,11 @@
 {
-    "name": "shim",
-    "short_name": "shim",
+    "name": "shimx",
+    "short_name": "shimx",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "shim",
+    "description": "shimx",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

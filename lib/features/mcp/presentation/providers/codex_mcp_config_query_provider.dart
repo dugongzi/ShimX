@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/features/mcp/data/datasources/codex_mcp_config_query_datasource.dart';
-import 'package:shim/features/mcp/data/repositories/codex_mcp_config_query_repository_impl.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
-import 'package:shim/features/mcp/domain/repositories/codex_mcp_config_query_repository.dart';
+import 'package:shimx/features/mcp/data/datasources/codex_mcp_config_query_datasource.dart';
+import 'package:shimx/features/mcp/data/repositories/codex_mcp_config_query_repository_impl.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/domain/repositories/codex_mcp_config_query_repository.dart';
 
 part 'codex_mcp_config_query_provider.g.dart';
 

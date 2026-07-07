@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/claude_session/presentation/widgets/claude_sessions_view.dart';
-import 'package:shim/features/codex_session/presentation/widgets/codex_sessions_view.dart';
-import 'package:shim/features/home/presentation/widgets/backup_library_view.dart';
-import 'package:shim/features/home/presentation/widgets/sessions_home_view.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/claude_session/presentation/widgets/claude_sessions_view.dart';
+import 'package:shimx/features/codex_session/presentation/widgets/codex_sessions_view.dart';
+import 'package:shimx/features/home/presentation/widgets/backup_library_view.dart';
+import 'package:shimx/features/home/presentation/widgets/sessions_home_view.dart';
 
 class SessionsTab extends StatelessWidget {
   const SessionsTab({super.key});

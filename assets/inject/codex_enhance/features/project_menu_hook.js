@@ -1,18 +1,18 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/project_menu_hook
+// ==ShimX==
+// @name        ShimX codex_enhance — features/project_menu_hook
 // @description 在 Codex 项目折叠头右侧的 "⋯" 按钮 (radix dropdown) 顶部插两项:
 //              "导入 zip" — 选 .zip → /session/import-bundle 进当前项目目录
 //              "导出为 ▸" — hover 出二级菜单 (Markdown / 原始数据 / HTML), 各 zip 打包
 //
 //              通过 MutationObserver 监听菜单弹出, 用 aria-labelledby 反查 trigger 找到项目 cwd。
-//              install() 在 bootstrap 阶段调一次, 内部有 window.__shimCodexProjectMenuHookInstalled 守卫,
+//              install() 在 bootstrap 阶段调一次, 内部有 window.__shimxCodexProjectMenuHookInstalled 守卫,
 //              防止热重载/再注入时重复挂载。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const S = (k, f) => ns.i18n.S(k, f);
   const showToast = (msg, kind) => ns.ui.toast.show(msg, kind);
   const showBusyIndicator = (label) => ns.ui.busy.show(label);
@@ -21,42 +21,42 @@
   // 跟 control_panel 里的 runImportBundle 是同一份逻辑, 故意 copy 一份避免污染
   // control_panel 的公开 API 表面; 二者只是路由相同, 各自调度 busy/toast 是独立的。
   async function runImportBundle(targetCwd) {
-    const busyToken = showBusyIndicator(S('shimControlImportBusyZip', 'Importing project bundle…'));
+    const busyToken = showBusyIndicator(S('shimxControlImportBusyZip', 'Importing project bundle…'));
     try {
-      const res = await window.shim('/session/import-bundle', targetCwd ? { targetCwd } : {});
+      const res = await window.shimx('/session/import-bundle', targetCwd ? { targetCwd } : {});
       if (!res || res.code !== 0) {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
         return;
       }
       const data = res.data || {};
       if (data.cancelled) return;
       if (data.reason === 'no-jsonl-in-zip') {
-        showToast(S('shimControlImportEmpty', 'No .jsonl files inside the zip'), 'warning');
+        showToast(S('shimxControlImportEmpty', 'No .jsonl files inside the zip'), 'warning');
         return;
       }
       if (data.reason === 'bad-zip') {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.message || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${data.message || ''}`, 'error');
         return;
       }
       if (!data.ok) {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.reason || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${data.reason || ''}`, 'error');
         return;
       }
       const ok = data.count || 0;
       const failed = data.failed || 0;
       const tail = failed > 0 ? ` · ${failed} failed` : '';
-      showToast(`${S('shimControlImportDoneN', 'Imported')} · ${ok}${tail}`, 'success');
+      showToast(`${S('shimxControlImportDoneN', 'Imported')} · ${ok}${tail}`, 'success');
     } catch (err) {
-      showToast(`${S('shimControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
+      showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
     } finally {
       hideBusyIndicator(busyToken);
     }
   }
 
   function install() {
-    if (window.__shimCodexProjectMenuHookInstalled) return;
-    window.__shimCodexProjectMenuHookInstalled = true;
-    const SHIM_INJECTED_FLAG = 'data-shim-export-injected';
+    if (window.__shimxCodexProjectMenuHookInstalled) return;
+    window.__shimxCodexProjectMenuHookInstalled = true;
+    const SHIMX_INJECTED_FLAG = 'data-shimx-export-injected';
 
     const observer = new MutationObserver((records) => {
       for (const rec of records) {
@@ -67,7 +67,7 @@
             ? [node]
             : Array.from(node.querySelectorAll('[data-radix-menu-content]'));
           for (const menu of menus) {
-            if (menu.getAttribute(SHIM_INJECTED_FLAG) === '1') continue;
+            if (menu.getAttribute(SHIMX_INJECTED_FLAG) === '1') continue;
             tryInjectProjectExportItem(menu);
           }
         }
@@ -90,7 +90,7 @@
       const cwd = projectRow.getAttribute('data-app-action-sidebar-project-id') || '';
       const label = projectRow.getAttribute('data-app-action-sidebar-project-label') || '';
 
-      menu.setAttribute(SHIM_INJECTED_FLAG, '1');
+      menu.setAttribute(SHIMX_INJECTED_FLAG, '1');
 
       // 找菜单里现有任意 menuitem 当样式模板
       const sampleItem = menu.querySelector('[role="menuitem"]');
@@ -309,7 +309,7 @@
     }
     const busyToken = showBusyIndicator(S('exportBusyBundle', 'Packing export…'));
     try {
-      const res = await window.shim('/session/export-bundle', { cwd, format });
+      const res = await window.shimx('/session/export-bundle', { cwd, format });
       if (!res || res.code !== 0) {
         const msg = res && res.message ? res.message : '';
         showToast(`${S('projectMenuExportFailed', 'Export failed')}: ${msg}`, 'error');

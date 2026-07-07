@@ -8,7 +8,7 @@ abstract class ClaudeProject with _$ClaudeProject {
   const ClaudeProject._();
 
   const factory ClaudeProject({
-    /// 目录名(原始,作为 ID 用),例如 `f--Programming-projects-FlutterProject-shim`
+    /// 目录名(原始,作为 ID 用),例如 `f--Programming-projects-FlutterProject-shimx`
     required String encodedDir,
     /// 解码后的 cwd(优先取 jsonl 内的 cwd 字段,fallback 用 encodedDir 推算)
     required String cwd,

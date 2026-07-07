@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shim/common/widgets/collapsible_text.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_message.dart';
+import 'package:shimx/common/widgets/collapsible_text.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_message.dart';
 
 /// 单条消息气泡:文本 / 工具调用 / 工具结果 三态。
 class ThreadMessageTile extends StatelessWidget {

@@ -1,5 +1,5 @@
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/routes/routes/home_route.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/routes/routes/home_route.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

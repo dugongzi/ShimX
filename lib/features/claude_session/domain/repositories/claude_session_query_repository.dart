@@ -1,6 +1,6 @@
-import 'package:shim/features/claude_session/domain/models/claude_project.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_project.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
 
 abstract class ClaudeSessionQueryRepository {
   /// 列出 ~/.claude/projects/ 下所有项目目录,按 lastActiveMs 倒序。

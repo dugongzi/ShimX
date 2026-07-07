@@ -11,7 +11,7 @@ abstract class CodexMcpConfig with _$CodexMcpConfig {
     required String kind,
     required String bodyText,
     required bool enabled,
-    required bool managedByShim,
+    required bool managedByShimX,
     required bool readOnly,
     @Default('') String name,
     @Default('') String description,

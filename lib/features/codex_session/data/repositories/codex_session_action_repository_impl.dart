@@ -1,7 +1,7 @@
-import 'package:shim/features/codex_session/data/datasources/codex_session_action_datasource.dart';
-import 'package:shim/features/codex_session/domain/models/codex_import_result.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
-import 'package:shim/features/codex_session/domain/repositories/codex_session_action_repository.dart';
+import 'package:shimx/features/codex_session/data/datasources/codex_session_action_datasource.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_import_result.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/features/codex_session/domain/repositories/codex_session_action_repository.dart';
 
 class CodexSessionActionRepositoryImpl implements CodexSessionActionRepository {
   final CodexSessionActionDatasource dataSource;

@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/core/utils/codex_session_export_formatter.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/core/utils/codex_session_export_formatter.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_action_provider.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 
 part 'codex_session_bridge_provider.g.dart';
 

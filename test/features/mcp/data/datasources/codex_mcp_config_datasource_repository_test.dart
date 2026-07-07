@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shim/features/mcp/data/datasources/codex_mcp_config_action_datasource.dart';
-import 'package:shim/features/mcp/data/datasources/codex_mcp_config_query_datasource.dart';
-import 'package:shim/features/mcp/data/models/codex_mcp_config_dto.dart';
-import 'package:shim/features/mcp/data/repositories/codex_mcp_config_action_repository_impl.dart';
-import 'package:shim/features/mcp/data/repositories/codex_mcp_config_query_repository_impl.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/data/datasources/codex_mcp_config_action_datasource.dart';
+import 'package:shimx/features/mcp/data/datasources/codex_mcp_config_query_datasource.dart';
+import 'package:shimx/features/mcp/data/models/codex_mcp_config_dto.dart';
+import 'package:shimx/features/mcp/data/repositories/codex_mcp_config_action_repository_impl.dart';
+import 'package:shimx/features/mcp/data/repositories/codex_mcp_config_query_repository_impl.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
 
 void main() {
   late Directory tempDir;
@@ -14,7 +14,7 @@ void main() {
 
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp(
-      'shim_codex_mcp_config_test_',
+      'shimx_codex_mcp_config_test_',
     );
     configFile = File('${tempDir.path}${Platform.pathSeparator}config.toml');
   });
@@ -31,16 +31,16 @@ void main() {
     await configFile.writeAsString('''
 model = "gpt-5"
 
-[mcp_servers.shim_claude]
+[mcp_servers.shimx_claude]
 url = "http://127.0.0.1:18787/mcp"
 
 [mcp_servers.external]
 command = "npx"
 
-# shim-managed:start $legacyKind id=writer
+# shimx-managed:start $legacyKind id=writer
 $legacyTable
 description = "Draft docs"
-# shim-managed:end
+# shimx-managed:end
 ''');
 
     final datasource = CodexMcpConfigQueryDatasource(configFile: configFile);
@@ -53,7 +53,7 @@ description = "Draft docs"
     );
   });
 
-  test('action datasource writes only shim-managed marker blocks', () async {
+  test('action datasource writes only shimx-managed marker blocks', () async {
     const original = '''
 model = "gpt-5"
 
@@ -69,7 +69,7 @@ command = "keep"
         kind: CodexMcpConfigKind.mcpServer,
         bodyText: 'command = "node"\nargs = []',
         enabled: true,
-        managedByShim: true,
+        managedByShimX: true,
         readOnly: false,
       ),
     );
@@ -78,7 +78,7 @@ command = "keep"
     expect(text.startsWith(original), isTrue);
     expect(
       text,
-      contains('# shim-managed:start kind=mcp_servers id=local_docs'),
+      contains('# shimx-managed:start kind=mcp_servers id=local_docs'),
     );
     expect(text, contains('[mcp_servers.external]\ncommand = "keep"'));
 
@@ -141,7 +141,7 @@ trust_level = "trusted"
         kind: CodexMcpConfigKind.mcpServer,
         bodyText: 'command = "node"\nargs = []',
         enabled: false,
-        managedByShim: true,
+        managedByShimX: true,
         readOnly: false,
         name: 'local_docs',
         description: 'command = "node"',

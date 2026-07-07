@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
-import 'package:shim/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
-import 'package:shim/features/mcp/data/datasources/claude_bridge_state_controller.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
+import 'package:shimx/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
+import 'package:shimx/features/mcp/data/datasources/claude_bridge_state_controller.dart';
 
 void main() {
   test(

@@ -1,10 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
-import 'package:shim/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
-import 'package:shim/features/mcp/data/datasources/claude_bridge_state_controller.dart';
-import 'package:shim/features/mcp/data/repositories/claude_bridge_query_repository_impl.dart';
-import 'package:shim/features/mcp/domain/repositories/claude_bridge_query_repository.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
+import 'package:shimx/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
+import 'package:shimx/features/mcp/data/datasources/claude_bridge_state_controller.dart';
+import 'package:shimx/features/mcp/data/repositories/claude_bridge_query_repository_impl.dart';
+import 'package:shimx/features/mcp/domain/repositories/claude_bridge_query_repository.dart';
 
 part 'claude_bridge_query_provider.g.dart';
 

@@ -1,5 +1,5 @@
 abstract class McpServerActionRepository {
-  /// 持久化 shim 内置 MCP server 的开关。
+  /// 持久化 shimx 内置 MCP server 的开关。
   Future<void> saveEnabled(bool enabled);
 
   /// 在 ~/.codex/config.toml 注册 `[mcp_servers.<id>] url = "..."` 段。

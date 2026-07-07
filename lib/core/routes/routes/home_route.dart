@@ -1,4 +1,4 @@
-import 'package:shim/features/home/presentation/pages/home_page.dart';
+import 'package:shimx/features/home/presentation/pages/home_page.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeRoute {

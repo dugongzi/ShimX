@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:toml/toml.dart';
 
-import 'package:shim/core/services/codex_paths.dart';
+import 'package:shimx/core/services/codex_paths.dart';
 
 /// 只写:改 codex config.toml 里跟会话分桶相关的字段。
 ///
@@ -10,18 +10,18 @@ import 'package:shim/core/services/codex_paths.dart';
 class CodexConfigActionDatasource {
   const CodexConfigActionDatasource();
 
-  /// shim 塞的 provider 段身上打这个标记 —— 方便下次切桶时识别"这段是我塞的,
+  /// shimx 塞的 provider 段身上打这个标记 —— 方便下次切桶时识别"这段是我塞的,
   /// 可以直接改键名",而不是留下垃圾多塞一段。
   static const _managedMarkerKey = 'managed_by';
-  static const _managedMarkerValue = 'shim';
+  static const _managedMarkerValue = 'shimx';
 
   /// 覆盖顶层 `model_provider`。文件不存在则新建。
   ///
   /// 若给出 [ensureBaseUrl],保证 `[model_providers.<value>]` 段存在:
-  ///   - 已有同名段(不管是不是 shim 塞的): 不动
-  ///   - shim 已经塞过别的段(带 managed_by 标记): 改键名成 value,内容不动
+  ///   - 已有同名段(不管是不是 shimx 塞的): 不动
+  ///   - shimx 已经塞过别的段(带 managed_by 标记): 改键名成 value,内容不动
   ///   - 完全没有: 新塞一段并打上 managed_by 标记
-  /// 目的是切多个桶时 config 里只留一段 shim 塞的 provider 定义。
+  /// 目的是切多个桶时 config 里只留一段 shimx 塞的 provider 定义。
   Future<void> writeModelProvider(
     String value, {
     String? ensureBaseUrl,
@@ -50,10 +50,10 @@ class CodexConfigActionDatasource {
           : <String, dynamic>{};
 
       if (providers[value] is Map) {
-        // 目标段已存在(用户手工的或 shim 之前塞过同名的): 不动
+        // 目标段已存在(用户手工的或 shimx 之前塞过同名的): 不动
       } else {
-        // 找一段"shim 之前塞的、当前 config 里已经不是目标桶名"的段,
-        // 把它改名成 value,内容保留。这样切桶时 shim 塞的段永远只有一个。
+        // 找一段"shimx 之前塞的、当前 config 里已经不是目标桶名"的段,
+        // 把它改名成 value,内容保留。这样切桶时 shimx 塞的段永远只有一个。
         String? renameFrom;
         for (final entry in providers.entries) {
           final v = entry.value;
@@ -69,7 +69,7 @@ class CodexConfigActionDatasource {
           section['name'] = value;
           providers[value] = section;
         } else {
-          // shim 从没塞过段, 首次塞一段并打上 managed_by 标记
+          // shimx 从没塞过段, 首次塞一段并打上 managed_by 标记
           providers[value] = <String, dynamic>{
             'name': value,
             'wire_api': 'responses',

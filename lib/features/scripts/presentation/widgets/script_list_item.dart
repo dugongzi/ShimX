@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/routes/routes/scripts_route.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/presentation/providers/script_action_provider.dart';
-import 'package:shim/features/scripts/presentation/providers/script_query_provider.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/routes/routes/scripts_route.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/presentation/providers/script_action_provider.dart';
+import 'package:shimx/features/scripts/presentation/providers/script_query_provider.dart';
 
 class ScriptListItem extends ConsumerWidget {
   const ScriptListItem({

@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appName => 'Shim';
+  String get appName => 'ShimX';
 
   @override
   String get searchHint => '搜索';
@@ -153,10 +153,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backToHome => '返回首页';
 
   @override
-  String get homeTitle => 'Shim';
+  String get homeTitle => 'ShimX';
 
   @override
-  String get welcome => 'Shim';
+  String get welcome => 'ShimX';
 
   @override
   String get inject => '注入';
@@ -165,7 +165,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get injectPanelTitle => '界面注入';
 
   @override
-  String get injectPanelDescription => '将 Shim 的控制界面注入到目标环境，用于后续连接、调试和操作。';
+  String get injectPanelDescription => '将 ShimX 的控制界面注入到目标环境，用于后续连接、调试和操作。';
 
   @override
   String get injectReadyStatus => '等待注入';
@@ -242,10 +242,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get trayLaunchCodex => '启动 Codex 并注入';
 
   @override
-  String get trayQuit => '退出 Shim';
+  String get trayQuit => '退出 ShimX';
 
   @override
-  String get trayTooltip => 'Shim';
+  String get trayTooltip => 'ShimX';
 
   @override
   String get systemLanguage => '系统语言';
@@ -586,73 +586,73 @@ class AppLocalizationsZh extends AppLocalizations {
   String get logsCopiedToast => '日志已复制';
 
   @override
-  String get shimDeleteThreadHeading => '删除对话';
+  String get shimxDeleteThreadHeading => '删除对话';
 
   @override
-  String get shimDeleteThreadDelete => '删除';
+  String get shimxDeleteThreadDelete => '删除';
 
   @override
-  String get shimDeleteThreadAria => '删除对话';
+  String get shimxDeleteThreadAria => '删除对话';
 
   @override
-  String get shimDeleteThreadDefaultTitle => '此对话';
+  String get shimxDeleteThreadDefaultTitle => '此对话';
 
   @override
-  String get shimDeleteSessionIdMissing => '未找到会话 id';
+  String get shimxDeleteSessionIdMissing => '未找到会话 id';
 
   @override
-  String get shimDeleteFailed => '删除失败';
+  String get shimxDeleteFailed => '删除失败';
 
   @override
-  String get shimDeleteSuccess => '已删除';
+  String get shimxDeleteSuccess => '已删除';
 
   @override
-  String get shimUnknownError => '未知错误';
+  String get shimxUnknownError => '未知错误';
 
   @override
-  String get shimProviderFallbackName => '供应商';
+  String get shimxProviderFallbackName => '供应商';
 
   @override
-  String get shimClearModel => '清除模型';
+  String get shimxClearModel => '清除模型';
 
   @override
-  String get shimEffortLow => '低';
+  String get shimxEffortLow => '低';
 
   @override
-  String get shimEffortMedium => '中';
+  String get shimxEffortMedium => '中';
 
   @override
-  String get shimEffortHigh => '高';
+  String get shimxEffortHigh => '高';
 
   @override
-  String get shimEffortXHigh => '超高';
+  String get shimxEffortXHigh => '超高';
 
   @override
-  String get shimHealthTimeout => '超时';
+  String get shimxHealthTimeout => '超时';
 
   @override
-  String get shimNoProviders => '还没有导入供应商';
+  String get shimxNoProviders => '还没有导入供应商';
 
   @override
-  String get shimUnnamedProvider => '未命名供应商';
+  String get shimxUnnamedProvider => '未命名供应商';
 
   @override
-  String get shimProviderNoModels => '该供应商没有模型';
+  String get shimxProviderNoModels => '该供应商没有模型';
 
   @override
-  String get shimReasoningEffort => '思考深度';
+  String get shimxReasoningEffort => '思考深度';
 
   @override
-  String get shimSaveFailed => '保存失败';
+  String get shimxSaveFailed => '保存失败';
 
   @override
-  String get shimSwitchProviderFailed => '切换供应商失败';
+  String get shimxSwitchProviderFailed => '切换供应商失败';
 
   @override
-  String get shimSwitchModelFailed => '切换模型失败';
+  String get shimxSwitchModelFailed => '切换模型失败';
 
   @override
-  String get shimSwitchEffortFailed => '切换思考深度失败';
+  String get shimxSwitchEffortFailed => '切换思考深度失败';
 
   @override
   String get sessionManagement => '会话管理';
@@ -676,7 +676,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionSwitchBucket => '切换桶';
 
   @override
-  String get sessionSwitchToShim => '切到 shim';
+  String get sessionSwitchToShimX => '切到 shimx';
 
   @override
   String get sessionRefresh => '刷新';
@@ -702,11 +702,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionBackupSelected => '备份选中';
 
   @override
-  String get sessionMergeAllToShim => '统一对话';
+  String get sessionMergeAllToShimX => '统一对话';
 
   @override
-  String get sessionMergeAllToShimTooltip =>
-      'codex 的会话按 model_provider(桶)分组显示。切换供应商时侧栏只显示当前桶,其它桶里的历史看不到。\n此操作把所有非 shim 桶里的会话都改成 shim 桶,并把 codex 的默认桶切到 shim。之后不管你用哪个供应商,侧栏都能看到全部历史。';
+  String get sessionMergeAllToShimXTooltip =>
+      'codex 的会话按 model_provider(桶)分组显示。切换供应商时侧栏只显示当前桶,其它桶里的历史看不到。\n此操作把所有非 shimx 桶里的会话都改成 shimx 桶,并把 codex 的默认桶切到 shimx。之后不管你用哪个供应商,侧栏都能看到全部历史。';
 
   @override
   String get sessionSwitchBucketTooltip =>
@@ -714,7 +714,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sessionBackupSelectedTooltip =>
-      '把选中的会话打包保存到 shim 备份目录,同时记录每条会话原本所属的桶。之后可在「备份」tab 里逐条或整批恢复到原桶。';
+      '把选中的会话打包保存到 shimx 备份目录,同时记录每条会话原本所属的桶。之后可在「备份」tab 里逐条或整批恢复到原桶。';
 
   @override
   String sessionMoveSuccess(int n, String bucket) {
@@ -760,13 +760,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sessionMergeConfirmBody =>
-      '将把除 shim 桶外所有会话全部移动到 shim 桶,该操作不会自动备份。';
+      '将把除 shimx 桶外所有会话全部移动到 shimx 桶,该操作不会自动备份。';
 
   @override
   String get sessionMergeConfirmOk => '合并';
 
   @override
-  String get sessionMergeProgressTitle => '正在合并到 shim 桶';
+  String get sessionMergeProgressTitle => '正在合并到 shimx 桶';
 
   @override
   String sessionMergeProgressBody(int done, int total) {
@@ -926,20 +926,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mcp => 'MCP';
 
   @override
-  String get mcpServersTitle => 'shim 提供的 MCP server';
+  String get mcpServersTitle => 'shimx 提供的 MCP server';
 
   @override
   String get mcpServersHint =>
-      '这些 MCP server 由 shim 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。';
+      '这些 MCP server 由 shimx 进程内置提供,可以被 codex 通过 streamable_http 接入,让 LLM 按需查询本地数据。';
 
   @override
   String get mcpServersEmpty => '尚未启用任何 MCP server';
 
   @override
-  String get mcpShimClaudeName => 'Claude 会话查询';
+  String get mcpShimXClaudeName => 'Claude 会话查询';
 
   @override
-  String get mcpShimClaudeDescription =>
+  String get mcpShimXClaudeDescription =>
       '把本地 Claude Code 会话作为 MCP 工具暴露给 Codex 的 LLM。';
 
   @override
@@ -1023,7 +1023,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get skillsHint =>
-      '管理 ~/.codex/skills 下的本地 Codex Skill。shim 只会删除或覆盖已导入 registry 的 Skill。';
+      '管理 ~/.codex/skills 下的本地 Codex Skill。shimx 只会删除或覆盖已导入 registry 的 Skill。';
 
   @override
   String get skillsInstallFolder => '安装文件夹';
@@ -1032,7 +1032,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get skillsInstallZip => '安装 ZIP';
 
   @override
-  String get skillsManagedGroup => 'shim 管理';
+  String get skillsManagedGroup => 'shimx 管理';
 
   @override
   String get skillsExternalGroup => '外部 Codex Skills';
@@ -1041,7 +1041,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get skillsEmpty => '还没有发现 Codex Skill';
 
   @override
-  String get skillsManagedBadge => 'shim 管理';
+  String get skillsManagedBadge => 'shimx 管理';
 
   @override
   String get skillsExternalBadge => '外部';
@@ -1082,13 +1082,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get skillsOverwriteTitle => '覆盖 Skill';
 
   @override
-  String get skillsOverwriteMessage => '同名 shim 管理 Skill 已存在，确认覆盖当前目录？';
+  String get skillsOverwriteMessage => '同名 shimx 管理 Skill 已存在，确认覆盖当前目录？';
 
   @override
   String get skillsDeleteTitle => '删除 Skill';
 
   @override
-  String get skillsDeleteMessage => '确认删除这个 shim 管理的 Skill 目录？';
+  String get skillsDeleteMessage => '确认删除这个 shimx 管理的 Skill 目录？';
 
   @override
   String get skillsZipChooseTitle => '选择 ZIP 中的 Skill';

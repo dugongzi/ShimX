@@ -1,5 +1,5 @@
-import 'package:shim/features/home/data/datasources/inject_query_datasource.dart';
-import 'package:shim/features/home/domain/repositories/inject_query_repository.dart';
+import 'package:shimx/features/home/data/datasources/inject_query_datasource.dart';
+import 'package:shimx/features/home/domain/repositories/inject_query_repository.dart';
 
 class InjectQueryRepositoryImpl implements InjectQueryRepository {
   final InjectQueryDatasource _dataSource;

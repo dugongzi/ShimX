@@ -6,9 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 
-import 'package:shim/core/utils/plugin_marketplace_paths.dart';
-import 'package:shim/features/plugins/data/datasources/plugin_query_datasource.dart';
-import 'package:shim/features/plugins/data/models/plugin_marketplace_status_dto.dart';
+import 'package:shimx/core/utils/plugin_marketplace_paths.dart';
+import 'package:shimx/features/plugins/data/datasources/plugin_query_datasource.dart';
+import 'package:shimx/features/plugins/data/models/plugin_marketplace_status_dto.dart';
 
 /// 只写:下载 zip / 解压 / 释放 / 改 config.toml。全部方法都在末尾复用
 /// [PluginQueryDatasource.readMarketplaceStatus] 回传最新 DTO,避免与
@@ -81,7 +81,7 @@ class PluginActionDatasource {
     return _query.readMarketplaceStatus();
   }
 
-  /// 弹 shim 主界面 file picker 选一个 .zip,返回绝对路径。用户取消返回 null。
+  /// 弹 shimx 主界面 file picker 选一个 .zip,返回绝对路径。用户取消返回 null。
   Future<String?> pickLocalZipPath() async {
     final picked = await FilePicker.platform.pickFiles(
       dialogTitle: 'Pick openai/plugins zip',
@@ -230,7 +230,7 @@ class PluginActionDatasource {
   }) async {
     final parent = Directory(p.dirname(destination.path));
     if (!parent.existsSync()) parent.createSync(recursive: true);
-    final backup = Directory('${destination.path}.previous-shim');
+    final backup = Directory('${destination.path}.previous-shimx');
     if (backup.existsSync()) {
       try {
         backup.deleteSync(recursive: true);

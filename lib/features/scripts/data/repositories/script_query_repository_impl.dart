@@ -1,6 +1,6 @@
-import 'package:shim/features/scripts/data/datasources/script_query_datasource.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/domain/repositories/script_query_repository.dart';
+import 'package:shimx/features/scripts/data/datasources/script_query_datasource.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/domain/repositories/script_query_repository.dart';
 
 class ScriptQueryRepositoryImpl implements ScriptQueryRepository {
   final ScriptQueryDatasource _dataSource;

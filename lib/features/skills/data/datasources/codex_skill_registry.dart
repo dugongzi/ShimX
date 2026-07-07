@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:shim/core/services/app_storage.dart';
+import 'package:shimx/core/services/app_storage.dart';
 
 const codexSkillRegistryKey = 'codex_skill_registry_v1';
 

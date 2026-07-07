@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shim/features/home/presentation/widgets/proxy_status.dart';
-import 'package:shim/features/home/presentation/widgets/sidebar_status.dart';
+import 'package:shimx/features/home/presentation/widgets/proxy_status.dart';
+import 'package:shimx/features/home/presentation/widgets/sidebar_status.dart';
 
 /// 侧栏底部两行裸文字状态:Codex 状态 / 代理状态。
 /// 无容器,作为"系统脚注"轻量呈现。

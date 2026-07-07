@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_message.dart';
-import 'package:shim/features/codex_session/presentation/widgets/thread_message_tile.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_message.dart';
+import 'package:shimx/features/codex_session/presentation/widgets/thread_message_tile.dart';
 
 /// 消息流。`reverse: true` 从下往上懒加载渲染,默认即在底部,大会话不卡。
 class ThreadMessagesList extends StatelessWidget {

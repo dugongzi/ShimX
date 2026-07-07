@@ -1,5 +1,5 @@
-import 'package:shim/features/codex_config/data/datasources/codex_config_action_datasource.dart';
-import 'package:shim/features/codex_config/domain/repositories/codex_config_action_repository.dart';
+import 'package:shimx/features/codex_config/data/datasources/codex_config_action_datasource.dart';
+import 'package:shimx/features/codex_config/domain/repositories/codex_config_action_repository.dart';
 
 class CodexConfigActionRepositoryImpl implements CodexConfigActionRepository {
   CodexConfigActionRepositoryImpl({required this.dataSource});

@@ -1,28 +1,28 @@
-// ==Shim==
-// @name        Shim codex_enhance — runtime/scheduler
+// ==ShimX==
+// @name        ShimX codex_enhance — runtime/scheduler
 // @description 总调度: trace 工具 + ensureAll 主循环 + MutationObserver 主驱动。
 //              ensureAll 按顺序拉一遍 features/*.ensure*(), 由 MutationObserver 在 codex 重渲染
 //              侧栏/composer 时触发; 每轮带计时和 DOM 计数。
 //              对外: runEnsureAll(source), install()(由 bootstrap 调一次), trace.t(tag, data),
 //              countDomBefore — 给外部 (如 features/badge / thread_row 的 ensure log) 用。
 // @layer       runtime
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
 
   // ---- trace ----
 
-  const SHIM_TRACE = true;
+  const SHIMX_TRACE = true;
   let ensureCount = 0;
   let observerCount = 0;
 
   function t(tag, data) {
-    if (!SHIM_TRACE) return;
-    if (data === undefined) console.log('[ShimTrace]', tag);
-    else console.log('[ShimTrace]', tag, data);
+    if (!SHIMX_TRACE) return;
+    if (data === undefined) console.log('[ShimXTrace]', tag);
+    else console.log('[ShimXTrace]', tag, data);
   }
 
   function countDomBefore() {
@@ -31,7 +31,7 @@
       menu: document.querySelectorAll('#' + ids.menuItem).length,
       picker: document.querySelectorAll('#' + ids.providerPicker).length,
       providerBadge: document.querySelectorAll('.' + ids.providerBadgeClass).length,
-      delBtns: document.querySelectorAll('[data-shim-delete-added="1"]').length,
+      delBtns: document.querySelectorAll('[data-shimx-delete-added="1"]').length,
     };
   }
 
@@ -49,7 +49,7 @@
     ns.features.badge.remove();
     const t1 = performance.now();
     ns.features.claudeBridge.ensureNav();
-    ns.features.shimMenu.ensure();
+    ns.features.shimxMenu.ensure();
     ns.features.pluginMenu?.ensure?.();
     const t2 = performance.now();
     ns.features.threadRow.ensure();
@@ -111,11 +111,11 @@
     '#' + ids.toastContainer,
     '#' + ids.confirmDialog,
     '.' + ids.providerBadgeClass,
-    '[data-shim-delete-added]',
-    '[data-shim-nav-handled]',
-    '[data-shim-install-ready]',
-    '[data-shim-prompt-ready]',
-    '[data-shim-clear-model]',
+    '[data-shimx-delete-added]',
+    '[data-shimx-nav-handled]',
+    '[data-shimx-install-ready]',
+    '[data-shimx-prompt-ready]',
+    '[data-shimx-clear-model]',
   ].join(', ');
 
   const WATCH_TARGET_SELECTOR = [
@@ -124,7 +124,7 @@
     'button[aria-label="归档对话"]',
     'nav[role="navigation"]',
     // codex 新版 sidebar 没有 nav[role=navigation] 外壳了, 用 button 行高的 Tailwind
-    // 任意值类做兜底, 否则 sidebar 重新挂载时观察者不会触发, Shim 入口和 Claude 桥都重新注入失败。
+    // 任意值类做兜底, 否则 sidebar 重新挂载时观察者不会触发, ShimX 入口和 Claude 桥都重新注入失败。
     'button[class*="h-[var(--height-token-row)]"]',
     '[data-codex-intelligence-trigger]',
     '[data-turn-key]',
@@ -225,11 +225,11 @@
       setTimeout(install, 50);
       return;
     }
-    if (window.__shimUiSchedulerInstalled) {
+    if (window.__shimxUiSchedulerInstalled) {
       runEnsureAll('reinit');
       return;
     }
-    window.__shimUiSchedulerInstalled = true;
+    window.__shimxUiSchedulerInstalled = true;
 
     runEnsureAll('initial');
 

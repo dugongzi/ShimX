@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/utils/auto_switch_label.dart';
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
-import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
-import 'package:shim/features/providers/presentation/widgets/auto_switch_dialog.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/utils/auto_switch_label.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/presentation/providers/auto_switch_provider.dart';
+import 'package:shimx/features/providers/presentation/widgets/auto_switch_dialog.dart';
 
 /// providers tab 顶部:展示当前自动切换策略 + 一个按钮打开详细设置 dialog。
 class AutoSwitchCard extends ConsumerWidget {

@@ -11,7 +11,7 @@
 //   1. 跑这个脚本,它会输出生成的 thread id
 //   2. 完全退出 codex(任务管理器看一下别留后台进程)
 //   3. 重启 codex
-//   4. 在 shim 项目下看是否出现一条 "Shim 导入测试" 的新 thread
+//   4. 在 shimx 项目下看是否出现一条 "ShimX 导入测试" 的新 thread
 //   5. 点开它,应该能看到 1 条 user + 1 条 assistant 消息
 //
 // 回滚:删 jsonl 文件 + 删 sqlite 行 + 删 session_index.jsonl 末尾对应行。
@@ -54,7 +54,7 @@ void main() async {
 
   // 4. 准备 cwd —— Windows 上 codex 真实用的是 UNC long-path 格式 `\\?\X:\...`(大写盘符)
   // 这是 codex 在 sqlite 里分组项目的 key,**必须逐字节匹配**,否则会被分到不同项目。
-  final cwd = r'\\?\F:\Programming_projects\FlutterProject\shim';
+  final cwd = r'\\?\F:\Programming_projects\FlutterProject\shimx';
 
   // 5. 拼 rollout 内容(按调查报告里观察的真实 codex rollout 头部顺序)
   final lines = <String>[];
@@ -72,7 +72,7 @@ void main() async {
       'source': 'vscode',
       'model_provider': 'rayincode',
       'base_instructions': {
-        'text': 'You are Codex, a coding agent. (shim import test)',
+        'text': 'You are Codex, a coding agent. (shimx import test)',
       },
       'git': {
         'commit_hash': '0000000000000000000000000000000000000000',
@@ -92,7 +92,7 @@ void main() async {
         {
           'type': 'input_text',
           'text':
-              '<permissions instructions>\nShim 导入测试占位 permissions 块。\n</permissions instructions>',
+              '<permissions instructions>\nShimX 导入测试占位 permissions 块。\n</permissions instructions>',
         }
       ],
     },
@@ -138,7 +138,7 @@ void main() async {
         {
           'type': 'input_text',
           'text':
-              '<collaboration_mode>\nShim 导入测试占位 collaboration_mode。\n</collaboration_mode>',
+              '<collaboration_mode>\nShimX 导入测试占位 collaboration_mode。\n</collaboration_mode>',
         }
       ],
     },
@@ -154,7 +154,7 @@ void main() async {
       'content': [
         {
           'type': 'input_text',
-          'text': 'Shim 导入测试:这是一条由 shim 测试脚本写入的用户消息。',
+          'text': 'ShimX 导入测试:这是一条由 shimx 测试脚本写入的用户消息。',
         }
       ],
     },
@@ -166,7 +166,7 @@ void main() async {
     'type': 'event_msg',
     'payload': {
       'type': 'user_message',
-      'message': 'Shim 导入测试:这是一条由 shim 测试脚本写入的用户消息。',
+      'message': 'ShimX 导入测试:这是一条由 shimx 测试脚本写入的用户消息。',
       'images': [],
       'local_images': [],
       'text_elements': [],
@@ -202,7 +202,7 @@ void main() async {
       'content': [
         {
           'type': 'output_text',
-          'text': '收到。这是一条由 shim 测试脚本写入的 assistant 回复,用于验证 codex 是否能 backfill 出此 thread 并正确渲染消息。',
+          'text': '收到。这是一条由 shimx 测试脚本写入的 assistant 回复,用于验证 codex 是否能 backfill 出此 thread 并正确渲染消息。',
         }
       ],
       'phase': 'final_answer',
@@ -215,7 +215,7 @@ void main() async {
     'type': 'event_msg',
     'payload': {
       'type': 'agent_message',
-      'message': '收到。这是一条由 shim 测试脚本写入的 assistant 回复,用于验证 codex 是否能 backfill 出此 thread 并正确渲染消息。',
+      'message': '收到。这是一条由 shimx 测试脚本写入的 assistant 回复,用于验证 codex 是否能 backfill 出此 thread 并正确渲染消息。',
     },
   }));
 
@@ -240,7 +240,7 @@ void main() async {
     exit(2);
   }
   // 备份(脚本可能崩,先 backup)
-  final backupPath = '$dbPath.shim-backup-${nowLocal.millisecondsSinceEpoch}';
+  final backupPath = '$dbPath.shimx-backup-${nowLocal.millisecondsSinceEpoch}';
   await dbFile.copy(backupPath);
 
   final db = sqlite3.open(dbPath);
@@ -249,7 +249,7 @@ void main() async {
     final updatedAt = createdAt;
     final createdAtMs = nowUtc.millisecondsSinceEpoch;
     final updatedAtMs = createdAtMs;
-    final firstUserMsg = 'Shim 导入测试';
+    final firstUserMsg = 'ShimX 导入测试';
 
     // sandbox_policy 抄真实 thread 的简化版(read-only,不要求复杂权限)
     final sandboxPolicy = jsonEncode({
@@ -309,13 +309,13 @@ void main() async {
   final idxFile = File('$home/.codex/session_index.jsonl');
   final idxLine = jsonEncode({
     'id': threadId,
-    'thread_name': 'Shim 导入测试',
+    'thread_name': 'ShimX 导入测试',
     'updated_at': tsUtc,
   });
   // 用追加模式写
   await idxFile.writeAsString('$idxLine\n', mode: FileMode.append);
 
-  stdout.writeln('========== Shim Rollout Import Test v2 ==========');
+  stdout.writeln('========== ShimX Rollout Import Test v2 ==========');
   stdout.writeln('rollout:  ${file.path}');
   stdout.writeln('sqlite:   已 INSERT 一行 thread(备份在 $backupPath)');
   stdout.writeln('index:    已追加一行到 ~/.codex/session_index.jsonl');
@@ -326,7 +326,7 @@ void main() async {
   stdout.writeln('下一步:');
   stdout.writeln('  1) 完全退出 codex(任务管理器看下别留后台进程)');
   stdout.writeln('  2) 重启 codex');
-  stdout.writeln('  3) 在 shim 项目下找 "Shim 导入测试" thread');
+  stdout.writeln('  3) 在 shimx 项目下找 "ShimX 导入测试" thread');
   stdout.writeln('');
   stdout.writeln('回滚:');
   stdout.writeln('  - 删 rollout: rm "${file.path}"');

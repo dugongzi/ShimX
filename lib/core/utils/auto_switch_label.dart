@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:shim/core/constants/auto_switch_options.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/constants/auto_switch_options.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 /// 自动切换策略字符串 → 本地化标签。未知值兜底为 manual。
 String autoSwitchStrategyLabel(BuildContext context, String key) {

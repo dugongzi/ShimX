@@ -1,14 +1,14 @@
-// ==Shim==
-// @name        Shim codex_enhance — ui/toast
+// ==ShimX==
+// @name        ShimX codex_enhance — ui/toast
 // @description Toast 提示 (用 Codex 主题), 跨 feature 复用。
-//              暴露 __shimCodex.ui.toast.show(message, kind) / .ensureContainer()。
+//              暴露 __shimxCodex.ui.toast.show(message, kind) / .ensureContainer()。
 //              kind: 'info' | 'success' | 'error' | 'warning'。
 // @layer       ui
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ids = window.__shimCodex.ids;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ids = window.__shimxCodex.ids;
 
   function ensureContainer() {
     let container = document.getElementById(ids.toastContainer);
@@ -64,5 +64,5 @@
     }, 3000);
   }
 
-  window.__shimCodex.ui.toast = { show, ensureContainer };
+  window.__shimxCodex.ui.toast = { show, ensureContainer };
 })();

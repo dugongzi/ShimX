@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/constants/auto_switch_options.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
-import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
-import 'package:shim/features/providers/presentation/widgets/auto_switch_number_row.dart';
-import 'package:shim/features/providers/presentation/widgets/auto_switch_row_label.dart';
+import 'package:shimx/core/constants/auto_switch_options.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/presentation/providers/auto_switch_provider.dart';
+import 'package:shimx/features/providers/presentation/widgets/auto_switch_number_row.dart';
+import 'package:shimx/features/providers/presentation/widgets/auto_switch_row_label.dart';
 
 /// 自动切换详细参数对话框:策略 / 范围 / 各阈值。
 class AutoSwitchDialog extends ConsumerWidget {

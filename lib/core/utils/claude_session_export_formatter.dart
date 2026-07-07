@@ -1,5 +1,5 @@
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread_message.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_message.dart';
 
 class ClaudeSessionExportFormatter {
   /// Markdown:头部 meta + 按 role 分块

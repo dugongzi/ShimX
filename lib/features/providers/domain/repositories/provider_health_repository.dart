@@ -1,4 +1,4 @@
-import 'package:shim/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
 
 /// 供应商健康数据访问接口。
 ///

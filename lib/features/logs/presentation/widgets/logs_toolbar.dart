@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/logs/presentation/providers/logs_query_provider.dart';
-import 'package:shim/core/utils/log_format.dart';
+import 'package:shimx/common/widgets/section_title.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/logs/presentation/providers/logs_query_provider.dart';
+import 'package:shimx/core/utils/log_format.dart';
 
 /// 日志 tab 顶部:标题 + 复制全部 + 清空 两个 icon 按钮。
 class LogsToolbar extends ConsumerWidget {

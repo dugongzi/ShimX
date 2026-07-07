@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/mcp/domain/models/mcp_server_info.dart';
+import 'package:shimx/features/mcp/domain/models/mcp_server_info.dart';
 
 part 'mcp_server_info_dto.freezed.dart';
 part 'mcp_server_info_dto.g.dart';

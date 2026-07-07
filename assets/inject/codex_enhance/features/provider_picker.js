@@ -1,5 +1,5 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/provider_picker
+// ==ShimX==
+// @name        ShimX codex_enhance — features/provider_picker
 // @description Composer 旁的 "供应商:模型" 按钮 + 下拉, 含 auto-switch footer + provider 标签 badge。
 //              下拉: 供应商列表 / 模型子列表 / 测速按钮 / 健康 chip / reasoning effort picker /
 //              自动切换配置 (策略 / 范围 / 阈值)。
@@ -8,15 +8,15 @@
 //              findAnchor() / pickerId / popoverId 给 features/claude_bridge 用 — chip 要插在
 //              picker 按钮旁边, 解绑后也要重定位 chip。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
   const __i18n = ns.i18n;
   const S = __i18n.S;
-  const shimProviderState = __i18n.state;
+  const shimxProviderState = __i18n.state;
   const currentProvider = __i18n.currentProvider;
   const refreshCurrentProvider = __i18n.refreshCurrentProvider;
   const refreshProviderPickerState = __i18n.refreshProviderPickerState;
@@ -133,13 +133,13 @@
       providerName,
       protocol,
       selectedModel,
-      shimProviderState.reasoningEffort || 'high',
+      shimxProviderState.reasoningEffort || 'high',
     ].join('|');
-    if (button.getAttribute('data-shim-render-key') === renderKey) {
+    if (button.getAttribute('data-shimx-render-key') === renderKey) {
       updateCodexModelSelectorVisibility();
       return;
     }
-    button.setAttribute('data-shim-render-key', renderKey);
+    button.setAttribute('data-shimx-render-key', renderKey);
     button.innerHTML = '';
 
     button.appendChild(buildProviderProtocolChip(protocol));
@@ -166,10 +166,10 @@
       });
       button.appendChild(model);
 
-      if (shouldShowShimReasoningEffort(selectedModel)) {
+      if (shouldShowShimXReasoningEffort(selectedModel)) {
         const effort = document.createElement('span');
         effort.textContent = reasoningEffortLabel(
-          shimProviderState.reasoningEffort || 'high',
+          shimxProviderState.reasoningEffort || 'high',
         );
         Object.assign(effort.style, {
           padding: '2px 5px',
@@ -185,7 +185,7 @@
 
       const clear = document.createElement('span');
       clear.textContent = '×';
-      clear.setAttribute('data-shim-clear-model', '1');
+      clear.setAttribute('data-shimx-clear-model', '1');
       clear.setAttribute('aria-label', S('clearModel', 'Clear model'));
       Object.assign(clear.style, {
         display: 'inline-flex',
@@ -214,10 +214,10 @@
   }
 
   function isProviderModelClearTarget(target) {
-    return !!target?.closest?.('[data-shim-clear-model="1"]');
+    return !!target?.closest?.('[data-shimx-clear-model="1"]');
   }
 
-  function selectedShimModel() {
+  function selectedShimXModel() {
     const provider = currentProvider();
     return provider?.selectedModel || '';
   }
@@ -236,7 +236,7 @@
     return name.includes('gpt');
   }
 
-  function shouldShowShimReasoningEffort(model) {
+  function shouldShowShimXReasoningEffort(model) {
     return supportsCodexReasoningEffort(model);
   }
 
@@ -256,7 +256,7 @@
   }
 
   function updateCodexModelSelectorVisibility() {
-    const model = selectedShimModel();
+    const model = selectedShimXModel();
     const shouldHide = !!model;
     const selector =
       findCodexModelSelector() ||
@@ -307,14 +307,14 @@
   }
 
   // picker 打开 → 测速触发的客户端节流 (60s 内不重复打, 后端也有同样的去重兜底)
-  let __shimLastHealthRefreshAt = 0;
+  let __shimxLastHealthRefreshAt = 0;
   function triggerHealthRefresh() {
-    if (typeof window.shim !== 'function') return;
+    if (typeof window.shimx !== 'function') return;
     const now = Date.now();
-    if (now - __shimLastHealthRefreshAt < 60 * 1000) return;
-    __shimLastHealthRefreshAt = now;
+    if (now - __shimxLastHealthRefreshAt < 60 * 1000) return;
+    __shimxLastHealthRefreshAt = now;
     // 默认 scope = selected, 只测当前选中的家; 用户量大也只多一次中转
-    window.shim('/provider/health/refresh', {}).then(() => {
+    window.shimx('/provider/health/refresh', {}).then(() => {
       refreshProviderPickerState();
     }).catch(() => {});
   }
@@ -389,7 +389,7 @@
     btn.setAttribute('role', 'button');
     btn.setAttribute('aria-label', S('probeNow', 'Measure latency'));
     btn.setAttribute('title', S('probeNow', 'Measure latency'));
-    btn.setAttribute('data-shim-probe-btn', '1');
+    btn.setAttribute('data-shimx-probe-btn', '1');
     Object.assign(btn.style, {
       display: 'inline-flex',
       alignItems: 'center',
@@ -411,7 +411,7 @@
     `;
     btn.addEventListener('mouseenter', () => { btn.style.opacity = '1'; });
     btn.addEventListener('mouseleave', () => {
-      if (btn.dataset.shimProbing !== '1') btn.style.opacity = '0.7';
+      if (btn.dataset.shimxProbing !== '1') btn.style.opacity = '0.7';
     });
     const stopAll = (e) => {
       e.preventDefault();
@@ -423,8 +423,8 @@
     btn.addEventListener('mousedown', stopAll, true);
     btn.addEventListener('click', async (event) => {
       stopAll(event);
-      if (btn.dataset.shimProbing === '1') return;
-      btn.dataset.shimProbing = '1';
+      if (btn.dataset.shimxProbing === '1') return;
+      btn.dataset.shimxProbing = '1';
       btn.style.opacity = '1';
       btn.style.transition = 'transform 0.6s linear';
       let angle = 0;
@@ -433,14 +433,14 @@
         btn.style.transform = `rotate(${angle}deg)`;
       }, 100);
       try {
-        await window.shim('/provider/health/refresh', {
+        await window.shimx('/provider/health/refresh', {
           id: provider.id,
           force: true,
         });
         // 拉新的 list, 弹层开着时只刷数据不重建按钮 (避免破坏其它点击),
         // 但 health chip 要更新到本行 → 我们手动只更新这一行的 chip
         await refreshProviderPickerState({ rebuildPopover: false });
-        const updated = (shimProviderState.providers || []).find((p) => p.id === provider.id);
+        const updated = (shimxProviderState.providers || []).find((p) => p.id === provider.id);
         if (updated) {
           const chip = btn.nextSibling;
           if (chip && chip.parentElement === btn.parentElement) {
@@ -454,7 +454,7 @@
         clearInterval(spin);
         btn.style.transform = '';
         btn.style.transition = '';
-        btn.dataset.shimProbing = '0';
+        btn.dataset.shimxProbing = '0';
         btn.style.opacity = '0.7';
       }
     }, true);
@@ -500,7 +500,7 @@
   }
 
   function renderProviderPickerPopover(popover) {
-    const providers = shimProviderState.providers;
+    const providers = shimxProviderState.providers;
     if (!providers.length) {
       const empty = document.createElement('div');
       empty.textContent = S('noProviders', 'No providers configured yet');
@@ -524,7 +524,7 @@
         minHeight: '34px',
         padding: '8px 10px',
         border: '0',
-        background: provider.id === shimProviderState.selectedId
+        background: provider.id === shimxProviderState.selectedId
           ? 'var(--token-main-surface-secondary, rgba(127,127,127,0.08))'
           : 'transparent',
         color: 'inherit',
@@ -532,7 +532,7 @@
       });
       providerRow.addEventListener('click', async (event) => {
         // 点的是测速按钮 → 放行 (让按钮自己的 listener 跑)
-        if (event.target.closest && event.target.closest('[data-shim-probe-btn="1"]')) {
+        if (event.target.closest && event.target.closest('[data-shimx-probe-btn="1"]')) {
           return;
         }
         event.preventDefault();
@@ -549,14 +549,14 @@
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        fontWeight: provider.id === shimProviderState.selectedId ? '700' : '500',
+        fontWeight: provider.id === shimxProviderState.selectedId ? '700' : '500',
       });
       providerRow.appendChild(name);
       providerRow.appendChild(buildProbeButton(provider));
       providerRow.appendChild(buildHealthChip(provider.health));
       fragment.appendChild(providerRow);
 
-      if (provider.id === shimProviderState.selectedId) {
+      if (provider.id === shimxProviderState.selectedId) {
         const modelList = document.createElement('div');
         Object.assign(modelList.style, {
           margin: '0 0 4px 14px',
@@ -602,13 +602,13 @@
             event.stopPropagation();
             event.stopImmediatePropagation();
             await selectProviderModel(provider.id, modelName, 'click:model-row');
-            if (!shouldShowShimReasoningEffort(modelName)) {
+            if (!shouldShowShimXReasoningEffort(modelName)) {
               dismissProviderPickerPopover();
             }
           }, true);
           modelList.appendChild(modelRow);
         }
-        if (shouldShowShimReasoningEffort(provider.selectedModel)) {
+        if (shouldShowShimXReasoningEffort(provider.selectedModel)) {
           modelList.appendChild(buildReasoningEffortPicker(provider.id));
         }
         fragment.appendChild(modelList);
@@ -656,7 +656,7 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = text;
-      const selected = (shimProviderState.reasoningEffort || 'high') === value;
+      const selected = (shimxProviderState.reasoningEffort || 'high') === value;
       Object.assign(btn.style, {
         height: '28px',
         border: selected
@@ -684,23 +684,23 @@
 
   // ========== 自动切换 ==========
 
-  let shimAutoSwitch = null; // {strategy, scope, failureThreshold, fastestMarginMs, cooldownSeconds, probeIntervalSeconds, ...}
-  let shimAutoSwitchExpanded = false;
+  let shimxAutoSwitch = null; // {strategy, scope, failureThreshold, fastestMarginMs, cooldownSeconds, probeIntervalSeconds, ...}
+  let shimxAutoSwitchExpanded = false;
 
   function ensureAutoSwitchLoaded() {
-    if (shimAutoSwitch || typeof window.shim !== 'function') return Promise.resolve();
-    return window.shim('/auto-switch/get', {}).then((res) => {
+    if (shimxAutoSwitch || typeof window.shimx !== 'function') return Promise.resolve();
+    return window.shimx('/auto-switch/get', {}).then((res) => {
       if (res && res.code === 0 && res.data) {
-        shimAutoSwitch = res.data;
+        shimxAutoSwitch = res.data;
       }
     }).catch(() => {});
   }
 
   function saveAutoSwitch(patch) {
-    const next = Object.assign({}, shimAutoSwitch || {}, patch);
-    return window.shim('/auto-switch/set', next).then((res) => {
+    const next = Object.assign({}, shimxAutoSwitch || {}, patch);
+    return window.shimx('/auto-switch/set', next).then((res) => {
       if (res && res.code === 0 && res.data) {
-        shimAutoSwitch = res.data;
+        shimxAutoSwitch = res.data;
         updateProviderPickerPopover();
       } else {
         showToast(`${S('saveFailed', 'Save failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
@@ -710,19 +710,19 @@
     });
   }
 
-  function shimAutoSwitchLabels() {
-    return (shimAutoSwitch && shimAutoSwitch.labels) || {};
+  function shimxAutoSwitchLabels() {
+    return (shimxAutoSwitch && shimxAutoSwitch.labels) || {};
   }
 
   function strategyLabel(value) {
-    const L = shimAutoSwitchLabels();
+    const L = shimxAutoSwitchLabels();
     if (value === 'failover') return L.strategyFailover || 'Failover';
     if (value === 'fastest') return L.strategyFastest || 'Fastest';
     return L.strategyManual || 'Manual';
   }
 
   function scopeLabel(value) {
-    const L = shimAutoSwitchLabels();
+    const L = shimxAutoSwitchLabels();
     if (value === 'same-protocol') return L.scopeSameProtocol || 'Same proto';
     if (value === 'any') return L.scopeAny || 'Any';
     return L.scopeSameType || 'Same type';
@@ -753,7 +753,7 @@
       fontSize: '12px',
       fontWeight: '700',
     });
-    const L = shimAutoSwitchLabels();
+    const L = shimxAutoSwitchLabels();
     const headerLabel = document.createElement('span');
     headerLabel.textContent = '⚙ ' + (L.title || 'Auto switch');
     headerLabel.style.flex = '1';
@@ -762,14 +762,14 @@
     summary.style.color = 'var(--text-secondary, currentColor)';
     summary.style.fontWeight = '500';
     summary.style.fontSize = '11px';
-    if (shimAutoSwitch) {
-      summary.textContent = `${strategyLabel(shimAutoSwitch.strategy)} · ${scopeLabel(shimAutoSwitch.scope)}`;
+    if (shimxAutoSwitch) {
+      summary.textContent = `${strategyLabel(shimxAutoSwitch.strategy)} · ${scopeLabel(shimxAutoSwitch.scope)}`;
     } else {
       summary.textContent = '…';
     }
 
     const caret = document.createElement('span');
-    caret.textContent = shimAutoSwitchExpanded ? '▴' : '▾';
+    caret.textContent = shimxAutoSwitchExpanded ? '▴' : '▾';
     caret.style.fontSize = '10px';
     caret.style.opacity = '0.6';
 
@@ -780,13 +780,13 @@
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      shimAutoSwitchExpanded = !shimAutoSwitchExpanded;
-      if (shimAutoSwitchExpanded) await ensureAutoSwitchLoaded();
+      shimxAutoSwitchExpanded = !shimxAutoSwitchExpanded;
+      if (shimxAutoSwitchExpanded) await ensureAutoSwitchLoaded();
       updateProviderPickerPopover();
     }, true);
     wrap.appendChild(header);
 
-    if (shimAutoSwitchExpanded && shimAutoSwitch) {
+    if (shimxAutoSwitchExpanded && shimxAutoSwitch) {
       const body = document.createElement('div');
       Object.assign(body.style, {
         marginTop: '6px',
@@ -850,7 +850,7 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = text;
-      const selected = shimAutoSwitch[fieldKey] === value;
+      const selected = shimxAutoSwitch[fieldKey] === value;
       Object.assign(btn.style, {
         height: '26px',
         border: selected
@@ -893,7 +893,7 @@
       color: 'var(--text-secondary, currentColor)',
     });
 
-    const current = Number(shimAutoSwitch[fieldKey] ?? 0);
+    const current = Number(shimxAutoSwitch[fieldKey] ?? 0);
 
     function btn(text, delta, disabled) {
       const b = document.createElement('button');
@@ -943,40 +943,40 @@
 
   // ========== 工具过滤关键词 ==========
 
-  let shimToolFilter = null; // { keywords: {keyword, enabled}[], labels: {...} }
-  let shimToolFilterExpanded = false;
-  let shimToolFilterPending = ''; // 输入框未提交的值,展开时保留
+  let shimxToolFilter = null; // { keywords: {keyword, enabled}[], labels: {...} }
+  let shimxToolFilterExpanded = false;
+  let shimxToolFilterPending = ''; // 输入框未提交的值,展开时保留
 
   function ensureToolFilterLoaded() {
-    if (shimToolFilter || typeof window.shim !== 'function') return Promise.resolve();
-    return window.shim('/tool-filter/get', {}).then((res) => {
+    if (shimxToolFilter || typeof window.shimx !== 'function') return Promise.resolve();
+    return window.shimx('/tool-filter/get', {}).then((res) => {
       if (res && res.code === 0 && res.data) {
-        shimToolFilter = res.data;
+        shimxToolFilter = res.data;
       }
     }).catch(() => {});
   }
 
-  function shimToolFilterLabels() {
-    return (shimToolFilter && shimToolFilter.labels) || {};
+  function shimxToolFilterLabels() {
+    return (shimxToolFilter && shimxToolFilter.labels) || {};
   }
 
   async function toolFilterAdd(keyword) {
     const kw = String(keyword || '').trim();
     if (!kw) {
-      const L = shimToolFilterLabels();
+      const L = shimxToolFilterLabels();
       showToast(L.invalid || 'Keyword cannot be empty', 'error');
       return;
     }
-    if (Array.isArray(shimToolFilter?.keywords) && shimToolFilter.keywords.some((k) => k.keyword === kw)) {
-      const L = shimToolFilterLabels();
+    if (Array.isArray(shimxToolFilter?.keywords) && shimxToolFilter.keywords.some((k) => k.keyword === kw)) {
+      const L = shimxToolFilterLabels();
       showToast(L.duplicate || 'Keyword already exists', 'error');
       return;
     }
     try {
-      const res = await window.shim('/tool-filter/add', { keyword: kw });
+      const res = await window.shimx('/tool-filter/add', { keyword: kw });
       if (res && res.code === 0 && res.data) {
-        shimToolFilter = res.data;
-        shimToolFilterPending = '';
+        shimxToolFilter = res.data;
+        shimxToolFilterPending = '';
         updateProviderPickerPopover();
       } else {
         showToast(`${res?.message || S('unknownError', 'Unknown error')}`, 'error');
@@ -988,9 +988,9 @@
 
   async function toolFilterRemove(keyword) {
     try {
-      const res = await window.shim('/tool-filter/remove', { keyword });
+      const res = await window.shimx('/tool-filter/remove', { keyword });
       if (res && res.code === 0 && res.data) {
-        shimToolFilter = res.data;
+        shimxToolFilter = res.data;
         updateProviderPickerPopover();
       } else {
         showToast(`${res?.message || S('unknownError', 'Unknown error')}`, 'error');
@@ -1002,9 +1002,9 @@
 
   async function toolFilterToggle(keyword, enabled) {
     try {
-      const res = await window.shim('/tool-filter/toggle', { keyword, enabled });
+      const res = await window.shimx('/tool-filter/toggle', { keyword, enabled });
       if (res && res.code === 0 && res.data) {
-        shimToolFilter = res.data;
+        shimxToolFilter = res.data;
         updateProviderPickerPopover();
       } else {
         showToast(`${res?.message || S('unknownError', 'Unknown error')}`, 'error');
@@ -1022,7 +1022,7 @@
       paddingTop: '8px',
     });
 
-    const L = shimToolFilterLabels();
+    const L = shimxToolFilterLabels();
     const header = document.createElement('button');
     header.type = 'button';
     header.className = 'no-drag cursor-interaction rounded-md hover:bg-token-list-hover-background';
@@ -1049,7 +1049,7 @@
     summary.style.color = 'var(--text-secondary, currentColor)';
     summary.style.fontWeight = '500';
     summary.style.fontSize = '11px';
-    const keywords = Array.isArray(shimToolFilter?.keywords) ? shimToolFilter.keywords : null;
+    const keywords = Array.isArray(shimxToolFilter?.keywords) ? shimxToolFilter.keywords : null;
     if (keywords === null) {
       summary.textContent = '…';
     } else if (!keywords.length) {
@@ -1062,7 +1062,7 @@
     }
 
     const caret = document.createElement('span');
-    caret.textContent = shimToolFilterExpanded ? '▴' : '▾';
+    caret.textContent = shimxToolFilterExpanded ? '▴' : '▾';
     caret.style.fontSize = '10px';
     caret.style.opacity = '0.6';
 
@@ -1073,13 +1073,13 @@
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      shimToolFilterExpanded = !shimToolFilterExpanded;
-      if (shimToolFilterExpanded) await ensureToolFilterLoaded();
+      shimxToolFilterExpanded = !shimxToolFilterExpanded;
+      if (shimxToolFilterExpanded) await ensureToolFilterLoaded();
       updateProviderPickerPopover();
     }, true);
     wrap.appendChild(header);
 
-    if (shimToolFilterExpanded && shimToolFilter) {
+    if (shimxToolFilterExpanded && shimxToolFilter) {
       const body = document.createElement('div');
       Object.assign(body.style, {
         marginTop: '6px',
@@ -1109,7 +1109,7 @@
       const input = document.createElement('input');
       input.type = 'text';
       input.placeholder = L.placeholder || 'e.g. image_generation';
-      input.value = shimToolFilterPending;
+      input.value = shimxToolFilterPending;
       Object.assign(input.style, {
         flex: '1',
         minWidth: '0',
@@ -1126,7 +1126,7 @@
         // 空格禁止
         const cleaned = String(event.target.value || '').replace(/\s+/g, '');
         if (cleaned !== event.target.value) event.target.value = cleaned;
-        shimToolFilterPending = cleaned;
+        shimxToolFilterPending = cleaned;
       });
       input.addEventListener('keydown', async (event) => {
         if (event.key === 'Enter') {
@@ -1174,7 +1174,7 @@
         gap: '6px',
       });
 
-      const list = Array.isArray(shimToolFilter.keywords) ? shimToolFilter.keywords : [];
+      const list = Array.isArray(shimxToolFilter.keywords) ? shimxToolFilter.keywords : [];
       if (!list.length) {
         const empty = document.createElement('div');
         empty.textContent = L.empty || 'No keywords';
@@ -1287,17 +1287,17 @@
 
   async function selectProvider(id, caller) {
     // caller: 'user-click' / 'auto' / etc. 仅用于 dart 端日志定位是哪段 JS 触发的
-    console.log('[ShimDbg] selectProvider', { id, caller, stack: new Error().stack });
-    const res = await window.shim('/provider/select', { id, __caller: caller || 'js:unknown' });
+    console.log('[ShimXDbg] selectProvider', { id, caller, stack: new Error().stack });
+    const res = await window.shimx('/provider/select', { id, __caller: caller || 'js:unknown' });
     if (!res || res.code !== 0) {
       showToast(`${S('switchProviderFailed', 'Switch provider failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
-    Object.assign(shimProviderState, {
+    Object.assign(shimxProviderState, {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
-      labels: res.data.labels || shimProviderState.labels || {},
+      labels: res.data.labels || shimxProviderState.labels || {},
     });
     updateProviderPickerButton();
     updateProviderPickerPopover();
@@ -1306,17 +1306,17 @@
   }
 
   async function selectProviderModel(id, model, caller) {
-    console.log('[ShimDbg] selectProviderModel', { id, model, caller, stack: new Error().stack });
-    const res = await window.shim('/provider/select-model', { id, model, __caller: caller || 'js:unknown' });
+    console.log('[ShimXDbg] selectProviderModel', { id, model, caller, stack: new Error().stack });
+    const res = await window.shimx('/provider/select-model', { id, model, __caller: caller || 'js:unknown' });
     if (!res || res.code !== 0) {
       showToast(`${S('switchModelFailed', 'Switch model failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
-    Object.assign(shimProviderState, {
+    Object.assign(shimxProviderState, {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
-      labels: res.data.labels || shimProviderState.labels || {},
+      labels: res.data.labels || shimxProviderState.labels || {},
     });
     updateProviderPickerButton();
     updateProviderPickerPopover();
@@ -1325,7 +1325,7 @@
   }
 
   async function selectReasoningEffort(id, effort) {
-    const res = await window.shim('/provider/set-reasoning-effort', {
+    const res = await window.shimx('/provider/set-reasoning-effort', {
       id,
       effort,
     });
@@ -1333,11 +1333,11 @@
       showToast(`${S('switchEffortFailed', 'Switch reasoning failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
       return;
     }
-    Object.assign(shimProviderState, {
+    Object.assign(shimxProviderState, {
       selectedId: res.data.selectedId ?? null,
       reasoningEffort: res.data.reasoningEffort || 'high',
       providers: Array.isArray(res.data.providers) ? res.data.providers : [],
-      labels: res.data.labels || shimProviderState.labels || {},
+      labels: res.data.labels || shimxProviderState.labels || {},
     });
     updateProviderPickerButton();
     updateProviderPickerPopover();

@@ -10,7 +10,7 @@ class PolishActionDatasource {
     required String proxyBaseUrl,
   }) async {
     final body = <String, Object?>{
-      'model': 'shim-polish',
+      'model': 'shimx-polish',
       'input': [
         {
           'type': 'message',

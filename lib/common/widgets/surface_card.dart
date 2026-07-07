@@ -1,8 +1,8 @@
 import 'dart:ui';
 
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/themes/app_colors.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 通用卡片:深色下走玻璃质感 + 蓝紫带色阴影。

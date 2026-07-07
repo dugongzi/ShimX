@@ -1,7 +1,7 @@
-import 'package:shim/features/providers/data/datasources/auto_switch_datasource.dart';
-import 'package:shim/features/providers/data/models/auto_switch_settings_dto.dart';
-import 'package:shim/features/providers/domain/models/auto_switch_settings.dart';
-import 'package:shim/features/providers/domain/repositories/auto_switch_repository.dart';
+import 'package:shimx/features/providers/data/datasources/auto_switch_datasource.dart';
+import 'package:shimx/features/providers/data/models/auto_switch_settings_dto.dart';
+import 'package:shimx/features/providers/domain/models/auto_switch_settings.dart';
+import 'package:shimx/features/providers/domain/repositories/auto_switch_repository.dart';
 
 class AutoSwitchRepositoryImpl implements AutoSwitchRepository {
   final AutoSwitchDatasource dataSource;

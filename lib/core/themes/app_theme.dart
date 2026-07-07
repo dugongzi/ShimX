@@ -1,6 +1,6 @@
-import 'package:shim/core/themes/app_colors.dart';
-import 'package:shim/core/themes/app_fonts.dart';
-import 'package:shim/core/themes/app_text_styles.dart';
+import 'package:shimx/core/themes/app_colors.dart';
+import 'package:shimx/core/themes/app_fonts.dart';
+import 'package:shimx/core/themes/app_text_styles.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {

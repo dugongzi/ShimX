@@ -3,17 +3,17 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/codex_backup/presentation/providers/codex_backup_action_provider.dart';
-import 'package:shim/features/codex_backup/presentation/providers/codex_backup_query_provider.dart';
-import 'package:shim/features/codex_config/presentation/providers/codex_config_action_provider.dart';
-import 'package:shim/features/codex_config/presentation/providers/codex_config_query_provider.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_action_provider.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/codex_backup/presentation/providers/codex_backup_action_provider.dart';
+import 'package:shimx/features/codex_backup/presentation/providers/codex_backup_query_provider.dart';
+import 'package:shimx/features/codex_config/presentation/providers/codex_config_action_provider.dart';
+import 'package:shimx/features/codex_config/presentation/providers/codex_config_query_provider.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_action_provider.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_query_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
-const String _shimBucket = 'shim';
+const String _shimxBucket = 'shimx';
 const int _bucketPageSize = 30;
 
 /// 首页 tab:codex 会话按 model_provider 分桶展示 + 手动移动 + 备份触发。
@@ -25,7 +25,7 @@ class SessionsHomeView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final selected = useState<Set<String>>({});
-    final targetBucket = useState<String>(_shimBucket);
+    final targetBucket = useState<String>(_shimxBucket);
 
     final buckets = ref.watch(codexBucketsProvider);
     final currentBucket = ref.watch(codexModelProviderProvider);
@@ -89,7 +89,7 @@ class SessionsHomeView extends HookConsumerWidget {
       }
     }
 
-    Future<void> mergeAllToShim() async {
+    Future<void> mergeAllToShimX() async {
       final ok = await _confirm(
         context,
         title: l10n.sessionMergeConfirmTitle,
@@ -102,7 +102,7 @@ class SessionsHomeView extends HookConsumerWidget {
       final bucketList = buckets.value ?? const [];
       final allIds = <String>[];
       for (final b in bucketList) {
-        if (b.bucket == _shimBucket) continue;
+        if (b.bucket == _shimxBucket) continue;
         final threads = await ref
             .read(codexSessionQueryRepositoryProvider)
             .listThreadsByBucket(bucket: b.bucket, limit: 1 << 30);
@@ -130,23 +130,23 @@ class SessionsHomeView extends HookConsumerWidget {
           );
           moved += await repo.moveThreadsToBucket(
             threadIds: batch,
-            targetBucket: _shimBucket,
+            targetBucket: _shimxBucket,
           );
           done.value = moved;
           await Future<void>.delayed(Duration.zero);
         }
         selected.value = {};
-        // 合并完顺便切桶到 shim(用户点这个按钮的目的就是"以后新会话也走 shim")
+        // 合并完顺便切桶到 shimx(用户点这个按钮的目的就是"以后新会话也走 shimx")
         final proxy = await ref.read(proxyConfigProvider.future);
         await ref
             .read(codexConfigActionRepositoryProvider)
             .writeModelProviderWithSection(
-              value: _shimBucket,
+              value: _shimxBucket,
               baseUrl: proxy.localProxyUrl,
             );
         ref.invalidate(codexModelProviderProvider);
         await SmartDialog.dismiss();
-        SmartDialog.showToast(l10n.sessionMoveSuccess(moved, _shimBucket));
+        SmartDialog.showToast(l10n.sessionMoveSuccess(moved, _shimxBucket));
         await refreshAll();
       } catch (e) {
         await SmartDialog.dismiss();
@@ -161,12 +161,12 @@ class SessionsHomeView extends HookConsumerWidget {
       error: (e, _) => Center(child: Text(e.toString())),
       data: (bucketList) {
         final bucketNames = bucketList.map((b) => b.bucket).toList();
-        final targetOptions = <String>{...bucketNames, _shimBucket}.toList()
+        final targetOptions = <String>{...bucketNames, _shimxBucket}.toList()
           ..sort();
         if (!targetOptions.contains(targetBucket.value)) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!targetOptions.contains(targetBucket.value)) {
-              targetBucket.value = _shimBucket;
+              targetBucket.value = _shimxBucket;
             }
           });
         }
@@ -186,7 +186,7 @@ class SessionsHomeView extends HookConsumerWidget {
               onTargetChanged: (v) => targetBucket.value = v,
               onMove: moveSelected,
               onBackup: backupSelected,
-              onMergeAll: mergeAllToShim,
+              onMergeAll: mergeAllToShimX,
             ),
             Expanded(
               child: ListView.separated(
@@ -380,12 +380,12 @@ class _SessionActionToolbar extends StatelessWidget {
             ),
             SizedBox(width: AppSizes.itemGap),
             Tooltip(
-              message: l10n.sessionMergeAllToShimTooltip,
+              message: l10n.sessionMergeAllToShimXTooltip,
               waitDuration: const Duration(milliseconds: 500),
               child: TextButton.icon(
                 onPressed: onMergeAll,
                 icon: const Icon(Icons.merge_type_rounded, size: 18),
-                label: Text(l10n.sessionMergeAllToShim),
+                label: Text(l10n.sessionMergeAllToShimX),
               ),
             ),
           ],
@@ -410,7 +410,7 @@ class _TargetBucketDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final effective =
-        options.contains(value) ? value : (options.isNotEmpty ? options.first : _shimBucket);
+        options.contains(value) ? value : (options.isNotEmpty ? options.first : _shimxBucket);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

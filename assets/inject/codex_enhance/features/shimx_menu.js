@@ -1,14 +1,14 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/shim_menu
-// @description 侧栏 Shim 入口菜单项。挂在 Claude bridge 按钮 / 面板下方一行,
+// ==ShimX==
+// @name        ShimX codex_enhance — features/shimx_menu
+// @description 侧栏 ShimX 入口菜单项。挂在 Claude bridge 按钮 / 面板下方一行,
 //              点击打开 features/control_panel 的浮层。
 //              对外: ensure() — 由 runtime/scheduler 在 ensureAll 里每轮调一次。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
 
   function findInsertAnchor() {
@@ -31,11 +31,11 @@
     const iconWrap = document.createElement('span');
     iconWrap.style.display = 'inline-flex';
     iconWrap.style.color = '#1296db';
-    iconWrap.innerHTML = ids.shimIconSvg;
+    iconWrap.innerHTML = ids.shimxIconSvg;
 
     const label = document.createElement('span');
     label.className = 'flex-1 min-w-0 truncate';
-    label.textContent = 'Shim';
+    label.textContent = 'ShimX';
 
     const statusDot = document.createElement('span');
     statusDot.setAttribute('aria-hidden', 'true');
@@ -78,11 +78,11 @@
     if (existing && existing.parentElement === navList && existing.previousElementSibling === anchor) {
       return;
     }
-    ns.runtime?.trace?.t?.('ensureShimMenuItem: INSERT into nav');
+    ns.runtime?.trace?.t?.('ensureShimXMenuItem: INSERT into nav');
     existing?.remove();
     const item = buildItem();
     anchor.insertAdjacentElement('afterend', item);
   }
 
-  ns.features.shimMenu = { ensure };
+  ns.features.shimxMenu = { ensure };
 })();

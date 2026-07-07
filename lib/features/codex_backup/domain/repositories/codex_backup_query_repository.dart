@@ -1,5 +1,5 @@
-import 'package:shim/features/codex_backup/domain/models/codex_backup.dart';
-import 'package:shim/features/codex_backup/domain/models/codex_backup_detail.dart';
+import 'package:shimx/features/codex_backup/domain/models/codex_backup.dart';
+import 'package:shimx/features/codex_backup/domain/models/codex_backup_detail.dart';
 
 abstract class CodexBackupQueryRepository {
   /// 只扫备份目录,拿到分页后的 backupId 列表(按时间倒序)。

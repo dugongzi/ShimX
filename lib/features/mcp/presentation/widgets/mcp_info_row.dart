@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 /// MCP 卡片里的一行 label + value(可选 copy 按钮);
 /// value 为 SelectableText,长内容可手动选中。

@@ -1,6 +1,6 @@
-# Shim User Script Manual
+# ShimX User Script Manual
 
-In shim's script editor you can write JS scripts that get injected into the Codex web app. Shim installs an SDK at `window.shimApi` covering bridge calls, DOM observation, and UI helpers.
+In shimx's script editor you can write JS scripts that get injected into the Codex web app. ShimX installs an SDK at `window.shimxApi` covering bridge calls, DOM observation, and UI helpers.
 
 ---
 
@@ -9,16 +9,16 @@ In shim's script editor you can write JS scripts that get injected into the Code
 The editor generates this template for a new script:
 
 ```js
-// ==Shim==
+// ==ShimX==
 // @name        My Script
 // @description Script description
 // @version     1.0.0
 // @author
 // @layer       user
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodex) return;
+  if (!window.__shimxCodex) return;
 
   // Your injection logic here
   console.log('[MyScript] loaded');
@@ -29,21 +29,21 @@ Recommended pattern (async version):
 
 ```js
 (async () => {
-  if (!window.shimApi) return;
+  if (!window.shimxApi) return;
 
-  // Wait for the shim backend bridge (window.shim). Only after this
+  // Wait for the shimx backend bridge (window.shimx). Only after this
   // resolves can bridge / subscribe be used.
-  const ok = await shimApi.ready();
+  const ok = await shimxApi.ready();
   if (!ok) {
-    console.warn('[MyScript] shim bridge timeout');
+    console.warn('[MyScript] shimx bridge timeout');
     return;
   }
 
-  shimApi.toast('MyScript started', 'success');
+  shimxApi.toast('MyScript started', 'success');
 })();
 ```
 
-Scripts are injected at **document_start** on the Codex page. `shim_api.js` runs after all of `codex_enhance` and before your script. `bridge.call` / `subscribe` depend on the `window.shim` binding — **always `await shimApi.ready()` first**.
+Scripts are injected at **document_start** on the Codex page. `shimx_api.js` runs after all of `codex_enhance` and before your script. `bridge.call` / `subscribe` depend on the `window.shimx` binding — **always `await shimxApi.ready()` first**.
 
 ---
 
@@ -51,10 +51,10 @@ Scripts are injected at **document_start** on the Codex page. `shim_api.js` runs
 
 | Group | API | Purpose |
 | --- | --- | --- |
-| Lifecycle | `ready(timeoutMs?)` | Wait for the shim backend bridge |
+| Lifecycle | `ready(timeoutMs?)` | Wait for the shimx backend bridge |
 |  | `onReady(cb)` | Wait for DOMContentLoaded |
-| Backend | `bridge.call(path, payload?, timeoutMs?)` | Call a shim server RPC |
-|  | `subscribe(topic, cb)` | Subscribe to shim server pushes |
+| Backend | `bridge.call(path, payload?, timeoutMs?)` | Call a shimx server RPC |
+|  | `subscribe(topic, cb)` | Subscribe to shimx server pushes |
 | UI | `toast(msg, kind?)` | Top toast |
 |  | `confirm(options)` | Confirm dialog |
 |  | `busy(label)` / `withBusy(label, fn)` | Loading indicator |
@@ -67,22 +67,22 @@ Scripts are injected at **document_start** on the Codex page. `shim_api.js` runs
 
 ## Lifecycle
 
-### `shimApi.ready(timeoutMs?): Promise<boolean>`
+### `shimxApi.ready(timeoutMs?): Promise<boolean>`
 
-Waits for the `window.shim` binding that shim's Dart side installs via CDP. Default timeout 8000 ms. Returns `true` if the bridge is available, `false` on timeout (usually means the page isn't a shim-injected one, or the debug port dropped).
+Waits for the `window.shimx` binding that shimx's Dart side installs via CDP. Default timeout 8000 ms. Returns `true` if the bridge is available, `false` on timeout (usually means the page isn't a shimx-injected one, or the debug port dropped).
 
 **Always call this** before `bridge.call` or `subscribe`.
 
 ```js
-if (!await shimApi.ready()) return;
+if (!await shimxApi.ready()) return;
 ```
 
-### `shimApi.onReady(callback)`
+### `shimxApi.onReady(callback)`
 
 Waits for `DOMContentLoaded`. If the DOM is already ready when called, the callback runs on the next microtask.
 
 ```js
-shimApi.onReady(() => {
+shimxApi.onReady(() => {
   console.log('DOM ready');
 });
 ```
@@ -91,29 +91,29 @@ shimApi.onReady(() => {
 
 ## Backend communication
 
-### `shimApi.bridge.call(path, payload?, timeoutMs?): Promise<Response>`
+### `shimxApi.bridge.call(path, payload?, timeoutMs?): Promise<Response>`
 
-Calls a shim backend RPC. Returns `{ ok: true, data }` or `{ ok: false, message }`.
+Calls a shimx backend RPC. Returns `{ ok: true, data }` or `{ ok: false, message }`.
 
 ```js
-const res = await shimApi.bridge.call('/provider/current', {});
+const res = await shimxApi.bridge.call('/provider/current', {});
 if (res.ok) {
-  shimApi.toast('Current provider: ' + res.data.label);
+  shimxApi.toast('Current provider: ' + res.data.label);
 } else {
-  shimApi.toast('Query failed: ' + res.message, 'error');
+  shimxApi.toast('Query failed: ' + res.message, 'error');
 }
 ```
 
-`path` is a route registered by the shim backend. Common ones are `/provider/current`, `/provider/list`. The exact set depends on the shim version — check the shim home page to see which routes are enabled.
+`path` is a route registered by the shimx backend. Common ones are `/provider/current`, `/provider/list`. The exact set depends on the shimx version — check the shimx home page to see which routes are enabled.
 
-### `shimApi.subscribe(topic, callback): { stop }`
+### `shimxApi.subscribe(topic, callback): { stop }`
 
-Subscribes to events pushed from the shim server. Returns `{ stop }` for manual cancellation.
+Subscribes to events pushed from the shimx server. Returns `{ stop }` for manual cancellation.
 
 ```js
-const sub = shimApi.subscribe('/provider/auto-switched', (payload) => {
+const sub = shimxApi.subscribe('/provider/auto-switched', (payload) => {
   if (payload.event === 'switched') {
-    shimApi.toast(`Provider switched to ${payload.to}`, 'success');
+    shimxApi.toast(`Provider switched to ${payload.to}`, 'success');
   }
 });
 // Later: sub.stop();
@@ -123,21 +123,21 @@ const sub = shimApi.subscribe('/provider/auto-switched', (payload) => {
 
 ## UI helpers
 
-### `shimApi.toast(message, kind?)`
+### `shimxApi.toast(message, kind?)`
 
 Top-of-page toast, auto-dismisses after 3 s. `kind` is one of `'info' | 'success' | 'error' | 'warning'`, default `'info'`.
 
 ```js
-shimApi.toast('Saved', 'success');
-shimApi.toast('Network error', 'error');
+shimxApi.toast('Saved', 'success');
+shimxApi.toast('Network error', 'error');
 ```
 
-### `shimApi.confirm(options): Promise<boolean>`
+### `shimxApi.confirm(options): Promise<boolean>`
 
 Confirm dialog. Resolves to `true` on confirm, `false` on cancel / overlay click / Esc.
 
 ```js
-const ok = await shimApi.confirm({
+const ok = await shimxApi.confirm({
   title: 'Delete script',
   message: 'Really delete? This cannot be undone.',
   okText: 'Delete',
@@ -149,13 +149,13 @@ if (ok) {
 }
 ```
 
-### `shimApi.busy(label): { done }` and `shimApi.withBusy(label, fn)`
+### `shimxApi.busy(label): { done }` and `shimxApi.withBusy(label, fn)`
 
 Loading overlay for long-running tasks.
 
 ```js
 // Manual control
-const b = shimApi.busy('Exporting...');
+const b = shimxApi.busy('Exporting...');
 try {
   await doExport();
 } finally {
@@ -163,8 +163,8 @@ try {
 }
 
 // Or auto-wrap
-const result = await shimApi.withBusy('Fetching data', async () => {
-  return await shimApi.bridge.call('/some/endpoint', {});
+const result = await shimxApi.withBusy('Fetching data', async () => {
+  return await shimxApi.bridge.call('/some/endpoint', {});
 });
 ```
 
@@ -176,25 +176,25 @@ Multiple busies can be shown concurrently — the overlay only clears once every
 
 Codex is a React SPA and elements mount / unmount as you navigate or collapse the sidebar.
 
-### `shimApi.waitFor(selector, opts?): Promise<Element | null>`
+### `shimxApi.waitFor(selector, opts?): Promise<Element | null>`
 
 Waits for the first appearance of an element. Default timeout 10 s. Returns `null` on timeout.
 
 ```js
-const btn = await shimApi.waitFor('button[data-testid="submit"]');
+const btn = await shimxApi.waitFor('button[data-testid="submit"]');
 if (btn) btn.click();
 
 // Custom timeout and search root
-const el = await shimApi.waitFor('.item', { timeout: 3000, root: sidebar });
+const el = await shimxApi.waitFor('.item', { timeout: 3000, root: sidebar });
 ```
 
-### `shimApi.onMount(selector, callback, opts?): { stop }`
+### `shimxApi.onMount(selector, callback, opts?): { stop }`
 
 Fires once per mount. The same element instance won't be reprocessed (tracked with a WeakSet).
 
 ```js
 // Add a copy button to every thread row
-shimApi.onMount('[data-app-action-sidebar-thread-row]', (row) => {
+shimxApi.onMount('[data-app-action-sidebar-thread-row]', (row) => {
   const btn = document.createElement('button');
   btn.textContent = 'Copy';
   btn.onclick = () => copyThread(row);
@@ -202,27 +202,27 @@ shimApi.onMount('[data-app-action-sidebar-thread-row]', (row) => {
 });
 
 // Only fire once
-shimApi.onMount('nav[role="navigation"]', (nav) => setup(nav), { once: true });
+shimxApi.onMount('nav[role="navigation"]', (nav) => setup(nav), { once: true });
 ```
 
-### `shimApi.observe(target, callback, init?): { stop }`
+### `shimxApi.observe(target, callback, init?): { stop }`
 
 Thin wrapper around `MutationObserver`.
 
 ```js
-const sub = shimApi.observe(
+const sub = shimxApi.observe(
   document.title,
   (records) => console.log('title changed', records),
   { characterData: true, subtree: true },
 );
 ```
 
-### `shimApi.onUrlChange(callback): { stop }`
+### `shimxApi.onUrlChange(callback): { stop }`
 
 Notifies on SPA route changes (hooks `pushState` / `replaceState` + `popstate` + `hashchange`).
 
 ```js
-shimApi.onUrlChange((url) => {
+shimxApi.onUrlChange((url) => {
   if (url.includes('/settings')) {
     injectSettingsPanel();
   }
@@ -236,18 +236,18 @@ shimApi.onUrlChange((url) => {
 Add a "Copy title" button to every thread in the sidebar:
 
 ```js
-// ==Shim==
+// ==ShimX==
 // @name        Copy Thread Title
 // @description Add a "Copy" button to every thread row
 // @version     1.0.0
 // @layer       user
-// ==/Shim==
+// ==/ShimX==
 
 (async () => {
-  if (!window.shimApi) return;
-  if (!await shimApi.ready()) return;
+  if (!window.shimxApi) return;
+  if (!await shimxApi.ready()) return;
 
-  shimApi.onMount('[data-app-action-sidebar-thread-row]', (row) => {
+  shimxApi.onMount('[data-app-action-sidebar-thread-row]', (row) => {
     if (row.querySelector('.__my_copy_btn')) return;
     const btn = document.createElement('button');
     btn.className = '__my_copy_btn';
@@ -258,12 +258,12 @@ Add a "Copy title" button to every thread in the sidebar:
       const title = row.getAttribute('data-app-action-sidebar-thread-title')
         || row.textContent.trim();
       navigator.clipboard.writeText(title);
-      shimApi.toast('Copied: ' + title, 'success');
+      shimxApi.toast('Copied: ' + title, 'success');
     };
     row.appendChild(btn);
   });
 
-  shimApi.onUrlChange((url) => {
+  shimxApi.onUrlChange((url) => {
     console.log('[CopyThread] url:', url);
   });
 })();
@@ -279,6 +279,6 @@ Add a "Copy title" button to every thread in the sidebar:
 
 ## Caveats
 
-- Do not overwrite `window.shimApi`.
+- Do not overwrite `window.shimxApi`.
 - Do not patch `Array.prototype` / `Object.prototype` or other built-in prototypes — other code on the page already patches these, and stacking will interfere.
 - Do not patch `window.fetch` / `XMLHttpRequest` for the same reason.

@@ -36,7 +36,7 @@ class InjectQueryDatasource {
     'assets/inject/codex_enhance/features/polish_button.js',
     'assets/inject/codex_enhance/features/project_menu_hook.js',
     'assets/inject/codex_enhance/features/provider_picker.js',
-    'assets/inject/codex_enhance/features/shim_menu.js',
+    'assets/inject/codex_enhance/features/shimx_menu.js',
     'assets/inject/codex_enhance/features/thread_row.js',
     // runtime: 插件兼容层 → scheduler 主循环 → bootstrap 启动序列
     'assets/inject/codex_enhance/runtime/plugins.js',
@@ -44,12 +44,12 @@ class InjectQueryDatasource {
     'assets/inject/codex_enhance/runtime/bootstrap.js',
     // 面向用户脚本的 SDK,必须排在 codex_enhance 全部装完之后,
     // 用户脚本之前(inject_orchestrator 拼接顺序: [此脚本, ...用户脚本])。
-    'assets/inject/shim_api.js',
+    'assets/inject/shimx_api.js',
   ];
 
   /// debug 模式下直接读项目源码路径下的同名分片, 改完立刻生效 (零重启)。
   static const String _devShardRoot =
-      r'F:\Programming_projects\FlutterProject\shim\';
+      r'F:\Programming_projects\FlutterProject\shimx\';
 
   final Dio _dio;
 

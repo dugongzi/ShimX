@@ -1,16 +1,16 @@
-// ==Shim==
-// @name        Shim codex_enhance — ui/panel_utils
-// @description Shim 控制面板 / Provider picker / Logs 等 UI 共享的小工具:
+// ==ShimX==
+// @name        ShimX codex_enhance — ui/panel_utils
+// @description ShimX 控制面板 / Provider picker / Logs 等 UI 共享的小工具:
 //              - statusTone* : 把 'success' | 'warning' | 'error' | 'info' | 'muted' 映射成
 //                              前景色 / 浅背景 / 边框色 / 本地化标签
 //              - currentCodexThreadLabel / codexThreadLabelById : 从 codex 侧栏取 thread 标题
 //              - shortThreadId : 把超长 thread id 截成 "前 6 位 … 后 4 位"
 // @layer       ui
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const S = (k, f) => window.__shimCodex.i18n.S(k, f);
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const S = (k, f) => window.__shimxCodex.i18n.S(k, f);
 
   // 前景色: 亮/暗色模式都要有足够对比度的语义色。
   // 蓝/黄/红/灰选深一档的值,浅色模式白底也读得清。
@@ -42,11 +42,11 @@
   }
 
   function statusToneLabel(tone) {
-    if (tone === 'success') return S('shimControlStatusOk', 'OK');
-    if (tone === 'warning') return S('shimControlStatusWarn', 'Warn');
-    if (tone === 'error') return S('shimControlStatusError', 'Error');
-    if (tone === 'info') return S('shimControlStatusInfo', 'Info');
-    return S('shimControlStatusIdle', 'Idle');
+    if (tone === 'success') return S('shimxControlStatusOk', 'OK');
+    if (tone === 'warning') return S('shimxControlStatusWarn', 'Warn');
+    if (tone === 'error') return S('shimxControlStatusError', 'Error');
+    if (tone === 'info') return S('shimxControlStatusInfo', 'Info');
+    return S('shimxControlStatusIdle', 'Idle');
   }
 
   function currentCodexThreadLabel() {
@@ -81,7 +81,7 @@
     return `${text.slice(0, 6)}…${text.slice(-4)}`;
   }
 
-  window.__shimCodex.ui.panel = {
+  window.__shimxCodex.ui.panel = {
     statusToneColor,
     statusToneSoftBackground,
     statusToneBorder,

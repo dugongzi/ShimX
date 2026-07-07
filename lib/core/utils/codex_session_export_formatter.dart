@@ -1,6 +1,6 @@
 import 'package:path/path.dart' as p;
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_message.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_message.dart';
 
 class CodexSessionExportFormatter {
   /// Markdown:头部 meta + 按 role 分块

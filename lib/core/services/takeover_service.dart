@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/constants/storage_keys.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/presentation/providers/auto_switch_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/constants/storage_keys.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/auto_switch_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_health_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 part 'takeover_service.g.dart';
 

@@ -1,7 +1,7 @@
-import 'package:shim/features/providers/data/datasources/provider_query_datasource.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/models/proxy_config.dart';
-import 'package:shim/features/providers/domain/repositories/provider_query_repository.dart';
+import 'package:shimx/features/providers/data/datasources/provider_query_datasource.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/proxy_config.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_query_repository.dart';
 
 class ProviderQueryRepositoryImpl implements ProviderQueryRepository {
   final ProviderQueryDatasource dataSource;

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 
-import 'package:shim/features/codex_backup/data/datasources/codex_backup_paths.dart';
+import 'package:shimx/features/codex_backup/data/datasources/codex_backup_paths.dart';
 
 /// 只写:创建备份 / 恢复备份 / 删除备份。
 ///

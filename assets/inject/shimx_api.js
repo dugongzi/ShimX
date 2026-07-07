@@ -1,14 +1,14 @@
-// ==Shim==
-// @name        Shim User Script SDK
-// @description 面向用户脚本的通用 API,挂到 window.shimApi。
-//              建立在 codex_enhance (window.__shimCodex) 之上,但屏蔽内部细节:
-//              用户不用碰 __shimCodex.features.*、也不用理会拼片顺序。
-//              注入顺序: codex_enhance 全部拼片 → shim_api.js → 用户脚本。
+// ==ShimX==
+// @name        ShimX User Script SDK
+// @description 面向用户脚本的通用 API,挂到 window.shimxApi。
+//              建立在 codex_enhance (window.__shimxCodex) 之上,但屏蔽内部细节:
+//              用户不用碰 __shimxCodex.features.*、也不用理会拼片顺序。
+//              注入顺序: codex_enhance 全部拼片 → shimx_api.js → 用户脚本。
 // @layer       sdk
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (window.shimApi) return; // 一次注入 guard
+  if (window.shimxApi) return; // 一次注入 guard
 
   // ---------- 内部工具 ----------
 
@@ -20,17 +20,17 @@
 
   // codex_enhance 的命名空间。任何 SDK 调用都从这里派生,如果找不到就用兜底。
   function ns() {
-    return window.__shimCodex || null;
+    return window.__shimxCodex || null;
   }
 
-  // ---------- ready: 等 window.shim 桥装好 ----------
+  // ---------- ready: 等 window.shimx 桥装好 ----------
   //
-  // shim Dart 侧通过 CDP Runtime.addBinding 注入 window.shim / window.__shimOn,
+  // shimx Dart 侧通过 CDP Runtime.addBinding 注入 window.shimx / window.__shimxOn,
   // document_start 时可能还没到位,所以对外提供一个 Promise。
   //
   // 用法:
-  //   const ok = await shimApi.ready();
-  //   if (!ok) return; // 超时,页面可能不是被 shim 注入的
+  //   const ok = await shimxApi.ready();
+  //   if (!ok) return; // 超时,页面可能不是被 shimx 注入的
   const READY_TIMEOUT_MS = 8000;
   const READY_POLL_MS = 100;
 
@@ -40,7 +40,7 @@
     const deadline = Date.now() + (timeoutMs || READY_TIMEOUT_MS);
     readyPromise = (async () => {
       while (Date.now() < deadline) {
-        if (typeof window.shim === 'function') return true;
+        if (typeof window.shimx === 'function') return true;
         await sleep(READY_POLL_MS);
       }
       return false;
@@ -48,16 +48,16 @@
     return readyPromise;
   }
 
-  // ---------- bridge.call: 走 shim server RPC ----------
+  // ---------- bridge.call: 走 shimx server RPC ----------
   //
   // 优先复用 codex_enhance 的 bridge.call(内置超时 + 统一 { ok, data } 语义),
-  // 找不到时回退到直接调 window.shim。
+  // 找不到时回退到直接调 window.shimx。
   async function call(path, payload, timeoutMs) {
     const base = ns();
     if (base && base.bridge && typeof base.bridge.call === 'function') {
       return base.bridge.call(path, payload || {}, timeoutMs || 8000);
     }
-    if (typeof window.shim !== 'function') {
+    if (typeof window.shimx !== 'function') {
       return { ok: false, message: 'bridge not ready' };
     }
     let timer;
@@ -68,7 +68,7 @@
           timeoutMs || 8000,
         );
       });
-      const res = await Promise.race([window.shim(path, payload || {}), timeout]);
+      const res = await Promise.race([window.shimx(path, payload || {}), timeout]);
       if (res && res.code === 0) return { ok: true, data: res.data || {} };
       return { ok: false, message: (res && res.message) || 'rpc error' };
     } catch (error) {
@@ -139,11 +139,11 @@
     const danger = !!opts.danger;
 
     return new Promise((resolve) => {
-      const oldOverlay = document.getElementById('__shim_api_confirm__');
+      const oldOverlay = document.getElementById('__shimx_api_confirm__');
       if (oldOverlay) oldOverlay.remove();
 
       const overlay = document.createElement('div');
-      overlay.id = '__shim_api_confirm__';
+      overlay.id = '__shimx_api_confirm__';
       Object.assign(overlay.style, {
         position: 'fixed',
         inset: '0',
@@ -307,7 +307,7 @@
         try {
           callback(node);
         } catch (e) {
-          console.error('[shimApi.onMount] callback error:', e);
+          console.error('[shimxApi.onMount] callback error:', e);
         }
         if (o.once) {
           stop();
@@ -344,7 +344,7 @@
       try {
         callback(records);
       } catch (e) {
-        console.error('[shimApi.observe] callback error:', e);
+        console.error('[shimxApi.observe] callback error:', e);
       }
     });
     observer.observe(target || document.documentElement, init || {
@@ -371,7 +371,7 @@
         try {
           cb(url);
         } catch (e) {
-          console.error('[shimApi.onUrlChange] callback error:', e);
+          console.error('[shimxApi.onUrlChange] callback error:', e);
         }
       }
     };
@@ -399,7 +399,7 @@
     };
   }
 
-  // ---------- 页面生命周期 & shim 事件订阅 ----------
+  // ---------- 页面生命周期 & shimx 事件订阅 ----------
 
   function onReady(callback) {
     if (typeof callback !== 'function') return;
@@ -414,17 +414,17 @@
   }
 
   /**
-   * 订阅 shim server 主动推送的事件(如 provider 切换、health 变化等)。
-   * topic 参考 shim 后端 route 定义。
+   * 订阅 shimx server 主动推送的事件(如 provider 切换、health 变化等)。
+   * topic 参考 shimx 后端 route 定义。
    * @param {string} topic
    * @param {(payload: any) => void} callback
    * @returns {{stop: () => void}}
    */
   function subscribe(topic, callback) {
-    if (typeof window.__shimOn !== 'function' || typeof callback !== 'function') {
+    if (typeof window.__shimxOn !== 'function' || typeof callback !== 'function') {
       return { stop: noop };
     }
-    const sub = window.__shimOn(topic, callback);
+    const sub = window.__shimxOn(topic, callback);
     return {
       stop: () => {
         try {
@@ -437,7 +437,7 @@
 
   // ---------- 导出 ----------
 
-  window.shimApi = {
+  window.shimxApi = {
     version: '1.0.0',
     ready,
     bridge: { call },
@@ -457,6 +457,6 @@
   };
 
   if (typeof console !== 'undefined') {
-    console.log('[shimApi] ready, version', window.shimApi.version);
+    console.log('[shimxApi] ready, version', window.shimxApi.version);
   }
 })();

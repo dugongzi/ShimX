@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
 
 part 'api_provider_dto.freezed.dart';
 part 'api_provider_dto.g.dart';

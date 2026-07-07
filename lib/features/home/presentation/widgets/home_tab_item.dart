@@ -1,6 +1,6 @@
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/themes/app_colors.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 侧栏 tab 项:选中态走 Wally 设计语言——

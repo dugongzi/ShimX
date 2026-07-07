@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shim/core/constants/network_constants.dart';
+import 'package:shimx/core/constants/network_constants.dart';
 
 /// 应用级 HTTP 拦截器
 /// 负责补充通用请求信息，并输出简洁的请求摘要日志

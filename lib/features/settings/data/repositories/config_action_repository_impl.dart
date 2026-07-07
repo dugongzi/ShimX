@@ -1,5 +1,5 @@
-import 'package:shim/features/settings/data/datasources/config_action_datasource.dart';
-import 'package:shim/features/settings/domain/repositories/config_action_repository.dart';
+import 'package:shimx/features/settings/data/datasources/config_action_datasource.dart';
+import 'package:shimx/features/settings/domain/repositories/config_action_repository.dart';
 
 class ConfigActionRepositoryImpl implements ConfigActionRepository {
   final ConfigActionDatasource dataSource;

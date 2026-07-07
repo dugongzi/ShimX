@@ -1,5 +1,5 @@
-import 'package:shim/features/polish/data/datasources/polish_action_datasource.dart';
-import 'package:shim/features/polish/domain/repositories/polish_action_repository.dart';
+import 'package:shimx/features/polish/data/datasources/polish_action_datasource.dart';
+import 'package:shimx/features/polish/domain/repositories/polish_action_repository.dart';
 
 class PolishActionRepositoryImpl implements PolishActionRepository {
   PolishActionRepositoryImpl({

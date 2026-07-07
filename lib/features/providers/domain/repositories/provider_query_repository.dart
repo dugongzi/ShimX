@@ -1,5 +1,5 @@
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/models/proxy_config.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/proxy_config.dart';
 
 abstract class ProviderQueryRepository {
   /// 列出全部供应商

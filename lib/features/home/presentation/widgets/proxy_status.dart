@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 /// 侧栏底部:本地代理服务状态。
 /// 不带自身装饰,容器由 SidebarSystemPanel 统一提供。

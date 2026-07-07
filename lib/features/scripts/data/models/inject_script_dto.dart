@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/scripts/data/models/script_metadata_dto.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/data/models/script_metadata_dto.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
 
 part 'inject_script_dto.freezed.dart';
 part 'inject_script_dto.g.dart';

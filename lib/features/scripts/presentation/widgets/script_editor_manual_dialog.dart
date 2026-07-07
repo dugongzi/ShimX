@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 /// 用户脚本手册弹窗。按当前界面语言选择 zh/en 一份 md 文件,
 /// flutter_markdown 渲染。右上角复制按钮把当前手册原文写入剪贴板。

@@ -1,16 +1,16 @@
-// ==Shim==
-// @name        Shim codex_enhance — ui/busy
+// ==ShimX==
+// @name        ShimX codex_enhance — ui/busy
 // @description 持久 Busy 指示器 (导出等长耗时任务用), 跨 feature 复用。
 //              支持多个并发任务: showBusyIndicator(label) 返回 token, 各 token 独立
 //              hideBusyIndicator(token), 全部 hide 后 indicator 才消失。
 //              withBusyIndicator(label, run) 包一段可能抛错的异步任务, 自动 show/hide,
 //              异常会再抛出。
 // @layer       ui
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ids = window.__shimCodex.ids;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ids = window.__shimxCodex.ids;
 
   const busyTasks = new Map(); // token -> { node }
   let nextToken = 1;
@@ -20,10 +20,10 @@
       const style = document.createElement('style');
       style.id = ids.busyKeyframes;
       style.textContent = [
-        '@keyframes shimBusySpin{to{transform:rotate(360deg)}}',
-        '@keyframes shimBusyPulse{0%,100%{box-shadow:0 12px 36px rgba(0,0,0,0.45),0 0 0 1px rgba(96,165,250,0.32),0 0 28px rgba(96,165,250,0.30)}50%{box-shadow:0 12px 36px rgba(0,0,0,0.45),0 0 0 1px rgba(96,165,250,0.48),0 0 44px rgba(96,165,250,0.55)}}',
-        '@keyframes shimBusyBarSlide{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}',
-        '@keyframes shimBusyPop{0%{opacity:0;transform:translateY(-10px) scale(0.94)}60%{opacity:1;transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}',
+        '@keyframes shimxBusySpin{to{transform:rotate(360deg)}}',
+        '@keyframes shimxBusyPulse{0%,100%{box-shadow:0 12px 36px rgba(0,0,0,0.45),0 0 0 1px rgba(96,165,250,0.32),0 0 28px rgba(96,165,250,0.30)}50%{box-shadow:0 12px 36px rgba(0,0,0,0.45),0 0 0 1px rgba(96,165,250,0.48),0 0 44px rgba(96,165,250,0.55)}}',
+        '@keyframes shimxBusyBarSlide{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}',
+        '@keyframes shimxBusyPop{0%{opacity:0;transform:translateY(-10px) scale(0.94)}60%{opacity:1;transform:translateY(0) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}',
       ].join('\n');
       document.head.appendChild(style);
     }
@@ -96,7 +96,7 @@
       letterSpacing: '0.2px',
       pointerEvents: 'auto',
       overflow: 'hidden',
-      animation: 'shimBusyPop 260ms cubic-bezier(0.2,0.9,0.3,1.2) both, shimBusyPulse 2.2s ease-in-out 260ms infinite',
+      animation: 'shimxBusyPop 260ms cubic-bezier(0.2,0.9,0.3,1.2) both, shimxBusyPulse 2.2s ease-in-out 260ms infinite',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
     });
@@ -109,7 +109,7 @@
       border: '2.5px solid rgba(127,127,127,0.22)',
       borderTopColor: '#60a5fa',
       borderRightColor: 'rgba(96,165,250,0.55)',
-      animation: 'shimBusySpin 0.8s linear infinite',
+      animation: 'shimxBusySpin 0.8s linear infinite',
       flex: '0 0 auto',
       boxShadow: '0 0 12px rgba(96,165,250,0.4)',
     });
@@ -143,7 +143,7 @@
       width: '45%',
       height: '100%',
       background: 'linear-gradient(90deg, rgba(96,165,250,0), rgba(96,165,250,0.9), rgba(96,165,250,0))',
-      animation: 'shimBusyBarSlide 1.5s linear infinite',
+      animation: 'shimxBusyBarSlide 1.5s linear infinite',
     });
     progressTrack.appendChild(progressBar);
 
@@ -195,5 +195,5 @@
     }
   }
 
-  window.__shimCodex.ui.busy = { show, hide, update, withBusy };
+  window.__shimxCodex.ui.busy = { show, hide, update, withBusy };
 })();

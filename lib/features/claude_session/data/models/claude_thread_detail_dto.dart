@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/claude_session/data/models/claude_thread_message_dto.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/features/claude_session/data/models/claude_thread_message_dto.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
 
 part 'claude_thread_detail_dto.freezed.dart';
 part 'claude_thread_detail_dto.g.dart';

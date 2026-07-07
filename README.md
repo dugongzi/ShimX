@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="assets/images/icon.png" width="96" alt="Shim icon" />
-  <h1>Shim</h1>
+  <img src="assets/images/icon.png" width="96" alt="ShimX icon" />
+  <h1>ShimX</h1>
   <p>面向 Codex Desktop 的本地增强器</p>
   <p>
     <img src="https://img.shields.io/badge/license-GPLv3-b22222" alt="license GPLv3" />
@@ -11,9 +11,9 @@
   </p>
 </div>
 
-Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌面端管理界面,通过 Chrome DevTools Protocol 注入 Codex 页面,并在本机提供反向代理、MCP server、会话管理、用户脚本和 Codex Skills/Plugins 管理能力。
+ShimX 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌面端管理界面,通过 Chrome DevTools Protocol 注入 Codex 页面,并在本机提供反向代理、MCP server、会话管理、用户脚本和 Codex Skills/Plugins 管理能力。
 
-项目开源地址: <https://github.com/dugongzi/Shim>
+项目开源地址: <https://github.com/dugongzi/ShimX>
 
 <p align="center">
   <a href="README_cn.md"><strong>简体中文</strong></a> |
@@ -25,7 +25,7 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
 <table>
   <tr>
     <td width="50%">
-      <img src="assets/screenshots/shim_panel.png" alt="Shim 控制面板" />
+      <img src="assets/screenshots/shimx_panel.png" alt="ShimX 控制面板" />
       <p><strong>Codex 内浮层控制面板</strong><br />注入后可在 Codex 页面内查看 Bridge 状态、当前供应商、自动切换策略和上下文映射。</p>
     </td>
     <td width="50%">
@@ -69,7 +69,7 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
       <p><strong>脚本列表与批量管理</strong><br />在主窗口中查看脚本 metadata,并批量启用、禁用、删除或导入脚本。</p>
     </td>
     <td width="50%">
-      <img src="assets/screenshots/setup.png" alt="Shim 设置页" />
+      <img src="assets/screenshots/setup.png" alt="ShimX 设置页" />
       <p><strong>桌面端设置中心</strong><br />统一管理语言、主题、主题色、快捷方式、工具过滤、官方登录和代理接管端口。</p>
     </td>
   </tr>
@@ -81,8 +81,8 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
 
 - 自动启动或连接 Codex Desktop,默认使用调试端口 `9229`。
 - 通过 CDP 注入内置 `codex_enhance` 脚本和用户启用的脚本。
-- 在 Codex 页面中增加 Shim 徽章、侧栏入口、控制面板、日志面板、插件面板、供应商/模型选择器、Claude Bridge、会话导出/删除入口、项目菜单增强和润色按钮。
-- 注入侧通过 `window.shim(path, payload)` 与 Flutter 侧桥接;用户脚本可使用 `window.shimApi`。详见 [用户脚本手册](docs/user_script_manual_zh.md) / [User Script Manual](docs/user_script_manual_en.md)。
+- 在 Codex 页面中增加 ShimX 徽章、侧栏入口、控制面板、日志面板、插件面板、供应商/模型选择器、Claude Bridge、会话导出/删除入口、项目菜单增强和润色按钮。
+- 注入侧通过 `window.shimx(path, payload)` 与 Flutter 侧桥接;用户脚本可使用 `window.shimxApi`。详见 [用户脚本手册](docs/user_script_manual_zh.md) / [User Script Manual](docs/user_script_manual_en.md)。
 
 ### API 供应商与本地代理
 
@@ -102,7 +102,7 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
   - 支持导出 Markdown、HTML 和原始 JSONL。
   - 支持导入单个 JSONL 或 ZIP 包。
   - 支持删除会话,删除前会在应用支持目录写入备份。
-  - 支持把会话移动到指定桶,或统一合并到 `shim` 桶。
+  - 支持把会话移动到指定桶,或统一合并到 `shimx` 桶。
 - Claude Code 会话:
   - 读取 `~/.claude/projects/<encoded-cwd>/*.jsonl`。
   - 按项目和会话浏览 Claude Code 历史。
@@ -121,22 +121,22 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
   - `read_claude_session`
   - `search_claude_session`
 - MCP server 可按持久化开关自动启动,并可写入/移除 Codex `config.toml` 的 `[mcp_servers.*]` 配置。
-- 高级 MCP 配置页可编辑 Shim 管理的 Codex MCP 配置块,支持启用/禁用、保存和删除。
+- 高级 MCP 配置页可编辑 ShimX 管理的 Codex MCP 配置块,支持启用/禁用、保存和删除。
 
 ### 用户脚本
 
-- 在 Shim 首页管理注入到 Codex 页面的 `.js` 脚本。
+- 在 ShimX 首页管理注入到 Codex 页面的 `.js` 脚本。
 - 支持导入、创建、编辑、删除、启用/禁用、批量操作。
 - 脚本保存在应用支持目录的 `scripts/` 下。
 - 编辑器支持自动保存、运行时刷新、热运行、手册查看和 Codex DevTools 控制台入口。
-- 脚本 metadata 使用 `// ==Shim==` 块解析,缺失时会按文件名生成默认信息。
+- 脚本 metadata 使用 `// ==ShimX==` 块解析,缺失时会按文件名生成默认信息。
 
 ### Codex Skills
 
 - 扫描并管理 `~/.codex/skills`。
 - 支持从文件夹或 ZIP 安装 Skill。
-- 支持把已有 Skill 导入 Shim 管理。
-- 只允许删除 Shim 管理的 Skill,避免误删外部 Skill。
+- 支持把已有 Skill 导入 ShimX 管理。
+- 只允许删除 ShimX 管理的 Skill,避免误删外部 Skill。
 - 安装记录保存在本地 registry 中,并计算内容 hash 用于识别变更。
 
 ### Codex Plugins
@@ -148,23 +148,23 @@ Shim 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌
 
 ### 桌面体验与设置
 
-- 支持系统托盘:显示窗口、启动 Codex 并注入、退出 Shim。
+- 支持系统托盘:显示窗口、启动 Codex 并注入、退出 ShimX。
 - 关闭窗口默认最小化到托盘。
-- 可创建桌面快捷方式,快捷方式会用 `--launch-codex` 启动 Shim,自动启动 Codex 并注入后隐藏到托盘。
+- 可创建桌面快捷方式,快捷方式会用 `--launch-codex` 启动 ShimX,自动启动 Codex 并注入后隐藏到托盘。
 - 支持简体中文/英语、系统/浅色/深色主题、主题色设置。
 - 支持打开源码仓库、创建快捷方式、开启官方登录配置、管理工具过滤关键词。
 - 应用内日志支持按等级过滤、复制和清空。
 
 ## 工作机制
 
-Shim 的运行链路可以概括为:
+ShimX 的运行链路可以概括为:
 
 1. Flutter 应用启动,初始化窗口、托盘、主题、本地化和持久化配置。
 2. 如果代理或 MCP 开关处于启用状态,启动对应本地服务。
-3. 用户点击注入或通过快捷方式启动时,Shim 启动/连接 Codex Desktop,并确保 Codex 开启远程调试端口。
-4. Shim 通过 CDP 连接 Codex 页面,注册 Dart 侧 bridge 路由,注入 `bridge_bootstrap.js`、内置增强脚本和用户脚本。
+3. 用户点击注入或通过快捷方式启动时,ShimX 启动/连接 Codex Desktop,并确保 Codex 开启远程调试端口。
+4. ShimX 通过 CDP 连接 Codex 页面,注册 Dart 侧 bridge 路由,注入 `bridge_bootstrap.js`、内置增强脚本和用户脚本。
 5. Codex 页面中的注入脚本通过 bridge 调用 Flutter 侧功能,例如供应商切换、会话读取、导出、日志、插件和 Claude Bridge。
-6. 开启接管后,Codex 请求会先到 Shim 本机代理,再由代理按选中供应商、协议和模型转发到真实上游。
+6. 开启接管后,Codex 请求会先到 ShimX 本机代理,再由代理按选中供应商、协议和模型转发到真实上游。
 
 ## 项目结构
 
@@ -227,19 +227,19 @@ flutter run -d macos
 
 - Codex Home: 优先使用 `CODEX_HOME`,否则默认 `~/.codex`。
 - Codex 配置: `~/.codex/config.toml`。
-- Codex 数据库: `~/.codex/state_5.sqlite`。Shim 当前使用的是 Codex Home 根目录下这份库,不是 `~/.codex/sqlite/state_5.sqlite`。
+- Codex 数据库: `~/.codex/state_5.sqlite`。ShimX 当前使用的是 Codex Home 根目录下这份库,不是 `~/.codex/sqlite/state_5.sqlite`。
 - Codex 会话 JSONL: `~/.codex/sessions/<yyyy>/<mm>/<dd>/rollout-*.jsonl`。
 - Claude Code 会话: `~/.claude/projects/**/*.jsonl`。
-- Shim 用户脚本: `<AppSupport>/scripts/`。
-- Shim Codex 会话备份: `<AppSupport>/codex_session_backups/`。
-- 接管快照: `~/.codex/.shim_takeover_backup/`。
+- ShimX 用户脚本: `<AppSupport>/scripts/`。
+- ShimX Codex 会话备份: `<AppSupport>/codex_session_backups/`。
+- 接管快照: `~/.codex/.shimx_takeover_backup/`。
 - Codex Skills: `~/.codex/skills/`。
 
 ## 注意事项
 
-- Shim 会按用户操作修改 `~/.codex/config.toml`,尤其是代理接管、MCP 配置和插件 marketplace 配置。修改前后建议确认 Codex 未在关键请求中。
+- ShimX 会按用户操作修改 `~/.codex/config.toml`,尤其是代理接管、MCP 配置和插件 marketplace 配置。修改前后建议确认 Codex 未在关键请求中。
 - Codex 会话删除、导入、桶移动和备份恢复会写 `state_5.sqlite` 与 rollout JSONL。虽然代码里做了备份和事务,但这类操作仍建议在 Codex 空闲时执行。
-- 用户脚本运行在 Codex 页面上下文中,应避免覆盖 `window.shimApi`、全局 patch `fetch`/`XMLHttpRequest` 或修改内置原型。
+- 用户脚本运行在 Codex 页面上下文中,应避免覆盖 `window.shimxApi`、全局 patch `fetch`/`XMLHttpRequest` 或修改内置原型。
 - 代理只监听 loopback 地址,不会对外网开放服务。
 
 ## License

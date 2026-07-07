@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_log_service.dart';
 
 /// HH:mm:ss.SSS
 String formatLogTime(DateTime time) {

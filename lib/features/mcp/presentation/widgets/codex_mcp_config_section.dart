@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
-import 'package:shim/features/mcp/presentation/providers/codex_mcp_config_action_provider.dart';
-import 'package:shim/features/mcp/presentation/providers/codex_mcp_config_query_provider.dart';
-import 'package:shim/features/mcp/presentation/widgets/codex_mcp_config_card.dart';
-import 'package:shim/features/mcp/presentation/widgets/codex_mcp_config_edit_dialog.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_empty_box.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_error_box.dart';
+import 'package:shimx/common/widgets/section_title.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/presentation/providers/codex_mcp_config_action_provider.dart';
+import 'package:shimx/features/mcp/presentation/providers/codex_mcp_config_query_provider.dart';
+import 'package:shimx/features/mcp/presentation/widgets/codex_mcp_config_card.dart';
+import 'package:shimx/features/mcp/presentation/widgets/codex_mcp_config_edit_dialog.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_empty_box.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_error_box.dart';
 
 /// "Codex MCP 配置"分区:标题 + 添加按钮 + 进度条 + 配置列表。
 class CodexMcpConfigSection extends HookConsumerWidget {

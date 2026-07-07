@@ -1,14 +1,14 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/plugin_panel
+// ==ShimX==
+// @name        ShimX codex_enhance — features/plugin_panel
 // @description 侧栏「插件」入口点击后的浮层。目前只是骨架 + 两个动作按钮 + 状态占位,
 //              点击按钮弹 toast 占位;后端 bridge 路由接好后,这里再改成真实调用。
 //              对外: togglePopover(anchor) — plugin_menu 点击时调。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
   const S = (k, f) => ns.i18n.S(k, f);
 
@@ -102,7 +102,7 @@
     });
 
     const dot = document.createElement('span');
-    dot.setAttribute('data-shim-plugin-dot', '1');
+    dot.setAttribute('data-shimx-plugin-dot', '1');
     Object.assign(dot.style, {
       display: 'inline-block',
       width: '8px',
@@ -113,7 +113,7 @@
     });
 
     const value = document.createElement('span');
-    value.setAttribute('data-shim-plugin-status', '1');
+    value.setAttribute('data-shimx-plugin-status', '1');
     value.textContent = S('pluginPanelStatusIdle', 'Not installed');
     Object.assign(value.style, {
       fontSize: '13px',
@@ -122,7 +122,7 @@
     });
 
     const count = document.createElement('span');
-    count.setAttribute('data-shim-plugin-count', '1');
+    count.setAttribute('data-shimx-plugin-count', '1');
     Object.assign(count.style, {
       marginLeft: 'auto',
       fontSize: '12px',
@@ -141,9 +141,9 @@
   //   installed=true & !configured → 橙点 + 已下载但未配置
   //   installed=true & configured  → 绿点 + 已安装,右侧展示 「插件数 N」
   function refreshStatus(panel, data) {
-    const dot = panel.querySelector('[data-shim-plugin-dot="1"]');
-    const value = panel.querySelector('[data-shim-plugin-status="1"]');
-    const count = panel.querySelector('[data-shim-plugin-count="1"]');
+    const dot = panel.querySelector('[data-shimx-plugin-dot="1"]');
+    const value = panel.querySelector('[data-shimx-plugin-status="1"]');
+    const count = panel.querySelector('[data-shimx-plugin-count="1"]');
     if (!dot || !value || !count) return;
     if (!data) {
       dot.style.background = '#ef4444';
@@ -198,8 +198,8 @@
   // 通用远端安装:source ∈ {'jihulab', 'github'} 由 dart 侧枚举成实际 URL。
   // busy 卡片 + 200ms 节流的下载进度事件都跟老逻辑一致。
   async function runInstallFromRemote(panel, source) {
-    if (panel.dataset.shimBusy === '1') return;
-    panel.dataset.shimBusy = '1';
+    if (panel.dataset.shimxBusy === '1') return;
+    panel.dataset.shimxBusy = '1';
     const baseLabel = S(
       'pluginPanelBusyDownload',
       'Downloading and installing…',
@@ -207,8 +207,8 @@
     const busyToken = ns.ui?.busy?.show?.(baseLabel);
 
     let progressSub = null;
-    if (typeof window.__shimOn === 'function' && busyToken != null) {
-      progressSub = window.__shimOn(
+    if (typeof window.__shimxOn === 'function' && busyToken != null) {
+      progressSub = window.__shimxOn(
         '/plugin/download-progress',
         (payload) => {
           if (!payload) return;
@@ -247,7 +247,7 @@
         }
       } catch (_) {}
       if (busyToken != null) ns.ui?.busy?.hide?.(busyToken);
-      delete panel.dataset.shimBusy;
+      delete panel.dataset.shimxBusy;
     }
   }
 
@@ -256,7 +256,7 @@
   //   2) /plugin/install-from-local {zipPath} → 解压 + 写 config
   // 取消 file picker 静默返回,不弹错误。
   async function runInstallFromLocalZip(panel) {
-    if (panel.dataset.shimBusy === '1') return;
+    if (panel.dataset.shimxBusy === '1') return;
     let pickRes;
     try {
       pickRes = await ns.bridge.call('/plugin/pick-local-zip', {}, 5 * 60 * 1000);
@@ -273,7 +273,7 @@
       return;
     }
 
-    panel.dataset.shimBusy = '1';
+    panel.dataset.shimxBusy = '1';
     const busyToken = ns.ui?.busy?.show?.(
       S('pluginPanelBusyLocal', 'Extracting and installing local zip…'),
     );
@@ -291,7 +291,7 @@
       );
     } finally {
       if (busyToken != null) ns.ui?.busy?.hide?.(busyToken);
-      delete panel.dataset.shimBusy;
+      delete panel.dataset.shimxBusy;
     }
   }
 

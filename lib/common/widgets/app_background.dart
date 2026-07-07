@@ -1,5 +1,5 @@
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/themes/app_colors.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 
 /// 全局渐变背景:

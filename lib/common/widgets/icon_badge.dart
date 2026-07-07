@@ -1,4 +1,4 @@
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class IconBadge extends StatelessWidget {

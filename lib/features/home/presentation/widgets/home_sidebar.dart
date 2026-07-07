@@ -1,11 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/themes/app_colors.dart';
-import 'package:shim/features/home/presentation/widgets/sidebar_brand.dart';
-import 'package:shim/features/home/presentation/widgets/sidebar_system_panel.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/themes/app_colors.dart';
+import 'package:shimx/features/home/presentation/widgets/sidebar_brand.dart';
+import 'package:shimx/features/home/presentation/widgets/sidebar_system_panel.dart';
 
 /// 主页面左侧侧栏外壳:品牌 + tab 列表 + 底部动作 / 状态。
 /// 关键:不用任何 Scroll widget(viewport 永远裁剪),纯 Column,

@@ -1,5 +1,5 @@
-import 'package:shim/features/mcp/data/datasources/mcp_server_action_datasource.dart';
-import 'package:shim/features/mcp/domain/repositories/mcp_server_action_repository.dart';
+import 'package:shimx/features/mcp/data/datasources/mcp_server_action_datasource.dart';
+import 'package:shimx/features/mcp/domain/repositories/mcp_server_action_repository.dart';
 
 class McpServerActionRepositoryImpl implements McpServerActionRepository {
   final McpServerActionDatasource dataSource;

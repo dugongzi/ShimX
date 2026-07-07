@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 class ScriptEditorEmptyView extends StatelessWidget {
   const ScriptEditorEmptyView({super.key});

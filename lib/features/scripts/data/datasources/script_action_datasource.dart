@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:shim/core/services/app_storage.dart';
+import 'package:shimx/core/services/app_storage.dart';
 
 /// 脚本写操作 IO:
 ///   - 文件选择器拾取 .js → 拷贝到 `<appSupport>/scripts/`

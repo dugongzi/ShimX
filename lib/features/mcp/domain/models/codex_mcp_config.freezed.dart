@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CodexMcpConfig {
 
- String get id; String get kind; String get bodyText; bool get enabled; bool get managedByShim; bool get readOnly; String get name; String get description;
+ String get id; String get kind; String get bodyText; bool get enabled; bool get managedByShimX; bool get readOnly; String get name; String get description;
 /// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CodexMcpConfigCopyWith<CodexMcpConfig> get copyWith => _$CodexMcpConfigCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexMcpConfig&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexMcpConfig&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShimX, managedByShimX) || other.managedByShimX == managedByShimX)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,kind,bodyText,enabled,managedByShim,readOnly,name,description);
+int get hashCode => Object.hash(runtimeType,id,kind,bodyText,enabled,managedByShimX,readOnly,name,description);
 
 @override
 String toString() {
-  return 'CodexMcpConfig(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShim: $managedByShim, readOnly: $readOnly, name: $name, description: $description)';
+  return 'CodexMcpConfig(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShimX: $managedByShimX, readOnly: $readOnly, name: $name, description: $description)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CodexMcpConfigCopyWith<$Res>  {
   factory $CodexMcpConfigCopyWith(CodexMcpConfig value, $Res Function(CodexMcpConfig) _then) = _$CodexMcpConfigCopyWithImpl;
 @useResult
 $Res call({
- String id, String kind, String bodyText, bool enabled, bool managedByShim, bool readOnly, String name, String description
+ String id, String kind, String bodyText, bool enabled, bool managedByShimX, bool readOnly, String name, String description
 });
 
 
@@ -62,13 +62,13 @@ class _$CodexMcpConfigCopyWithImpl<$Res>
 
 /// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? bodyText = null,Object? enabled = null,Object? managedByShim = null,Object? readOnly = null,Object? name = null,Object? description = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? bodyText = null,Object? enabled = null,Object? managedByShimX = null,Object? readOnly = null,Object? name = null,Object? description = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,bodyText: null == bodyText ? _self.bodyText : bodyText // ignore: cast_nullable_to_non_nullable
 as String,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
-as bool,managedByShim: null == managedByShim ? _self.managedByShim : managedByShim // ignore: cast_nullable_to_non_nullable
+as bool,managedByShimX: null == managedByShimX ? _self.managedByShimX : managedByShimX // ignore: cast_nullable_to_non_nullable
 as bool,readOnly: null == readOnly ? _self.readOnly : readOnly // ignore: cast_nullable_to_non_nullable
 as bool,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -157,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShim,  bool readOnly,  String name,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShimX,  bool readOnly,  String name,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CodexMcpConfig() when $default != null:
-return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShim,_that.readOnly,_that.name,_that.description);case _:
+return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShimX,_that.readOnly,_that.name,_that.description);case _:
   return orElse();
 
 }
@@ -178,10 +178,10 @@ return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedBy
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShim,  bool readOnly,  String name,  String description)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShimX,  bool readOnly,  String name,  String description)  $default,) {final _that = this;
 switch (_that) {
 case _CodexMcpConfig():
-return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShim,_that.readOnly,_that.name,_that.description);case _:
+return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShimX,_that.readOnly,_that.name,_that.description);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +198,10 @@ return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedBy
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShim,  bool readOnly,  String name,  String description)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String kind,  String bodyText,  bool enabled,  bool managedByShimX,  bool readOnly,  String name,  String description)?  $default,) {final _that = this;
 switch (_that) {
 case _CodexMcpConfig() when $default != null:
-return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShim,_that.readOnly,_that.name,_that.description);case _:
+return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedByShimX,_that.readOnly,_that.name,_that.description);case _:
   return null;
 
 }
@@ -213,14 +213,14 @@ return $default(_that.id,_that.kind,_that.bodyText,_that.enabled,_that.managedBy
 
 
 class _CodexMcpConfig extends CodexMcpConfig {
-  const _CodexMcpConfig({required this.id, required this.kind, required this.bodyText, required this.enabled, required this.managedByShim, required this.readOnly, this.name = '', this.description = ''}): super._();
+  const _CodexMcpConfig({required this.id, required this.kind, required this.bodyText, required this.enabled, required this.managedByShimX, required this.readOnly, this.name = '', this.description = ''}): super._();
   
 
 @override final  String id;
 @override final  String kind;
 @override final  String bodyText;
 @override final  bool enabled;
-@override final  bool managedByShim;
+@override final  bool managedByShimX;
 @override final  bool readOnly;
 @override@JsonKey() final  String name;
 @override@JsonKey() final  String description;
@@ -235,16 +235,16 @@ _$CodexMcpConfigCopyWith<_CodexMcpConfig> get copyWith => __$CodexMcpConfigCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexMcpConfig&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexMcpConfig&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.bodyText, bodyText) || other.bodyText == bodyText)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.managedByShimX, managedByShimX) || other.managedByShimX == managedByShimX)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,kind,bodyText,enabled,managedByShim,readOnly,name,description);
+int get hashCode => Object.hash(runtimeType,id,kind,bodyText,enabled,managedByShimX,readOnly,name,description);
 
 @override
 String toString() {
-  return 'CodexMcpConfig(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShim: $managedByShim, readOnly: $readOnly, name: $name, description: $description)';
+  return 'CodexMcpConfig(id: $id, kind: $kind, bodyText: $bodyText, enabled: $enabled, managedByShimX: $managedByShimX, readOnly: $readOnly, name: $name, description: $description)';
 }
 
 
@@ -255,7 +255,7 @@ abstract mixin class _$CodexMcpConfigCopyWith<$Res> implements $CodexMcpConfigCo
   factory _$CodexMcpConfigCopyWith(_CodexMcpConfig value, $Res Function(_CodexMcpConfig) _then) = __$CodexMcpConfigCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String kind, String bodyText, bool enabled, bool managedByShim, bool readOnly, String name, String description
+ String id, String kind, String bodyText, bool enabled, bool managedByShimX, bool readOnly, String name, String description
 });
 
 
@@ -272,13 +272,13 @@ class __$CodexMcpConfigCopyWithImpl<$Res>
 
 /// Create a copy of CodexMcpConfig
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? bodyText = null,Object? enabled = null,Object? managedByShim = null,Object? readOnly = null,Object? name = null,Object? description = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? kind = null,Object? bodyText = null,Object? enabled = null,Object? managedByShimX = null,Object? readOnly = null,Object? name = null,Object? description = null,}) {
   return _then(_CodexMcpConfig(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as String,bodyText: null == bodyText ? _self.bodyText : bodyText // ignore: cast_nullable_to_non_nullable
 as String,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
-as bool,managedByShim: null == managedByShim ? _self.managedByShim : managedByShim // ignore: cast_nullable_to_non_nullable
+as bool,managedByShimX: null == managedByShimX ? _self.managedByShimX : managedByShimX // ignore: cast_nullable_to_non_nullable
 as bool,readOnly: null == readOnly ? _self.readOnly : readOnly // ignore: cast_nullable_to_non_nullable
 as bool,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable

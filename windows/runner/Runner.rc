@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.shim.wf" "\0"
-            VALUE "FileDescription", "shim" "\0"
+            VALUE "CompanyName", "com.shimx.wf" "\0"
+            VALUE "FileDescription", "shimx" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "shim" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.shim.wf. All rights reserved." "\0"
-            VALUE "OriginalFilename", "shim.exe" "\0"
-            VALUE "ProductName", "shim" "\0"
+            VALUE "InternalName", "shimx" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.shimx.wf. All rights reserved." "\0"
+            VALUE "OriginalFilename", "shimx.exe" "\0"
+            VALUE "ProductName", "shimx" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,16 +1,16 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/polish_button
-// @description 在 shim provider picker 按钮右边挂一个润色按钮:
+// ==ShimX==
+// @name        ShimX codex_enhance — features/polish_button
+// @description 在 shimx provider picker 按钮右边挂一个润色按钮:
 //              点击 → 弹风格 popover(更简洁 / 更正式 / 更口语 / 更详细) →
 //              选后从 composer 拿原文 → bridge.call('/polish/text') →
 //              弹预览 dialog(原文 vs 润色后)→ 用户确认才写回 composer。
 //              对外: ensure() — 由 runtime/scheduler 每轮调一次。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
   const S = (k, f) => ns.i18n.S(k, f);
   const BUTTON_ID = ids.polishButton;
@@ -208,12 +208,12 @@
       );
       return;
     }
-    // 没在 shim 选桶时,代理走 passthrough,body.model 会原样透传给上游,
-    // 而润色用的 'shim-polish' 是假名,上游必然 404。让用户先选一个。
-    const shimModel = ns.i18n?.currentProvider?.()?.selectedModel || '';
-    if (!shimModel) {
+    // 没在 shimx 选桶时,代理走 passthrough,body.model 会原样透传给上游,
+    // 而润色用的 'shimx-polish' 是假名,上游必然 404。让用户先选一个。
+    const shimxModel = ns.i18n?.currentProvider?.()?.selectedModel || '';
+    if (!shimxModel) {
       ns.ui?.toast?.show?.(
-        S('polishNoProvider', 'Pick a shim provider first to polish'),
+        S('polishNoProvider', 'Pick a shimx provider first to polish'),
         'warning',
       );
       return;
@@ -302,7 +302,7 @@
 
     // 按钮不依赖 codex 的 tailwind token(暗色下 bg-token-foreground 变纯黑、
     // text-token-background 不生效会让按钮变没文字的黑椭圆),
-    // 全部内联样式对齐 shim popover 里的控件风格。
+    // 全部内联样式对齐 shimx popover 里的控件风格。
     const cancelBtn = document.createElement('button');
     cancelBtn.type = 'button';
     cancelBtn.textContent = S('polishCancel', 'Cancel');

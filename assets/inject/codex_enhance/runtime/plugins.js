@@ -1,28 +1,28 @@
-// ==Shim==
-// @name        Shim codex_enhance — runtime/plugins
+// ==ShimX==
+// @name        ShimX codex_enhance — runtime/plugins
 // @description Codex 插件运行时兼容层。Codex 自己把 OpenAI 官方插件市场标成 "remote", 不能用,
 //              这里在 Array.prototype.filter 上插了一个 guard, 让市场 visibility / source 过滤
 //              放行 OpenAI 官方家族 (openai-bundled / openai-curated / openai-primary-runtime),
 //              并把 list-plugins 的请求/响应规范化, 让安装/导航按钮真的可点。
 //
 //              对外: ensureFeatures() — 由 runtime/scheduler 在 ensureAll 里每轮调一次,
-//              tick(flags) — 直接调底层, 单独控制每个特性是否启用 (window.__SHIM_PLUGIN_FLAGS)。
+//              tick(flags) — 直接调底层, 单独控制每个特性是否启用 (window.__SHIMX_PLUGIN_FLAGS)。
 // @layer       runtime
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
 
   // ========== Codex 插件运行时兼容 ==========
 
-  const shimRuntimePlugins = (() => {
-    const version = 'shim-runtime-plugin-layer-v1';
-    const arrayGuardVersion = 'shim-runtime-array-visibility-v1';
-    const clientBridgeVersion = 'shim-runtime-client-bridge-v1';
-    const scanFlag = 'data-shim-plugin-ready';
-    const installFlag = 'data-shim-install-ready';
-    const logPrefix = '[ShimPlugin]';
+  const shimxRuntimePlugins = (() => {
+    const version = 'shimx-runtime-plugin-layer-v1';
+    const arrayGuardVersion = 'shimx-runtime-array-visibility-v1';
+    const clientBridgeVersion = 'shimx-runtime-client-bridge-v1';
+    const scanFlag = 'data-shimx-plugin-ready';
+    const installFlag = 'data-shimx-install-ready';
+    const logPrefix = '[ShimXPlugin]';
     // codex 老版本: nav[role="navigation"] button.h-token-nav-row.w-full
     // codex 新版本: 去掉了 nav 包裹,行高换成 Tailwind 任意值 h-[var(--height-token-row)],
     //              按钮在 div.flex.flex-col.gap-px 里。两种都接受,避免改一边漏一边。
@@ -153,7 +153,7 @@
 
     function normalizeMarketObject(marketplace) {
       if (!marketplace || typeof marketplace !== 'object') return false;
-      if (marketplace.__shimRuntimeMarket === version) return false;
+      if (marketplace.__shimxRuntimeMarket === version) return false;
       const name = canonicalMarketName(marketplace.name || marketplace.marketplaceName || marketplace.remoteMarketplaceName);
       if (!marketIds.has(name)) return false;
       const label = marketLabel(name, marketplace.displayName || marketplace.title || marketplace.label || marketplace.name);
@@ -180,7 +180,7 @@
           }
         });
       }
-      marketplace.__shimRuntimeMarket = version;
+      marketplace.__shimxRuntimeMarket = version;
       return true;
     }
 
@@ -274,28 +274,28 @@
     }
 
     function installScopedArrayGuard() {
-      const baseFilter = Array.prototype.__shimRuntimeArrayFilterSource ||
-        Array.prototype.__shimPluginOriginalFilter ||
+      const baseFilter = Array.prototype.__shimxRuntimeArrayFilterSource ||
+        Array.prototype.__shimxPluginOriginalFilter ||
         Array.prototype.filter;
-      if (!Array.prototype.__shimRuntimeArrayFilterSource) {
-        Object.defineProperty(Array.prototype, '__shimRuntimeArrayFilterSource', {
+      if (!Array.prototype.__shimxRuntimeArrayFilterSource) {
+        Object.defineProperty(Array.prototype, '__shimxRuntimeArrayFilterSource', {
           value: baseFilter,
           configurable: true,
           writable: true,
         });
       }
-      if (Array.prototype.filter.__shimRuntimeArrayGuard === arrayGuardVersion) {
+      if (Array.prototype.filter.__shimxRuntimeArrayGuard === arrayGuardVersion) {
         state.arrayGuardInstalled = true;
         return;
       }
-      const guardedFilter = function shimRuntimeScopedFilter(callback, thisArg) {
+      const guardedFilter = function shimxRuntimeScopedFilter(callback, thisArg) {
         if (isSourceGate(callback, this) || isVisibilityGate(callback, this)) {
           log('runtime marketplace visibility retained', { count: this.length });
           return Array.from(this);
         }
         return baseFilter.call(this, callback, thisArg);
       };
-      Object.defineProperty(guardedFilter, '__shimRuntimeArrayGuard', {
+      Object.defineProperty(guardedFilter, '__shimxRuntimeArrayGuard', {
         value: arrayGuardVersion,
         configurable: true,
       });
@@ -326,12 +326,12 @@
 
     function attachRequestMiddleware(client) {
       if (!client || typeof client.sendRequest !== 'function') return false;
-      if (client.__shimRuntimeClientBridge === clientBridgeVersion) return true;
-      const baseSend = client.__shimRuntimeOriginalSendRequest ||
-        client.__shimPluginOriginalSendRequest ||
+      if (client.__shimxRuntimeClientBridge === clientBridgeVersion) return true;
+      const baseSend = client.__shimxRuntimeOriginalSendRequest ||
+        client.__shimxPluginOriginalSendRequest ||
         client.sendRequest.bind(client);
-      client.__shimRuntimeOriginalSendRequest = baseSend;
-      client.sendRequest = async function shimRuntimeSendRequest(method, params, options) {
+      client.__shimxRuntimeOriginalSendRequest = baseSend;
+      client.sendRequest = async function shimxRuntimeSendRequest(method, params, options) {
         const resolvedMethod = runtimeMethodName(method, params);
         const nextParams = prepareRuntimeParams(resolvedMethod, params);
         if (resolvedMethod === 'list-plugins') state.lastPluginListParams = nextParams;
@@ -345,13 +345,13 @@
         const result = await baseSend(method, nextParams, options);
         return normalizeRuntimePayload(resolvedMethod, result);
       };
-      client.__shimRuntimeClientBridge = clientBridgeVersion;
+      client.__shimxRuntimeClientBridge = clientBridgeVersion;
       if (!state.clients.includes(client)) state.clients.push(client);
       return true;
     }
 
     function attachRuntimeClientBridge() {
-      if (window.__shimRuntimeClientBridgeReady === clientBridgeVersion) return;
+      if (window.__shimxRuntimeClientBridgeReady === clientBridgeVersion) return;
       importCodexRuntime('app-server-manager-signals-').then((module) => {
         const exports = Object.values(module || {}).filter((value) => value && typeof value === 'object');
         let attached = 0;
@@ -364,7 +364,7 @@
           }
         }
         if (attached > 0) {
-          window.__shimRuntimeClientBridgeReady = clientBridgeVersion;
+          window.__shimxRuntimeClientBridgeReady = clientBridgeVersion;
           log('runtime client bridge attached', { exports: Object.keys(module || {}).length, candidates: exports.length, attached });
         } else {
           log('runtime client bridge not found', { exports: Object.keys(module || {}).length, candidates: exports.length });
@@ -441,8 +441,8 @@
 
     function keepControlInteractive(control) {
       if (!(control instanceof HTMLElement)) return;
-      if (control.dataset.shimKeepInteractive === '1') return;
-      control.dataset.shimKeepInteractive = '1';
+      if (control.dataset.shimxKeepInteractive === '1') return;
+      control.dataset.shimxKeepInteractive = '1';
       const keep = () => forceInteractiveCluster(control);
       ['pointerover', 'pointerenter', 'pointerdown', 'mousedown', 'mouseup', 'click', 'focus'].forEach((eventName) => {
         control.addEventListener(eventName, keep, true);
@@ -458,12 +458,12 @@
       }
       for (const button of buttons) {
         // 每个 button 只处理一次——重复 makeControlInteractive 会触发 React reconcile 循环
-        if (button.getAttribute('data-shim-nav-handled') === '1') continue;
+        if (button.getAttribute('data-shimx-nav-handled') === '1') continue;
         makeControlInteractive(button);
         button.style.display = '';
         button.setAttribute(scanFlag, '1');
-        button.setAttribute('data-shim-nav-handled', '1');
-        button.title = button.title || 'Shim plugin runtime ready';
+        button.setAttribute('data-shimx-nav-handled', '1');
+        button.title = button.title || 'ShimX plugin runtime ready';
       }
     }
 
@@ -491,7 +491,7 @@
         forceInteractiveCluster(control);
         keepControlInteractive(control);
         control.setAttribute(installFlag, '1');
-        control.title = control.title || 'Shim install control ready';
+        control.title = control.title || 'ShimX install control ready';
         if (blocked) changed += 1;
       }
       const signature = matched + ':' + changed;
@@ -508,8 +508,8 @@
       for (const control of controls) {
         forceInteractiveCluster(control);
         keepControlInteractive(control);
-        control.setAttribute('data-shim-prompt-ready', '1');
-        control.title = control.title || 'Shim prompt ready';
+        control.setAttribute('data-shimx-prompt-ready', '1');
+        control.title = control.title || 'ShimX prompt ready';
         changed += 1;
       }
       const signature = controls.length + ':' + changed;
@@ -522,7 +522,7 @@
     function tick(flags) {
       const f = flags || {};
       const ready = isRuntimeSurfaceReady();
-      window.__shimCodex.runtime?.trace?.t?.('plugin tick', { ready, isLogin: isLoginSurface() });
+      window.__shimxCodex.runtime?.trace?.t?.('plugin tick', { ready, isLogin: isLoginSurface() });
       if (!ready) return;
       if (f.arrayGuard !== false) installScopedArrayGuard();
       if (f.clientBridge !== false) attachRuntimeClientBridge();
@@ -534,21 +534,21 @@
     return { tick };
   })();
 
-  const __SHIM_PLUGIN_FLAGS = {
+  const __SHIMX_PLUGIN_FLAGS = {
     arrayGuard: true,
     clientBridge: true,
     syncNav: true,
     normalizeInstall: true,
     normalizePrompt: true,
   };
-  window.__SHIM_PLUGIN_FLAGS = __SHIM_PLUGIN_FLAGS;
+  window.__SHIMX_PLUGIN_FLAGS = __SHIMX_PLUGIN_FLAGS;
 
   function ensureCodexPluginFeatures() {
-    shimRuntimePlugins.tick(__SHIM_PLUGIN_FLAGS);
+    shimxRuntimePlugins.tick(__SHIMX_PLUGIN_FLAGS);
   }
 
   ns.runtime.plugins = {
-    tick: shimRuntimePlugins.tick,
+    tick: shimxRuntimePlugins.tick,
     ensureFeatures: ensureCodexPluginFeatures,
   };
 })();

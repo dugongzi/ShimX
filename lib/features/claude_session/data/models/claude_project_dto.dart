@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/claude_session/domain/models/claude_project.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_project.dart';
 
 part 'claude_project_dto.freezed.dart';
 part 'claude_project_dto.g.dart';

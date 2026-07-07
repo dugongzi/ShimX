@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/utils/mcp_config_body.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
-import 'package:shim/features/mcp/presentation/providers/codex_mcp_config_action_provider.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_dialog_field.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_enabled_toggle.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/utils/mcp_config_body.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/presentation/providers/codex_mcp_config_action_provider.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_dialog_field.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_enabled_toggle.dart';
 
 /// codex MCP 配置 新建 / 编辑对话框。
 /// 由 [SmartDialog.show] 调起;[existing] 为 null 时为新建。
@@ -47,7 +47,7 @@ class CodexMcpConfigEditDialog extends HookConsumerWidget {
                 description: firstNonEmptyLine(bodyText),
                 bodyText: bodyText,
                 enabled: enabled.value,
-                managedByShim: true,
+                managedByShimX: true,
                 readOnly: false,
               ),
             );

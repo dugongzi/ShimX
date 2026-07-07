@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:shim/features/skills/data/datasources/codex_skill_action_datasource.dart';
-import 'package:shim/features/skills/data/datasources/codex_skill_query_datasource.dart';
-import 'package:shim/features/skills/data/datasources/codex_skill_registry.dart';
-import 'package:shim/features/skills/data/repositories/codex_skill_query_repository_impl.dart';
-import 'package:shim/features/skills/domain/models/codex_skill.dart';
+import 'package:shimx/features/skills/data/datasources/codex_skill_action_datasource.dart';
+import 'package:shimx/features/skills/data/datasources/codex_skill_query_datasource.dart';
+import 'package:shimx/features/skills/data/datasources/codex_skill_registry.dart';
+import 'package:shimx/features/skills/data/repositories/codex_skill_query_repository_impl.dart';
+import 'package:shimx/features/skills/domain/models/codex_skill.dart';
 
 void main() {
   late Directory tempDir;
@@ -17,7 +17,7 @@ void main() {
   late CodexSkillRegistry registry;
 
   setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('shim_codex_skill_test_');
+    tempDir = await Directory.systemTemp.createTemp('shimx_codex_skill_test_');
     skillsDir = Directory(p.join(tempDir.path, 'skills'));
     registryMemory = {};
     registry = CodexSkillRegistry(memory: registryMemory);
@@ -60,9 +60,9 @@ void main() {
     ]);
     expect(skills.first.name, 'Managed Skill');
     expect(skills.first.description, 'Managed description');
-    expect(skills.first.managedByShim, isTrue);
+    expect(skills.first.managedByShimX, isTrue);
     expect(skills.first.readOnly, isFalse);
-    expect(skills.last.managedByShim, isFalse);
+    expect(skills.last.managedByShimX, isFalse);
     expect(skills.last.readOnly, isTrue);
   });
 

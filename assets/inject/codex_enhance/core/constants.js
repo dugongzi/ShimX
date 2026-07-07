@@ -1,43 +1,43 @@
-// ==Shim==
-// @name        Shim codex_enhance — core/constants
-// @description 所有跨分片共享的 DOM id / SVG / 选择器常量, 挂在 window.__shimCodex.ids 下。
+// ==ShimX==
+// @name        ShimX codex_enhance — core/constants
+// @description 所有跨分片共享的 DOM id / SVG / 选择器常量, 挂在 window.__shimxCodex.ids 下。
 // @layer       core
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
+  if (!window.__shimxCodexEnhanceLoaded) return;
 
-  Object.assign(window.__shimCodex.ids, {
-    badge: '__shim_injected_badge__',
-    menuItem: '__shim_menu_item__',
-    popover: '__shim_popover__',
-    providerPicker: '__shim_provider_picker__',
-    providerPickerPopover: '__shim_provider_picker_popover__',
-    toastContainer: '__shim_toast_container__',
-    confirmDialog: '__shim_confirm_dialog__',
-    threadMenu: '__shim_thread_menu__',
-    threadActionsMenu: '__shim_thread_actions_menu__',
-    exportMenu: '__shim_export_menu__',
-    importMenu: '__shim_import_menu__',
-    busyContainer: '__shim_busy_container__',
-    busyDim: '__shim_busy_dim__',
-    busyKeyframes: '__shim_busy_kf__',
-    navBtn: '__shim_claude_bridge_nav__',
-    navPanel: '__shim_claude_bridge_panel__',
-    claudeBridgeChip: '__shim_claude_bridge_chip__',
-    pluginMenuItem: '__shim_plugin_menu_item__',
-    pluginPanel: '__shim_plugin_panel__',
-    polishButton: '__shim_polish_button__',
-    polishPopover: '__shim_polish_popover__',
+  Object.assign(window.__shimxCodex.ids, {
+    badge: '__shimx_injected_badge__',
+    menuItem: '__shimx_menu_item__',
+    popover: '__shimx_popover__',
+    providerPicker: '__shimx_provider_picker__',
+    providerPickerPopover: '__shimx_provider_picker_popover__',
+    toastContainer: '__shimx_toast_container__',
+    confirmDialog: '__shimx_confirm_dialog__',
+    threadMenu: '__shimx_thread_menu__',
+    threadActionsMenu: '__shimx_thread_actions_menu__',
+    exportMenu: '__shimx_export_menu__',
+    importMenu: '__shimx_import_menu__',
+    busyContainer: '__shimx_busy_container__',
+    busyDim: '__shimx_busy_dim__',
+    busyKeyframes: '__shimx_busy_kf__',
+    navBtn: '__shimx_claude_bridge_nav__',
+    navPanel: '__shimx_claude_bridge_panel__',
+    claudeBridgeChip: '__shimx_claude_bridge_chip__',
+    pluginMenuItem: '__shimx_plugin_menu_item__',
+    pluginPanel: '__shimx_plugin_panel__',
+    polishButton: '__shimx_polish_button__',
+    polishPopover: '__shimx_polish_popover__',
 
-    providerBadgeClass: '__shim_provider_badge__',
-    deleteButtonFlag: 'data-shim-delete-added',
-    codexModelSelectorFlag: 'data-shim-hidden-codex-model-selector',
+    providerBadgeClass: '__shimx_provider_badge__',
+    deleteButtonFlag: 'data-shimx-delete-added',
+    codexModelSelectorFlag: 'data-shimx-hidden-codex-model-selector',
 
     badgeAnchorSvgD: 'M16.835 8.66301C16.835 7.71885',
     sendButtonSvgD: 'M9.33467 16.6663V4.93978',
 
-    shimIconSvg: `
+    shimxIconSvg: `
       <svg viewBox="0 0 1210 1024" width="20" height="20" xmlns="http://www.w3.org/2000/svg" class="icon-xs shrink-0 opacity-75 group-focus:opacity-100 group-hover:opacity-100">
         <path d="M929.170154 428.766111a24.122983 24.122983 0 0 1 24.205717 24.169078v108.663343a29.35416 29.35416 0 0 0 29.237151 29.350614h214.831653c14.863823 0 17.889538 21.483756 3.44175 25.411276L768.803729 740.837852a23.561571 23.561571 0 0 1-29.311611-15.998467 20.064271 20.064271 0 0 1-0.945536-6.694393v-113.582493a10.712921 10.712921 0 0 0-10.55218-10.590002H254.267944a10.657371 10.657371 0 0 1-10.55218-10.438716V455.959722a32.661172 32.661172 0 0 0-31.960294-32.787638l-201.635518-3.517393c-11.838109-0.491679-14.031752-17.137837-2.609679-20.57486l441.769711-127.540966a10.503721 10.503721 0 0 1 12.821466 7.37518 11.305063 11.305063 0 0 1 0.340393 2.685321v123.111131a24.320364 24.320364 0 0 0 24.169078 24.093435zM443.152911 135.94548c15.393324-2.609679 18.910717 17.549145 18.910717 17.549145s1.248107 47.769653 0 67.474619c-1.361572 19.667146-19.326753 18.910717-19.326752 18.910717H267.429803s-15.885002-5.711036-18.003003-26.3249c-2.685322-20.57486 21.89861-32.073757 21.89861-32.073757s156.54646-42.928509 171.714037-45.538188z m296.791882-55.674333s-2.269286-23.260182 23.756588-33.284043C789.526329 37.342638 928.489368 1.411094 928.489368 1.411094s25.833221-10.098323 27.573007 23.756588c1.77288 33.700079 0 311.543423 0 311.543423s0.907714 22.730682-23.638396 24.509471c-24.622935 1.77288-162.632165 0-162.632165 0s-29.842293 2.685322-29.842293-21.028717z m3.933429 722.785327c1.248107-19.704967 19.326753-18.910717 18.910717-19.364574h175.23143s15.393324 5.711036 18.003003 26.3249c2.685322 20.57486-21.974253 32.030027-21.974253 32.030027s-156.432996 42.928509-171.751858 45.503912c-15.393324 3.139179-18.419038-17.095288-18.419039-17.095288s-1.248107-47.656188 0-67.361155z m-278.259379 140.699279s2.571857 23.260182-23.756588 33.284044c-25.871043 9.57355-164.791532 45.538188-164.791532 45.538188s-25.908864 10.136144-27.563552-23.715221c-1.77288-33.700079 0-311.543423 0-311.543423s-0.907714-22.730682 23.638396-24.509471 162.632165 0 162.632165 0 26.665293-2.685322 29.842293 21.028717c2.987893 23.185721 0 39.830697 0 39.830698z" fill="currentColor"></path>
       </svg>
@@ -52,23 +52,23 @@
 
     // ensureAll 后由 runtime/scheduler 用来识别"我们自己的 DOM" 和"值得观察的 DOM"
     selfNodeSelectors: [
-      '#__shim_injected_badge__',
-      '#__shim_menu_item__',
-      '#__shim_plugin_menu_item__',
-      '#__shim_plugin_panel__',
-      '#__shim_polish_button__',
-      '#__shim_polish_popover__',
-      '#__shim_popover__',
-      '#__shim_provider_picker__',
-      '#__shim_provider_picker_popover__',
-      '#__shim_toast_container__',
-      '#__shim_confirm_dialog__',
-      '.__shim_provider_badge__',
-      '[data-shim-delete-added]',
-      '[data-shim-nav-handled]',
-      '[data-shim-install-ready]',
-      '[data-shim-prompt-ready]',
-      '[data-shim-clear-model]',
+      '#__shimx_injected_badge__',
+      '#__shimx_menu_item__',
+      '#__shimx_plugin_menu_item__',
+      '#__shimx_plugin_panel__',
+      '#__shimx_polish_button__',
+      '#__shimx_polish_popover__',
+      '#__shimx_popover__',
+      '#__shimx_provider_picker__',
+      '#__shimx_provider_picker_popover__',
+      '#__shimx_toast_container__',
+      '#__shimx_confirm_dialog__',
+      '.__shimx_provider_badge__',
+      '[data-shimx-delete-added]',
+      '[data-shimx-nav-handled]',
+      '[data-shimx-install-ready]',
+      '[data-shimx-prompt-ready]',
+      '[data-shimx-clear-model]',
     ].join(', '),
 
     watchTargetSelectors: [

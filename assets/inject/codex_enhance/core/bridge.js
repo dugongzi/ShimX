@@ -1,14 +1,14 @@
-// ==Shim==
-// @name        Shim codex_enhance — core/bridge
-// @description shim 桥 RPC 工具。包 window.shim 加 timeout, 返回 { ok, data } 或 { ok:false, message }。
+// ==ShimX==
+// @name        ShimX codex_enhance — core/bridge
+// @description shimx 桥 RPC 工具。包 window.shimx 加 timeout, 返回 { ok, data } 或 { ok:false, message }。
 // @layer       core
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
+  if (!window.__shimxCodexEnhanceLoaded) return;
 
   async function call(path, payload, timeoutMs) {
-    if (typeof window.shim !== 'function') {
+    if (typeof window.shimx !== 'function') {
       return { ok: false, message: 'bridge not ready' };
     }
     let timer;
@@ -16,7 +16,7 @@
       const timeout = new Promise((resolve) => {
         timer = setTimeout(() => resolve({ code: -1, message: 'timeout' }), timeoutMs);
       });
-      const res = await Promise.race([window.shim(path, payload || {}), timeout]);
+      const res = await Promise.race([window.shimx(path, payload || {}), timeout]);
       if (res && res.code === 0) return { ok: true, data: res.data || {} };
       return { ok: false, message: res?.message || 'rpc error' };
     } catch (error) {
@@ -26,5 +26,5 @@
     }
   }
 
-  window.__shimCodex.bridge = { call };
+  window.__shimxCodex.bridge = { call };
 })();

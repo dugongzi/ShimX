@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/features/claude_session/data/models/claude_project_dto.dart';
-import 'package:shim/features/claude_session/data/models/claude_thread_detail_dto.dart';
-import 'package:shim/features/claude_session/data/models/claude_thread_dto.dart';
+import 'package:shimx/features/claude_session/data/models/claude_project_dto.dart';
+import 'package:shimx/features/claude_session/data/models/claude_thread_detail_dto.dart';
+import 'package:shimx/features/claude_session/data/models/claude_thread_dto.dart';
 
 /// 扫 `~/.claude/projects/<encoded-cwd>/<uuid>.jsonl`,只读。
 ///
@@ -400,7 +400,7 @@ class ClaudeSessionQueryDatasource {
     return name.substring(0, i);
   }
 
-  /// 兜底:从 `f--Programming-projects-FlutterProject-shim` 还原盘符路径
+  /// 兜底:从 `f--Programming-projects-FlutterProject-shimx` 还原盘符路径
   /// 不是所有平台都靠 `-` 还原都能拿对(unix 下分隔符也是 -),所以只在 jsonl 里
   /// 没拿到 cwd 时用。Windows 规则:首字母 + 第一个 `-` 还原成 `:`,后续 `-` 还原为 `\`
   String _decodeCwd(String encoded) {

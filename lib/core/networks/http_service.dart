@@ -2,8 +2,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/constants/network_constants.dart';
-import 'package:shim/core/networks/interceptors/http_interceptor.dart';
+import 'package:shimx/core/constants/network_constants.dart';
+import 'package:shimx/core/networks/interceptors/http_interceptor.dart';
 
 part 'http_service.g.dart';
 
@@ -157,7 +157,7 @@ Dio dio(Ref ref) {
       headers: {
         NetworkHeaders.contentType: NetworkHeaders.json,
         NetworkHeaders.accept: NetworkHeaders.json,
-        if (!kIsWeb) NetworkHeaders.userAgent: 'Shim/5.0.0',
+        if (!kIsWeb) NetworkHeaders.userAgent: 'ShimX/5.0.0',
       },
       // 只有 5xx 服务器错误才抛异常，4xx 交给业务处理
       validateStatus: (status) => status != null && status < 500,

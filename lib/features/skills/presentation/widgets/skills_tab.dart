@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/constants/skill_progress_mode.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/skills/domain/models/codex_skill.dart';
-import 'package:shim/features/skills/domain/models/skill_overwrite_required_exception.dart';
-import 'package:shim/features/skills/presentation/providers/codex_skill_action_provider.dart';
-import 'package:shim/features/skills/presentation/providers/codex_skill_query_provider.dart';
-import 'package:shim/features/skills/presentation/widgets/empty_skills.dart';
-import 'package:shim/features/skills/presentation/widgets/skill_card.dart';
-import 'package:shim/features/skills/presentation/widgets/skill_group_header.dart';
-import 'package:shim/features/skills/presentation/widgets/skills_error_box.dart';
-import 'package:shim/features/skills/presentation/widgets/skills_progress_bar.dart';
+import 'package:shimx/common/widgets/section_title.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/constants/skill_progress_mode.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/skills/domain/models/codex_skill.dart';
+import 'package:shimx/features/skills/domain/models/skill_overwrite_required_exception.dart';
+import 'package:shimx/features/skills/presentation/providers/codex_skill_action_provider.dart';
+import 'package:shimx/features/skills/presentation/providers/codex_skill_query_provider.dart';
+import 'package:shimx/features/skills/presentation/widgets/empty_skills.dart';
+import 'package:shimx/features/skills/presentation/widgets/skill_card.dart';
+import 'package:shimx/features/skills/presentation/widgets/skill_group_header.dart';
+import 'package:shimx/features/skills/presentation/widgets/skills_error_box.dart';
+import 'package:shimx/features/skills/presentation/widgets/skills_progress_bar.dart';
 
 class SkillsTab extends HookConsumerWidget {
   const SkillsTab({super.key});
@@ -287,9 +287,9 @@ class SkillsTab extends HookConsumerWidget {
                 );
               }
               final managed =
-                  skills.where((skill) => skill.managedByShim).toList();
+                  skills.where((skill) => skill.managedByShimX).toList();
               final external =
-                  skills.where((skill) => !skill.managedByShim).toList();
+                  skills.where((skill) => !skill.managedByShimX).toList();
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

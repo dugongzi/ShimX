@@ -1,16 +1,16 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/control_panel
-// @description Shim 控制面板 (侧栏 Shim 入口点开后弹出的浮层): tab 切换的 chrome、
+// ==ShimX==
+// @name        ShimX codex_enhance — features/control_panel
+// @description ShimX 控制面板 (侧栏 ShimX 入口点开后弹出的浮层): tab 切换的 chrome、
 //              Data overview (provider / bridge / auto-switch / claude binding) 视图、
 //              Logs 视图、当前对话操作菜单 (导出 / 导入 / 解绑 / 删除)。
-//              对外: togglePopover(anchor), refreshOpen() — shim_menu / control_panel 自己刷新用,
-//              loadSnapshot — 让外部触发拉数据 (内部还是用 callShimRoute 兜底)。
+//              对外: togglePopover(anchor), refreshOpen() — shimx_menu / control_panel 自己刷新用,
+//              loadSnapshot — 让外部触发拉数据 (内部还是用 callShimXRoute 兜底)。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const __ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const __ns = window.__shimxCodex;
   const ids = __ns.ids;
   const __i18n = __ns.i18n;
   const S = __i18n.S;
@@ -41,13 +41,13 @@
   const POPOVER_ID = ids.popover;
   const MENU_ITEM_ID = ids.menuItem;
 
-  // ========== Shim 控制面板 ==========
+  // ========== ShimX 控制面板 ==========
 
-  let shimControlPanelSnapshot = null;
+  let shimxControlPanelSnapshot = null;
   // 控制面板当前选中的 tab key。模块级状态, 点击切换 + 重渲染 chrome 即可。
-  let shimControlActiveTab = 'overview';
+  let shimxControlActiveTab = 'overview';
   // 日志页面级状态 (只在 logs tab 用)
-  let shimControlLogsState = {
+  let shimxControlLogsState = {
     loading: false,
     error: null,
     entries: [],
@@ -91,8 +91,8 @@
 
   function controlPanelTabs() {
     return [
-      { key: 'overview', label: S('shimControlOverviewTab', 'Data overview'), icon: ICON_OVERVIEW },
-      { key: 'logs', label: S('shimControlLogsTab', 'Logs'), icon: ICON_LOGS },
+      { key: 'overview', label: S('shimxControlOverviewTab', 'Data overview'), icon: ICON_OVERVIEW },
+      { key: 'logs', label: S('shimxControlLogsTab', 'Logs'), icon: ICON_LOGS },
     ];
   }
 
@@ -116,7 +116,7 @@
     shell.appendChild(buildControlPanelSidebar(panel));
 
     const content = document.createElement('div');
-    content.setAttribute('data-shim-control-body', '1');
+    content.setAttribute('data-shimx-control-body', '1');
     Object.assign(content.style, {
       display: 'flex',
       flexDirection: 'column',
@@ -132,28 +132,28 @@
   // 根据当前 active tab 把 content 区填上对应页面。
   // overview 用已经拉好的 snapshot (没拉到就 loading); logs 触发自己的 loader。
   function renderActiveTab(panel) {
-    const body = panel.querySelector('[data-shim-control-body]');
+    const body = panel.querySelector('[data-shimx-control-body]');
     if (!body) return;
     body.innerHTML = '';
-    if (shimControlActiveTab === 'logs') {
+    if (shimxControlActiveTab === 'logs') {
       body.appendChild(buildLogsPage(panel));
       // 第一次进 logs tab, 或上次出错时, 自动拉一次
-      if (!shimControlLogsState.entries.length && !shimControlLogsState.loading) {
+      if (!shimxControlLogsState.entries.length && !shimxControlLogsState.loading) {
         reloadLogs(panel);
       }
       return;
     }
     // overview
-    if (shimControlPanelSnapshot) {
-      renderControlPanelSnapshot(body, shimControlPanelSnapshot);
+    if (shimxControlPanelSnapshot) {
+      renderControlPanelSnapshot(body, shimxControlPanelSnapshot);
     } else {
       renderControlPanelLoading(body);
     }
   }
 
   function switchControlTab(panel, key) {
-    if (shimControlActiveTab === key) return;
-    shimControlActiveTab = key;
+    if (shimxControlActiveTab === key) return;
+    shimxControlActiveTab = key;
     renderControlPanelChrome(panel);
   }
 
@@ -170,7 +170,7 @@
     });
 
     const navLabel = document.createElement('div');
-    navLabel.textContent = S('shimControlNavTitle', 'Sections');
+    navLabel.textContent = S('shimxControlNavTitle', 'Sections');
     Object.assign(navLabel.style, {
       padding: '4px 10px 10px',
       color: 'var(--token-text-secondary, rgba(127,127,127,0.42))',
@@ -182,7 +182,7 @@
     sidebar.appendChild(navLabel);
 
     for (const tab of controlPanelTabs()) {
-      const active = tab.key === shimControlActiveTab;
+      const active = tab.key === shimxControlActiveTab;
       sidebar.appendChild(buildSidebarNavItem(tab.icon, tab.label, active, () => {
         switchControlTab(panel, tab.key);
       }));
@@ -271,7 +271,7 @@
     });
 
     const dot = document.createElement('span');
-    dot.innerHTML = ids.shimIconSvg;
+    dot.innerHTML = ids.shimxIconSvg;
     Object.assign(dot.style, {
       width: '22px',
       height: '22px',
@@ -284,7 +284,7 @@
     });
 
     const titleText = document.createElement('span');
-    titleText.textContent = S('shimControlTitle', 'Shim control');
+    titleText.textContent = S('shimxControlTitle', 'ShimX control');
     Object.assign(titleText.style, {
       fontSize: '14px',
       fontWeight: '600',
@@ -309,17 +309,17 @@
 
     actions.appendChild(buildControlIconButton(
       ICON_REFRESH,
-      S('shimControlRefreshAria', 'Refresh status'),
+      S('shimxControlRefreshAria', 'Refresh status'),
       () => refreshOpenControlPanel(),
     ));
     actions.appendChild(buildControlIconButton(
       ICON_COPY,
-      S('shimControlCopyAria', 'Copy status summary'),
+      S('shimxControlCopyAria', 'Copy status summary'),
       () => copyControlPanelSnapshot(),
     ));
     actions.appendChild(buildControlIconButton(
       ICON_CLOSE,
-      S('shimControlClose', 'Close'),
+      S('shimxControlClose', 'Close'),
       () => dismissPopover(),
     ));
 
@@ -365,10 +365,10 @@
 
   function refreshOpenControlPanel() {
     const panel = document.getElementById(POPOVER_ID);
-    const body = panel?.querySelector?.('[data-shim-control-body]');
+    const body = panel?.querySelector?.('[data-shimx-control-body]');
     if (!panel || !body) return;
     // 刷新按钮的行为按当前 tab 走 - overview 重拉 snapshot, logs 重拉日志列表
-    if (shimControlActiveTab === 'logs') {
+    if (shimxControlActiveTab === 'logs') {
       reloadLogs(panel);
       return;
     }
@@ -377,23 +377,23 @@
   }
 
   async function copyControlPanelSnapshot() {
-    if (shimControlActiveTab === 'logs') {
-      const entries = shimControlLogsState.entries;
+    if (shimxControlActiveTab === 'logs') {
+      const entries = shimxControlLogsState.entries;
       if (!entries.length) {
-        showToast(S('shimControlCopyEmpty', 'No status to copy yet'), 'warning');
+        showToast(S('shimxControlCopyEmpty', 'No status to copy yet'), 'warning');
         return;
       }
       const text = entries.map(formatLogEntryForCopy).join('\n');
-      await copyTextToClipboard(text, S('shimControlCopied', 'Status copied'));
+      await copyTextToClipboard(text, S('shimxControlCopied', 'Status copied'));
       return;
     }
-    const snapshot = shimControlPanelSnapshot;
+    const snapshot = shimxControlPanelSnapshot;
     if (!snapshot) {
-      showToast(S('shimControlCopyEmpty', 'No status to copy yet'), 'warning');
+      showToast(S('shimxControlCopyEmpty', 'No status to copy yet'), 'warning');
       return;
     }
     const text = controlPanelSnapshotText(snapshot);
-    await copyTextToClipboard(text, S('shimControlCopied', 'Status copied'));
+    await copyTextToClipboard(text, S('shimxControlCopied', 'Status copied'));
   }
 
   async function copyTextToClipboard(text, successMessage) {
@@ -402,30 +402,30 @@
       await navigator.clipboard.writeText(text);
       showToast(successMessage, 'success');
     } catch (_) {
-      showToast(S('shimControlCopyFailed', 'Copy failed'), 'error');
+      showToast(S('shimxControlCopyFailed', 'Copy failed'), 'error');
     }
   }
 
   function controlPanelSnapshotText(snapshot) {
     const providerLabel = snapshot.provider.ok
-      ? (snapshot.provider.data.label || S('shimControlProviderEmpty', 'No active provider'))
-      : `${S('shimControlProviderFailed', 'Provider unavailable')}: ${snapshot.provider.message || ''}`;
+      ? (snapshot.provider.data.label || S('shimxControlProviderEmpty', 'No active provider'))
+      : `${S('shimxControlProviderFailed', 'Provider unavailable')}: ${snapshot.provider.message || ''}`;
     const autoData = snapshot.autoSwitch.data || {};
     const labels = autoData.labels || {};
     const strategy = autoData.strategy || 'manual';
     const strategyLabel = labels[`strategy${strategy.charAt(0).toUpperCase()}${strategy.slice(1)}`] || strategy;
     const bridgeLabel = snapshot.bridge.ok
-      ? S('shimControlBridgeReady', 'Connected')
-      : `${S('shimControlBridgeFailed', 'Unavailable')}: ${snapshot.bridge.message || ''}`;
+      ? S('shimxControlBridgeReady', 'Connected')
+      : `${S('shimxControlBridgeFailed', 'Unavailable')}: ${snapshot.bridge.message || ''}`;
     const thread = snapshot.currentThread || {};
     const lines = [
-      `${S('shimControlTitle', 'Shim control')}`,
-      `${S('shimControlCurrentThread', 'Current thread')}: ${thread.label || ''}`,
-      `${S('shimControlThreadId', 'Thread ID')}: ${thread.id || ''}`,
-      `${S('shimControlBridge', 'Bridge')}: ${bridgeLabel}`,
-      `${S('shimControlProvider', 'Provider')}: ${providerLabel}`,
-      `${S('shimControlAutoSwitch', 'Auto switch')}: ${strategyLabel}`,
-      `${S('shimControlClaudeBinding', 'Claude binding')}: ${snapshot.claude.value || ''}`,
+      `${S('shimxControlTitle', 'ShimX control')}`,
+      `${S('shimxControlCurrentThread', 'Current thread')}: ${thread.label || ''}`,
+      `${S('shimxControlThreadId', 'Thread ID')}: ${thread.id || ''}`,
+      `${S('shimxControlBridge', 'Bridge')}: ${bridgeLabel}`,
+      `${S('shimxControlProvider', 'Provider')}: ${providerLabel}`,
+      `${S('shimxControlAutoSwitch', 'Auto switch')}: ${strategyLabel}`,
+      `${S('shimxControlClaudeBinding', 'Claude binding')}: ${snapshot.claude.value || ''}`,
     ];
     for (const item of snapshot.claude.details || []) {
       if (item && typeof item === 'object') {
@@ -466,24 +466,24 @@
       borderRadius: '999px',
       border: '2px solid rgba(127,127,127,0.10)',
       borderTopColor: '#60a5fa',
-      animation: 'shimSpin 0.9s linear infinite',
+      animation: 'shimxSpin 0.9s linear infinite',
       marginBottom: '4px',
     });
-    if (!document.getElementById('__shim_spin_kf__')) {
+    if (!document.getElementById('__shimx_spin_kf__')) {
       const style = document.createElement('style');
-      style.id = '__shim_spin_kf__';
-      style.textContent = '@keyframes shimSpin{to{transform:rotate(360deg)}}';
+      style.id = '__shimx_spin_kf__';
+      style.textContent = '@keyframes shimxSpin{to{transform:rotate(360deg)}}';
       document.head.appendChild(style);
     }
     const title = document.createElement('div');
-    title.textContent = S('shimControlChecking', 'Checking…');
+    title.textContent = S('shimxControlChecking', 'Checking…');
     Object.assign(title.style, {
       color: 'var(--token-text-primary, currentColor)',
       fontSize: '13px',
       fontWeight: '500',
     });
     const desc = document.createElement('div');
-    desc.textContent = S('shimControlCheckingDescription', 'Collecting bridge, provider, failover, and binding status.');
+    desc.textContent = S('shimxControlCheckingDescription', 'Collecting bridge, provider, failover, and binding status.');
     Object.assign(desc.style, {
       fontSize: '12px',
       lineHeight: '1.5',
@@ -498,13 +498,13 @@
 
   async function refreshControlPanel(panel) {
     // labels 由 /provider/list 响应填充, 这里主动拉一次确保 i18n 是最新的,
-    // 否则用户在 dart 改了文案后 JS 端 shimProviderState.labels 仍是旧值。
+    // 否则用户在 dart 改了文案后 JS 端 shimxProviderState.labels 仍是旧值。
     // 用 Promise.all 让 labels 跟 snapshot 并行拉,不卡渲染。
     const [, snapshot] = await Promise.all([
       refreshProviderPickerState({ rebuildPopover: false }),
       loadControlPanelSnapshot(),
     ]);
-    shimControlPanelSnapshot = snapshot;
+    shimxControlPanelSnapshot = snapshot;
     if (!document.body.contains(panel)) return;
     // labels 现在已经是最新的, 把 header/sidebar 静态文案跟着重建,
     // 顺带按当前 active tab 渲染内容区。
@@ -512,19 +512,19 @@
   }
 
   async function loadControlPanelSnapshot() {
-    const bridge = await callShimRoute('/echo', { from: 'control-panel' }, 900);
-    const provider = await callShimRoute('/provider/current', {}, 1600);
-    const autoSwitch = await callShimRoute('/auto-switch/get', {}, 1600);
+    const bridge = await callShimXRoute('/echo', { from: 'control-panel' }, 900);
+    const provider = await callShimXRoute('/provider/current', {}, 1600);
+    const autoSwitch = await callShimXRoute('/auto-switch/get', {}, 1600);
     const claude = await loadClaudeBindingOverview();
     const currentThread = {
       id: __ns.features.claudeBridge.currentCodexThreadId() || '',
-      label: currentCodexThreadLabel() || S('shimControlNoCodexThread', 'No active Codex conversation'),
+      label: currentCodexThreadLabel() || S('shimxControlNoCodexThread', 'No active Codex conversation'),
     };
     return { bridge, provider, autoSwitch, claude, currentThread };
   }
 
-  async function callShimRoute(path, payload, timeoutMs) {
-    if (typeof window.shim !== 'function') {
+  async function callShimXRoute(path, payload, timeoutMs) {
+    if (typeof window.shimx !== 'function') {
       return { ok: false, message: 'bridge not ready' };
     }
     let timer;
@@ -532,7 +532,7 @@
       const timeout = new Promise((resolve) => {
         timer = setTimeout(() => resolve({ code: -1, message: 'timeout' }), timeoutMs);
       });
-      const res = await Promise.race([window.shim(path, payload || {}), timeout]);
+      const res = await Promise.race([window.shimx(path, payload || {}), timeout]);
       if (res && res.code === 0) return { ok: true, data: res.data || {} };
       return { ok: false, message: res?.message || 'rpc error' };
     } catch (error) {
@@ -543,11 +543,11 @@
   }
 
   async function loadClaudeBindingOverview() {
-    const res = await callShimRoute('/claude-bridge/list', {}, 1600);
+    const res = await callShimXRoute('/claude-bridge/list', {}, 1600);
     if (!res.ok) {
       return {
         tone: 'error',
-        value: `${S('shimControlClaudeBindingFailed', 'Binding status unavailable')}: ${res.message || ''}`,
+        value: `${S('shimxControlClaudeBindingFailed', 'Binding status unavailable')}: ${res.message || ''}`,
         count: 0,
         details: [],
       };
@@ -556,17 +556,17 @@
     if (!bindings.length) {
       return {
         tone: 'muted',
-        value: S('shimControlClaudeBindingEmpty', 'No Codex conversations are bound'),
+        value: S('shimxControlClaudeBindingEmpty', 'No Codex conversations are bound'),
         count: 0,
         details: [],
       };
     }
     const details = bindings.map((binding) => {
       const codexThreadId = binding.codexThreadId || '';
-      const claudeTitle = binding.title || binding.sessionId || S('shimControlClaudeSession', 'Claude session');
+      const claudeTitle = binding.title || binding.sessionId || S('shimxControlClaudeSession', 'Claude session');
       const codexTitle = codexThreadLabelById(codexThreadId) ||
         (codexThreadId === '__legacy_claude_binding__'
-          ? S('shimControlLegacyBinding', 'Legacy global binding')
+          ? S('shimxControlLegacyBinding', 'Legacy global binding')
           : shortThreadId(codexThreadId));
       if (codexThreadId) {
         __ns.features.claudeBridge.applyStateForThread(codexThreadId, {
@@ -586,7 +586,7 @@
     });
     return {
       tone: 'success',
-      value: `${bindings.length} ${S('shimControlClaudeBindingCount', 'Codex conversations bound')}`,
+      value: `${bindings.length} ${S('shimxControlClaudeBindingCount', 'Codex conversations bound')}`,
       count: bindings.length,
       details,
     };
@@ -673,7 +673,7 @@
       borderBottom: '1px solid var(--token-border, rgba(127,127,127,0.05))',
     });
     const title = document.createElement('h2');
-    title.textContent = S('shimControlOverviewTab', 'Data overview');
+    title.textContent = S('shimxControlOverviewTab', 'Data overview');
     Object.assign(title.style, {
       margin: '0 0 4px',
       fontSize: '16px',
@@ -682,7 +682,7 @@
       letterSpacing: '0.1px',
     });
     const desc = document.createElement('div');
-    desc.textContent = S('shimControlCheckingDescription', 'Collecting bridge, provider, failover, and binding status.');
+    desc.textContent = S('shimxControlCheckingDescription', 'Collecting bridge, provider, failover, and binding status.');
     Object.assign(desc.style, {
       color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '12px',
@@ -703,27 +703,27 @@
       gap: '8px',
     });
     bar.appendChild(buildStatusChip(
-      S('shimControlBridge', 'Bridge'),
+      S('shimxControlBridge', 'Bridge'),
       snapshot.bridge.ok
-        ? S('shimControlBridgeReady', 'Connected')
-        : S('shimControlBridgeFailed', 'Unavailable'),
+        ? S('shimxControlBridgeReady', 'Connected')
+        : S('shimxControlBridgeFailed', 'Unavailable'),
       model.bridgeTone,
     ));
     bar.appendChild(buildStatusChip(
-      S('shimControlProvider', 'Provider'),
-      model.providerName || S('shimControlProviderEmpty', 'No active provider'),
+      S('shimxControlProvider', 'Provider'),
+      model.providerName || S('shimxControlProviderEmpty', 'No active provider'),
       model.providerTone,
     ));
     bar.appendChild(buildStatusChip(
-      S('shimControlAutoSwitch', 'Auto switch'),
+      S('shimxControlAutoSwitch', 'Auto switch'),
       snapshot.autoSwitch.ok
         ? model.strategyLabel
-        : S('shimControlAutoSwitchFailed', 'Unavailable'),
+        : S('shimxControlAutoSwitchFailed', 'Unavailable'),
       model.autoTone,
     ));
     bar.appendChild(buildStatusChip(
-      S('shimControlClaudeBinding', 'Context mapping'),
-      `${snapshot.claude.count || 0} ${S('shimControlBoundMetricSuffix', 'mappings')}`,
+      S('shimxControlClaudeBinding', 'Context mapping'),
+      `${snapshot.claude.count || 0} ${S('shimxControlBoundMetricSuffix', 'mappings')}`,
       snapshot.claude.tone || 'muted',
     ));
     return bar;
@@ -786,13 +786,13 @@
   }
 
   function buildProviderSection(model) {
-    const section = buildPanelSection(S('shimControlProviderSection', 'Provider details'));
+    const section = buildPanelSection(S('shimxControlProviderSection', 'Provider details'));
 
     if (model.providerTone !== 'success') {
       section.appendChild(buildEmptyState(
         ICON_PROVIDER_EMPTY,
-        S('shimControlProviderEmpty', 'No active provider'),
-        S('shimControlProviderEmptyDescription', 'Codex is using its current default provider.'),
+        S('shimxControlProviderEmpty', 'No active provider'),
+        S('shimxControlProviderEmptyDescription', 'Codex is using its current default provider.'),
       ));
       return section;
     }
@@ -818,7 +818,7 @@
       whiteSpace: 'nowrap',
     });
     const sub = document.createElement('div');
-    sub.textContent = model.providerModel || S('shimControlProviderModelEmpty', 'Passthrough');
+    sub.textContent = model.providerModel || S('shimxControlProviderModelEmpty', 'Passthrough');
     sub.title = sub.textContent;
     Object.assign(sub.style, {
       color: 'var(--token-text-secondary, rgba(127,127,127,0.62))',
@@ -833,17 +833,17 @@
     section.appendChild(head);
 
     section.appendChild(buildMetaRow([
-      { label: S('shimControlProviderProtocol', 'Protocol'), value: model.providerProtocol || '—' },
+      { label: S('shimxControlProviderProtocol', 'Protocol'), value: model.providerProtocol || '—' },
       {
-        label: S('shimControlProviderWeights', 'Weights'),
+        label: S('shimxControlProviderWeights', 'Weights'),
         value: model.providerWeight == null ? '—' : `${model.providerWeight}/${model.modelWeight ?? '—'}`,
       },
-      { label: S('shimControlCurrentMode', 'Mode'), value: model.strategyLabel },
+      { label: S('shimxControlCurrentMode', 'Mode'), value: model.strategyLabel },
     ]));
 
     const hint = model.strategy === 'manual'
-      ? S('shimControlAutoSwitchManualDescription', 'Automatic failover is standing by.')
-      : S('shimControlAutoSwitchDescription', 'Provider health can trigger failover.');
+      ? S('shimxControlAutoSwitchManualDescription', 'Automatic failover is standing by.')
+      : S('shimxControlAutoSwitchDescription', 'Provider health can trigger failover.');
     section.appendChild(buildPanelHint(hint));
     return section;
   }
@@ -951,7 +951,7 @@
     page.appendChild(buildLogsFilterRow(panel));
 
     const listWrap = document.createElement('div');
-    listWrap.setAttribute('data-shim-logs-list', '1');
+    listWrap.setAttribute('data-shimx-logs-list', '1');
     Object.assign(listWrap.style, {
       flex: '1 1 auto',
       minHeight: '0',
@@ -985,7 +985,7 @@
       flex: '1 1 auto',
     });
     const title = document.createElement('h2');
-    title.textContent = S('shimControlLogsHeading', 'Runtime logs');
+    title.textContent = S('shimxControlLogsHeading', 'Runtime logs');
     Object.assign(title.style, {
       margin: '0',
       fontSize: '16px',
@@ -994,7 +994,7 @@
       letterSpacing: '0.1px',
     });
     const desc = document.createElement('div');
-    desc.textContent = S('shimControlLogsDescription', 'Recent log entries from the Shim backend, useful for diagnosing provider and binding issues.');
+    desc.textContent = S('shimxControlLogsDescription', 'Recent log entries from the ShimX backend, useful for diagnosing provider and binding issues.');
     Object.assign(desc.style, {
       color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '12px',
@@ -1028,10 +1028,10 @@
       gap: '2px',
     });
     const filters = [
-      { key: 'all', label: S('shimControlLogsFilterAll', 'All') },
-      { key: 'info', label: S('shimControlLogsFilterInfo', 'Info') },
-      { key: 'warning', label: S('shimControlLogsFilterWarning', 'Warn') },
-      { key: 'error', label: S('shimControlLogsFilterError', 'Error') },
+      { key: 'all', label: S('shimxControlLogsFilterAll', 'All') },
+      { key: 'info', label: S('shimxControlLogsFilterInfo', 'Info') },
+      { key: 'warning', label: S('shimxControlLogsFilterWarning', 'Warn') },
+      { key: 'error', label: S('shimxControlLogsFilterError', 'Error') },
     ];
     for (const f of filters) {
       segment.appendChild(buildLogsFilterButton(panel, f.key, f.label));
@@ -1044,8 +1044,8 @@
       gap: '8px',
     });
     const count = document.createElement('span');
-    count.setAttribute('data-shim-logs-count', '1');
-    count.textContent = `${shimControlLogsState.entries.length} ${S('shimControlLogsCount', 'entries')}`;
+    count.setAttribute('data-shimx-logs-count', '1');
+    count.textContent = `${shimxControlLogsState.entries.length} ${S('shimxControlLogsCount', 'entries')}`;
     Object.assign(count.style, {
       color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '12px',
@@ -1061,7 +1061,7 @@
   }
 
   function buildLogsFilterButton(panel, key, label) {
-    const active = shimControlLogsState.filter === key;
+    const active = shimxControlLogsState.filter === key;
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.textContent = label;
@@ -1091,7 +1091,7 @@
       btn.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
-        shimControlLogsState = { ...shimControlLogsState, filter: key };
+        shimxControlLogsState = { ...shimxControlLogsState, filter: key };
         renderActiveTab(panel);
       });
     }
@@ -1101,8 +1101,8 @@
   function buildLogsClearButton(panel) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = S('shimControlLogsClear', 'Clear');
-    btn.setAttribute('aria-label', S('shimControlLogsClearAria', 'Clear logs'));
+    btn.textContent = S('shimxControlLogsClear', 'Clear');
+    btn.setAttribute('aria-label', S('shimxControlLogsClearAria', 'Clear logs'));
     Object.assign(btn.style, {
       padding: '5px 10px',
       border: '1px solid var(--token-border, rgba(127,127,127,0.08))',
@@ -1127,14 +1127,14 @@
     btn.addEventListener('click', async (event) => {
       event.preventDefault();
       event.stopPropagation();
-      const res = await callShimRoute('/logs/clear', {}, 1500);
+      const res = await callShimXRoute('/logs/clear', {}, 1500);
       if (!res.ok) {
-        showToast(`${S('shimControlLogsClearFailed', 'Clear failed')}: ${res.message || ''}`, 'error');
+        showToast(`${S('shimxControlLogsClearFailed', 'Clear failed')}: ${res.message || ''}`, 'error');
         return;
       }
-      shimControlLogsState = { ...shimControlLogsState, entries: [] };
+      shimxControlLogsState = { ...shimxControlLogsState, entries: [] };
       renderActiveTab(panel);
-      showToast(S('shimControlLogsCleared', 'Logs cleared'), 'success');
+      showToast(S('shimxControlLogsCleared', 'Logs cleared'), 'success');
     });
     return btn;
   }
@@ -1142,24 +1142,24 @@
   // 仅刷新列表区, 不重建 chrome 或 page header
   function renderLogsListContent(listWrap) {
     listWrap.innerHTML = '';
-    if (shimControlLogsState.loading) {
+    if (shimxControlLogsState.loading) {
       listWrap.appendChild(buildControlLoadingPanel());
       return;
     }
-    if (shimControlLogsState.error) {
+    if (shimxControlLogsState.error) {
       listWrap.appendChild(buildEmptyState(
         ICON_LOGS,
-        S('shimControlLogsLoadFailed', 'Failed to load logs'),
-        shimControlLogsState.error,
+        S('shimxControlLogsLoadFailed', 'Failed to load logs'),
+        shimxControlLogsState.error,
       ));
       return;
     }
-    const visible = shimControlLogsState.entries.filter(matchesLogFilter);
+    const visible = shimxControlLogsState.entries.filter(matchesLogFilter);
     if (!visible.length) {
       listWrap.appendChild(buildEmptyState(
         ICON_LOGS,
-        S('shimControlLogsEmpty', 'No logs yet'),
-        S('shimControlLogsDescription', 'Recent log entries from the Shim backend, useful for diagnosing provider and binding issues.'),
+        S('shimxControlLogsEmpty', 'No logs yet'),
+        S('shimxControlLogsDescription', 'Recent log entries from the ShimX backend, useful for diagnosing provider and binding issues.'),
       ));
       return;
     }
@@ -1176,7 +1176,7 @@
   }
 
   function matchesLogFilter(entry) {
-    const f = shimControlLogsState.filter;
+    const f = shimxControlLogsState.filter;
     if (f === 'all') return true;
     if (f === 'info') return entry.level === 'info' || entry.level === 'debug';
     if (f === 'warning') return entry.level === 'warning';
@@ -1310,51 +1310,51 @@
   }
 
   async function reloadLogs(panel) {
-    shimControlLogsState = { ...shimControlLogsState, loading: true, error: null };
-    const listWrap = panel.querySelector('[data-shim-logs-list]');
+    shimxControlLogsState = { ...shimxControlLogsState, loading: true, error: null };
+    const listWrap = panel.querySelector('[data-shimx-logs-list]');
     if (listWrap) renderLogsListContent(listWrap);
 
-    const res = await callShimRoute('/logs/list', {}, 2000);
+    const res = await callShimXRoute('/logs/list', {}, 2000);
     if (!document.body.contains(panel)) return;
     if (!res.ok) {
-      shimControlLogsState = {
-        ...shimControlLogsState,
+      shimxControlLogsState = {
+        ...shimxControlLogsState,
         loading: false,
-        error: res.message || S('shimControlLogsLoadFailed', 'Failed to load logs'),
+        error: res.message || S('shimxControlLogsLoadFailed', 'Failed to load logs'),
       };
     } else {
       const entries = Array.isArray(res.data.entries) ? res.data.entries : [];
-      shimControlLogsState = {
-        ...shimControlLogsState,
+      shimxControlLogsState = {
+        ...shimxControlLogsState,
         loading: false,
         error: null,
         entries,
       };
     }
     // 列表区 + 计数都要更新
-    const list2 = panel.querySelector('[data-shim-logs-list]');
+    const list2 = panel.querySelector('[data-shimx-logs-list]');
     if (list2) renderLogsListContent(list2);
-    const countEl = panel.querySelector('[data-shim-logs-count]');
+    const countEl = panel.querySelector('[data-shimx-logs-count]');
     if (countEl) {
-      countEl.textContent = `${shimControlLogsState.entries.length} ${S('shimControlLogsCount', 'entries')}`;
+      countEl.textContent = `${shimxControlLogsState.entries.length} ${S('shimxControlLogsCount', 'entries')}`;
     }
   }
 
   function controlPanelViewModel(snapshot) {
     const providerData = snapshot.provider.data || {};
     const providerLabel = snapshot.provider.ok
-      ? (providerData.label || S('shimControlProviderEmpty', 'No active provider'))
-      : `${S('shimControlProviderFailed', 'Provider unavailable')}: ${snapshot.provider.message || ''}`;
+      ? (providerData.label || S('shimxControlProviderEmpty', 'No active provider'))
+      : `${S('shimxControlProviderFailed', 'Provider unavailable')}: ${snapshot.provider.message || ''}`;
     const autoData = snapshot.autoSwitch.data || {};
     const labels = autoData.labels || {};
     const strategy = autoData.strategy || 'manual';
     const strategyLabel = labels[`strategy${strategy.charAt(0).toUpperCase()}${strategy.slice(1)}`] || strategy;
     const bridgeValue = snapshot.bridge.ok
-      ? S('shimControlBridgeReady', 'Connected')
-      : `${S('shimControlBridgeFailed', 'Unavailable')}: ${snapshot.bridge.message || ''}`;
+      ? S('shimxControlBridgeReady', 'Connected')
+      : `${S('shimxControlBridgeFailed', 'Unavailable')}: ${snapshot.bridge.message || ''}`;
     const autoValue = snapshot.autoSwitch.ok
       ? strategyLabel
-      : `${S('shimControlAutoSwitchFailed', 'Unavailable')}: ${snapshot.autoSwitch.message || ''}`;
+      : `${S('shimxControlAutoSwitchFailed', 'Unavailable')}: ${snapshot.autoSwitch.message || ''}`;
     return {
       providerLabel,
       strategy,
@@ -1409,7 +1409,7 @@
   function buildBindingTable(snapshot) {
     const details = snapshot.claude.details || [];
     const section = buildPanelSection(
-      `${S('shimControlBindingsSection', 'Claude bindings')}${details.length ? ` · ${details.length}` : ''}`,
+      `${S('shimxControlBindingsSection', 'Claude bindings')}${details.length ? ` · ${details.length}` : ''}`,
     );
     Object.assign(section.style, {
       display: 'flex',
@@ -1421,8 +1421,8 @@
     if (!details.length) {
       section.appendChild(buildEmptyState(
         ICON_BINDING_EMPTY,
-        S('shimControlClaudeBindingEmpty', 'No Codex conversations are mapped'),
-        S('shimControlClaudeBindingEmptyDescription', 'Bind a Claude session from the sidebar to continue context here.'),
+        S('shimxControlClaudeBindingEmpty', 'No Codex conversations are mapped'),
+        S('shimxControlClaudeBindingEmptyDescription', 'Bind a Claude session from the sidebar to continue context here.'),
       ));
       return section;
     }
@@ -1485,7 +1485,7 @@
     });
     row.addEventListener('mouseleave', () => {
       if (!current) row.style.background = 'rgba(127,127,127,0.018)';
-      if (unbindBtn.dataset.shimBusy !== '1') unbindBtn.style.opacity = '0';
+      if (unbindBtn.dataset.shimxBusy !== '1') unbindBtn.style.opacity = '0';
     });
     return row;
   }
@@ -1493,8 +1493,8 @@
   function buildBindingUnbindButton(item) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.setAttribute('aria-label', S('shimControlBindingUnbindAria', 'Remove this mapping'));
-    btn.setAttribute('title', S('shimControlBindingUnbind', 'Unbind'));
+    btn.setAttribute('aria-label', S('shimxControlBindingUnbindAria', 'Remove this mapping'));
+    btn.setAttribute('title', S('shimxControlBindingUnbind', 'Unbind'));
     btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
     Object.assign(btn.style, {
       width: '22px',
@@ -1521,11 +1521,11 @@
     btn.addEventListener('click', async (event) => {
       event.preventDefault();
       event.stopPropagation();
-      if (btn.dataset.shimBusy === '1') return;
-      btn.dataset.shimBusy = '1';
+      if (btn.dataset.shimxBusy === '1') return;
+      btn.dataset.shimxBusy = '1';
       btn.style.opacity = '1';
       await unbindMappingFromControlPanel(item);
-      btn.dataset.shimBusy = '0';
+      btn.dataset.shimxBusy = '0';
     });
     return btn;
   }
@@ -1534,12 +1534,12 @@
   async function unbindMappingFromControlPanel(item) {
     const codexThreadId = item && item.codexThreadId;
     if (!codexThreadId) {
-      showToast(S('shimControlBindingUnbindFailed', 'Unbind failed'), 'error');
+      showToast(S('shimxControlBindingUnbindFailed', 'Unbind failed'), 'error');
       return;
     }
-    const res = await callShimRoute('/claude-bridge/unbind', { codexThreadId }, 2000);
+    const res = await callShimXRoute('/claude-bridge/unbind', { codexThreadId }, 2000);
     if (!res.ok) {
-      showToast(`${S('shimControlBindingUnbindFailed', 'Unbind failed')}: ${res.message || ''}`, 'error');
+      showToast(`${S('shimxControlBindingUnbindFailed', 'Unbind failed')}: ${res.message || ''}`, 'error');
       return;
     }
     // 同步给侧栏 chip (如果当前 codex thread 就是被解绑的 thread, chip 也要变回未绑定)
@@ -1547,11 +1547,11 @@
       __ns.features.claudeBridge.applyStateForThread(codexThreadId, res.data || { bound: false });
     } catch (_) {}
     // 从内存 snapshot 里删掉这一项, 重渲染 overview, 不必再走一次 /claude-bridge/list
-    if (shimControlPanelSnapshot && shimControlPanelSnapshot.claude) {
-      const claude = shimControlPanelSnapshot.claude;
+    if (shimxControlPanelSnapshot && shimxControlPanelSnapshot.claude) {
+      const claude = shimxControlPanelSnapshot.claude;
       const nextDetails = (claude.details || []).filter((d) => d.codexThreadId !== codexThreadId);
-      shimControlPanelSnapshot = {
-        ...shimControlPanelSnapshot,
+      shimxControlPanelSnapshot = {
+        ...shimxControlPanelSnapshot,
         claude: {
           ...claude,
           details: nextDetails,
@@ -1560,12 +1560,12 @@
         },
       };
       const panel = document.getElementById(POPOVER_ID);
-      if (panel && shimControlActiveTab === 'overview') {
-        const body = panel.querySelector('[data-shim-control-body]');
-        if (body) renderControlPanelSnapshot(body, shimControlPanelSnapshot);
+      if (panel && shimxControlActiveTab === 'overview') {
+        const body = panel.querySelector('[data-shimx-control-body]');
+        if (body) renderControlPanelSnapshot(body, shimxControlPanelSnapshot);
       }
     }
-    showToast(S('shimControlBindingUnboundToast', 'Mapping removed'), 'success');
+    showToast(S('shimxControlBindingUnboundToast', 'Mapping removed'), 'success');
   }
 
   // 没选中 Codex 对话时整张卡彻底不渲染 — 返回 null, 调用方负责跳过。
@@ -1609,7 +1609,7 @@
       flex: '1 1 auto',
     });
     const label = document.createElement('div');
-    label.textContent = S('shimControlCurrentThread', 'Current thread');
+    label.textContent = S('shimxControlCurrentThread', 'Current thread');
     Object.assign(label.style, {
       color: 'var(--token-text-secondary, rgba(127,127,127,0.5))',
       fontSize: '11px',
@@ -1618,7 +1618,7 @@
       textTransform: 'uppercase',
     });
     const title = document.createElement('div');
-    title.textContent = thread.label || S('shimControlNoCodexThread', 'No active Codex conversation');
+    title.textContent = thread.label || S('shimxControlNoCodexThread', 'No active Codex conversation');
     title.title = thread.label || '';
     Object.assign(title.style, {
       color: 'var(--token-text-primary, currentColor)',
@@ -1633,8 +1633,8 @@
 
     const badge = document.createElement('span');
     badge.textContent = currentBinding
-      ? S('shimControlBoundTo', 'Mapped to').replace(/\s*[:：]?$/, '')
-      : S('shimControlReadyToBind', 'Not mapped');
+      ? S('shimxControlBoundTo', 'Mapped to').replace(/\s*[:：]?$/, '')
+      : S('shimxControlReadyToBind', 'Not mapped');
     Object.assign(badge.style, {
       flex: '0 0 auto',
       padding: '4px 10px',
@@ -1693,7 +1693,7 @@
         display: 'inline-flex',
       });
       const target = document.createElement('span');
-      target.textContent = currentBinding.target || S('shimControlClaudeSession', 'Claude session');
+      target.textContent = currentBinding.target || S('shimxControlClaudeSession', 'Claude session');
       target.title = target.textContent;
       Object.assign(target.style, {
         color: 'var(--token-text-primary, currentColor)',
@@ -1723,8 +1723,8 @@
   //   解除映射  (仅 hasBinding=true 时显示)
   //   删除对话  (danger 色)
 
-  const THREAD_ACTIONS_MENU_ID = '__shim_thread_actions_menu__';
-  const EXPORT_MENU_ID = '__shim_export_menu__';
+  const THREAD_ACTIONS_MENU_ID = '__shimx_thread_actions_menu__';
+  const EXPORT_MENU_ID = '__shimx_export_menu__';
 
   const ICON_EXPORT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10V2M4.5 6.5L8 3l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
   const ICON_EXPORT_MD = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2.5V6h3" stroke="currentColor" stroke-width="1.2"/></svg>';
@@ -1737,8 +1737,8 @@
   function buildThreadActionsOverflow(threadId, thread, hasBinding) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.setAttribute('aria-label', S('shimControlThreadActions', 'Conversation actions'));
-    btn.setAttribute('title', S('shimControlThreadActions', 'Conversation actions'));
+    btn.setAttribute('aria-label', S('shimxControlThreadActions', 'Conversation actions'));
+    btn.setAttribute('title', S('shimxControlThreadActions', 'Conversation actions'));
     Object.assign(btn.style, {
       flex: '0 0 auto',
       display: 'inline-flex',
@@ -1822,7 +1822,7 @@
     });
 
     // 导出对话 ▸  (二级菜单: Markdown / 原始 / HTML)
-    const exportItem = buildSubmenuMenuItem(ICON_EXPORT, S('shimControlExport', 'Export conversation'));
+    const exportItem = buildSubmenuMenuItem(ICON_EXPORT, S('shimxControlExport', 'Export conversation'));
     exportItem.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1833,7 +1833,7 @@
     menu.appendChild(buildMenuDivider());
 
     // 导入对话 ▸  (二级菜单: .jsonl / .zip, 老逻辑)
-    const importItem = buildSubmenuMenuItem(ICON_IMPORT, S('shimControlImport', 'Import'));
+    const importItem = buildSubmenuMenuItem(ICON_IMPORT, S('shimxControlImport', 'Import'));
     importItem.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1854,14 +1854,14 @@
 
     if (hasBinding) {
       menu.appendChild(buildMenuDivider());
-      menu.appendChild(buildThreadMenuItem(ICON_UNBIND, S('shimControlUnbindCurrent', 'Remove mapping'), 'neutral', async () => {
+      menu.appendChild(buildThreadMenuItem(ICON_UNBIND, S('shimxControlUnbindCurrent', 'Remove mapping'), 'neutral', async () => {
         dismissThreadActionsMenu();
         await unbindMappingFromControlPanel({ codexThreadId: threadId });
       }));
     }
 
     menu.appendChild(buildMenuDivider());
-    menu.appendChild(buildThreadMenuItem(ICON_DELETE, S('shimControlDeleteThread', 'Delete thread'), 'danger', async () => {
+    menu.appendChild(buildThreadMenuItem(ICON_DELETE, S('shimxControlDeleteThread', 'Delete thread'), 'danger', async () => {
       dismissThreadActionsMenu();
       await deleteThreadFromControlPanel(threadId, thread.label || '');
     }));
@@ -1928,9 +1928,9 @@
       dismissThreadActionsMenu();
       await exportThreadById(threadId, format);
     };
-    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_MD, S('shimControlExportMarkdown', 'Export as Markdown'), 'neutral', () => choose('markdown')));
-    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_RAW, S('shimControlExportRaw', 'Export raw data'), 'neutral', () => choose('raws')));
-    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_HTML, S('shimControlExportHtml', 'Export HTML'), 'neutral', () => choose('html')));
+    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_MD, S('shimxControlExportMarkdown', 'Export as Markdown'), 'neutral', () => choose('markdown')));
+    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_RAW, S('shimxControlExportRaw', 'Export raw data'), 'neutral', () => choose('raws')));
+    menu.appendChild(buildThreadMenuItem(ICON_EXPORT_HTML, S('shimxControlExportHtml', 'Export HTML'), 'neutral', () => choose('html')));
 
     document.body.appendChild(menu);
     // 子菜单贴在 anchor 右边; 横向不够就退回到 anchor 下方右对齐。
@@ -2020,7 +2020,7 @@
     return item;
   }
 
-  const IMPORT_MENU_ID = '__shim_import_menu__';
+  const IMPORT_MENU_ID = '__shimx_import_menu__';
 
   function dismissImportMenu() {
     document.getElementById(IMPORT_MENU_ID)?.remove();
@@ -2060,11 +2060,11 @@
       fontSize: '12.5px',
     });
 
-    menu.appendChild(buildImportMenuItem(S('shimControlImportJsonl', 'Import .jsonl'), async () => {
+    menu.appendChild(buildImportMenuItem(S('shimxControlImportJsonl', 'Import .jsonl'), async () => {
       dismissImportMenu();
       await runImportFile(targetCwd);
     }));
-    menu.appendChild(buildImportMenuItem(S('shimControlImportZip', 'Import zip'), async () => {
+    menu.appendChild(buildImportMenuItem(S('shimxControlImportZip', 'Import zip'), async () => {
       dismissImportMenu();
       await runImportBundle(targetCwd);
     }));
@@ -2080,7 +2080,7 @@
         borderTop: '1px solid var(--token-border, rgba(127,127,127,0.05))',
         marginTop: '4px',
       });
-      hint.textContent = `${S('shimControlImportToCurrent', 'Assign to current project')} · ${S('shimControlImportHint', 'Reload Codex to see imported threads in the sidebar')}`;
+      hint.textContent = `${S('shimxControlImportToCurrent', 'Assign to current project')} · ${S('shimxControlImportHint', 'Reload Codex to see imported threads in the sidebar')}`;
       menu.appendChild(hint);
     }
 
@@ -2150,59 +2150,59 @@
   }
 
   async function runImportFile(targetCwd) {
-    const busyToken = showBusyIndicator(S('shimControlImportBusyFile', 'Importing conversation…'));
+    const busyToken = showBusyIndicator(S('shimxControlImportBusyFile', 'Importing conversation…'));
     try {
-      const res = await window.shim('/session/import', targetCwd ? { targetCwd } : {});
+      const res = await window.shimx('/session/import', targetCwd ? { targetCwd } : {});
       if (!res || res.code !== 0) {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
         return;
       }
       const data = res.data || {};
       if (data.cancelled) return;
       if (data.reason === 'empty-file') {
-        showToast(S('shimControlImportBadFile', 'File is invalid or empty'), 'warning');
+        showToast(S('shimxControlImportBadFile', 'File is invalid or empty'), 'warning');
         return;
       }
       if (!data.ok) {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.message || data.reason || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${data.message || data.reason || ''}`, 'error');
         return;
       }
-      showToast(`${S('shimControlImportDone', 'Import succeeded')} · ${data.title || ''}`.trim(), 'success');
+      showToast(`${S('shimxControlImportDone', 'Import succeeded')} · ${data.title || ''}`.trim(), 'success');
     } catch (err) {
-      showToast(`${S('shimControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
+      showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
     } finally {
       hideBusyIndicator(busyToken);
     }
   }
 
   async function runImportBundle(targetCwd) {
-    const busyToken = showBusyIndicator(S('shimControlImportBusyZip', 'Importing project bundle…'));
+    const busyToken = showBusyIndicator(S('shimxControlImportBusyZip', 'Importing project bundle…'));
     try {
-      const res = await window.shim('/session/import-bundle', targetCwd ? { targetCwd } : {});
+      const res = await window.shimx('/session/import-bundle', targetCwd ? { targetCwd } : {});
       if (!res || res.code !== 0) {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${res?.message || ''}`, 'error');
         return;
       }
       const data = res.data || {};
       if (data.cancelled) return;
       if (data.reason === 'no-jsonl-in-zip') {
-        showToast(S('shimControlImportEmpty', 'No .jsonl files inside the zip'), 'warning');
+        showToast(S('shimxControlImportEmpty', 'No .jsonl files inside the zip'), 'warning');
         return;
       }
       if (data.reason === 'bad-zip') {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.message || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${data.message || ''}`, 'error');
         return;
       }
       if (!data.ok) {
-        showToast(`${S('shimControlImportFailed', 'Import failed')}: ${data.reason || ''}`, 'error');
+        showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${data.reason || ''}`, 'error');
         return;
       }
       const ok = data.count || 0;
       const failed = data.failed || 0;
       const tail = failed > 0 ? ` · ${failed} failed` : '';
-      showToast(`${S('shimControlImportDoneN', 'Imported')} · ${ok}${tail}`, 'success');
+      showToast(`${S('shimxControlImportDoneN', 'Imported')} · ${ok}${tail}`, 'success');
     } catch (err) {
-      showToast(`${S('shimControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
+      showToast(`${S('shimxControlImportFailed', 'Import failed')}: ${err?.message || err}`, 'error');
     } finally {
       hideBusyIndicator(busyToken);
     }
@@ -2216,7 +2216,7 @@
     }
     const busyToken = showBusyIndicator(exportBusyLabel(format));
     try {
-      const res = await window.shim('/session/export', { id, format });
+      const res = await window.shimx('/session/export', { id, format });
       if (res?.code !== 0) {
         showToast(`${S('threadExportFailed', 'Export failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
         return;
@@ -2246,7 +2246,7 @@
     const ok = await showDeleteConfirm(title || S('deleteDefaultTitle', 'this thread'));
     if (!ok) return;
     try {
-      const res = await window.shim('/session/delete', { id });
+      const res = await window.shimx('/session/delete', { id });
       if (res?.code !== 0) {
         showToast(`${S('deleteFailed', 'Delete failed')}: ${res?.message || S('unknownError', 'Unknown error')}`, 'error');
         return;
@@ -2259,9 +2259,9 @@
       const panel = document.getElementById(POPOVER_ID);
       if (panel) {
         const snapshot = await loadControlPanelSnapshot();
-        shimControlPanelSnapshot = snapshot;
-        if (document.body.contains(panel) && shimControlActiveTab === 'overview') {
-          const body = panel.querySelector('[data-shim-control-body]');
+        shimxControlPanelSnapshot = snapshot;
+        if (document.body.contains(panel) && shimxControlActiveTab === 'overview') {
+          const body = panel.querySelector('[data-shimx-control-body]');
           if (body) renderControlPanelSnapshot(body, snapshot);
         }
       }
@@ -2274,8 +2274,8 @@
   function buildCopyIdButton(currentId) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.setAttribute('aria-label', S('shimControlCopyThreadId', 'Copy ID'));
-    btn.setAttribute('title', S('shimControlCopyThreadId', 'Copy ID'));
+    btn.setAttribute('aria-label', S('shimxControlCopyThreadId', 'Copy ID'));
+    btn.setAttribute('title', S('shimxControlCopyThreadId', 'Copy ID'));
     btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="8" height="9" rx="1.4" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3.4a1.4 1.4 0 0 0-1.4-1.4H4.4A1.4 1.4 0 0 0 3 3.4v6.2A1.4 1.4 0 0 0 4.4 11H5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
     Object.assign(btn.style, {
       flex: '0 0 auto',
@@ -2302,7 +2302,7 @@
     btn.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      copyTextToClipboard(currentId, S('shimControlThreadIdCopied', 'Thread ID copied'));
+      copyTextToClipboard(currentId, S('shimxControlThreadIdCopied', 'Thread ID copied'));
     });
     return btn;
   }

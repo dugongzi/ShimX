@@ -1,6 +1,6 @@
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_list.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_list.dart';
 import 'package:flutter/material.dart';
 
 class DashboardTab extends StatelessWidget {

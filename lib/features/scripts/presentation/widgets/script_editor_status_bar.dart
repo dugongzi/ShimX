@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/home/presentation/providers/inject_query_provider.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_status_item.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/home/presentation/providers/inject_query_provider.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_status_item.dart';
 
 class ScriptEditorStatusBar extends StatelessWidget {
   const ScriptEditorStatusBar({

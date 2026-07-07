@@ -1,11 +1,11 @@
 import 'package:toml/toml.dart';
 
-const shimManagedStartPrefix = '# shim-managed:start';
-const shimManagedEnd = '# shim-managed:end';
+const shimxManagedStartPrefix = '# shimx-managed:start';
+const shimxManagedEnd = '# shimx-managed:end';
 const codexMcpConfigKindMcpServer = 'mcpServer';
 
 final _managedStartPattern = RegExp(
-  r'^\s*#\s*shim-managed:start\s+kind=mcp_servers\s+id=([A-Za-z0-9_-]+)\s*$',
+  r'^\s*#\s*shimx-managed:start\s+kind=mcp_servers\s+id=([A-Za-z0-9_-]+)\s*$',
 );
 final _tableHeaderPattern = RegExp(r'^\s*\[([^\]]+)\]\s*$');
 
@@ -15,7 +15,7 @@ class CodexMcpConfigTomlFragment {
     required this.kind,
     required this.bodyText,
     required this.enabled,
-    required this.managedByShim,
+    required this.managedByShimX,
     required this.readOnly,
     required this.name,
     required this.description,
@@ -25,7 +25,7 @@ class CodexMcpConfigTomlFragment {
   final String kind;
   final String bodyText;
   final bool enabled;
-  final bool managedByShim;
+  final bool managedByShimX;
   final bool readOnly;
   final String name;
   final String description;
@@ -52,7 +52,7 @@ List<CodexMcpConfigTomlFragment> parseCodexMcpConfigs(
         id: id,
       );
       configs.add(
-        _fragmentFromBody(id: id, bodyText: bodyText, managedByShim: true),
+        _fragmentFromBody(id: id, bodyText: bodyText, managedByShimX: true),
       );
     }
     managedRanges.add(_LineRange(i, end));
@@ -69,7 +69,7 @@ List<CodexMcpConfigTomlFragment> parseCodexMcpConfigs(
     final end = _findTableEnd(lines, i + 1, id: id);
     final bodyText = lines.sublist(i + 1, end).join('\n').trimRight();
     configs.add(
-      _fragmentFromBody(id: id, bodyText: bodyText, managedByShim: false),
+      _fragmentFromBody(id: id, bodyText: bodyText, managedByShimX: false),
     );
     i = end - 1;
   }
@@ -83,7 +83,7 @@ List<CodexMcpConfigTomlFragment> parseCodexMcpConfigs(
   return result;
 }
 
-String upsertShimManagedCodexMcpConfigBlock(
+String upsertShimXManagedCodexMcpConfigBlock(
   String text, {
   required String kind,
   required String id,
@@ -115,7 +115,7 @@ String upsertShimManagedCodexMcpConfigBlock(
   return _appendManagedBlock(text, managedBlock);
 }
 
-String deleteShimManagedCodexMcpConfigBlock(
+String deleteShimXManagedCodexMcpConfigBlock(
   String text, {
   required String kind,
   required String id,
@@ -135,7 +135,7 @@ String deleteShimManagedCodexMcpConfigBlock(
   return next.trim().isEmpty ? '' : next;
 }
 
-String setShimManagedCodexMcpConfigEnabled(
+String setShimXManagedCodexMcpConfigEnabled(
   String text, {
   required String kind,
   required String id,
@@ -148,7 +148,7 @@ String setShimManagedCodexMcpConfigEnabled(
       existingManaged.bodyText,
       enabled,
     );
-    return upsertShimManagedCodexMcpConfigBlock(
+    return upsertShimXManagedCodexMcpConfigBlock(
       text,
       kind: kind,
       id: id,
@@ -214,14 +214,14 @@ String setEnabledInCodexMcpConfigBody(String bodyText, bool enabled) {
 CodexMcpConfigTomlFragment _fragmentFromBody({
   required String id,
   required String bodyText,
-  required bool managedByShim,
+  required bool managedByShimX,
 }) {
   return CodexMcpConfigTomlFragment(
     id: id,
     kind: codexMcpConfigKindMcpServer,
     bodyText: bodyText,
     enabled: _bodyEnabled(bodyText),
-    managedByShim: managedByShim,
+    managedByShimX: managedByShimX,
     readOnly: false,
     name: _bodyName(id, bodyText),
     description: _bodyDescription(bodyText),
@@ -300,7 +300,7 @@ String _bodyTextFromManagedBlock(
 
 int? _findManagedEnd(List<String> lines, int start) {
   for (var i = start; i < lines.length; i++) {
-    if (lines[i].trim() == shimManagedEnd) return i;
+    if (lines[i].trim() == shimxManagedEnd) return i;
   }
   return null;
 }
@@ -328,10 +328,10 @@ bool _lineInAnyRange(int line, List<_LineRange> ranges) {
 String _renderManagedBlock({required String id, required String bodyText}) {
   final body = bodyText.trimRight();
   return [
-    '$shimManagedStartPrefix kind=mcp_servers id=$id',
+    '$shimxManagedStartPrefix kind=mcp_servers id=$id',
     '[mcp_servers.${_tomlKey(id)}]',
     body,
-    shimManagedEnd,
+    shimxManagedEnd,
   ].join('\n');
 }
 

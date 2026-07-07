@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/icon_badge.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/providers/domain/models/proxy_config.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/common/widgets/icon_badge.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/providers/domain/models/proxy_config.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 /// 本地代理总开关 + 端口编辑卡。
 /// 开关由 [providerActionsProvider.setProxyEnabled] 驱动;端口由 [setProxyPort] 写入。

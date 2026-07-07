@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/providers/presentation/widgets/auto_switch_row_label.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/providers/presentation/widgets/auto_switch_row_label.dart';
 
 /// 自动切换数字调节行:label + 减号 + 当前值 + 加号。带边界 clamp。
 class AutoSwitchNumberRow extends StatelessWidget {

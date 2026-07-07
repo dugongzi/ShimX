@@ -1,5 +1,5 @@
-import 'package:shim/features/codex_session/domain/models/codex_import_result.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_import_result.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
 
 /// codex 会话的写操作:删除 / 导出(单条+打 zip)/ 导入(单条+解 zip)。
 abstract class CodexSessionActionRepository {

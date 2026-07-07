@@ -1,10 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/features/mcp/data/datasources/codex_mcp_config_action_datasource.dart';
-import 'package:shim/features/mcp/data/repositories/codex_mcp_config_action_repository_impl.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
-import 'package:shim/features/mcp/domain/repositories/codex_mcp_config_action_repository.dart';
-import 'package:shim/features/mcp/presentation/providers/codex_mcp_config_query_provider.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/features/mcp/data/datasources/codex_mcp_config_action_datasource.dart';
+import 'package:shimx/features/mcp/data/repositories/codex_mcp_config_action_repository_impl.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/domain/repositories/codex_mcp_config_action_repository.dart';
+import 'package:shimx/features/mcp/presentation/providers/codex_mcp_config_query_provider.dart';
 
 part 'codex_mcp_config_action_provider.g.dart';
 

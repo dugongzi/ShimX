@@ -1,15 +1,15 @@
-// ==Shim==
-// @name        Shim codex_enhance — ui/confirm
+// ==ShimX==
+// @name        ShimX codex_enhance — ui/confirm
 // @description 删除确认对话框 (用 Codex 主题), 跨 feature 复用。
 //              showDelete(title) → Promise<bool>, true 表示用户确认, false 表示取消。
 //              Enter 确认 / Escape 取消 / 点蒙层取消, 关弹窗时自动清 keydown 监听。
 // @layer       ui
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ids = window.__shimCodex.ids;
-  const S = (k, f) => window.__shimCodex.i18n.S(k, f);
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ids = window.__shimxCodex.ids;
+  const S = (k, f) => window.__shimxCodex.i18n.S(k, f);
 
   function showDelete(title) {
     return new Promise((resolve) => {
@@ -118,5 +118,5 @@
     });
   }
 
-  window.__shimCodex.ui.confirm = { showDelete };
+  window.__shimxCodex.ui.confirm = { showDelete };
 })();

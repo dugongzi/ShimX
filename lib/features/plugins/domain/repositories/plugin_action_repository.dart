@@ -1,4 +1,4 @@
-import 'package:shim/features/plugins/domain/models/plugin_marketplace_status.dart';
+import 'package:shimx/features/plugins/domain/models/plugin_marketplace_status.dart';
 
 abstract class PluginActionRepository {
   /// 从任意 zip 直链拉 openai/plugins 快照,释放到 codex home,写 config.toml。

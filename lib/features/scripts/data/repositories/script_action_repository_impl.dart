@@ -1,5 +1,5 @@
-import 'package:shim/features/scripts/data/datasources/script_action_datasource.dart';
-import 'package:shim/features/scripts/domain/repositories/script_action_repository.dart';
+import 'package:shimx/features/scripts/data/datasources/script_action_datasource.dart';
+import 'package:shimx/features/scripts/domain/repositories/script_action_repository.dart';
 
 class ScriptActionRepositoryImpl implements ScriptActionRepository {
   ScriptActionRepositoryImpl({required ScriptActionDatasource dataSource})

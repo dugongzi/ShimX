@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/constants/mcp_server_status.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/mcp/domain/models/mcp_server_info.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_info_row.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_status_badge.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/constants/mcp_server_status.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/mcp/domain/models/mcp_server_info.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_info_row.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_status_badge.dart';
 
-/// shim 暴露的一个 MCP server 在 UI 列表里的卡片。
+/// shimx 暴露的一个 MCP server 在 UI 列表里的卡片。
 class McpServerCard extends StatelessWidget {
   const McpServerCard({
     super.key,

@@ -1,4 +1,4 @@
-import 'package:shim/core/services/app_storage.dart';
+import 'package:shimx/core/services/app_storage.dart';
 
 class ConfigActionDatasource {
   // ignore: unused_field

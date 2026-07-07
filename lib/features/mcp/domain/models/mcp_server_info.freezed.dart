@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$McpServerInfo {
 
-/// 唯一 key,例如 'shim_claude'(也是 ~/.codex/config.toml 里 [mcp_servers.<id>] 的 id)
+/// 唯一 key,例如 'shimx_claude'(也是 ~/.codex/config.toml 里 [mcp_servers.<id>] 的 id)
  String get id;/// 人类可读名称,UI 显示用
  String get name;/// 一句话描述这个 server 干什么
  String get description;/// 本地 HTTP MCP 地址,例如 http://127.0.0.1:18787/mcp
@@ -224,7 +224,7 @@ class _McpServerInfo extends McpServerInfo {
   const _McpServerInfo({required this.id, required this.name, required this.description, required this.url, required this.status, this.statusDetail = '', this.toolCount = 0, this.registeredInCodex = false}): super._();
   
 
-/// 唯一 key,例如 'shim_claude'(也是 ~/.codex/config.toml 里 [mcp_servers.<id>] 的 id)
+/// 唯一 key,例如 'shimx_claude'(也是 ~/.codex/config.toml 里 [mcp_servers.<id>] 的 id)
 @override final  String id;
 /// 人类可读名称,UI 显示用
 @override final  String name;

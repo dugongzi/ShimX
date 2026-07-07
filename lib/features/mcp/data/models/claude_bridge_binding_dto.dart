@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
 
 part 'claude_bridge_binding_dto.freezed.dart';
 part 'claude_bridge_binding_dto.g.dart';

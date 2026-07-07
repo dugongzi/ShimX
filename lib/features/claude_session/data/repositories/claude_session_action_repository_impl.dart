@@ -1,6 +1,6 @@
-import 'package:shim/features/claude_session/data/datasources/claude_session_action_datasource.dart';
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
-import 'package:shim/features/claude_session/domain/repositories/claude_session_action_repository.dart';
+import 'package:shimx/features/claude_session/data/datasources/claude_session_action_datasource.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/features/claude_session/domain/repositories/claude_session_action_repository.dart';
 
 class ClaudeSessionActionRepositoryImpl
     implements ClaudeSessionActionRepository {

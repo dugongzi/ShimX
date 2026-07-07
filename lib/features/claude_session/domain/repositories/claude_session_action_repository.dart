@@ -1,4 +1,4 @@
-import 'package:shim/features/claude_session/domain/models/claude_thread_detail.dart';
+import 'package:shimx/features/claude_session/domain/models/claude_thread_detail.dart';
 
 abstract class ClaudeSessionActionRepository {
   /// format ∈ { markdown, raws }。raws 直接拷贝原 jsonl,markdown 走 formatter。

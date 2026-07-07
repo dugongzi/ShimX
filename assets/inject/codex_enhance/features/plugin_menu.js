@@ -1,21 +1,21 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/plugin_menu
-// @description 侧栏「插件」入口。挂在 shim 菜单项下面一行,点击目前只弹 toast 占位。
+// ==ShimX==
+// @name        ShimX codex_enhance — features/plugin_menu
+// @description 侧栏「插件」入口。挂在 shimx 菜单项下面一行,点击目前只弹 toast 占位。
 //              后续接入插件解锁逻辑时,在 handleClick 里换成真实动作即可。
 //              对外: ensure() — 由 runtime/scheduler 在 ensureAll 里每轮调一次。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
   const S = (k, f) => ns.i18n.S(k, f);
 
   function findAnchor() {
-    // shim 菜单项存在 → 挂它下面;否则挂 claude 面板/按钮下面(fallback)
-    const shimItem = document.getElementById(ids.menuItem);
-    if (shimItem) return shimItem;
+    // shimx 菜单项存在 → 挂它下面;否则挂 claude 面板/按钮下面(fallback)
+    const shimxItem = document.getElementById(ids.menuItem);
+    if (shimxItem) return shimxItem;
     const panel = document.getElementById(ids.navPanel);
     if (panel) return panel;
     return document.getElementById(ids.navBtn);

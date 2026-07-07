@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/codex_launcher_service.dart';
-import 'package:shim/features/home/presentation/providers/inject_orchestrator_provider.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/codex_launcher_service.dart';
+import 'package:shimx/features/home/presentation/providers/inject_orchestrator_provider.dart';
 
-/// 侧栏底部:启动 Codex + 注入 shim 的图标按钮。
+/// 侧栏底部:启动 Codex + 注入 shimx 的图标按钮。
 class InjectIcon extends HookConsumerWidget {
   const InjectIcon({super.key, required this.debugPort});
 

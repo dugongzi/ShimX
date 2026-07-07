@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/app_background.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/home/presentation/widgets/dashboard_tab.dart';
-import 'package:shim/features/home/presentation/widgets/home_sidebar.dart';
-import 'package:shim/features/home/presentation/widgets/home_tab_item.dart';
-import 'package:shim/features/home/presentation/widgets/sessions_tab.dart';
-import 'package:shim/features/logs/presentation/widgets/logs_tab.dart';
-import 'package:shim/features/mcp/presentation/widgets/mcp_tab.dart';
-import 'package:shim/features/providers/presentation/widgets/providers_tab.dart';
-import 'package:shim/features/settings/presentation/widgets/settings_tab.dart';
-import 'package:shim/features/skills/presentation/widgets/skills_tab.dart';
+import 'package:shimx/common/widgets/app_background.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/home/presentation/widgets/dashboard_tab.dart';
+import 'package:shimx/features/home/presentation/widgets/home_sidebar.dart';
+import 'package:shimx/features/home/presentation/widgets/home_tab_item.dart';
+import 'package:shimx/features/home/presentation/widgets/sessions_tab.dart';
+import 'package:shimx/features/logs/presentation/widgets/logs_tab.dart';
+import 'package:shimx/features/mcp/presentation/widgets/mcp_tab.dart';
+import 'package:shimx/features/providers/presentation/widgets/providers_tab.dart';
+import 'package:shimx/features/settings/presentation/widgets/settings_tab.dart';
+import 'package:shimx/features/skills/presentation/widgets/skills_tab.dart';
 enum HomeTab { home, providers, sessions, mcp, skills, logs, settings }
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});

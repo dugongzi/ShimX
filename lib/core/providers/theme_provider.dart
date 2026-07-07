@@ -1,5 +1,5 @@
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/themes/app_colors.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/themes/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -1,13 +1,13 @@
-// ==Shim==
-// @name        Shim codex_enhance — features/badge
-// @description "Shim Injected" 徽章。锚定在 Codex 工具栏「请求批准」按钮右侧, 没锚点时
+// ==ShimX==
+// @name        ShimX codex_enhance — features/badge
+// @description "ShimX Injected" 徽章。锚定在 Codex 工具栏「请求批准」按钮右侧, 没锚点时
 //              退化为右下角 fixed。runtime/scheduler 在 ensureAll 里每轮 remove + ensure 一次。
 // @layer       features
-// ==/Shim==
+// ==/ShimX==
 
 (() => {
-  if (!window.__shimCodexEnhanceLoaded) return;
-  const ns = window.__shimCodex;
+  if (!window.__shimxCodexEnhanceLoaded) return;
+  const ns = window.__shimxCodex;
   const ids = ns.ids;
 
   function buildBadge(inline) {
@@ -48,7 +48,7 @@
     });
 
     const text = document.createElement('span');
-    text.textContent = 'Shim Injected';
+    text.textContent = 'ShimX Injected';
 
     badge.appendChild(dot);
     badge.appendChild(text);

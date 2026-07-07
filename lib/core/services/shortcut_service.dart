@@ -21,8 +21,8 @@ class ShortcutPlatformUnsupportedException implements Exception {
   String toString() => 'unsupported platform';
 }
 
-/// 在桌面创建"CodexShim"快捷方式：双击 = 启动 shim 并附带 --launch-codex 参数
-/// 让 shim 走"一键注入"流程。
+/// 在桌面创建"CodexShimX"快捷方式：双击 = 启动 shimx 并附带 --launch-codex 参数
+/// 让 shimx 走"一键注入"流程。
 class ShortcutService {
   Future<File> createDesktopShortcut() async {
     if (Platform.isWindows) return _createWindows();
@@ -36,14 +36,14 @@ class ShortcutService {
     final desktop = _desktopDir();
     final exePath = Platform.resolvedExecutable;
     final workingDir = p.dirname(exePath);
-    final lnkPath = p.join(desktop, 'CodexShim.lnk');
+    final lnkPath = p.join(desktop, 'CodexShimX.lnk');
 
     _writeWindowsShortcut(
       lnkPath: lnkPath,
       targetPath: exePath,
       arguments: _shortcutFlag,
       workingDir: workingDir,
-      description: 'Launch Codex via Shim',
+      description: 'Launch Codex via ShimX',
     );
 
     return File(lnkPath);
@@ -130,10 +130,10 @@ class ShortcutService {
   Future<File> _createMacOS() async {
     final desktop = _desktopDir();
     final exePath = Platform.resolvedExecutable;
-    // resolvedExecutable 在 .app bundle 中指向 Contents/MacOS/shim
+    // resolvedExecutable 在 .app bundle 中指向 Contents/MacOS/shimx
     // 通过 open -a + --args 传参即可
     final appBundle = _macOSAppBundlePath(exePath);
-    final commandPath = p.join(desktop, 'CodexShim.command');
+    final commandPath = p.join(desktop, 'CodexShimX.command');
     final script = '''#!/bin/sh
 open -a "$appBundle" --args $_shortcutFlag
 ''';
@@ -144,7 +144,7 @@ open -a "$appBundle" --args $_shortcutFlag
   }
 
   String _macOSAppBundlePath(String exePath) {
-    // .../CodexShim.app/Contents/MacOS/shim → .../CodexShim.app
+    // .../CodexShimX.app/Contents/MacOS/shimx → .../CodexShimX.app
     final macosDir = p.dirname(exePath);
     final contentsDir = p.dirname(macosDir);
     return p.dirname(contentsDir);

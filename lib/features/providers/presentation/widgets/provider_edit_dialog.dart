@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/constants/provider_protocol.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
-import 'package:shim/features/providers/presentation/widgets/weight_row.dart';
+import 'package:shimx/core/constants/provider_protocol.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/features/providers/presentation/widgets/weight_row.dart';
 
 /// 新建 / 编辑供应商对话框。[existing] 为 null 时为新建。
 class ProviderEditDialog extends HookConsumerWidget {

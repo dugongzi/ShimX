@@ -1,11 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/core/services/provider_health_probe_service.dart';
-import 'package:shim/features/providers/data/datasources/provider_health_datasource.dart';
-import 'package:shim/features/providers/data/repositories/provider_health_repository_impl.dart';
-import 'package:shim/features/providers/domain/models/provider_health.dart';
-import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/core/services/provider_health_probe_service.dart';
+import 'package:shimx/features/providers/data/datasources/provider_health_datasource.dart';
+import 'package:shimx/features/providers/data/repositories/provider_health_repository_impl.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_health_repository.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 part 'provider_health_provider.g.dart';
 

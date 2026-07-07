@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/providers/locale_provider.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/core/services/local_proxy_service.dart';
+import 'package:shimx/core/providers/locale_provider.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
 
 part 'tool_filter_keywords_provider.g.dart';
 

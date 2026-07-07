@@ -7,9 +7,9 @@ import 'package:re_editor/re_editor.dart';
 import 'package:re_highlight/languages/javascript.dart';
 import 'package:re_highlight/styles/vs.dart';
 import 'package:re_highlight/styles/vs2015.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/utils/js_autocomplete_prompts.dart';
-import 'package:shim/core/utils/js_code_formatter.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/utils/js_autocomplete_prompts.dart';
+import 'package:shimx/core/utils/js_code_formatter.dart';
 
 const double _kMinFontSize = 8;
 const double _kMaxFontSize = 40;

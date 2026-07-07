@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/home/presentation/providers/inject_query_provider.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/home/presentation/providers/inject_query_provider.dart';
 
 /// 侧栏底部:在系统浏览器打开 Codex DevTools 的图标按钮。
 class OpenInspectorIcon extends HookConsumerWidget {

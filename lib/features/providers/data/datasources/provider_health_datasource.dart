@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:shim/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
 
 /// 内存态健康数据源。生命周期内活着，每次 write 推一份快照给订阅者。
 ///

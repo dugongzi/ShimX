@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 /// 把毫秒时间戳格式化为相对时间。30 天内显示 "x 分/小时/天 前",超出则显示绝对日期。
 /// ms 为 0 时返回空串。

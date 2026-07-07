@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Shim';
+  String get appName => 'ShimX';
 
   @override
   String get searchHint => 'Search';
@@ -155,10 +155,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToHome => 'Back to home';
 
   @override
-  String get homeTitle => 'Shim';
+  String get homeTitle => 'ShimX';
 
   @override
-  String get welcome => 'Shim';
+  String get welcome => 'ShimX';
 
   @override
   String get inject => 'Inject';
@@ -168,7 +168,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get injectPanelDescription =>
-      'Inject the Shim control surface into the target environment for connection, debugging, and operation.';
+      'Inject the ShimX control surface into the target environment for connection, debugging, and operation.';
 
   @override
   String get injectReadyStatus => 'Ready to inject';
@@ -246,10 +246,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trayLaunchCodex => 'Launch Codex & inject';
 
   @override
-  String get trayQuit => 'Quit Shim';
+  String get trayQuit => 'Quit ShimX';
 
   @override
-  String get trayTooltip => 'Shim';
+  String get trayTooltip => 'ShimX';
 
   @override
   String get systemLanguage => 'System language';
@@ -596,73 +596,73 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logsCopiedToast => 'Logs copied';
 
   @override
-  String get shimDeleteThreadHeading => 'Delete thread';
+  String get shimxDeleteThreadHeading => 'Delete thread';
 
   @override
-  String get shimDeleteThreadDelete => 'Delete';
+  String get shimxDeleteThreadDelete => 'Delete';
 
   @override
-  String get shimDeleteThreadAria => 'Delete thread';
+  String get shimxDeleteThreadAria => 'Delete thread';
 
   @override
-  String get shimDeleteThreadDefaultTitle => 'this thread';
+  String get shimxDeleteThreadDefaultTitle => 'this thread';
 
   @override
-  String get shimDeleteSessionIdMissing => 'Session id not found';
+  String get shimxDeleteSessionIdMissing => 'Session id not found';
 
   @override
-  String get shimDeleteFailed => 'Delete failed';
+  String get shimxDeleteFailed => 'Delete failed';
 
   @override
-  String get shimDeleteSuccess => 'Deleted';
+  String get shimxDeleteSuccess => 'Deleted';
 
   @override
-  String get shimUnknownError => 'Unknown error';
+  String get shimxUnknownError => 'Unknown error';
 
   @override
-  String get shimProviderFallbackName => 'Provider';
+  String get shimxProviderFallbackName => 'Provider';
 
   @override
-  String get shimClearModel => 'Clear model';
+  String get shimxClearModel => 'Clear model';
 
   @override
-  String get shimEffortLow => 'Low';
+  String get shimxEffortLow => 'Low';
 
   @override
-  String get shimEffortMedium => 'Med';
+  String get shimxEffortMedium => 'Med';
 
   @override
-  String get shimEffortHigh => 'High';
+  String get shimxEffortHigh => 'High';
 
   @override
-  String get shimEffortXHigh => 'XHigh';
+  String get shimxEffortXHigh => 'XHigh';
 
   @override
-  String get shimHealthTimeout => 'timeout';
+  String get shimxHealthTimeout => 'timeout';
 
   @override
-  String get shimNoProviders => 'No providers configured yet';
+  String get shimxNoProviders => 'No providers configured yet';
 
   @override
-  String get shimUnnamedProvider => 'Unnamed provider';
+  String get shimxUnnamedProvider => 'Unnamed provider';
 
   @override
-  String get shimProviderNoModels => 'No models for this provider';
+  String get shimxProviderNoModels => 'No models for this provider';
 
   @override
-  String get shimReasoningEffort => 'Reasoning';
+  String get shimxReasoningEffort => 'Reasoning';
 
   @override
-  String get shimSaveFailed => 'Save failed';
+  String get shimxSaveFailed => 'Save failed';
 
   @override
-  String get shimSwitchProviderFailed => 'Switch provider failed';
+  String get shimxSwitchProviderFailed => 'Switch provider failed';
 
   @override
-  String get shimSwitchModelFailed => 'Switch model failed';
+  String get shimxSwitchModelFailed => 'Switch model failed';
 
   @override
-  String get shimSwitchEffortFailed => 'Switch reasoning failed';
+  String get shimxSwitchEffortFailed => 'Switch reasoning failed';
 
   @override
   String get sessionManagement => 'Sessions';
@@ -686,7 +686,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionSwitchBucket => 'Switch bucket';
 
   @override
-  String get sessionSwitchToShim => 'Switch to shim';
+  String get sessionSwitchToShimX => 'Switch to shimx';
 
   @override
   String get sessionRefresh => 'Refresh';
@@ -712,11 +712,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionBackupSelected => 'Back up selected';
 
   @override
-  String get sessionMergeAllToShim => 'Unify threads';
+  String get sessionMergeAllToShimX => 'Unify threads';
 
   @override
-  String get sessionMergeAllToShimTooltip =>
-      'codex groups threads by model_provider (bucket). When you switch provider, the sidebar only shows the current bucket — history in other buckets is hidden.\nThis moves every thread outside the shim bucket into it and points codex\'s default bucket to shim. Afterwards the sidebar shows all history regardless of which provider you use.';
+  String get sessionMergeAllToShimXTooltip =>
+      'codex groups threads by model_provider (bucket). When you switch provider, the sidebar only shows the current bucket — history in other buckets is hidden.\nThis moves every thread outside the shimx bucket into it and points codex\'s default bucket to shimx. Afterwards the sidebar shows all history regardless of which provider you use.';
 
   @override
   String get sessionSwitchBucketTooltip =>
@@ -724,7 +724,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionBackupSelectedTooltip =>
-      'Zip the selected threads into shim\'s backup directory along with the original bucket for each. Later you can restore them individually or all at once from the Backup tab.';
+      'Zip the selected threads into shimx\'s backup directory along with the original bucket for each. Later you can restore them individually or all at once from the Backup tab.';
 
   @override
   String sessionMoveSuccess(int n, String bucket) {
@@ -770,13 +770,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionMergeConfirmBody =>
-      'This moves every thread outside the shim bucket into it. It does not create a backup automatically.';
+      'This moves every thread outside the shimx bucket into it. It does not create a backup automatically.';
 
   @override
   String get sessionMergeConfirmOk => 'Merge';
 
   @override
-  String get sessionMergeProgressTitle => 'Merging into shim bucket';
+  String get sessionMergeProgressTitle => 'Merging into shimx bucket';
 
   @override
   String sessionMergeProgressBody(int done, int total) {
@@ -938,20 +938,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mcp => 'MCP';
 
   @override
-  String get mcpServersTitle => 'MCP servers from shim';
+  String get mcpServersTitle => 'MCP servers from shimx';
 
   @override
   String get mcpServersHint =>
-      'These MCP servers are hosted inside the shim process and can be wired into codex via streamable_http so the LLM can query local data on demand.';
+      'These MCP servers are hosted inside the shimx process and can be wired into codex via streamable_http so the LLM can query local data on demand.';
 
   @override
   String get mcpServersEmpty => 'No MCP servers enabled';
 
   @override
-  String get mcpShimClaudeName => 'Claude session search';
+  String get mcpShimXClaudeName => 'Claude session search';
 
   @override
-  String get mcpShimClaudeDescription =>
+  String get mcpShimXClaudeDescription =>
       'Expose local Claude Code sessions to the Codex LLM as MCP tools.';
 
   @override
@@ -1036,7 +1036,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get skillsHint =>
-      'Manage local Codex skills under ~/.codex/skills. Shim only deletes or overwrites skills imported into its registry.';
+      'Manage local Codex skills under ~/.codex/skills. ShimX only deletes or overwrites skills imported into its registry.';
 
   @override
   String get skillsInstallFolder => 'Install folder';
@@ -1045,7 +1045,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get skillsInstallZip => 'Install ZIP';
 
   @override
-  String get skillsManagedGroup => 'Managed by shim';
+  String get skillsManagedGroup => 'Managed by shimx';
 
   @override
   String get skillsExternalGroup => 'External Codex Skills';
@@ -1096,13 +1096,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get skillsOverwriteMessage =>
-      'A shim-managed Skill with the same name already exists. Overwrite its directory?';
+      'A shimx-managed Skill with the same name already exists. Overwrite its directory?';
 
   @override
   String get skillsDeleteTitle => 'Delete Skill';
 
   @override
-  String get skillsDeleteMessage => 'Delete this shim-managed Skill directory?';
+  String get skillsDeleteMessage =>
+      'Delete this shimx-managed Skill directory?';
 
   @override
   String get skillsZipChooseTitle => 'Choose Skill from ZIP';

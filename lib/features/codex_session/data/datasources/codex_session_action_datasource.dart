@@ -6,9 +6,9 @@ import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:shim/core/utils/codex_session_export_formatter.dart';
-import 'package:shim/features/codex_session/domain/models/codex_import_result.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/core/utils/codex_session_export_formatter.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_import_result.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:uuid/uuid.dart';
 
@@ -501,7 +501,7 @@ class CodexSessionActionDatasource {
     var id = '';
     var cwd = '';
     var cliVersion = '';
-    var source = 'shim';
+    var source = 'shimx';
     var modelProvider = '';
     var model = '';
     var timestampMs = 0;
@@ -611,7 +611,7 @@ class CodexSessionActionDatasource {
           rolloutPath,
           createdAtMs ~/ 1000,
           updatedAtMs ~/ 1000,
-          source.isEmpty ? 'shim' : source,
+          source.isEmpty ? 'shimx' : source,
           modelProvider.isEmpty ? 'unknown' : modelProvider,
           cwd,
           title.isEmpty ? 'Imported thread' : title,
@@ -620,7 +620,7 @@ class CodexSessionActionDatasource {
           0, // tokens_used
           0, // has_user_event
           0, // archived
-          cliVersion.isEmpty ? 'shim-import' : cliVersion,
+          cliVersion.isEmpty ? 'shimx-import' : cliVersion,
           '', // first_user_message
           'enabled', // memory_mode
           model.isEmpty ? null : model,

@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/utils/codex_mcp_config_toml_codec.dart';
-import 'package:shim/features/mcp/data/models/codex_mcp_config_dto.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/utils/codex_mcp_config_toml_codec.dart';
+import 'package:shimx/features/mcp/data/models/codex_mcp_config_dto.dart';
 
 class CodexMcpConfigActionDatasource {
   CodexMcpConfigActionDatasource({File? configFile}) : _configFile = configFile;
@@ -15,7 +15,7 @@ class CodexMcpConfigActionDatasource {
     final file = _codexConfigFile();
     if (file == null) throw StateError('Cannot resolve user home directory');
     final current = await _read(file);
-    final next = upsertShimManagedCodexMcpConfigBlock(
+    final next = upsertShimXManagedCodexMcpConfigBlock(
       current,
       kind: config.kind,
       id: config.id,
@@ -41,7 +41,7 @@ class CodexMcpConfigActionDatasource {
       throw StateError('Codex config.toml 不存在: ${file.path}');
     }
     final current = await _read(file);
-    final next = deleteShimManagedCodexMcpConfigBlock(
+    final next = deleteShimXManagedCodexMcpConfigBlock(
       current,
       kind: kind,
       id: id,
@@ -86,7 +86,7 @@ class CodexMcpConfigActionDatasource {
       ),
     );
 
-    final next = setShimManagedCodexMcpConfigEnabled(
+    final next = setShimXManagedCodexMcpConfigEnabled(
       current,
       kind: kind,
       id: id,

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shim/core/services/llm_protocol_converter.dart';
-import 'package:shim/core/services/llm_protocol_proxy_spec.dart';
+import 'package:shimx/core/services/llm_protocol_converter.dart';
+import 'package:shimx/core/services/llm_protocol_proxy_spec.dart';
 
 void main() {
   group('resolveLlmProtocolSpec', () {

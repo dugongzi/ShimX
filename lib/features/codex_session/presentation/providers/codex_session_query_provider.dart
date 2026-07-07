@@ -1,11 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/features/codex_session/data/datasources/codex_session_query_datasource.dart';
-import 'package:shim/features/codex_session/data/repositories/codex_session_query_repository_impl.dart';
-import 'package:shim/features/codex_session/domain/models/codex_bucket.dart';
-import 'package:shim/features/codex_session/domain/models/codex_project.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread_detail.dart';
-import 'package:shim/features/codex_session/domain/repositories/codex_session_query_repository.dart';
+import 'package:shimx/features/codex_session/data/datasources/codex_session_query_datasource.dart';
+import 'package:shimx/features/codex_session/data/repositories/codex_session_query_repository_impl.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_bucket.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_project.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread_detail.dart';
+import 'package:shimx/features/codex_session/domain/repositories/codex_session_query_repository.dart';
 
 part 'codex_session_query_provider.g.dart';
 

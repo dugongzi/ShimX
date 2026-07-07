@@ -1,18 +1,18 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/constants/reasoning_effort.dart';
-import 'package:shim/core/constants/shim_bridge_labels.dart';
-import 'package:shim/core/constants/storage_keys.dart';
-import 'package:shim/core/providers/locale_provider.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/core/services/takeover_service.dart';
-import 'package:shim/features/providers/domain/models/api_provider.dart';
-import 'package:shim/features/providers/domain/models/provider_health.dart';
-import 'package:shim/features/providers/domain/repositories/provider_health_repository.dart';
-import 'package:shim/features/providers/presentation/providers/provider_action_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_health_provider.dart';
-import 'package:shim/features/providers/presentation/providers/provider_query_provider.dart';
+import 'package:shimx/core/constants/reasoning_effort.dart';
+import 'package:shimx/core/constants/shimx_bridge_labels.dart';
+import 'package:shimx/core/constants/storage_keys.dart';
+import 'package:shimx/core/providers/locale_provider.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/core/services/takeover_service.dart';
+import 'package:shimx/features/providers/domain/models/api_provider.dart';
+import 'package:shimx/features/providers/domain/models/provider_health.dart';
+import 'package:shimx/features/providers/domain/repositories/provider_health_repository.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_action_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_health_provider.dart';
+import 'package:shimx/features/providers/presentation/providers/provider_query_provider.dart';
 
 part 'provider_action_bridge_provider.g.dart';
 
@@ -188,7 +188,7 @@ Map<String, dynamic> _providerListPayload(
           },
         )
         .toList(),
-    'labels': shimBridgeLabels(isZh: isZh),
+    'labels': shimxBridgeLabels(isZh: isZh),
   };
 }
 

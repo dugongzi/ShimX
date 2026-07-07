@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/app_storage.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/app_storage.dart';
 
-/// shim 内置 MCP server 的写端:
+/// shimx 内置 MCP server 的写端:
 ///   - saveEnabled:持久化开关到本地存储
 ///   - registerInCodex / unregisterFromCodex:在 ~/.codex/config.toml 增删
 ///     `[mcp_servers.<id>]` 段。纯文本拼接,不全量重写 —— 避免误改用户已有
@@ -42,7 +42,7 @@ class McpServerActionDatasource {
         return false;
       }
     } else {
-      // 父目录不存在时也建,Codex 第一次跑前 shim 也可能先一步建好这个文件
+      // 父目录不存在时也建,Codex 第一次跑前 shimx 也可能先一步建好这个文件
       await file.parent.create(recursive: true);
     }
 

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/section_title.dart';
-import 'package:shim/common/widgets/theme_color_swatch.dart';
-import 'package:shim/common/widgets/workspace_surface.dart';
-import 'package:shim/core/constants/app_links.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/constants/theme_color_presets.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/providers/locale_provider.dart';
-import 'package:shim/core/providers/theme_provider.dart';
-import 'package:shim/core/services/shortcut_service.dart';
-import 'package:shim/core/utils/theme_mode_label.dart';
-import 'package:shim/core/providers/requires_openai_auth_provider.dart';
-import 'package:shim/core/providers/tool_filter_keywords_provider.dart';
-import 'package:shim/features/providers/presentation/widgets/proxy_card.dart';
-import 'package:shim/features/settings/presentation/widgets/app_version_line.dart';
-import 'package:shim/features/settings/presentation/widgets/setting_card.dart';
-import 'package:shim/features/settings/presentation/widgets/tool_filter_keywords_dialog.dart';
+import 'package:shimx/common/widgets/section_title.dart';
+import 'package:shimx/common/widgets/theme_color_swatch.dart';
+import 'package:shimx/common/widgets/workspace_surface.dart';
+import 'package:shimx/core/constants/app_links.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/constants/theme_color_presets.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/providers/locale_provider.dart';
+import 'package:shimx/core/providers/theme_provider.dart';
+import 'package:shimx/core/services/shortcut_service.dart';
+import 'package:shimx/core/utils/theme_mode_label.dart';
+import 'package:shimx/core/providers/requires_openai_auth_provider.dart';
+import 'package:shimx/core/providers/tool_filter_keywords_provider.dart';
+import 'package:shimx/features/providers/presentation/widgets/proxy_card.dart';
+import 'package:shimx/features/settings/presentation/widgets/app_version_line.dart';
+import 'package:shimx/features/settings/presentation/widgets/setting_card.dart';
+import 'package:shimx/features/settings/presentation/widgets/tool_filter_keywords_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsTab extends ConsumerWidget {
@@ -159,13 +159,13 @@ class SettingsTab extends ConsumerWidget {
           SettingCard(
             icon: Icons.code_rounded,
             title: context.l10n.openSourceRepository,
-            description: shimRepositoryUrl,
+            description: shimxRepositoryUrl,
             child: FilledButton.tonalIcon(
               onPressed: () async {
                 final l10n = context.l10n;
                 try {
                   await launchUrl(
-                    Uri.parse(shimRepositoryUrl),
+                    Uri.parse(shimxRepositoryUrl),
                     mode: LaunchMode.externalApplication,
                   );
                 } catch (e) {

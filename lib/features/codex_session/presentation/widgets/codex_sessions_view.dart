@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread.dart';
-import 'package:shim/features/codex_session/presentation/widgets/projects_pane.dart';
-import 'package:shim/features/codex_session/presentation/widgets/thread_detail_pane.dart';
-import 'package:shim/features/codex_session/presentation/widgets/threads_pane.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread.dart';
+import 'package:shimx/features/codex_session/presentation/widgets/projects_pane.dart';
+import 'package:shimx/features/codex_session/presentation/widgets/thread_detail_pane.dart';
+import 'package:shimx/features/codex_session/presentation/widgets/threads_pane.dart';
 
 /// Codex 会话浏览:栈式导航(项目 → 会话 → 详情),
 /// 同时只展示一栏,顶部面包屑可返回上一级。

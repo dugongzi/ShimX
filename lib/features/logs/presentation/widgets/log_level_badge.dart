@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/utils/log_format.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/utils/log_format.dart';
 
 /// 日志条目左侧的小圆角等级徽章。颜色来自 [logLevelColor]。
 class LogLevelBadge extends StatelessWidget {

@@ -1,13 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/bridge_service.dart';
-import 'package:shim/features/plugins/data/datasources/plugin_action_datasource.dart';
-import 'package:shim/features/plugins/domain/models/plugin_marketplace_status.dart';
-import 'package:shim/features/plugins/domain/repositories/plugin_action_repository.dart';
-import 'package:shim/features/plugins/domain/repositories/plugin_query_repository.dart';
-import 'package:shim/features/plugins/presentation/providers/plugin_action_provider.dart';
-import 'package:shim/features/plugins/presentation/providers/plugin_query_provider.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/bridge_service.dart';
+import 'package:shimx/features/plugins/data/datasources/plugin_action_datasource.dart';
+import 'package:shimx/features/plugins/domain/models/plugin_marketplace_status.dart';
+import 'package:shimx/features/plugins/domain/repositories/plugin_action_repository.dart';
+import 'package:shimx/features/plugins/domain/repositories/plugin_query_repository.dart';
+import 'package:shimx/features/plugins/presentation/providers/plugin_action_provider.dart';
+import 'package:shimx/features/plugins/presentation/providers/plugin_query_provider.dart';
 
 part 'plugin_bridge_provider.g.dart';
 
@@ -18,7 +18,7 @@ part 'plugin_bridge_provider.g.dart';
 /// - `/plugin/install-from-local`  → 用户传 `zipPath` 或 `dirPath`,落盘 + 写 config
 ///
 /// GitHub 下载期间通过 [BridgeService.dispatchEvent] 主动推
-/// `/plugin/download-progress` 事件,JS 侧用 `window.__shimOn` 订阅。
+/// `/plugin/download-progress` 事件,JS 侧用 `window.__shimxOn` 订阅。
 @Riverpod(keepAlive: true)
 bool pluginBridgeRouteRegistration(Ref ref) {
   final bridge = ref.read(bridgeServiceProvider);

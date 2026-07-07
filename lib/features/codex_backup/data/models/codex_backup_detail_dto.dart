@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:shim/features/codex_backup/data/models/codex_backup_entry_dto.dart';
-import 'package:shim/features/codex_backup/domain/models/codex_backup_detail.dart';
+import 'package:shimx/features/codex_backup/data/models/codex_backup_entry_dto.dart';
+import 'package:shimx/features/codex_backup/domain/models/codex_backup_detail.dart';
 
 part 'codex_backup_detail_dto.freezed.dart';
 part 'codex_backup_detail_dto.g.dart';

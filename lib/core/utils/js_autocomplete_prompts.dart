@@ -127,20 +127,20 @@ const List<CodePrompt> kJsGlobalPrompts = [
     parameters: {'input': 'string'},
     optionalParameters: {'init': 'RequestInit'},
   ),
-  // shim 用户脚本 SDK,详见 assets/inject/shim_api.js
-  CodeFieldPrompt(word: 'shimApi', type: 'ShimApi'),
-  // 底层桥,shimApi 已经封装过,通常不用直接调
+  // shimx 用户脚本 SDK,详见 assets/inject/shimx_api.js
+  CodeFieldPrompt(word: 'shimxApi', type: 'ShimXApi'),
+  // 底层桥,shimxApi 已经封装过,通常不用直接调
   CodeFunctionPrompt(
-    word: 'shim',
+    word: 'shimx',
     type: 'Promise<any>',
     parameters: {'path': 'string', 'payload': 'object'},
   ),
   CodeFunctionPrompt(
-    word: '__shimOn',
+    word: '__shimxOn',
     type: 'Subscription',
     parameters: {'topic': 'string', 'callback': 'Function'},
   ),
-  CodeFieldPrompt(word: '__shimCodex', type: 'CodexEnhance'),
+  CodeFieldPrompt(word: '__shimxCodex', type: 'CodexEnhance'),
 ];
 
 /// `foo.` 后的成员补全:按接收对象名映射。
@@ -310,16 +310,16 @@ const Map<String, List<CodePrompt>> kJsMemberPrompts = {
       parameters: {'iterable': 'Promise[]'},
     ),
   ],
-  // shim 用户脚本 SDK。二级成员(如 shimApi.bridge.call)re_editor 追不到,
-  // 把 bridge 记成 field 让用户至少看得见入口,call 走 shim RPC。
-  'shimApi': [
+  // shimx 用户脚本 SDK。二级成员(如 shimxApi.bridge.call)re_editor 追不到,
+  // 把 bridge 记成 field 让用户至少看得见入口,call 走 shimx RPC。
+  'shimxApi': [
     CodeFieldPrompt(word: 'version', type: 'string'),
     CodeFunctionPrompt(
       word: 'ready',
       type: 'Promise<boolean>',
       optionalParameters: {'timeoutMs': 'number'},
     ),
-    CodeFieldPrompt(word: 'bridge', type: 'ShimBridge'),
+    CodeFieldPrompt(word: 'bridge', type: 'ShimXBridge'),
     CodeFunctionPrompt(
       word: 'toast',
       type: 'void',

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/scripts/data/datasources/script_query_datasource.dart';
-import 'package:shim/features/scripts/data/repositories/script_query_repository_impl.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/domain/repositories/script_query_repository.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/scripts/data/datasources/script_query_datasource.dart';
+import 'package:shimx/features/scripts/data/repositories/script_query_repository_impl.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/domain/repositories/script_query_repository.dart';
 
 part 'script_query_provider.g.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/scripts/presentation/providers/script_query_provider.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_shell.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/scripts/presentation/providers/script_query_provider.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_shell.dart';
 
 /// 脚本编辑器页面(VSCode 布局):
 ///   左侧 = 脚本列表(点击切换) + 新建入口(先弹名字对话框)

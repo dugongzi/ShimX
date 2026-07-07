@@ -4,11 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:shim/core/services/anthropic_messages_stream_to_responses_transformer.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/chat_stream_to_responses_transformer.dart';
-import 'package:shim/core/services/llm_protocol_converter.dart';
-import 'package:shim/core/services/llm_protocol_proxy_spec.dart';
+import 'package:shimx/core/services/anthropic_messages_stream_to_responses_transformer.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/chat_stream_to_responses_transformer.dart';
+import 'package:shimx/core/services/llm_protocol_converter.dart';
+import 'package:shimx/core/services/llm_protocol_proxy_spec.dart';
 
 final localProxyRunningPortProvider = Provider<ValueNotifier<int?>>((ref) {
   final notifier = ValueNotifier<int?>(null);
@@ -161,7 +161,7 @@ class LocalProxyService {
         'ClaudeBridge',
         '兼容旧版绑定调用',
         details:
-            '旧 handler 调用了 setClaudeBinding(binding),请刷新/重启 shim 以恢复按 codex thread 隔离。claudeSession=${binding.sessionId}',
+            '旧 handler 调用了 setClaudeBinding(binding),请刷新/重启 shimx 以恢复按 codex thread 隔离。claudeSession=${binding.sessionId}',
       );
       return null;
     }

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:toml/toml.dart';
 
-import 'package:shim/core/services/codex_paths.dart';
+import 'package:shimx/core/services/codex_paths.dart';
 
 /// 供 plugin_query_datasource / plugin_action_datasource 共用的路径 + config 工具。
 /// 不做 IO 以外的业务判断,纯 helper。

@@ -1,6 +1,6 @@
-import 'package:shim/core/services/local_proxy_service.dart';
-import 'package:shim/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
-import 'package:shim/features/mcp/data/models/claude_bridge_binding_dto.dart';
+import 'package:shimx/core/services/local_proxy_service.dart';
+import 'package:shimx/features/mcp/data/datasources/claude_bridge_binding_datasource.dart';
+import 'package:shimx/features/mcp/data/models/claude_bridge_binding_dto.dart';
 
 /// 内存中维护当前 Claude 桥绑定状态,与 [LocalProxyService] 同步并按需持久化。
 ///

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shim/common/widgets/search_field.dart';
-import 'package:shim/common/widgets/session_empty_box.dart';
-import 'package:shim/common/widgets/session_error_box.dart';
-import 'package:shim/common/widgets/session_list_tile.dart';
-import 'package:shim/common/widgets/surface_card.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/utils/time_format.dart';
-import 'package:shim/features/codex_session/presentation/providers/codex_session_query_provider.dart';
+import 'package:shimx/common/widgets/search_field.dart';
+import 'package:shimx/common/widgets/session_empty_box.dart';
+import 'package:shimx/common/widgets/session_error_box.dart';
+import 'package:shimx/common/widgets/session_list_tile.dart';
+import 'package:shimx/common/widgets/surface_card.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/utils/time_format.dart';
+import 'package:shimx/features/codex_session/presentation/providers/codex_session_query_provider.dart';
 
 /// 左栏:按 cwd 分组的 codex 项目列表,带顶部搜索框。
 class ProjectsPane extends HookConsumerWidget {

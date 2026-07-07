@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/mcp/domain/models/codex_mcp_config.dart';
+import 'package:shimx/features/mcp/domain/models/codex_mcp_config.dart';
 
 part 'codex_mcp_config_dto.freezed.dart';
 part 'codex_mcp_config_dto.g.dart';
@@ -13,7 +13,7 @@ abstract class CodexMcpConfigDto with _$CodexMcpConfigDto {
     @Default(CodexMcpConfigKind.mcpServer) String kind,
     @Default('') String bodyText,
     @Default(true) bool enabled,
-    @Default(false) bool managedByShim,
+    @Default(false) bool managedByShimX,
     @Default(true) bool readOnly,
     @Default('') String name,
     @Default('') String description,
@@ -28,7 +28,7 @@ abstract class CodexMcpConfigDto with _$CodexMcpConfigDto {
       kind: entity.kind,
       bodyText: entity.bodyText,
       enabled: entity.enabled,
-      managedByShim: entity.managedByShim,
+      managedByShimX: entity.managedByShimX,
       readOnly: entity.readOnly,
       name: entity.name,
       description: entity.description,
@@ -41,7 +41,7 @@ abstract class CodexMcpConfigDto with _$CodexMcpConfigDto {
       kind: kind,
       bodyText: bodyText,
       enabled: enabled,
-      managedByShim: managedByShim,
+      managedByShimX: managedByShimX,
       readOnly: readOnly,
       name: name,
       description: description,

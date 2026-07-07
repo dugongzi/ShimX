@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
-import 'package:shim/core/utils/codex_mcp_config_toml_codec.dart';
-import 'package:shim/features/mcp/data/datasources/mcp_server_query_datasource.dart';
-import 'package:shim/features/mcp/data/models/codex_mcp_config_dto.dart';
+import 'package:shimx/core/utils/codex_mcp_config_toml_codec.dart';
+import 'package:shimx/features/mcp/data/datasources/mcp_server_query_datasource.dart';
+import 'package:shimx/features/mcp/data/models/codex_mcp_config_dto.dart';
 
 class CodexMcpConfigQueryDatasource {
   CodexMcpConfigQueryDatasource({File? configFile}) : _configFile = configFile;
@@ -16,7 +16,7 @@ class CodexMcpConfigQueryDatasource {
     if (file == null || !await file.exists()) return [];
     final fragments = parseCodexMcpConfigs(
       await file.readAsString(encoding: utf8),
-      excludedMcpId: McpServerQueryDatasource.shimClaudeId,
+      excludedMcpId: McpServerQueryDatasource.shimxClaudeId,
     );
     return fragments
         .map(
@@ -25,7 +25,7 @@ class CodexMcpConfigQueryDatasource {
             kind: fragment.kind,
             bodyText: fragment.bodyText,
             enabled: fragment.enabled,
-            managedByShim: fragment.managedByShim,
+            managedByShimX: fragment.managedByShimX,
             readOnly: fragment.readOnly,
             name: fragment.name,
             description: fragment.description,

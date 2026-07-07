@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:shim/features/codex_session/domain/models/codex_bucket.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_bucket.dart';
 
 part 'codex_bucket_dto.freezed.dart';
 part 'codex_bucket_dto.g.dart';

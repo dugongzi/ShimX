@@ -249,7 +249,7 @@ final class FetchProviderModelsFamily extends $Family
 ///
 /// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
 /// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
-/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 ShimX 本体设置，
 /// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
 
 @ProviderFor(providerRouteRegistration)
@@ -259,7 +259,7 @@ const providerRouteRegistrationProvider = ProviderRouteRegistrationProvider._();
 ///
 /// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
 /// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
-/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+/// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 ShimX 本体设置，
 /// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
 
 final class ProviderRouteRegistrationProvider
@@ -269,7 +269,7 @@ final class ProviderRouteRegistrationProvider
   ///
   /// /provider/current — JS 拉当前生效的供应商，用于在对话上方渲染名称。
   /// 返回 {name, label}：name 为供应商名（无则 null），label 为拼好语言前缀的
-  /// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 Shim 本体设置，
+  /// 完整文案（中「供应商：xxx」/ 英「Provider: xxx」）。语言跟随 ShimX 本体设置，
   /// 由 Dart 侧拼好交给 JS，JS 不处理语言逻辑。
   const ProviderRouteRegistrationProvider._()
     : super(

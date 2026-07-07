@@ -1,6 +1,6 @@
-import 'package:shim/features/plugins/data/datasources/plugin_action_datasource.dart';
-import 'package:shim/features/plugins/domain/models/plugin_marketplace_status.dart';
-import 'package:shim/features/plugins/domain/repositories/plugin_action_repository.dart';
+import 'package:shimx/features/plugins/data/datasources/plugin_action_datasource.dart';
+import 'package:shimx/features/plugins/domain/models/plugin_marketplace_status.dart';
+import 'package:shimx/features/plugins/domain/repositories/plugin_action_repository.dart';
 
 class PluginActionRepositoryImpl implements PluginActionRepository {
   PluginActionRepositoryImpl({required this.dataSource});

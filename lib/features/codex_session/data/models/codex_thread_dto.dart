@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/codex_session/domain/models/codex_thread.dart';
+import 'package:shimx/features/codex_session/domain/models/codex_thread.dart';
 
 part 'codex_thread_dto.freezed.dart';
 part 'codex_thread_dto.g.dart';

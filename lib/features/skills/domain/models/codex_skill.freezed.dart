@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CodexSkill {
 
- String get id; String get name; String get description; String get path; bool get managedByShim; bool get readOnly; bool get hasSkillFile; int get installedAt; String get contentHash;
+ String get id; String get name; String get description; String get path; bool get managedByShimX; bool get readOnly; bool get hasSkillFile; int get installedAt; String get contentHash;
 /// Create a copy of CodexSkill
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CodexSkillCopyWith<CodexSkill> get copyWith => _$CodexSkillCopyWithImpl<CodexSk
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexSkill&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.path, path) || other.path == path)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.hasSkillFile, hasSkillFile) || other.hasSkillFile == hasSkillFile)&&(identical(other.installedAt, installedAt) || other.installedAt == installedAt)&&(identical(other.contentHash, contentHash) || other.contentHash == contentHash));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CodexSkill&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.path, path) || other.path == path)&&(identical(other.managedByShimX, managedByShimX) || other.managedByShimX == managedByShimX)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.hasSkillFile, hasSkillFile) || other.hasSkillFile == hasSkillFile)&&(identical(other.installedAt, installedAt) || other.installedAt == installedAt)&&(identical(other.contentHash, contentHash) || other.contentHash == contentHash));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,description,path,managedByShim,readOnly,hasSkillFile,installedAt,contentHash);
+int get hashCode => Object.hash(runtimeType,id,name,description,path,managedByShimX,readOnly,hasSkillFile,installedAt,contentHash);
 
 @override
 String toString() {
-  return 'CodexSkill(id: $id, name: $name, description: $description, path: $path, managedByShim: $managedByShim, readOnly: $readOnly, hasSkillFile: $hasSkillFile, installedAt: $installedAt, contentHash: $contentHash)';
+  return 'CodexSkill(id: $id, name: $name, description: $description, path: $path, managedByShimX: $managedByShimX, readOnly: $readOnly, hasSkillFile: $hasSkillFile, installedAt: $installedAt, contentHash: $contentHash)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CodexSkillCopyWith<$Res>  {
   factory $CodexSkillCopyWith(CodexSkill value, $Res Function(CodexSkill) _then) = _$CodexSkillCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String description, String path, bool managedByShim, bool readOnly, bool hasSkillFile, int installedAt, String contentHash
+ String id, String name, String description, String path, bool managedByShimX, bool readOnly, bool hasSkillFile, int installedAt, String contentHash
 });
 
 
@@ -62,13 +62,13 @@ class _$CodexSkillCopyWithImpl<$Res>
 
 /// Create a copy of CodexSkill
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? path = null,Object? managedByShim = null,Object? readOnly = null,Object? hasSkillFile = null,Object? installedAt = null,Object? contentHash = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? path = null,Object? managedByShimX = null,Object? readOnly = null,Object? hasSkillFile = null,Object? installedAt = null,Object? contentHash = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as String,managedByShim: null == managedByShim ? _self.managedByShim : managedByShim // ignore: cast_nullable_to_non_nullable
+as String,managedByShimX: null == managedByShimX ? _self.managedByShimX : managedByShimX // ignore: cast_nullable_to_non_nullable
 as bool,readOnly: null == readOnly ? _self.readOnly : readOnly // ignore: cast_nullable_to_non_nullable
 as bool,hasSkillFile: null == hasSkillFile ? _self.hasSkillFile : hasSkillFile // ignore: cast_nullable_to_non_nullable
 as bool,installedAt: null == installedAt ? _self.installedAt : installedAt // ignore: cast_nullable_to_non_nullable
@@ -158,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String path,  bool managedByShim,  bool readOnly,  bool hasSkillFile,  int installedAt,  String contentHash)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String path,  bool managedByShimX,  bool readOnly,  bool hasSkillFile,  int installedAt,  String contentHash)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CodexSkill() when $default != null:
-return $default(_that.id,_that.name,_that.description,_that.path,_that.managedByShim,_that.readOnly,_that.hasSkillFile,_that.installedAt,_that.contentHash);case _:
+return $default(_that.id,_that.name,_that.description,_that.path,_that.managedByShimX,_that.readOnly,_that.hasSkillFile,_that.installedAt,_that.contentHash);case _:
   return orElse();
 
 }
@@ -179,10 +179,10 @@ return $default(_that.id,_that.name,_that.description,_that.path,_that.managedBy
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String path,  bool managedByShim,  bool readOnly,  bool hasSkillFile,  int installedAt,  String contentHash)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String description,  String path,  bool managedByShimX,  bool readOnly,  bool hasSkillFile,  int installedAt,  String contentHash)  $default,) {final _that = this;
 switch (_that) {
 case _CodexSkill():
-return $default(_that.id,_that.name,_that.description,_that.path,_that.managedByShim,_that.readOnly,_that.hasSkillFile,_that.installedAt,_that.contentHash);case _:
+return $default(_that.id,_that.name,_that.description,_that.path,_that.managedByShimX,_that.readOnly,_that.hasSkillFile,_that.installedAt,_that.contentHash);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +199,10 @@ return $default(_that.id,_that.name,_that.description,_that.path,_that.managedBy
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String description,  String path,  bool managedByShim,  bool readOnly,  bool hasSkillFile,  int installedAt,  String contentHash)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String description,  String path,  bool managedByShimX,  bool readOnly,  bool hasSkillFile,  int installedAt,  String contentHash)?  $default,) {final _that = this;
 switch (_that) {
 case _CodexSkill() when $default != null:
-return $default(_that.id,_that.name,_that.description,_that.path,_that.managedByShim,_that.readOnly,_that.hasSkillFile,_that.installedAt,_that.contentHash);case _:
+return $default(_that.id,_that.name,_that.description,_that.path,_that.managedByShimX,_that.readOnly,_that.hasSkillFile,_that.installedAt,_that.contentHash);case _:
   return null;
 
 }
@@ -214,14 +214,14 @@ return $default(_that.id,_that.name,_that.description,_that.path,_that.managedBy
 
 
 class _CodexSkill extends CodexSkill {
-  const _CodexSkill({required this.id, required this.name, required this.description, required this.path, required this.managedByShim, required this.readOnly, required this.hasSkillFile, required this.installedAt, required this.contentHash}): super._();
+  const _CodexSkill({required this.id, required this.name, required this.description, required this.path, required this.managedByShimX, required this.readOnly, required this.hasSkillFile, required this.installedAt, required this.contentHash}): super._();
   
 
 @override final  String id;
 @override final  String name;
 @override final  String description;
 @override final  String path;
-@override final  bool managedByShim;
+@override final  bool managedByShimX;
 @override final  bool readOnly;
 @override final  bool hasSkillFile;
 @override final  int installedAt;
@@ -237,16 +237,16 @@ _$CodexSkillCopyWith<_CodexSkill> get copyWith => __$CodexSkillCopyWithImpl<_Cod
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexSkill&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.path, path) || other.path == path)&&(identical(other.managedByShim, managedByShim) || other.managedByShim == managedByShim)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.hasSkillFile, hasSkillFile) || other.hasSkillFile == hasSkillFile)&&(identical(other.installedAt, installedAt) || other.installedAt == installedAt)&&(identical(other.contentHash, contentHash) || other.contentHash == contentHash));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CodexSkill&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.path, path) || other.path == path)&&(identical(other.managedByShimX, managedByShimX) || other.managedByShimX == managedByShimX)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.hasSkillFile, hasSkillFile) || other.hasSkillFile == hasSkillFile)&&(identical(other.installedAt, installedAt) || other.installedAt == installedAt)&&(identical(other.contentHash, contentHash) || other.contentHash == contentHash));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,description,path,managedByShim,readOnly,hasSkillFile,installedAt,contentHash);
+int get hashCode => Object.hash(runtimeType,id,name,description,path,managedByShimX,readOnly,hasSkillFile,installedAt,contentHash);
 
 @override
 String toString() {
-  return 'CodexSkill(id: $id, name: $name, description: $description, path: $path, managedByShim: $managedByShim, readOnly: $readOnly, hasSkillFile: $hasSkillFile, installedAt: $installedAt, contentHash: $contentHash)';
+  return 'CodexSkill(id: $id, name: $name, description: $description, path: $path, managedByShimX: $managedByShimX, readOnly: $readOnly, hasSkillFile: $hasSkillFile, installedAt: $installedAt, contentHash: $contentHash)';
 }
 
 
@@ -257,7 +257,7 @@ abstract mixin class _$CodexSkillCopyWith<$Res> implements $CodexSkillCopyWith<$
   factory _$CodexSkillCopyWith(_CodexSkill value, $Res Function(_CodexSkill) _then) = __$CodexSkillCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String description, String path, bool managedByShim, bool readOnly, bool hasSkillFile, int installedAt, String contentHash
+ String id, String name, String description, String path, bool managedByShimX, bool readOnly, bool hasSkillFile, int installedAt, String contentHash
 });
 
 
@@ -274,13 +274,13 @@ class __$CodexSkillCopyWithImpl<$Res>
 
 /// Create a copy of CodexSkill
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? path = null,Object? managedByShim = null,Object? readOnly = null,Object? hasSkillFile = null,Object? installedAt = null,Object? contentHash = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? path = null,Object? managedByShimX = null,Object? readOnly = null,Object? hasSkillFile = null,Object? installedAt = null,Object? contentHash = null,}) {
   return _then(_CodexSkill(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,path: null == path ? _self.path : path // ignore: cast_nullable_to_non_nullable
-as String,managedByShim: null == managedByShim ? _self.managedByShim : managedByShim // ignore: cast_nullable_to_non_nullable
+as String,managedByShimX: null == managedByShimX ? _self.managedByShimX : managedByShimX // ignore: cast_nullable_to_non_nullable
 as bool,readOnly: null == readOnly ? _self.readOnly : readOnly // ignore: cast_nullable_to_non_nullable
 as bool,hasSkillFile: null == hasSkillFile ? _self.hasSkillFile : hasSkillFile // ignore: cast_nullable_to_non_nullable
 as bool,installedAt: null == installedAt ? _self.installedAt : installedAt // ignore: cast_nullable_to_non_nullable

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/constants/skill_progress_mode.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/l10n/app_localizations.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/constants/skill_progress_mode.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/l10n/app_localizations.dart';
 
 /// skills tab 顶部:进行中的进度条 + 当前模式文案。
 /// 不进行时高度自适应为 0。

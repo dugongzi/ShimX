@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/services/bridge_service.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/services/bridge_service.dart';
 
 part 'logs_bridge_provider.g.dart';
 

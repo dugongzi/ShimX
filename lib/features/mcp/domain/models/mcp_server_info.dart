@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'mcp_server_info.freezed.dart';
 
-/// shim 自己暴露的一个 MCP server 在 UI 列表里的展示信息。
+/// shimx 自己暴露的一个 MCP server 在 UI 列表里的展示信息。
 ///
 /// status:
 ///   running    — 进程内 HTTP server 已起,可被 codex 调用
@@ -13,7 +13,7 @@ abstract class McpServerInfo with _$McpServerInfo {
   const McpServerInfo._();
 
   const factory McpServerInfo({
-    /// 唯一 key,例如 'shim_claude'(也是 ~/.codex/config.toml 里 [mcp_servers.<id>] 的 id)
+    /// 唯一 key,例如 'shimx_claude'(也是 ~/.codex/config.toml 里 [mcp_servers.<id>] 的 id)
     required String id,
     /// 人类可读名称,UI 显示用
     required String name,

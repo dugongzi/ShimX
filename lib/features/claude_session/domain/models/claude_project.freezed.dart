@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ClaudeProject {
 
-/// 目录名(原始,作为 ID 用),例如 `f--Programming-projects-FlutterProject-shim`
+/// 目录名(原始,作为 ID 用),例如 `f--Programming-projects-FlutterProject-shimx`
  String get encodedDir;/// 解码后的 cwd(优先取 jsonl 内的 cwd 字段,fallback 用 encodedDir 推算)
  String get cwd;/// 会话数(jsonl 文件数)
  int get sessionCount;/// 该项目最近活跃时间 = max(jsonl mtime)
@@ -216,7 +216,7 @@ class _ClaudeProject extends ClaudeProject {
   const _ClaudeProject({required this.encodedDir, required this.cwd, required this.sessionCount, required this.lastActiveMs}): super._();
   
 
-/// 目录名(原始,作为 ID 用),例如 `f--Programming-projects-FlutterProject-shim`
+/// 目录名(原始,作为 ID 用),例如 `f--Programming-projects-FlutterProject-shimx`
 @override final  String encodedDir;
 /// 解码后的 cwd(优先取 jsonl 内的 cwd 字段,fallback 用 encodedDir 推算)
 @override final  String cwd;

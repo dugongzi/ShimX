@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/core/services/app_log_service.dart';
-import 'package:shim/core/utils/log_format.dart';
-import 'package:shim/features/logs/presentation/widgets/log_level_badge.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/services/app_log_service.dart';
+import 'package:shimx/core/utils/log_format.dart';
+import 'package:shimx/features/logs/presentation/widgets/log_level_badge.dart';
 
 /// 日志列表的单条卡片:级别徽章 + source + 时间 + message + 可选 details。
 class LogEntryTile extends StatelessWidget {

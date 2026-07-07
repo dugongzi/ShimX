@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:shim/core/services/app_storage.dart';
-import 'package:shim/features/providers/data/models/auto_switch_settings_dto.dart';
+import 'package:shimx/core/services/app_storage.dart';
+import 'package:shimx/features/providers/data/models/auto_switch_settings_dto.dart';
 
 class AutoSwitchDatasource {
   AutoSwitchDatasource({required this.appStorage});

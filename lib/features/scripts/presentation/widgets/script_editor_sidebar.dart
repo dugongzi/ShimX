@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
-import 'package:shim/features/scripts/domain/models/inject_script.dart';
-import 'package:shim/features/scripts/presentation/widgets/script_editor_sidebar_item.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/features/scripts/domain/models/inject_script.dart';
+import 'package:shimx/features/scripts/presentation/widgets/script_editor_sidebar_item.dart';
 
 class ScriptEditorSidebar extends StatelessWidget {
   const ScriptEditorSidebar({

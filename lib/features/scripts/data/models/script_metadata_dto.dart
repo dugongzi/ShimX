@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:shim/features/scripts/domain/models/script_metadata.dart';
+import 'package:shimx/features/scripts/domain/models/script_metadata.dart';
 
 part 'script_metadata_dto.freezed.dart';
 part 'script_metadata_dto.g.dart';

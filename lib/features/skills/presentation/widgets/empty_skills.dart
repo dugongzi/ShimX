@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shim/core/constants/app_sizes.dart';
-import 'package:shim/core/extensions/context_extensions.dart';
+import 'package:shimx/core/constants/app_sizes.dart';
+import 'package:shimx/core/extensions/context_extensions.dart';
 
 /// 没有任何 skill 时显示的占位 + 两个安装入口。
 class EmptySkills extends StatelessWidget {

@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'package:shim/features/codex_backup/data/datasources/codex_backup_paths.dart';
-import 'package:shim/features/codex_backup/data/models/codex_backup_detail_dto.dart';
-import 'package:shim/features/codex_backup/data/models/codex_backup_dto.dart';
-import 'package:shim/features/codex_backup/data/models/codex_backup_entry_dto.dart';
+import 'package:shimx/features/codex_backup/data/datasources/codex_backup_paths.dart';
+import 'package:shimx/features/codex_backup/data/models/codex_backup_detail_dto.dart';
+import 'package:shimx/features/codex_backup/data/models/codex_backup_dto.dart';
+import 'package:shimx/features/codex_backup/data/models/codex_backup_entry_dto.dart';
 
 /// 只读:扫备份根目录列出备份 + 读单个 manifest 详情。
 class CodexBackupQueryDatasource {

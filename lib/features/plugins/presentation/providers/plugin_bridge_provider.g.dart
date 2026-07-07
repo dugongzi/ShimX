@@ -15,7 +15,7 @@ part of 'plugin_bridge_provider.dart';
 /// - `/plugin/install-from-local`  → 用户传 `zipPath` 或 `dirPath`,落盘 + 写 config
 ///
 /// GitHub 下载期间通过 [BridgeService.dispatchEvent] 主动推
-/// `/plugin/download-progress` 事件,JS 侧用 `window.__shimOn` 订阅。
+/// `/plugin/download-progress` 事件,JS 侧用 `window.__shimxOn` 订阅。
 
 @ProviderFor(pluginBridgeRouteRegistration)
 const pluginBridgeRouteRegistrationProvider =
@@ -28,7 +28,7 @@ const pluginBridgeRouteRegistrationProvider =
 /// - `/plugin/install-from-local`  → 用户传 `zipPath` 或 `dirPath`,落盘 + 写 config
 ///
 /// GitHub 下载期间通过 [BridgeService.dispatchEvent] 主动推
-/// `/plugin/download-progress` 事件,JS 侧用 `window.__shimOn` 订阅。
+/// `/plugin/download-progress` 事件,JS 侧用 `window.__shimxOn` 订阅。
 
 final class PluginBridgeRouteRegistrationProvider
     extends $FunctionalProvider<bool, bool, bool>
@@ -40,7 +40,7 @@ final class PluginBridgeRouteRegistrationProvider
   /// - `/plugin/install-from-local`  → 用户传 `zipPath` 或 `dirPath`,落盘 + 写 config
   ///
   /// GitHub 下载期间通过 [BridgeService.dispatchEvent] 主动推
-  /// `/plugin/download-progress` 事件,JS 侧用 `window.__shimOn` 订阅。
+  /// `/plugin/download-progress` 事件,JS 侧用 `window.__shimxOn` 订阅。
   const PluginBridgeRouteRegistrationProvider._()
     : super(
         from: null,

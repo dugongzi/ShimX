@@ -3,6 +3,11 @@
   <h1>ShimX</h1>
   <p>A local enhancer for Codex Desktop</p>
   <p>
+    <a href="README_cn.md">简体中文</a>
+    ·
+    <strong>English</strong>
+  </p>
+  <p>
     <img src="https://img.shields.io/badge/license-GPLv3-b22222" alt="license GPLv3" />
     <img src="https://img.shields.io/badge/dart-%3E%3D3.9-0175C2" alt="Dart >=3.9" />
     <img src="https://img.shields.io/badge/flutter-desktop-02569B" alt="Flutter desktop" />
@@ -13,65 +18,92 @@
 
 ShimX is a local enhancer for Codex Desktop. It provides a Flutter-based desktop management UI, injects enhancements into the Codex page through Chrome DevTools Protocol, and runs local services for reverse proxying, MCP, session management, user scripts, Codex Skills, and Codex Plugins.
 
-Repository: <https://github.com/dugongzi/ShimX>
+## Official Gateway
 
 <p align="center">
-  <a href="README_cn.md">简体中文</a> |
-  <strong>English</strong>
+  <a href="https://muxueai.pro">
+    <img src="assets/images/muxueai.png" alt="Official Gateway muxueai.pro" width="720" style="border-radius: 12px;" />
+  </a>
 </p>
+
+## Sponsors
+
+<p align="center">
+  <a href="https://muxueai.pro"><img src="assets/images/muxueai.png" alt="muxueai.pro" width="720" style="border-radius: 12px;" /></a><br />
+  <a href="https://fhl.mom"><img src="assets/images/fhl.png" alt="fhl.mom" width="720" style="border-radius: 12px;" /></a><br />
+  <a href="https://gptcodex.top"><img src="assets/images/gptcodex.png" alt="gptcodex.top" width="720" style="border-radius: 12px;" /></a>
+</p>
+
+## At A Glance
+
+- **Page Enhancements**: In-Codex panel, provider / model picker, prompt polish.
+- **Local Proxy**: Multi-provider routing, protocol conversion, latency probes, auto switch.
+- **Sessions And Backups**: Codex / Claude session browsing, import, export, delete, backup.
+- **Extension Ecosystem**: User scripts, MCP, Skills, Plugins.
 
 ## Feature Highlights
 
+### Codex Page Enhancements
+
 <table>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/shimx_panel.png" alt="ShimX control panel" />
-      <p><strong>In-Codex Control Panel</strong><br />After injection, inspect Bridge state, the current provider, auto-switch strategy, and context bindings directly inside Codex.</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/provider_preview_1.png" alt="Provider and model picker" />
-      <p><strong>Provider / Model Picker</strong><br />Switch providers, models, protocols, and reasoning effort beside the composer, with live latency indicators.</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/provider_preview_1.png" alt="Provider and model picker" width="100%" /></td>
+    <td valign="top"><strong>Provider / Model Picker</strong><br />Switch providers, models, protocols, and reasoning effort beside the composer, with live latency indicators.</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/claude_bridge.png" alt="Claude Bridge" />
-      <p><strong>Claude Bridge</strong><br />Bind a local Claude Code session to a Codex thread and let MCP read its history as continuation context.</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/io_full_delete_session.png" alt="Session import export and delete" />
-      <p><strong>Session Import / Export / Delete</strong><br />Import JSONL/ZIP, export Markdown, HTML, or raw data, and safely delete sessions from the Codex project menu.</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/polish.png" alt="Prompt polish" width="100%" /></td>
+    <td valign="top"><strong>Prompt Polish</strong><br />Choose concise, formal, casual, or detailed rewrites, preview the result, then replace the composer text only after confirming.</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/o_delete_session.png" alt="Single session export and delete" />
-      <p><strong>Single-Session Actions</strong><br />Export Markdown, HTML, raw data, or delete the current session directly from the Codex sidebar thread menu.</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/providers_full.png" alt="Auto switch and tool filtering" />
-      <p><strong>Auto Switch And Tool Filtering</strong><br />Configure failover, fastest-first switching, slow-response thresholds, sibling fallback, and keyword-based tool filtering.</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/shimx_panel.png" alt="ShimX control panel" width="100%" /></td>
+    <td valign="top"><strong>In-Codex Control Panel</strong><br />Inspect Bridge state, the current provider, auto-switch strategy, and context bindings directly inside Codex.</td>
+  </tr>
+</table>
+
+### Sessions And Context
+
+<table>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/claude_bridge.png" alt="Claude Bridge" width="100%" /></td>
+    <td valign="top"><strong>Claude Bridge</strong><br />Bind a local Claude Code session to a Codex thread and let MCP read its history as continuation context.</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/script_edit.png" alt="User script editor" />
-      <p><strong>User Script Editor</strong><br />Built-in JavaScript editor with metadata, autosave, hot run, reload-on-run, and DevTools console access.</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/plugin_pull.png" alt="Plugin unlock" />
-      <p><strong>Codex Plugin Unlock</strong><br />Install the curated plugin marketplace from a mirror, GitHub, or local ZIP, then register it in Codex config.</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/io_full_delete_session.png" alt="Session import export and delete" width="100%" /></td>
+    <td valign="top"><strong>Session Import / Export / Delete</strong><br />Import JSONL/ZIP, export Markdown, HTML, or raw data, and safely delete sessions from the Codex project menu.</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/scripts_layout.png" alt="User script list" />
-      <p><strong>Script List And Batch Management</strong><br />View script metadata in the main window and batch enable, disable, delete, or import scripts.</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/setup.png" alt="ShimX settings page" />
-      <p><strong>Desktop Settings Center</strong><br />Manage language, theme, theme color, shortcut, tool filtering, official login, and proxy takeover port in one place.</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/o_delete_session.png" alt="Single session export and delete" width="100%" /></td>
+    <td valign="top"><strong>Single-Session Actions</strong><br />Export Markdown, HTML, raw data, or delete the current session directly from the Codex sidebar thread menu.</td>
+  </tr>
+</table>
+
+### Auto Switching And Extensions
+
+<table>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/providers_full.png" alt="Auto switch and tool filtering" width="100%" /></td>
+    <td valign="top"><strong>Auto Switch And Tool Filtering</strong><br />Configure failover, fastest-first switching, slow-response thresholds, sibling fallback, and keyword-based tool filtering.</td>
+  </tr>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/script_edit.png" alt="User script editor" width="100%" /></td>
+    <td valign="top"><strong>User Script Editor</strong><br />Built-in JavaScript editor with metadata, autosave, hot run, reload-on-run, and DevTools console access.</td>
+  </tr>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/plugin_pull.png" alt="Plugin unlock" width="100%" /></td>
+    <td valign="top"><strong>Codex Plugin Unlock</strong><br />Install the curated plugin marketplace from a mirror, GitHub, or local ZIP, then register it in Codex config.</td>
+  </tr>
+</table>
+
+### Desktop Management
+
+<table>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/scripts_layout.png" alt="User script list" width="100%" /></td>
+    <td valign="top"><strong>Script List And Batch Management</strong><br />View script metadata in the main window and batch enable, disable, delete, or import scripts.</td>
+  </tr>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/setup.png" alt="ShimX settings page" width="100%" /></td>
+    <td valign="top"><strong>Desktop Settings Center</strong><br />Manage language, theme, theme color, shortcut, tool filtering, official login, and proxy takeover port in one place.</td>
   </tr>
 </table>
 

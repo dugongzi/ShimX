@@ -3,6 +3,11 @@
   <h1>ShimX</h1>
   <p>面向 Codex Desktop 的本地增强器</p>
   <p>
+    <a href="README_cn.md"><strong>简体中文</strong></a>
+    ·
+    <a href="README_en.md">English</a>
+  </p>
+  <p>
     <img src="https://img.shields.io/badge/license-GPLv3-b22222" alt="license GPLv3" />
     <img src="https://img.shields.io/badge/dart-%3E%3D3.9-0175C2" alt="Dart >=3.9" />
     <img src="https://img.shields.io/badge/flutter-desktop-02569B" alt="Flutter desktop" />
@@ -13,69 +18,92 @@
 
 ShimX 是一个面向 Codex Desktop 的本地增强器。它用 Flutter 构建桌面端管理界面,通过 Chrome DevTools Protocol 注入 Codex 页面,并在本机提供反向代理、MCP server、会话管理、用户脚本和 Codex Skills/Plugins 管理能力。
 
-项目开源地址: <https://github.com/dugongzi/ShimX>
+## 官方中转站
 
 <p align="center">
-  <a href="README_cn.md"><strong>简体中文</strong></a> |
-  <a href="README_en.md">English</a>
+  <a href="https://muxueai.pro">
+    <img src="assets/images/muxueai.png" alt="官方中转站 muxueai.pro" width="720" style="border-radius: 12px;" />
+  </a>
 </p>
+
+## 赞助商
+
+<p align="center">
+  <a href="https://muxueai.pro"><img src="assets/images/muxueai.png" alt="muxueai.pro" width="720" style="border-radius: 12px;" /></a><br />
+  <a href="https://fhl.mom"><img src="assets/images/fhl.png" alt="fhl.mom" width="720" style="border-radius: 12px;" /></a><br />
+  <a href="https://gptcodex.top"><img src="assets/images/gptcodex.png" alt="gptcodex.top" width="720" style="border-radius: 12px;" /></a>
+</p>
+
+## 快速浏览
+
+- **页面增强**: Codex 浮层、供应商 / 模型选择器、输入框润色。
+- **本地代理**: 多供应商、协议转换、测速、自动切换。
+- **会话与备份**: Codex / Claude 会话读取、导入导出、删除与备份。
+- **扩展生态**: 用户脚本、MCP、Skills、Plugins。
 
 ## 特色功能
 
+### Codex 页面增强
+
 <table>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/shimx_panel.png" alt="ShimX 控制面板" />
-      <p><strong>Codex 内浮层控制面板</strong><br />注入后可在 Codex 页面内查看 Bridge 状态、当前供应商、自动切换策略和上下文映射。</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/provider_preview_1.png" alt="供应商与模型选择器" />
-      <p><strong>供应商 / 模型选择器</strong><br />在输入区旁直接切换供应商、模型、协议和思考深度,并查看实时延迟。</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/provider_preview_1.png" alt="供应商与模型选择器" width="100%" /></td>
+    <td valign="top"><strong>供应商 / 模型选择器</strong><br />在输入区旁直接切换供应商、模型、协议和思考深度,并查看实时延迟。</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/polish.png" alt="输入框润色" />
-      <p><strong>输入框润色</strong><br />在 Codex 输入区旁选择更简洁、更正式、更口语或更详细,先预览原文与润色后文本,确认后再替换输入内容。</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/claude_bridge.png" alt="Claude Bridge" />
-      <p><strong>Claude Bridge</strong><br />把本地 Claude Code 会话绑定到 Codex thread,通过 MCP 读取历史上下文继续对话。</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/polish.png" alt="输入框润色" width="100%" /></td>
+    <td valign="top"><strong>输入框润色</strong><br />选择更简洁、更正式、更口语或更详细,先预览原文与润色后文本,确认后再替换输入内容。</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/io_full_delete_session.png" alt="会话导入导出与删除" />
-      <p><strong>会话导入 / 导出 / 删除</strong><br />在 Codex 项目菜单中导入 JSONL/ZIP,导出 Markdown、HTML 或原始数据,并支持安全删除。</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/o_delete_session.png" alt="单条会话导出与删除" />
-      <p><strong>单条会话操作</strong><br />在 Codex 侧栏会话菜单中直接导出 Markdown、HTML、原始数据或删除当前会话。</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/providers_full.png" alt="自动切换与工具过滤" />
-      <p><strong>自动切换与工具过滤</strong><br />配置故障转移、最快优先、慢响应阈值、同家模型策略,并按关键词过滤工具。</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/shimx_panel.png" alt="ShimX 控制面板" width="100%" /></td>
+    <td valign="top"><strong>Codex 内浮层控制面板</strong><br />注入后在 Codex 页面内查看 Bridge 状态、当前供应商、自动切换策略和上下文映射。</td>
+  </tr>
+</table>
+
+### 会话与上下文
+
+<table>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/claude_bridge.png" alt="Claude Bridge" width="100%" /></td>
+    <td valign="top"><strong>Claude Bridge</strong><br />把本地 Claude Code 会话绑定到 Codex thread,通过 MCP 读取历史上下文继续对话。</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/script_edit.png" alt="用户脚本编辑器" />
-      <p><strong>用户脚本编辑器</strong><br />内置 JavaScript 编辑器,支持 metadata、自动保存、热运行、运行时刷新和控制台入口。</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/plugin_pull.png" alt="插件解锁" />
-      <p><strong>Codex 插件解锁</strong><br />从镜像、GitHub 或本地 ZIP 安装 curated plugin marketplace,并写入 Codex 配置。</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/io_full_delete_session.png" alt="会话导入导出与删除" width="100%" /></td>
+    <td valign="top"><strong>会话导入 / 导出 / 删除</strong><br />在 Codex 项目菜单中导入 JSONL/ZIP,导出 Markdown、HTML 或原始数据,并支持安全删除。</td>
   </tr>
   <tr>
-    <td width="50%">
-      <img src="assets/screenshots/scripts_layout.png" alt="用户脚本列表" />
-      <p><strong>脚本列表与批量管理</strong><br />在主窗口中查看脚本 metadata,并批量启用、禁用、删除或导入脚本。</p>
-    </td>
-    <td width="50%">
-      <img src="assets/screenshots/setup.png" alt="ShimX 设置页" />
-      <p><strong>桌面端设置中心</strong><br />统一管理语言、主题、主题色、快捷方式、工具过滤、官方登录和代理接管端口。</p>
-    </td>
+    <td width="36%"><img src="assets/screenshots/o_delete_session.png" alt="单条会话导出与删除" width="100%" /></td>
+    <td valign="top"><strong>单条会话操作</strong><br />在 Codex 侧栏会话菜单中直接导出 Markdown、HTML、原始数据或删除当前会话。</td>
+  </tr>
+</table>
+
+### 自动切换与扩展
+
+<table>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/providers_full.png" alt="自动切换与工具过滤" width="100%" /></td>
+    <td valign="top"><strong>自动切换与工具过滤</strong><br />配置故障转移、最快优先、慢响应阈值、同家模型策略,并按关键词过滤工具。</td>
+  </tr>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/script_edit.png" alt="用户脚本编辑器" width="100%" /></td>
+    <td valign="top"><strong>用户脚本编辑器</strong><br />内置 JavaScript 编辑器,支持 metadata、自动保存、热运行、运行时刷新和控制台入口。</td>
+  </tr>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/plugin_pull.png" alt="插件解锁" width="100%" /></td>
+    <td valign="top"><strong>Codex 插件解锁</strong><br />从镜像、GitHub 或本地 ZIP 安装 curated plugin marketplace,并写入 Codex 配置。</td>
+  </tr>
+</table>
+
+### 桌面管理
+
+<table>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/scripts_layout.png" alt="用户脚本列表" width="100%" /></td>
+    <td valign="top"><strong>脚本列表与批量管理</strong><br />在主窗口中查看脚本 metadata,并批量启用、禁用、删除或导入脚本。</td>
+  </tr>
+  <tr>
+    <td width="36%"><img src="assets/screenshots/setup.png" alt="ShimX 设置页" width="100%" /></td>
+    <td valign="top"><strong>桌面端设置中心</strong><br />统一管理语言、主题、主题色、快捷方式、工具过滤、官方登录和代理接管端口。</td>
   </tr>
 </table>
 

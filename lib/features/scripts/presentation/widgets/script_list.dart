@@ -50,6 +50,10 @@ class ScriptList extends HookConsumerWidget {
       }
     }
 
+    void handleRefresh() {
+      ref.invalidate(scriptsProvider);
+    }
+
     Future<void> handleDeleteSelected() async {
       final ids = selected.value.where(pageIds.contains).toList();
       if (ids.isEmpty) return;
@@ -104,6 +108,7 @@ class ScriptList extends HookConsumerWidget {
                       }
                       selected.value = next;
                     },
+              onRefresh: handleRefresh,
               onDeleteSelected:
                   selectedOnPage == 0 ? null : () => handleDeleteSelected(),
               onEnableSelected:

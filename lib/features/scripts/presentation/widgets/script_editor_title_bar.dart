@@ -12,6 +12,7 @@ class ScriptEditorTitleBar extends StatelessWidget {
     required this.script,
     required this.dirty,
     required this.running,
+    required this.onRefresh,
     required this.onRun,
     required this.onClose,
   });
@@ -19,6 +20,7 @@ class ScriptEditorTitleBar extends StatelessWidget {
   final InjectScript? script;
   final bool dirty;
   final bool running;
+  final VoidCallback onRefresh;
   final VoidCallback? onRun;
   final VoidCallback onClose;
 
@@ -92,6 +94,13 @@ class ScriptEditorTitleBar extends StatelessWidget {
                   visualDensity: VisualDensity.compact,
                   onPressed: () => ScriptEditorManualDialog.show(context),
                   icon: Icon(Icons.menu_book_rounded, color: fg),
+                ),
+                IconButton(
+                  tooltip: l10n.refresh,
+                  iconSize: 18,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: onRefresh,
+                  icon: Icon(Icons.refresh_rounded, color: fg),
                 ),
                 IconButton(
                   tooltip: l10n.run,

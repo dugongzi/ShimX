@@ -8,6 +8,7 @@ class ScriptListToolbar extends StatelessWidget {
     required this.selectedCount,
     required this.onSelectAll,
     required this.onInvertSelection,
+    required this.onRefresh,
     required this.onDeleteSelected,
     required this.onEnableSelected,
     required this.onDisableSelected,
@@ -16,6 +17,7 @@ class ScriptListToolbar extends StatelessWidget {
   final int selectedCount;
   final VoidCallback? onSelectAll;
   final VoidCallback? onInvertSelection;
+  final VoidCallback onRefresh;
   final VoidCallback? onDeleteSelected;
   final VoidCallback? onEnableSelected;
   final VoidCallback? onDisableSelected;
@@ -39,6 +41,12 @@ class ScriptListToolbar extends StatelessWidget {
             onPressed: onInvertSelection,
             icon: const Icon(Icons.swap_horiz_rounded, size: 18),
             label: Text(context.l10n.invertSelection),
+          ),
+          SizedBox(width: AppSizes.itemGap),
+          TextButton.icon(
+            onPressed: onRefresh,
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: Text(context.l10n.refresh),
           ),
           SizedBox(width: AppSizes.itemGap),
           TextButton.icon(

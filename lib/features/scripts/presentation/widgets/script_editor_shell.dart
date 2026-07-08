@@ -346,6 +346,22 @@ class ScriptEditorShell extends HookConsumerWidget {
       }
     }
 
+    Future<void> handleRefresh() async {
+      ref.invalidate(scriptsProvider);
+      final script = current;
+      if (script == null || dirty.value) return;
+      try {
+        final file = File(script.filePath);
+        if (!await file.exists()) return;
+        final diskCode = await file.readAsString();
+        controller.text = diskCode;
+        lastSavedContent.value = diskCode;
+        dirty.value = false;
+      } catch (_) {
+        // 刷新失败不打断编辑。
+      }
+    }
+
     void selectScript(InjectScript script) {
       if (script.id == selectedId.value) return;
       selectedId.value = script.id;
@@ -370,6 +386,7 @@ class ScriptEditorShell extends HookConsumerWidget {
                 script: current,
                 dirty: dirty.value,
                 running: running.value,
+                onRefresh: handleRefresh,
                 onRun: current != null && !running.value ? handleRun : null,
                 onClose: () => context.pop(),
               ),

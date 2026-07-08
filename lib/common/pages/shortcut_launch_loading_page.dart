@@ -83,81 +83,81 @@ class _LaunchPalette {
   const _LaunchPalette({
     required this.background,
     required this.surface,
+    required this.surfaceHigh,
+    required this.border,
     required this.text,
     required this.mutedText,
     required this.cyan,
     required this.blue,
-    required this.violet,
-    required this.magenta,
+    required this.green,
     required this.backgroundGradient,
     required this.isDark,
   });
 
   final Color background;
   final Color surface;
+  final Color surfaceHigh;
+  final Color border;
   final Color text;
   final Color mutedText;
   final Color cyan;
   final Color blue;
-  final Color violet;
-  final Color magenta;
+  final Color green;
   final Gradient backgroundGradient;
   final bool isDark;
 
   static _LaunchPalette of(BuildContext context) {
     if (context.isDark) {
-      const cyan = Color(0xFF28F4FF);
-      const blue = Color(0xFF256BFF);
-      const violet = Color(0xFF7A35FF);
-      const magenta = Color(0xFFFF4DFF);
+      const cyan = Color(0xFF37D7FF);
+      const blue = Color(0xFF5B7CFF);
+      const green = Color(0xFF43F0B0);
       return const _LaunchPalette(
-        background: Color(0xFF050712),
-        surface: Color(0xFF0D1230),
-        text: Color(0xFFEFF7FF),
-        mutedText: Color(0xFF9DA7C8),
+        background: Color(0xFF060913),
+        surface: Color(0xCC0B1020),
+        surfaceHigh: Color(0xFF11172A),
+        border: Color(0x334E668F),
+        text: Color(0xFFF4F8FF),
+        mutedText: Color(0xFF95A1B8),
         cyan: cyan,
         blue: blue,
-        violet: violet,
-        magenta: magenta,
+        green: green,
         isDark: true,
         backgroundGradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF070A18),
-            Color(0xFF0C1330),
-            Color(0xFF110924),
-            Color(0xFF050712),
+            Color(0xFF060913),
+            Color(0xFF0A1222),
+            Color(0xFF070A12),
           ],
-          stops: [0, 0.36, 0.72, 1],
+          stops: [0, 0.54, 1],
         ),
       );
     }
 
-    const cyan = Color(0xFF00DDF4);
-    const blue = Color(0xFF2463FF);
-    const violet = Color(0xFF7143FF);
-    const magenta = Color(0xFFE843FF);
+    const cyan = Color(0xFF0CBAD3);
+    const blue = Color(0xFF4268F5);
+    const green = Color(0xFF16B886);
     return const _LaunchPalette(
-      background: Color(0xFFF5FAFF),
-      surface: Color(0xFFFFFFFF),
-      text: Color(0xFF171B34),
-      mutedText: Color(0xFF68718F),
+      background: Color(0xFFF6F9FC),
+      surface: Color(0xEFFFFFFF),
+      surfaceHigh: Color(0xFFFFFFFF),
+      border: Color(0x2233495F),
+      text: Color(0xFF151A24),
+      mutedText: Color(0xFF687286),
       cyan: cyan,
       blue: blue,
-      violet: violet,
-      magenta: magenta,
+      green: green,
       isDark: false,
       backgroundGradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Color(0xFFF8FDFF),
-          Color(0xFFEFF6FF),
-          Color(0xFFF8F0FF),
-          Color(0xFFF6FBFF),
+          Color(0xFFF8FBFE),
+          Color(0xFFEFF5FA),
+          Color(0xFFF7FAFD),
         ],
-        stops: [0, 0.38, 0.76, 1],
+        stops: [0, 0.58, 1],
       ),
     );
   }
@@ -183,107 +183,141 @@ class _LaunchPanel extends StatelessWidget {
     return AnimatedBuilder(
       animation: Listenable.merge([flow, pulse]),
       builder: (context, child) {
-        final lift = math.sin(flow.value * math.pi * 2) * 5;
+        final lift = math.sin(flow.value * math.pi * 2) * 2;
 
         return Transform.translate(offset: Offset(0, lift), child: child);
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _LaunchGlyph(flow: flow, pulse: pulse, palette: palette),
-          SizedBox(height: 26.ch(min: 20, max: 34)),
-          _GradientText(
-            title,
-            palette: palette,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-              height: 1.05,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: 34.cw(min: 24, max: 42),
+          vertical: 36.ch(min: 28, max: 44),
+        ),
+        decoration: BoxDecoration(
+          color: palette.surface,
+          borderRadius: BorderRadius.circular(28.cr(min: 22, max: 30)),
+          border: Border.all(color: palette.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: palette.isDark ? 0.26 : 0.08),
+              blurRadius: 34,
+              offset: const Offset(0, 22),
             ),
-          ),
-          SizedBox(height: 14.ch(min: 10, max: 18)),
-          AnimatedBuilder(
-            animation: pulse,
-            builder: (context, child) {
-              final textColor = Color.lerp(
-                palette.cyan,
-                palette.magenta,
-                pulse.value,
-              )!;
-
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Flexible(
-                    child: Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: textColor,
-                        fontWeight: FontWeight.w800,
-                        height: 1.25,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8.cw(min: 6, max: 10)),
-                  _LoadingDots(animation: flow, palette: palette),
-                ],
-              );
-            },
-          ),
-        ],
+            BoxShadow(
+              color: palette.cyan.withValues(
+                alpha: palette.isDark ? 0.07 : 0.10,
+              ),
+              blurRadius: 42,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _LaunchGlyph(flow: flow, pulse: pulse, palette: palette),
+            SizedBox(height: 28.ch(min: 22, max: 34)),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: palette.text,
+                fontWeight: FontWeight.w800,
+                height: 1.05,
+              ),
+            ),
+            SizedBox(height: 10.ch(min: 8, max: 12)),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: palette.mutedText,
+                fontWeight: FontWeight.w600,
+                height: 1.35,
+              ),
+            ),
+            SizedBox(height: 24.ch(min: 18, max: 28)),
+            _LaunchStatusBar(animation: flow, palette: palette),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _GradientText extends StatelessWidget {
-  const _GradientText(
-    this.text, {
-    required this.palette,
-    required this.style,
-  });
+class _LaunchStatusBar extends StatelessWidget {
+  const _LaunchStatusBar({required this.animation, required this.palette});
 
-  final String text;
+  final Animation<double> animation;
   final _LaunchPalette palette;
-  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) {
-        return LinearGradient(
-          colors: [
-            palette.cyan,
-            palette.blue,
-            palette.violet,
-            palette.magenta,
-          ],
-        ).createShader(bounds);
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) {
+        return SizedBox(
+          width: 188.cw(min: 154, max: 214),
+          height: 16.ch(min: 14, max: 18),
+          child: CustomPaint(
+            painter: _LaunchStatusBarPainter(
+              progress: animation.value,
+              palette: palette,
+            ),
+          ),
+        );
       },
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: style?.copyWith(
-          color: Colors.white,
-          shadows: [
-            Shadow(
-              color: palette.cyan.withValues(
-                alpha: palette.isDark ? 0.28 : 0.18,
-              ),
-              blurRadius: palette.isDark ? 18 : 12,
-            ),
-            Shadow(
-              color: palette.magenta.withValues(
-                alpha: palette.isDark ? 0.16 : 0.10,
-              ),
-              blurRadius: palette.isDark ? 22 : 14,
-            ),
-          ],
-        ),
-      ),
     );
+  }
+}
+
+class _LaunchStatusBarPainter extends CustomPainter {
+  const _LaunchStatusBarPainter({
+    required this.progress,
+    required this.palette,
+  });
+
+  final double progress;
+  final _LaunchPalette palette;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final trackRect = Rect.fromLTWH(0, size.height / 2 - 2, size.width, 4);
+    final track = RRect.fromRectAndRadius(trackRect, const Radius.circular(999));
+    final trackPaint = Paint()
+      ..color = palette.border.withValues(alpha: palette.isDark ? 0.9 : 0.72);
+    canvas.drawRRect(track, trackPaint);
+
+    final sweepWidth = size.width * 0.32;
+    final sweepX = (size.width + sweepWidth) * progress - sweepWidth;
+    final sweepRect = Rect.fromLTWH(sweepX, trackRect.top, sweepWidth, 4);
+    final sweepPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          Colors.transparent,
+          palette.cyan.withValues(alpha: 0.95),
+          palette.green.withValues(alpha: 0.78),
+          Colors.transparent,
+        ],
+      ).createShader(sweepRect);
+    canvas.save();
+    canvas.clipRRect(track);
+    canvas.drawRect(sweepRect, sweepPaint);
+    canvas.restore();
+
+    final dotPaint = Paint()
+      ..color = palette.green.withValues(alpha: palette.isDark ? 0.92 : 0.85);
+    canvas.drawCircle(
+      Offset(size.width - 4, size.height / 2),
+      3,
+      dotPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _LaunchStatusBarPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.palette != palette;
   }
 }
 
@@ -300,12 +334,12 @@ class _LaunchGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = 112.cr(min: 88, max: 128);
+    final size = 108.cr(min: 88, max: 118);
 
     return AnimatedBuilder(
       animation: Listenable.merge([flow, pulse]),
       builder: (context, child) {
-        final scale = 0.96 + pulse.value * 0.055;
+        final scale = 0.985 + pulse.value * 0.025;
 
         return Transform.scale(
           scale: scale,
@@ -322,57 +356,26 @@ class _LaunchGlyph extends StatelessWidget {
           ),
         );
       },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18.cr(min: 14, max: 20)),
-        child: Image.asset(
-          'assets/images/icon.png',
-          width: 58.cr(min: 44, max: 66),
-          height: 58.cr(min: 44, max: 66),
-          fit: BoxFit.contain,
-          filterQuality: FilterQuality.high,
+      child: Container(
+        width: 68.cr(min: 56, max: 74),
+        height: 68.cr(min: 56, max: 74),
+        padding: EdgeInsets.all(10.cr(min: 8, max: 11)),
+        decoration: BoxDecoration(
+          color: palette.surfaceHigh.withValues(
+            alpha: palette.isDark ? 0.86 : 0.96,
+          ),
+          borderRadius: BorderRadius.circular(20.cr(min: 16, max: 22)),
+          border: Border.all(color: palette.border),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14.cr(min: 11, max: 16)),
+          child: Image.asset(
+            'assets/images/icon.png',
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+          ),
         ),
       ),
-    );
-  }
-}
-
-class _LoadingDots extends StatelessWidget {
-  const _LoadingDots({required this.animation, required this.palette});
-
-  final Animation<double> animation;
-  final _LaunchPalette palette;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animation,
-      builder: (context, _) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(3, (index) {
-            final phase = (animation.value + index * 0.18) % 1;
-            final opacity = 0.28 + (math.sin(phase * math.pi * 2) + 1) * 0.34;
-            final y = -math.sin(phase * math.pi * 2) * 3;
-
-            return Transform.translate(
-              offset: Offset(0, y),
-              child: Container(
-                width: 5.cr(min: 4, max: 6),
-                height: 5.cr(min: 4, max: 6),
-                margin: EdgeInsets.only(left: index == 0 ? 0 : 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color.lerp(
-                    palette.cyan,
-                    palette.magenta,
-                    index / 2,
-                  )!.withValues(alpha: opacity),
-                ),
-              ),
-            );
-          }),
-        );
-      },
     );
   }
 }
@@ -388,106 +391,47 @@ class _LaunchBackgroundPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final linePaint = Paint()
+    final center = Offset(size.width * 0.5, size.height * 0.42);
+    final glowPaint = Paint()
+      ..shader = RadialGradient(
+        colors: [
+          palette.cyan.withValues(alpha: palette.isDark ? 0.11 : 0.16),
+          palette.blue.withValues(alpha: palette.isDark ? 0.055 : 0.08),
+          Colors.transparent,
+        ],
+      ).createShader(
+        Rect.fromCircle(center: center, radius: size.shortestSide * 0.52),
+      );
+    canvas.drawCircle(center, size.shortestSide * 0.52, glowPaint);
+
+    final railPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
-      ..color = palette.cyan.withValues(alpha: palette.isDark ? 0.035 : 0.075);
-    final accentPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..strokeCap = StrokeCap.round
-      ..color = palette.magenta.withValues(alpha: palette.isDark ? 0.055 : 0.12);
-
-    final spacing = 42.0;
-    final offset = progress * spacing * 2;
-    for (double x = -size.height; x < size.width + size.height; x += spacing) {
-      canvas.drawLine(
-        Offset(x + offset, 0),
-        Offset(x + offset + size.height * 0.45, size.height),
-        linePaint,
-      );
-    }
-
-    final path = Path();
-    final baseY = size.height * 0.72;
-    path.moveTo(0, baseY);
-    for (double x = 0; x <= size.width; x += 28) {
-      final wave = math.sin(
-        (x / size.width * 2 * math.pi) + progress * 2 * math.pi,
-      );
-      path.lineTo(x, baseY + wave * 14);
-    }
-    canvas.drawPath(path, accentPaint);
-
-    _drawVitalLine(
-      canvas,
-      size,
-      yFactor: 0.36,
-      amplitude: 18,
-      phase: progress * math.pi * 2,
-      color: palette.cyan,
-    );
-    _drawVitalLine(
-      canvas,
-      size,
-      yFactor: 0.62,
-      amplitude: 12,
-      phase: progress * math.pi * 2 + math.pi * 0.82,
-      color: palette.magenta,
+      ..color = palette.border.withValues(alpha: palette.isDark ? 0.30 : 0.34);
+    final railY = size.height * 0.86;
+    canvas.drawLine(
+      Offset(size.width * 0.18, railY),
+      Offset(size.width * 0.82, railY),
+      railPaint,
     );
 
-    final sweepWidth = size.width * 0.42;
+    final sweepWidth = size.width * 0.18;
     final sweepX = (size.width + sweepWidth) * progress - sweepWidth;
-    final railY = size.height * 0.88;
-    final railPaint = Paint()
+    final sweepPaint = Paint()
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          palette.cyan.withValues(alpha: palette.isDark ? 0.26 : 0.52),
-          palette.magenta.withValues(alpha: palette.isDark ? 0.22 : 0.46),
+          palette.cyan.withValues(alpha: palette.isDark ? 0.28 : 0.45),
           Colors.transparent,
         ],
       ).createShader(Rect.fromLTWH(sweepX, railY - 1, sweepWidth, 2));
     canvas.drawLine(
       Offset(sweepX, railY),
       Offset(sweepX + sweepWidth, railY),
-      railPaint,
+      sweepPaint,
     );
-  }
-
-  void _drawVitalLine(
-    Canvas canvas,
-    Size size, {
-    required double yFactor,
-    required double amplitude,
-    required double phase,
-    required Color color,
-  }) {
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2
-      ..strokeCap = StrokeCap.round
-      ..color = color.withValues(alpha: palette.isDark ? 0.10 : 0.16);
-    final glowPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
-      ..strokeCap = StrokeCap.round
-      ..color = color.withValues(alpha: palette.isDark ? 0.025 : 0.045);
-
-    final path = Path();
-    final baseY = size.height * yFactor;
-    path.moveTo(size.width * 0.08, baseY);
-    for (double x = size.width * 0.08; x <= size.width * 0.92; x += 22) {
-      final normalized = x / size.width;
-      final wave =
-          math.sin(normalized * math.pi * 2.4 + phase) * amplitude +
-          math.sin(normalized * math.pi * 5.2 - phase * 0.72) * amplitude * 0.34;
-      path.lineTo(x, baseY + wave);
-    }
-    canvas.drawPath(path, glowPaint);
-    canvas.drawPath(path, paint);
   }
 
   @override
@@ -513,50 +457,58 @@ class _LaunchGlyphPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = size.shortestSide / 2;
 
-    final fillPaint = Paint()
+    final haloPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          palette.cyan.withValues(alpha: palette.isDark ? 0.14 : 0.22),
-          palette.violet.withValues(alpha: palette.isDark ? 0.06 : 0.14),
+          palette.cyan.withValues(alpha: palette.isDark ? 0.16 : 0.18),
+          palette.blue.withValues(alpha: palette.isDark ? 0.06 : 0.10),
           Colors.transparent,
         ],
       ).createShader(Offset.zero & size);
-    canvas.drawCircle(center, radius, fillPaint);
+    canvas.drawCircle(center, radius, haloPaint);
 
-    final outerPaint = Paint()
+    final outerRingPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2
-      ..color = palette.cyan.withValues(
-        alpha: palette.isDark ? 0.12 + pulse * 0.08 : 0.20 + pulse * 0.16,
-      );
-    canvas.drawCircle(center, radius - 5, outerPaint);
+      ..strokeWidth = 1
+      ..color = palette.border.withValues(alpha: palette.isDark ? 0.95 : 0.72);
+    canvas.drawCircle(center, radius - 5, outerRingPaint);
 
     final arcPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 4
+      ..strokeWidth = 3
       ..shader = SweepGradient(
         startAngle: 0,
         endAngle: math.pi * 2,
         transform: GradientRotation(progress * math.pi * 2),
         colors: [
-          palette.cyan.withValues(alpha: 0.12),
-          palette.magenta.withValues(alpha: 0.85),
-          palette.blue.withValues(alpha: 0.92),
-          palette.cyan.withValues(alpha: 0.12),
+          palette.cyan.withValues(alpha: 0.08),
+          palette.cyan.withValues(alpha: 0.92),
+          palette.green.withValues(alpha: 0.74),
+          palette.cyan.withValues(alpha: 0.08),
         ],
       ).createShader(Offset.zero & size);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius - 12),
       -math.pi / 2 + progress * math.pi * 2,
-      math.pi * 1.35,
+      math.pi * 1.12,
       false,
       arcPaint,
     );
 
     final innerPaint = Paint()
-      ..color = palette.surface.withValues(alpha: palette.isDark ? 0.58 : 0.76);
+      ..color = palette.surface.withValues(alpha: palette.isDark ? 0.70 : 0.80);
     canvas.drawCircle(center, radius - 26, innerPaint);
+
+    final pinPaint = Paint()
+      ..color = palette.green.withValues(
+        alpha: palette.isDark ? 0.62 + pulse * 0.24 : 0.50 + pulse * 0.18,
+      );
+    canvas.drawCircle(
+      Offset(center.dx + radius * 0.58, center.dy - radius * 0.48),
+      3.2,
+      pinPaint,
+    );
   }
 
   @override

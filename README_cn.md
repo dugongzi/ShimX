@@ -255,6 +255,100 @@ flutter run -d macos
 
 项目使用 Riverpod Generator、Freezed 和 JSON Serializable,日常开发建议保持 `build_runner watch` 运行。
 
+## 构建与打包
+
+### Windows Release
+
+先构建 Flutter Windows release:
+
+```powershell
+flutter build windows --release
+```
+
+产物目录:
+
+```text
+build\windows\x64\runner\Release\
+```
+
+这个目录必须完整保留,包括 `shimx.exe`、`flutter_windows.dll`、插件 DLL、`data/` 和 `native_assets.json`。
+
+### Windows MSI 安装包
+
+ShimX 使用 WiX Toolset 生成标准 Windows Installer `.msi`。打包脚本位于:
+
+```text
+tool\build_windows_msi.ps1
+```
+
+安装前置工具:
+
+```powershell
+dotnet tool install --global wix
+& "$env:USERPROFILE\.dotnet\tools\wix.exe" eula accept wix7
+& "$env:USERPROFILE\.dotnet\tools\wix.exe" extension add WixToolset.UI.wixext
+```
+
+如果机器没有 .NET SDK,先安装 SDK 后再安装 WiX。没有 `winget` 时可使用 Microsoft 官方 `dotnet-install.ps1` 安装到用户目录。
+
+生成 MSI:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tool\build_windows_msi.ps1 -AcceptWix7Eula
+```
+
+默认会生成两个本地化 MSI:
+
+```text
+dist\ShimX-1.0.0-x64-zh-CN.msi
+dist\ShimX-1.0.0-x64-en-US.msi
+```
+
+如只生成单一语言:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tool\build_windows_msi.ps1 -AcceptWix7Eula -Cultures zh-CN
+powershell -ExecutionPolicy Bypass -File .\tool\build_windows_msi.ps1 -AcceptWix7Eula -Cultures en-US
+```
+
+- `dist/`、`.tmp/` 和 `.wix/` 是本地打包产物或缓存,不会进入版本控制。
+
+### macOS 打包
+
+Flutter macOS 不能在 Windows 本机交叉编译。macOS 包必须在 macOS + Xcode 环境构建,可以使用实体 Mac、云 Mac 或 GitHub Actions/Codemagic 的 macOS runner。
+
+在 macOS 上构建 release:
+
+```bash
+flutter build macos --release
+```
+
+产物:
+
+```text
+build/macos/Build/Products/Release/shimx.app
+```
+
+生成标准 `.pkg` 安装器:
+
+```bash
+mkdir -p dist
+productbuild \
+  --component build/macos/Build/Products/Release/shimx.app /Applications \
+  dist/ShimX-1.0.0.pkg
+```
+
+公开分发给普通用户时还需要 Apple Developer ID 签名和公证:
+
+```bash
+codesign --deep --force --options runtime --sign "Developer ID Application: <Name>" shimx.app
+productbuild --sign "Developer ID Installer: <Name>" ...
+xcrun notarytool submit ... --wait
+xcrun stapler staple ...
+```
+
+常见用户分发也可以制作 `.dmg`,但严格的 macOS 标准安装器是 `.pkg`。
+
 ## 重要数据位置
 
 - Codex Home: 优先使用 `CODEX_HOME`,否则默认 `~/.codex`。

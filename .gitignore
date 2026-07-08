@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/.tmp/
+/.wix/
+/dist/
 
 # Symbolication related
 app.*.symbols

@@ -134,6 +134,34 @@
   "confirm": "确认",
   "cancel": "取消",
   "settingsPersistedDescription": "这些设置会通过 SharedPreferencesAsync 持久化保存。",
+  "updateDownload": "下载更新",
+  "updateDownloadFailed": "打开下载失败：{message}",
+  "@updateDownloadFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "updateAvailableTitle": "发现新版本",
+  "updateAvailableVersion": "有新版本：{version}",
+  "@updateAvailableVersion": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+  "updateForceBadge": "强制",
+  "updateLog": "更新日志",
+  "updateLogDescription": "查看已发布版本时间线",
+  "updateLogOpen": "查看",
+  "updateLogEmpty": "暂无更新日志",
+  "updateLogLoadFailed": "更新日志加载失败：{message}",
+  "@updateLogLoadFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "updateLogCurrentSystem": "当前系统",
+  "updateLogAllSystems": "全部系统",
+  "updateCardNoChangelog": "暂无更新说明",
 
   "providers": "供应商",
   "addProvider": "新增",

@@ -692,6 +692,84 @@ abstract class AppLocalizations {
   /// **'这些设置会通过 SharedPreferencesAsync 持久化保存。'**
   String get settingsPersistedDescription;
 
+  /// No description provided for @updateDownload.
+  ///
+  /// In zh, this message translates to:
+  /// **'下载更新'**
+  String get updateDownload;
+
+  /// No description provided for @updateDownloadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'打开下载失败：{message}'**
+  String updateDownloadFailed(String message);
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'发现新版本'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateAvailableVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'有新版本：{version}'**
+  String updateAvailableVersion(String version);
+
+  /// No description provided for @updateForceBadge.
+  ///
+  /// In zh, this message translates to:
+  /// **'强制'**
+  String get updateForceBadge;
+
+  /// No description provided for @updateLog.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新日志'**
+  String get updateLog;
+
+  /// No description provided for @updateLogDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看已发布版本时间线'**
+  String get updateLogDescription;
+
+  /// No description provided for @updateLogOpen.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看'**
+  String get updateLogOpen;
+
+  /// No description provided for @updateLogEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无更新日志'**
+  String get updateLogEmpty;
+
+  /// No description provided for @updateLogLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新日志加载失败：{message}'**
+  String updateLogLoadFailed(String message);
+
+  /// No description provided for @updateLogCurrentSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前系统'**
+  String get updateLogCurrentSystem;
+
+  /// No description provided for @updateLogAllSystems.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部系统'**
+  String get updateLogAllSystems;
+
+  /// No description provided for @updateCardNoChangelog.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无更新说明'**
+  String get updateCardNoChangelog;
+
   /// No description provided for @providers.
   ///
   /// In zh, this message translates to:

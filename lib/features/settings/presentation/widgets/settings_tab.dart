@@ -18,6 +18,7 @@ import 'package:shimx/features/providers/presentation/widgets/proxy_card.dart';
 import 'package:shimx/features/settings/presentation/widgets/app_version_line.dart';
 import 'package:shimx/features/settings/presentation/widgets/setting_card.dart';
 import 'package:shimx/features/settings/presentation/widgets/tool_filter_keywords_dialog.dart';
+import 'package:shimx/features/update/presentation/widgets/update_changelog_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsTab extends ConsumerWidget {
@@ -28,7 +29,6 @@ class SettingsTab extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final themeMode = ref.watch(themeModeProvider);
     final themeColor = ref.watch(themeColorProvider);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return WorkspaceSurface(
       child: ListView(
@@ -193,6 +193,19 @@ class SettingsTab extends ConsumerWidget {
           ),
           SizedBox(height: AppSizes.itemGap),
           SettingCard(
+            icon: Icons.history_rounded,
+            title: context.l10n.updateLog,
+            description: context.l10n.updateLogDescription,
+            child: FilledButton.tonalIcon(
+              onPressed: () => SmartDialog.show(
+                builder: (_) => const UpdateChangelogDialog(),
+              ),
+              icon: const Icon(Icons.timeline_rounded),
+              label: Text(context.l10n.updateLogOpen),
+            ),
+          ),
+          SizedBox(height: AppSizes.itemGap),
+          SettingCard(
             icon: Icons.verified_user_rounded,
             title: context.l10n.requiresOpenaiAuthTitle,
             description: context.l10n.requiresOpenaiAuthDescription,
@@ -206,13 +219,6 @@ class SettingsTab extends ConsumerWidget {
           SizedBox(height: AppSizes.itemGap),
           const ProxyCard(),
           SizedBox(height: AppSizes.sectionGap),
-          Text(
-            context.l10n.settingsPersistedDescription,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-          ),
-          SizedBox(height: AppSizes.itemGap),
           const AppVersionLine(),
         ],
       ),

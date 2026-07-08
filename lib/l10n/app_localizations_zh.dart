@@ -328,6 +328,51 @@ class AppLocalizationsZh extends AppLocalizations {
       '这些设置会通过 SharedPreferencesAsync 持久化保存。';
 
   @override
+  String get updateDownload => '下载更新';
+
+  @override
+  String updateDownloadFailed(String message) {
+    return '打开下载失败：$message';
+  }
+
+  @override
+  String get updateAvailableTitle => '发现新版本';
+
+  @override
+  String updateAvailableVersion(String version) {
+    return '有新版本：$version';
+  }
+
+  @override
+  String get updateForceBadge => '强制';
+
+  @override
+  String get updateLog => '更新日志';
+
+  @override
+  String get updateLogDescription => '查看已发布版本时间线';
+
+  @override
+  String get updateLogOpen => '查看';
+
+  @override
+  String get updateLogEmpty => '暂无更新日志';
+
+  @override
+  String updateLogLoadFailed(String message) {
+    return '更新日志加载失败：$message';
+  }
+
+  @override
+  String get updateLogCurrentSystem => '当前系统';
+
+  @override
+  String get updateLogAllSystems => '全部系统';
+
+  @override
+  String get updateCardNoChangelog => '暂无更新说明';
+
+  @override
   String get providers => '供应商';
 
   @override

@@ -332,6 +332,51 @@ class AppLocalizationsEn extends AppLocalizations {
       'These settings are persisted with SharedPreferencesAsync.';
 
   @override
+  String get updateDownload => 'Download update';
+
+  @override
+  String updateDownloadFailed(String message) {
+    return 'Failed to open download: $message';
+  }
+
+  @override
+  String get updateAvailableTitle => 'New version available';
+
+  @override
+  String updateAvailableVersion(String version) {
+    return 'New version: $version';
+  }
+
+  @override
+  String get updateForceBadge => 'Required';
+
+  @override
+  String get updateLog => 'Update log';
+
+  @override
+  String get updateLogDescription => 'View the published version timeline';
+
+  @override
+  String get updateLogOpen => 'View';
+
+  @override
+  String get updateLogEmpty => 'No update log yet';
+
+  @override
+  String updateLogLoadFailed(String message) {
+    return 'Failed to load update log: $message';
+  }
+
+  @override
+  String get updateLogCurrentSystem => 'Current OS';
+
+  @override
+  String get updateLogAllSystems => 'All OS';
+
+  @override
+  String get updateCardNoChangelog => 'No changelog provided';
+
+  @override
   String get providers => 'Providers';
 
   @override

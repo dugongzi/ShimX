@@ -3,6 +3,8 @@ import 'package:shimx/core/constants/app_sizes.dart';
 import 'package:shimx/features/home/presentation/widgets/inject_icon.dart';
 import 'package:shimx/features/home/presentation/widgets/open_inspector_icon.dart';
 import 'package:shimx/features/home/presentation/widgets/reload_codex_icon.dart';
+import 'package:shimx/features/update/presentation/widgets/sidebar_update_card.dart';
+import 'package:shimx/features/update/presentation/widgets/update_download_icon.dart';
 
 /// 侧栏顶部品牌区:SHIMX wordmark + 下方一行小图标动作。
 class SidebarBrand extends StatelessWidget {
@@ -67,10 +69,12 @@ class SidebarBrand extends StatelessWidget {
                   ReloadCodexIcon(debugPort: debugPort),
                   const SizedBox(width: 4),
                   InjectIcon(debugPort: debugPort),
+                  const UpdateDownloadIcon(),
                 ],
               ),
             ),
           ),
+          const SidebarUpdateCard(),
         ],
       ),
     );

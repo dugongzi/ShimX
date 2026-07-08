@@ -134,6 +134,34 @@
   "confirm": "Confirm",
   "cancel": "Cancel",
   "settingsPersistedDescription": "These settings are persisted with SharedPreferencesAsync.",
+  "updateDownload": "Download update",
+  "updateDownloadFailed": "Failed to open download: {message}",
+  "@updateDownloadFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "updateAvailableTitle": "New version available",
+  "updateAvailableVersion": "New version: {version}",
+  "@updateAvailableVersion": {
+    "placeholders": {
+      "version": {"type": "String"}
+    }
+  },
+  "updateForceBadge": "Required",
+  "updateLog": "Update log",
+  "updateLogDescription": "View the published version timeline",
+  "updateLogOpen": "View",
+  "updateLogEmpty": "No update log yet",
+  "updateLogLoadFailed": "Failed to load update log: {message}",
+  "@updateLogLoadFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "updateLogCurrentSystem": "Current OS",
+  "updateLogAllSystems": "All OS",
+  "updateCardNoChangelog": "No changelog provided",
 
   "providers": "Providers",
   "addProvider": "Add",

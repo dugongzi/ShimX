@@ -620,6 +620,60 @@ abstract class AppLocalizations {
   /// **'脚本'**
   String get scripts;
 
+  /// No description provided for @localScripts.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地'**
+  String get localScripts;
+
+  /// No description provided for @remoteScripts.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程'**
+  String get remoteScripts;
+
+  /// No description provided for @installScript.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装'**
+  String get installScript;
+
+  /// No description provided for @updateScript.
+  ///
+  /// In zh, this message translates to:
+  /// **'更新'**
+  String get updateScript;
+
+  /// No description provided for @restoreScript.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复'**
+  String get restoreScript;
+
+  /// No description provided for @scriptInstalled.
+  ///
+  /// In zh, this message translates to:
+  /// **'已安装'**
+  String get scriptInstalled;
+
+  /// No description provided for @remoteScriptsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无远程脚本'**
+  String get remoteScriptsEmpty;
+
+  /// No description provided for @remoteScriptInstallSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程脚本已安装'**
+  String get remoteScriptInstallSuccess;
+
+  /// No description provided for @remoteScriptInstallFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'安装失败：{message}'**
+  String remoteScriptInstallFailed(String message);
+
   /// No description provided for @noScripts.
   ///
   /// In zh, this message translates to:

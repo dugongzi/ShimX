@@ -1,0 +1,283 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'remote_script_catalog.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$RemoteScriptCatalog {
+
+ int get version; String get updatedAt; List<RemoteScript> get items;
+/// Create a copy of RemoteScriptCatalog
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RemoteScriptCatalogCopyWith<RemoteScriptCatalog> get copyWith => _$RemoteScriptCatalogCopyWithImpl<RemoteScriptCatalog>(this as RemoteScriptCatalog, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RemoteScriptCatalog&&(identical(other.version, version) || other.version == version)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&const DeepCollectionEquality().equals(other.items, items));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,version,updatedAt,const DeepCollectionEquality().hash(items));
+
+@override
+String toString() {
+  return 'RemoteScriptCatalog(version: $version, updatedAt: $updatedAt, items: $items)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RemoteScriptCatalogCopyWith<$Res>  {
+  factory $RemoteScriptCatalogCopyWith(RemoteScriptCatalog value, $Res Function(RemoteScriptCatalog) _then) = _$RemoteScriptCatalogCopyWithImpl;
+@useResult
+$Res call({
+ int version, String updatedAt, List<RemoteScript> items
+});
+
+
+
+
+}
+/// @nodoc
+class _$RemoteScriptCatalogCopyWithImpl<$Res>
+    implements $RemoteScriptCatalogCopyWith<$Res> {
+  _$RemoteScriptCatalogCopyWithImpl(this._self, this._then);
+
+  final RemoteScriptCatalog _self;
+  final $Res Function(RemoteScriptCatalog) _then;
+
+/// Create a copy of RemoteScriptCatalog
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? updatedAt = null,Object? items = null,}) {
+  return _then(_self.copyWith(
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<RemoteScript>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [RemoteScriptCatalog].
+extension RemoteScriptCatalogPatterns on RemoteScriptCatalog {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RemoteScriptCatalog value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RemoteScriptCatalog() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RemoteScriptCatalog value)  $default,){
+final _that = this;
+switch (_that) {
+case _RemoteScriptCatalog():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RemoteScriptCatalog value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RemoteScriptCatalog() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  String updatedAt,  List<RemoteScript> items)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RemoteScriptCatalog() when $default != null:
+return $default(_that.version,_that.updatedAt,_that.items);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  String updatedAt,  List<RemoteScript> items)  $default,) {final _that = this;
+switch (_that) {
+case _RemoteScriptCatalog():
+return $default(_that.version,_that.updatedAt,_that.items);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  String updatedAt,  List<RemoteScript> items)?  $default,) {final _that = this;
+switch (_that) {
+case _RemoteScriptCatalog() when $default != null:
+return $default(_that.version,_that.updatedAt,_that.items);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _RemoteScriptCatalog extends RemoteScriptCatalog {
+  const _RemoteScriptCatalog({required this.version, required this.updatedAt, required final  List<RemoteScript> items}): _items = items,super._();
+  
+
+@override final  int version;
+@override final  String updatedAt;
+ final  List<RemoteScript> _items;
+@override List<RemoteScript> get items {
+  if (_items is EqualUnmodifiableListView) return _items;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_items);
+}
+
+
+/// Create a copy of RemoteScriptCatalog
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RemoteScriptCatalogCopyWith<_RemoteScriptCatalog> get copyWith => __$RemoteScriptCatalogCopyWithImpl<_RemoteScriptCatalog>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RemoteScriptCatalog&&(identical(other.version, version) || other.version == version)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&const DeepCollectionEquality().equals(other._items, _items));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,version,updatedAt,const DeepCollectionEquality().hash(_items));
+
+@override
+String toString() {
+  return 'RemoteScriptCatalog(version: $version, updatedAt: $updatedAt, items: $items)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RemoteScriptCatalogCopyWith<$Res> implements $RemoteScriptCatalogCopyWith<$Res> {
+  factory _$RemoteScriptCatalogCopyWith(_RemoteScriptCatalog value, $Res Function(_RemoteScriptCatalog) _then) = __$RemoteScriptCatalogCopyWithImpl;
+@override @useResult
+$Res call({
+ int version, String updatedAt, List<RemoteScript> items
+});
+
+
+
+
+}
+/// @nodoc
+class __$RemoteScriptCatalogCopyWithImpl<$Res>
+    implements _$RemoteScriptCatalogCopyWith<$Res> {
+  __$RemoteScriptCatalogCopyWithImpl(this._self, this._then);
+
+  final _RemoteScriptCatalog _self;
+  final $Res Function(_RemoteScriptCatalog) _then;
+
+/// Create a copy of RemoteScriptCatalog
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? updatedAt = null,Object? items = null,}) {
+  return _then(_RemoteScriptCatalog(
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<RemoteScript>,
+  ));
+}
+
+
+}
+
+// dart format on

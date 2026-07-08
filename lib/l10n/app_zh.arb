@@ -116,6 +116,20 @@
   },
   "injectSuccess": "注入成功",
   "scripts": "脚本",
+  "localScripts": "本地",
+  "remoteScripts": "远程",
+  "installScript": "安装",
+  "updateScript": "更新",
+  "restoreScript": "恢复",
+  "scriptInstalled": "已安装",
+  "remoteScriptsEmpty": "暂无远程脚本",
+  "remoteScriptInstallSuccess": "远程脚本已安装",
+  "remoteScriptInstallFailed": "安装失败：{message}",
+  "@remoteScriptInstallFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
   "noScripts": "暂无脚本",
   "importScript": "导入脚本",
   "selectAll": "全选",

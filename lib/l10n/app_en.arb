@@ -116,6 +116,20 @@
   },
   "injectSuccess": "Injection successful",
   "scripts": "Scripts",
+  "localScripts": "Local",
+  "remoteScripts": "Remote",
+  "installScript": "Install",
+  "updateScript": "Update",
+  "restoreScript": "Restore",
+  "scriptInstalled": "Installed",
+  "remoteScriptsEmpty": "No remote scripts",
+  "remoteScriptInstallSuccess": "Remote script installed",
+  "remoteScriptInstallFailed": "Install failed: {message}",
+  "@remoteScriptInstallFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
   "noScripts": "No scripts",
   "importScript": "Import script",
   "selectAll": "Select all",

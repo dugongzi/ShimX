@@ -10,6 +10,7 @@ import 'package:shimx/features/scripts/presentation/providers/script_action_prov
 import 'package:shimx/features/scripts/presentation/providers/script_query_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimx/core/routes/routes/scripts_route.dart';
+import 'package:shimx/features/scripts/presentation/widgets/remote_script_list.dart';
 import 'package:shimx/features/scripts/presentation/widgets/script_list_body.dart';
 import 'package:shimx/features/scripts/presentation/widgets/script_list_pagination.dart';
 import 'package:shimx/features/scripts/presentation/widgets/script_list_toolbar.dart';
@@ -23,6 +24,7 @@ class ScriptList extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = useState<Set<String>>({});
     final currentPage = useState(1);
+    final showRemote = useState(false);
 
     final scriptsAsync = ref.watch(scriptsProvider);
     final scripts = scriptsAsync.value ?? const <InjectScript>[];
@@ -90,69 +92,94 @@ class ScriptList extends HookConsumerWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ScriptListToolbar(
-              selectedCount: selectedOnPage,
-              onSelectAll: pageItems.isEmpty
-                  ? null
-                  : () => selected.value = {...selected.value, ...pageIds},
-              onInvertSelection: pageItems.isEmpty
-                  ? null
-                  : () {
-                      final next = {...selected.value};
-                      for (final id in pageIds) {
-                        if (next.contains(id)) {
-                          next.remove(id);
-                        } else {
-                          next.add(id);
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    label: Text(context.l10n.localScripts),
+                  ),
+                  ButtonSegment(
+                    value: true,
+                    label: Text(context.l10n.remoteScripts),
+                  ),
+                ],
+                selected: {showRemote.value},
+                onSelectionChanged: (value) {
+                  showRemote.value = value.first;
+                },
+              ),
+            ),
+            SizedBox(height: AppSizes.sectionGap),
+            if (showRemote.value)
+              Expanded(child: RemoteScriptList(localScripts: scripts))
+            else ...[
+              ScriptListToolbar(
+                selectedCount: selectedOnPage,
+                onSelectAll: pageItems.isEmpty
+                    ? null
+                    : () => selected.value = {...selected.value, ...pageIds},
+                onInvertSelection: pageItems.isEmpty
+                    ? null
+                    : () {
+                        final next = {...selected.value};
+                        for (final id in pageIds) {
+                          if (next.contains(id)) {
+                            next.remove(id);
+                          } else {
+                            next.add(id);
+                          }
                         }
-                      }
-                      selected.value = next;
-                    },
-              onRefresh: handleRefresh,
-              onDeleteSelected:
-                  selectedOnPage == 0 ? null : () => handleDeleteSelected(),
-              onEnableSelected:
-                  selectedOnPage == 0 ? null : () => handleSetEnabled(true),
-              onDisableSelected:
-                  selectedOnPage == 0 ? null : () => handleSetEnabled(false),
-            ),
-            SizedBox(height: AppSizes.sectionGap),
-            Expanded(
-              child: ScriptListBody(
-                scriptsAsync: scriptsAsync,
-                pageItems: pageItems,
-                selected: selected,
+                        selected.value = next;
+                      },
+                onRefresh: handleRefresh,
+                onDeleteSelected:
+                    selectedOnPage == 0 ? null : () => handleDeleteSelected(),
+                onEnableSelected:
+                    selectedOnPage == 0 ? null : () => handleSetEnabled(true),
+                onDisableSelected:
+                    selectedOnPage == 0 ? null : () => handleSetEnabled(false),
               ),
-            ),
-            SizedBox(height: AppSizes.sectionGap),
-            ScriptListPagination(
-              currentPage: clampedPage,
-              totalPages: totalPages,
-              onPageSelected: (page) => currentPage.value = page,
-            ),
-          ],
-        ),
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _AccentFab(
-                icon: Icons.file_download_outlined,
-                tooltip: context.l10n.importScript,
-                onTap: () => handleImport(),
+              SizedBox(height: AppSizes.sectionGap),
+              Expanded(
+                child: ScriptListBody(
+                  scriptsAsync: scriptsAsync,
+                  pageItems: pageItems,
+                  selected: selected,
+                ),
               ),
-              const SizedBox(height: 12),
-              _AccentFab(
-                icon: Icons.add_rounded,
-                tooltip: context.l10n.newScript,
-                onTap: () => context.push(ScriptsRoute.toEditorNew()),
+              SizedBox(height: AppSizes.sectionGap),
+              ScriptListPagination(
+                currentPage: clampedPage,
+                totalPages: totalPages,
+                onPageSelected: (page) => currentPage.value = page,
               ),
             ],
-          ),
+          ],
         ),
+        if (!showRemote.value)
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _AccentFab(
+                  icon: Icons.file_download_outlined,
+                  tooltip: context.l10n.importScript,
+                  onTap: () => handleImport(),
+                ),
+                const SizedBox(height: 12),
+                _AccentFab(
+                  icon: Icons.add_rounded,
+                  tooltip: context.l10n.newScript,
+                  onTap: () => context.push(ScriptsRoute.toEditorNew()),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

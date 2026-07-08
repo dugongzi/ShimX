@@ -289,6 +289,35 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scripts => '脚本';
 
   @override
+  String get localScripts => '本地';
+
+  @override
+  String get remoteScripts => '远程';
+
+  @override
+  String get installScript => '安装';
+
+  @override
+  String get updateScript => '更新';
+
+  @override
+  String get restoreScript => '恢复';
+
+  @override
+  String get scriptInstalled => '已安装';
+
+  @override
+  String get remoteScriptsEmpty => '暂无远程脚本';
+
+  @override
+  String get remoteScriptInstallSuccess => '远程脚本已安装';
+
+  @override
+  String remoteScriptInstallFailed(String message) {
+    return '安装失败：$message';
+  }
+
+  @override
   String get noScripts => '暂无脚本';
 
   @override

@@ -293,6 +293,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scripts => 'Scripts';
 
   @override
+  String get localScripts => 'Local';
+
+  @override
+  String get remoteScripts => 'Remote';
+
+  @override
+  String get installScript => 'Install';
+
+  @override
+  String get updateScript => 'Update';
+
+  @override
+  String get restoreScript => 'Restore';
+
+  @override
+  String get scriptInstalled => 'Installed';
+
+  @override
+  String get remoteScriptsEmpty => 'No remote scripts';
+
+  @override
+  String get remoteScriptInstallSuccess => 'Remote script installed';
+
+  @override
+  String remoteScriptInstallFailed(String message) {
+    return 'Install failed: $message';
+  }
+
+  @override
   String get noScripts => 'No scripts';
 
   @override

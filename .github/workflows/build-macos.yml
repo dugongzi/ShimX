@@ -2,17 +2,6 @@ name: Build macOS DMG
 
 on:
   workflow_dispatch:
-    inputs:
-      package:
-        description: macOS package target
-        required: true
-        default: universal
-        type: choice
-        options:
-          - universal
-          - intel
-          - apple-silicon
-          - all
 
 jobs:
   build:
@@ -37,72 +26,39 @@ jobs:
         run: |
           set -euo pipefail
 
-          PACKAGE="${{ inputs.package }}"
           VERSION="$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)"
           DIST_DIR="$PWD/dist"
+          APP_PATH="build/macos/Build/Products/Release/shimx.app"
+          EXECUTABLE_PATH="$APP_PATH/Contents/MacOS/shimx"
+          DMG_ROOT="$DIST_DIR/dmg-universal"
+          DMG_PATH="$DIST_DIR/ShimX-$VERSION-macos-universal.dmg"
 
           mkdir -p "$DIST_DIR"
 
-          build_dmg() {
-            local target_platform="$1"
-            local suffix="$2"
+          flutter clean
+          flutter pub get
+          flutter build macos --release
 
-            flutter clean
-            flutter pub get
+          if [[ ! -d "$APP_PATH" ]]; then
+            echo "Missing app bundle: $APP_PATH" >&2
+            exit 1
+          fi
 
-            if [[ "$target_platform" == "default" ]]; then
-              flutter build macos --release
-            else
-              flutter build macos --release --target-platform "$target_platform"
-            fi
+          if [[ -f "$EXECUTABLE_PATH" ]]; then
+            lipo -info "$EXECUTABLE_PATH" || true
+          fi
 
-            local app_path="build/macos/Build/Products/Release/shimx.app"
-            local executable_path="$app_path/Contents/MacOS/shimx"
-            local dmg_root="$DIST_DIR/dmg-$suffix"
-            local dmg_path="$DIST_DIR/ShimX-$VERSION-macos-$suffix.dmg"
+          rm -rf "$DMG_ROOT"
+          mkdir -p "$DMG_ROOT"
+          cp -R "$APP_PATH" "$DMG_ROOT/"
+          ln -s /Applications "$DMG_ROOT/Applications"
 
-            if [[ ! -d "$app_path" ]]; then
-              echo "Missing app bundle: $app_path" >&2
-              exit 1
-            fi
-
-            if [[ -f "$executable_path" ]]; then
-              lipo -info "$executable_path" || true
-            fi
-
-            rm -rf "$dmg_root"
-            mkdir -p "$dmg_root"
-            cp -R "$app_path" "$dmg_root/"
-            ln -s /Applications "$dmg_root/Applications"
-
-            hdiutil create \
-              -volname "ShimX" \
-              -srcfolder "$dmg_root" \
-              -ov \
-              -format UDZO \
-              "$dmg_path"
-          }
-
-          case "$PACKAGE" in
-            universal)
-              build_dmg default universal
-              ;;
-            intel)
-              build_dmg darwin-x64 intel
-              ;;
-            apple-silicon)
-              build_dmg darwin-arm64 apple-silicon
-              ;;
-            all)
-              build_dmg default universal
-              build_dmg darwin-x64 intel
-              build_dmg darwin-arm64 apple-silicon
-              ;;
-            *)
-              echo "Unknown package target: $PACKAGE" >&2
-              exit 1
-              ;;
-          esac
+          hdiutil create \
+            -volname "ShimX" \
+            -srcfolder "$DMG_ROOT" \
+            -ov \
+            -format UDZO \
+            "$DMG_PATH"
 
       - name: Upload DMG artifacts
         uses: actions/upload-artifact@v4

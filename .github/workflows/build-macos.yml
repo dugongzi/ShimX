@@ -1,0 +1,112 @@
+name: Build macOS DMG
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: macOS package target
+        required: true
+        default: universal
+        type: choice
+        options:
+          - universal
+          - intel
+          - apple-silicon
+          - all
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.0"
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Build DMG
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PACKAGE="${{ inputs.package }}"
+          VERSION="$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)"
+          DIST_DIR="$PWD/dist"
+
+          mkdir -p "$DIST_DIR"
+
+          build_dmg() {
+            local target_platform="$1"
+            local suffix="$2"
+
+            flutter clean
+            flutter pub get
+
+            if [[ "$target_platform" == "default" ]]; then
+              flutter build macos --release
+            else
+              flutter build macos --release --target-platform "$target_platform"
+            fi
+
+            local app_path="build/macos/Build/Products/Release/shimx.app"
+            local executable_path="$app_path/Contents/MacOS/shimx"
+            local dmg_root="$DIST_DIR/dmg-$suffix"
+            local dmg_path="$DIST_DIR/ShimX-$VERSION-macos-$suffix.dmg"
+
+            if [[ ! -d "$app_path" ]]; then
+              echo "Missing app bundle: $app_path" >&2
+              exit 1
+            fi
+
+            if [[ -f "$executable_path" ]]; then
+              lipo -info "$executable_path" || true
+            fi
+
+            rm -rf "$dmg_root"
+            mkdir -p "$dmg_root"
+            cp -R "$app_path" "$dmg_root/"
+            ln -s /Applications "$dmg_root/Applications"
+
+            hdiutil create \
+              -volname "ShimX" \
+              -srcfolder "$dmg_root" \
+              -ov \
+              -format UDZO \
+              "$dmg_path"
+          }
+
+          case "$PACKAGE" in
+            universal)
+              build_dmg default universal
+              ;;
+            intel)
+              build_dmg darwin-x64 intel
+              ;;
+            apple-silicon)
+              build_dmg darwin-arm64 apple-silicon
+              ;;
+            all)
+              build_dmg default universal
+              build_dmg darwin-x64 intel
+              build_dmg darwin-arm64 apple-silicon
+              ;;
+            *)
+              echo "Unknown package target: $PACKAGE" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Upload DMG artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: shimx-macos-dmg
+          path: dist/*.dmg
+          if-no-files-found: error

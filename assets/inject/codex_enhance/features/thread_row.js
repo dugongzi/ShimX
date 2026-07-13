@@ -242,6 +242,33 @@
     return wrapper;
   }
 
+  // codex 侧边行的归档按钮 aria-label 会随语言 / 版本变化:
+  // - 旧版中文: "归档对话"
+  // - 新版中文: "归档任务"
+  // - 英文: "Archive task" / "Archive chat" / "Archive conversation" 都可能出现
+  // 靠 aria-label 命中最直接,同时保留 SVG path 兜底(不依赖文案)。
+  const ARCHIVE_ARIA_KEYWORDS = ['归档', 'archive'];
+  // codex 归档按钮 SVG 里独有的 path 起始片段(带盒子+抽屉图标),多版本没变。
+  const ARCHIVE_SVG_PATH_PREFIX = 'M11.8008 10.1816';
+
+  function findArchiveButton(row) {
+    const buttons = row.querySelectorAll('button[aria-label]');
+    for (const btn of buttons) {
+      const label = (btn.getAttribute('aria-label') || '').toLowerCase();
+      if (ARCHIVE_ARIA_KEYWORDS.some((k) => label.includes(k))) return btn;
+    }
+    // 兜底:找到 svg path[d^="M11.8008 10.1816"] 所属的 button。
+    const paths = row.querySelectorAll('svg path');
+    for (const path of paths) {
+      const d = path.getAttribute('d') || '';
+      if (d.startsWith(ARCHIVE_SVG_PATH_PREFIX)) {
+        const btn = path.closest('button');
+        if (btn) return btn;
+      }
+    }
+    return null;
+  }
+
   function ensure() {
     const rows = document.querySelectorAll(
       '[data-app-action-sidebar-thread-row]',
@@ -249,9 +276,7 @@
     let added = 0;
     for (const row of rows) {
       if (row.getAttribute(DELETE_BUTTON_FLAG) === '1') continue;
-      const archiveButton = row.querySelector(
-        'button[aria-label="归档对话"]',
-      );
+      const archiveButton = findArchiveButton(row);
       if (!archiveButton) continue;
       const actionGroup = archiveButton.closest('span.contents')?.parentElement;
       if (!actionGroup) continue;

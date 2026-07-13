@@ -15,8 +15,21 @@ part 'takeover_service.g.dart';
 
 /// 完整接管:起反向代理 + 设转发目标 + 改写 config.toml 的 base_url。
 /// 仅当代理开关开着且有可用的选中供应商时执行。可重复调用(幂等)。
-Future<void> startTakeover(Ref ref, {bool? enabledOverride}) async {
-  final query = ref.read(providerQueryRepositoryProvider);
+///
+/// 接 [Ref] 便于在 provider body 里直接 `await startTakeover(ref)`。
+/// autoDispose provider 长流程里传自己的 ref 会踩 "Ref after disposed"——
+/// 那种场景请改调 [startTakeoverContainer],传 `WidgetRef.container` 进来。
+Future<void> startTakeover(Ref ref, {bool? enabledOverride}) =>
+    startTakeoverContainer(ref.container, enabledOverride: enabledOverride);
+
+/// [startTakeover] 的 [ProviderContainer] 版本。UI action(如 InjectIcon)从
+/// `WidgetRef.container` 拿容器传进来,长流程里所有 `.read()` 走容器,不受
+/// autoDispose provider 生命周期影响。
+Future<void> startTakeoverContainer(
+  ProviderContainer container, {
+  bool? enabledOverride,
+}) async {
+  final query = container.read(providerQueryRepositoryProvider);
   final proxyConfig = await query.proxyConfig();
   final effectiveEnabled = enabledOverride ?? proxyConfig.enabled;
   if (!effectiveEnabled) return;
@@ -35,8 +48,8 @@ Future<void> startTakeover(Ref ref, {bool? enabledOverride}) async {
     return;
   }
 
-  final proxy = ref.read(localProxyServiceProvider);
-  final runningPort = ref.read(localProxyRunningPortProvider);
+  final proxy = container.read(localProxyServiceProvider);
+  final runningPort = container.read(localProxyRunningPortProvider);
   await proxy.start(
     port: proxyConfig.port,
     target: ProxyTarget(
@@ -45,20 +58,20 @@ Future<void> startTakeover(Ref ref, {bool? enabledOverride}) async {
       model: selected.selectedModel,
       upstreamProtocol: selected.upstreamProtocol,
       reasoningEffort:
-          await ref.read(appStorageProvider).getString(reasoningEffortKey),
+          await container.read(appStorageProvider).getString(reasoningEffortKey),
       providerId: selected.id,
     ),
   );
   runningPort.value = proxy.port ?? proxyConfig.port;
 
-  final actionRepo = ref.read(providerActionRepositoryProvider);
+  final actionRepo = container.read(providerActionRepositoryProvider);
   await actionRepo.enableTakeover(localProxyUrl: proxyConfig.localProxyUrl);
 
   // 测速调度只在非 manual 才起。manual 模式下用户开 picker 时点对点测,
   // 不在后台轮询,完全避免给上游中转造成压力。
   final allProviders = await query.listProviders();
-  final autoSettings = await ref.read(autoSwitchRepositoryProvider).read();
-  final probe = ref.read(providerHealthProbeServiceProvider);
+  final autoSettings = await container.read(autoSwitchRepositoryProvider).read();
+  final probe = container.read(providerHealthProbeServiceProvider);
   probe.updateTargets(providers: allProviders);
 
   // 把请求 success/failure/timeout 回调接到 probe 上(请求实时感知)
@@ -97,7 +110,7 @@ Future<void> startTakeover(Ref ref, {bool? enabledOverride}) async {
       interval: Duration(seconds: autoSettings.probeIntervalSeconds),
     );
     // 必须用 .future 触发 Future provider 执行,只 read 不会跑里面的代码
-    unawaited(ref.read(autoSwitchWatcherProvider.future));
+    unawaited(container.read(autoSwitchWatcherProvider.future));
   }
 }
 

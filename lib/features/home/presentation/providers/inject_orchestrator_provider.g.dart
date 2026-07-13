@@ -63,7 +63,7 @@ final class InjectToRunningPortProvider
 }
 
 String _$injectToRunningPortHash() =>
-    r'947a3c176f241a627f8134d574e0fc50d7c03c70';
+    r'a7899fa3492101329f8302cda7ad8b9ff5a9ab11';
 
 /// 直接注入到端口(要求端口上已经有 page),建立 CDP 长连接并安装 bridge + 脚本。
 
@@ -92,6 +92,10 @@ final class InjectToRunningPortFamily extends $Family
 /// - 端口不活 → 自动发现 + 启动 Codex(Windows: COM 激活 UWP;macOS: open .app)→ 等就绪 → 注入
 ///
 /// Codex 未安装时抛 [CodexNotInstalledException]。
+/// codex 已运行但没开 CDP 时抛 [CodexRunningWithoutDebugException]。
+///
+/// provider 版本供 tray/shortcut 场景("成功/失败任意都行,只关心结束"),
+/// UI 精细异常处理请直接调 [runLaunchAndInject]。
 
 @ProviderFor(launchAndInject)
 const launchAndInjectProvider = LaunchAndInjectFamily._();
@@ -101,6 +105,10 @@ const launchAndInjectProvider = LaunchAndInjectFamily._();
 /// - 端口不活 → 自动发现 + 启动 Codex(Windows: COM 激活 UWP;macOS: open .app)→ 等就绪 → 注入
 ///
 /// Codex 未安装时抛 [CodexNotInstalledException]。
+/// codex 已运行但没开 CDP 时抛 [CodexRunningWithoutDebugException]。
+///
+/// provider 版本供 tray/shortcut 场景("成功/失败任意都行,只关心结束"),
+/// UI 精细异常处理请直接调 [runLaunchAndInject]。
 
 final class LaunchAndInjectProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
@@ -110,13 +118,17 @@ final class LaunchAndInjectProvider
   /// - 端口不活 → 自动发现 + 启动 Codex(Windows: COM 激活 UWP;macOS: open .app)→ 等就绪 → 注入
   ///
   /// Codex 未安装时抛 [CodexNotInstalledException]。
+  /// codex 已运行但没开 CDP 时抛 [CodexRunningWithoutDebugException]。
+  ///
+  /// provider 版本供 tray/shortcut 场景("成功/失败任意都行,只关心结束"),
+  /// UI 精细异常处理请直接调 [runLaunchAndInject]。
   const LaunchAndInjectProvider._({
     required LaunchAndInjectFamily super.from,
     required int super.argument,
   }) : super(
          retry: null,
          name: r'launchAndInjectProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -153,13 +165,17 @@ final class LaunchAndInjectProvider
   }
 }
 
-String _$launchAndInjectHash() => r'bdc58770274ee186ceb0ead3ad71d24359af69a3';
+String _$launchAndInjectHash() => r'd54b053dc143b72db157828e9c2024333d871ebb';
 
 /// 完整流程:
 /// - 端口活 → 直接连上现有 Codex 并注入
 /// - 端口不活 → 自动发现 + 启动 Codex(Windows: COM 激活 UWP;macOS: open .app)→ 等就绪 → 注入
 ///
 /// Codex 未安装时抛 [CodexNotInstalledException]。
+/// codex 已运行但没开 CDP 时抛 [CodexRunningWithoutDebugException]。
+///
+/// provider 版本供 tray/shortcut 场景("成功/失败任意都行,只关心结束"),
+/// UI 精细异常处理请直接调 [runLaunchAndInject]。
 
 final class LaunchAndInjectFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, int> {
@@ -169,7 +185,7 @@ final class LaunchAndInjectFamily extends $Family
         name: r'launchAndInjectProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   /// 完整流程:
@@ -177,6 +193,10 @@ final class LaunchAndInjectFamily extends $Family
   /// - 端口不活 → 自动发现 + 启动 Codex(Windows: COM 激活 UWP;macOS: open .app)→ 等就绪 → 注入
   ///
   /// Codex 未安装时抛 [CodexNotInstalledException]。
+  /// codex 已运行但没开 CDP 时抛 [CodexRunningWithoutDebugException]。
+  ///
+  /// provider 版本供 tray/shortcut 场景("成功/失败任意都行,只关心结束"),
+  /// UI 精细异常处理请直接调 [runLaunchAndInject]。
 
   LaunchAndInjectProvider call({required int debugPort}) =>
       LaunchAndInjectProvider._(argument: debugPort, from: this);
@@ -244,7 +264,7 @@ final class ReloadCodexAndReinjectProvider
 }
 
 String _$reloadCodexAndReinjectHash() =>
-    r'9417c12c9f31d94a695b8435890da66357dcac49';
+    r'bc0da88bc8f88c94b139af921804cb0323146335';
 
 /// 已注入状态下手动刷新 Codex 页面 + 重新装 bridge + 重跑脚本。
 /// 与 [injectToRunningPort] 区别:这里会先调用 `cdp.reloadPage()`,清掉旧 page 上的脚本副作用。

@@ -497,5 +497,13 @@
   "toolFilterKeywordEmpty": "关键词不能为空",
   "toolFilterKeywordDuplicate": "该关键词已在列表中",
   "requiresOpenaiAuthTitle": "开启官方登录",
-  "requiresOpenaiAuthDescription": "改动需重启 Codex"
+  "requiresOpenaiAuthDescription": "改动需重启 Codex",
+  "codexLaunchTargetTitle": "Codex 启动目标",
+  "codexLaunchTargetDescription": "留空 = 走内置默认(Windows 匹配 OpenAI.ChatGPT*/OpenAI.Codex*,macOS 探测 /Applications/ChatGPT.app 或 Codex.app)",
+  "codexLaunchTargetHintMac": "自定义 .app 完整路径,例如 /Applications/ChatGPT.app",
+  "codexLaunchTargetHintWindows": "自定义 AppxPackage -Name 通配符,例如 OpenAI.ChatGPT*",
+  "codexLaunchTargetHintDefault": "自定义 codex 启动目标",
+  "codexLaunchTargetReset": "重置为默认",
+  "codexRunningWithoutDebugTitle": "Codex 已运行但未启用调试端口",
+  "codexRunningWithoutDebugBody": "请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。"
 }

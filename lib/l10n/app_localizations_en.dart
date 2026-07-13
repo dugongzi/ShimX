@@ -1233,4 +1233,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requiresOpenaiAuthDescription => 'Restart Codex to apply';
+
+  @override
+  String get codexLaunchTargetTitle => 'Codex launch target';
+
+  @override
+  String get codexLaunchTargetDescription =>
+      'Leave empty to use built-in defaults (Windows matches OpenAI.ChatGPT*/OpenAI.Codex*, macOS probes /Applications/ChatGPT.app or Codex.app)';
+
+  @override
+  String get codexLaunchTargetHintMac =>
+      'Custom .app absolute path, e.g. /Applications/ChatGPT.app';
+
+  @override
+  String get codexLaunchTargetHintWindows =>
+      'Custom AppxPackage -Name pattern, e.g. OpenAI.ChatGPT*';
+
+  @override
+  String get codexLaunchTargetHintDefault => 'Custom codex launch target';
+
+  @override
+  String get codexLaunchTargetReset => 'Reset to default';
+
+  @override
+  String get codexRunningWithoutDebugTitle =>
+      'Codex is running without a debug port';
+
+  @override
+  String get codexRunningWithoutDebugBody =>
+      'Please fully quit Codex, then click inject again so shim can relaunch it with the debug flag.';
 }

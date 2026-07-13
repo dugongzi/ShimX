@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:shimx/core/services/app_log_service.dart';
 
 class InjectQueryDatasource {
   /// codex_enhance 改造为分层分片后, 注入脚本由多个 .js 文件按层顺序拼接而成。
@@ -82,21 +83,45 @@ class InjectQueryDatasource {
     }
   }
 
-  /// 轮询直到出现可注入的 page target 或超时
+  /// 轮询直到出现可注入的 page target 或超时。
+  /// 心跳:每 3 秒打一次进度,让用户看到 shim 在等而不是死了。
   Future<void> waitForDebugPort({
     required int debugPort,
     Duration timeout = const Duration(seconds: 30),
     Duration interval = const Duration(milliseconds: 500),
   }) async {
-    final deadline = DateTime.now().add(timeout);
+    final log = AppLogService.instance;
+    final start = DateTime.now();
+    final deadline = start.add(timeout);
+    var lastHeartbeat = start;
     while (DateTime.now().isBefore(deadline)) {
       try {
         await _findPageWebSocketUrl(debugPort);
+        final elapsed = DateTime.now().difference(start);
+        log.info(
+          'Inject',
+          'debug 端口就绪',
+          details: 'port=$debugPort elapsed=${elapsed.inMilliseconds}ms',
+        );
         return;
       } catch (_) {
+        final now = DateTime.now();
+        if (now.difference(lastHeartbeat) >= const Duration(seconds: 3)) {
+          log.debug(
+            'Inject',
+            '等待 debug 端口...',
+            details: 'port=$debugPort elapsed=${now.difference(start).inSeconds}s',
+          );
+          lastHeartbeat = now;
+        }
         await Future.delayed(interval);
       }
     }
+    log.warning(
+      'Inject',
+      'debug 端口 ${timeout.inSeconds}s 内未就绪',
+      details: 'port=$debugPort',
+    );
     throw TimeoutException('No page target on port $debugPort');
   }
 

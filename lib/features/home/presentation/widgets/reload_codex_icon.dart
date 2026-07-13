@@ -23,11 +23,9 @@ class ReloadCodexIcon extends HookConsumerWidget {
           : () async {
               isReloading.value = true;
               try {
-                ref.invalidate(
-                  reloadCodexAndReinjectProvider(debugPort: debugPort),
-                );
-                await ref.read(
-                  reloadCodexAndReinjectProvider(debugPort: debugPort).future,
+                await runReloadCodexAndReinject(
+                  ref.container,
+                  debugPort: debugPort,
                 );
                 SmartDialog.showToast(l10n.codexRefreshedToast);
               } catch (error) {

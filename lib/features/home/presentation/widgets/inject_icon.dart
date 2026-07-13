@@ -7,6 +7,11 @@ import 'package:shimx/core/services/codex_launcher_service.dart';
 import 'package:shimx/features/home/presentation/providers/inject_orchestrator_provider.dart';
 
 /// 侧栏底部:启动 Codex + 注入 shimx 的图标按钮。
+///
+/// action 语义:按下才跑,`ref.read(.future)` 拿异步结果。
+/// 用本地 `useState` 掌控转圈,不用 `ref.watch(provider)` —— 后者会在首帧
+/// 立刻触发 provider,provider body 里的 IO / log 在 build 期间调 setState,
+/// 会炸 setState-during-build。
 class InjectIcon extends HookConsumerWidget {
   const InjectIcon({super.key, required this.debugPort});
 
@@ -14,29 +19,31 @@ class InjectIcon extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isInjecting = useState(false);
     final l10n = context.l10n;
+    final isInjecting = useState(false);
+
+    Future<void> handlePressed() async {
+      isInjecting.value = true;
+      try {
+        // 直接调 core function,不走 provider —— provider 层是包装,body 抛异常
+        // 时 autoDispose 生命周期会踩 "Ref after disposed",走 container 版本
+        // 就没这坑,异常正常 rethrow。
+        await runLaunchAndInject(ref.container, debugPort: debugPort);
+        SmartDialog.showToast(l10n.injectSuccess);
+      } on CodexNotInstalledException {
+        SmartDialog.showToast(l10n.codexNotInstalled);
+      } on CodexRunningWithoutDebugException {
+        SmartDialog.showToast(l10n.codexRunningWithoutDebugBody);
+      } catch (e) {
+        SmartDialog.showToast(l10n.launchFailed(e.toString()));
+      } finally {
+        isInjecting.value = false;
+      }
+    }
 
     return IconButton(
       tooltip: l10n.inject,
-      onPressed: isInjecting.value
-          ? null
-          : () async {
-              isInjecting.value = true;
-              try {
-                ref.invalidate(launchAndInjectProvider(debugPort: debugPort));
-                await ref.read(
-                  launchAndInjectProvider(debugPort: debugPort).future,
-                );
-                SmartDialog.showToast(l10n.injectSuccess);
-              } on CodexNotInstalledException {
-                SmartDialog.showToast(l10n.codexNotInstalled);
-              } catch (e) {
-                SmartDialog.showToast(l10n.launchFailed(e.toString()));
-              } finally {
-                isInjecting.value = false;
-              }
-            },
+      onPressed: isInjecting.value ? null : handlePressed,
       icon: isInjecting.value
           ? SizedBox(
               width: 18.cr(min: 16, max: 20),

@@ -1217,4 +1217,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get requiresOpenaiAuthDescription => '改动需重启 Codex';
+
+  @override
+  String get codexLaunchTargetTitle => 'Codex 启动目标';
+
+  @override
+  String get codexLaunchTargetDescription =>
+      '留空 = 走内置默认(Windows 匹配 OpenAI.ChatGPT*/OpenAI.Codex*,macOS 探测 /Applications/ChatGPT.app 或 Codex.app)';
+
+  @override
+  String get codexLaunchTargetHintMac =>
+      '自定义 .app 完整路径,例如 /Applications/ChatGPT.app';
+
+  @override
+  String get codexLaunchTargetHintWindows =>
+      '自定义 AppxPackage -Name 通配符,例如 OpenAI.ChatGPT*';
+
+  @override
+  String get codexLaunchTargetHintDefault => '自定义 codex 启动目标';
+
+  @override
+  String get codexLaunchTargetReset => '重置为默认';
+
+  @override
+  String get codexRunningWithoutDebugTitle => 'Codex 已运行但未启用调试端口';
+
+  @override
+  String get codexRunningWithoutDebugBody =>
+      '请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。';
 }

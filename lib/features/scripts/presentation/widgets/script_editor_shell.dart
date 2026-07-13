@@ -305,18 +305,14 @@ class ScriptEditorShell extends HookConsumerWidget {
         );
         ref.invalidate(scriptEnabledProvider(id: current.id));
         if (reloadOnRun) {
-          ref.invalidate(
-            reloadCodexAndReinjectProvider(debugPort: _kDebugPort),
-          );
-          await ref.read(
-            reloadCodexAndReinjectProvider(debugPort: _kDebugPort).future,
+          await runReloadCodexAndReinject(
+            ref.container,
+            debugPort: _kDebugPort,
           );
         } else {
-          ref.invalidate(
-            injectToRunningPortProvider(debugPort: _kDebugPort),
-          );
-          await ref.read(
-            injectToRunningPortProvider(debugPort: _kDebugPort).future,
+          await runInjectToRunningPort(
+            ref.container,
+            debugPort: _kDebugPort,
           );
         }
         SmartDialog.showToast(l10n.scriptRunSuccess);

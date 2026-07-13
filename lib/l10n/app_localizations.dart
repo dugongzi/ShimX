@@ -2335,6 +2335,54 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'改动需重启 Codex'**
   String get requiresOpenaiAuthDescription;
+
+  /// No description provided for @codexLaunchTargetTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'Codex 启动目标'**
+  String get codexLaunchTargetTitle;
+
+  /// No description provided for @codexLaunchTargetDescription.
+  ///
+  /// In zh, this message translates to:
+  /// **'留空 = 走内置默认(Windows 匹配 OpenAI.ChatGPT*/OpenAI.Codex*,macOS 探测 /Applications/ChatGPT.app 或 Codex.app)'**
+  String get codexLaunchTargetDescription;
+
+  /// No description provided for @codexLaunchTargetHintMac.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义 .app 完整路径,例如 /Applications/ChatGPT.app'**
+  String get codexLaunchTargetHintMac;
+
+  /// No description provided for @codexLaunchTargetHintWindows.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义 AppxPackage -Name 通配符,例如 OpenAI.ChatGPT*'**
+  String get codexLaunchTargetHintWindows;
+
+  /// No description provided for @codexLaunchTargetHintDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义 codex 启动目标'**
+  String get codexLaunchTargetHintDefault;
+
+  /// No description provided for @codexLaunchTargetReset.
+  ///
+  /// In zh, this message translates to:
+  /// **'重置为默认'**
+  String get codexLaunchTargetReset;
+
+  /// No description provided for @codexRunningWithoutDebugTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'Codex 已运行但未启用调试端口'**
+  String get codexRunningWithoutDebugTitle;
+
+  /// No description provided for @codexRunningWithoutDebugBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。'**
+  String get codexRunningWithoutDebugBody;
 }
 
 class _AppLocalizationsDelegate

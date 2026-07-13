@@ -34,7 +34,7 @@ class WindowTrayBootstrap extends HookConsumerWidget {
         try {
           await windowManager.show();
           await windowManager.focus();
-          await ref.read(launchAndInjectProvider(debugPort: 9229).future);
+          await runLaunchAndInject(ref.container, debugPort: 9229);
           SmartDialog.showToast(l10n.injectSuccess);
         } catch (e) {
           SmartDialog.showToast(l10n.launchFailed(e.toString()));
@@ -66,7 +66,7 @@ class WindowTrayBootstrap extends HookConsumerWidget {
         shortcutLaunchStarted.value = true;
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           try {
-            await ref.read(launchAndInjectProvider(debugPort: 9229).future);
+            await runLaunchAndInject(ref.container, debugPort: 9229);
             SmartDialog.showToast(l10n.injectSuccess);
             await Future.delayed(const Duration(milliseconds: 1500));
             await windowManager.hide();

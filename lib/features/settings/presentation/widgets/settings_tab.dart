@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,6 +10,7 @@ import 'package:shimx/core/constants/app_links.dart';
 import 'package:shimx/core/constants/app_sizes.dart';
 import 'package:shimx/core/constants/theme_color_presets.dart';
 import 'package:shimx/core/extensions/context_extensions.dart';
+import 'package:shimx/core/providers/codex_launch_target_provider.dart';
 import 'package:shimx/core/providers/locale_provider.dart';
 import 'package:shimx/core/providers/theme_provider.dart';
 import 'package:shimx/core/services/shortcut_service.dart';
@@ -217,6 +220,8 @@ class SettingsTab extends ConsumerWidget {
             ),
           ),
           SizedBox(height: AppSizes.itemGap),
+          const _CodexLaunchTargetCard(),
+          SizedBox(height: AppSizes.itemGap),
           const ProxyCard(),
           SizedBox(height: AppSizes.sectionGap),
           const AppVersionLine(),
@@ -231,5 +236,85 @@ class SettingsTab extends ConsumerWidget {
     return list
         .map((k) => k.enabled ? k.keyword : '${k.keyword} (off)')
         .join(', ');
+  }
+}
+
+/// codex 启动目标自定义:文本框 + 提交/重置按钮。
+/// 提交时 trim,空字符串等价 remove(走内置默认)。
+class _CodexLaunchTargetCard extends ConsumerStatefulWidget {
+  const _CodexLaunchTargetCard();
+
+  @override
+  ConsumerState<_CodexLaunchTargetCard> createState() =>
+      _CodexLaunchTargetCardState();
+}
+
+class _CodexLaunchTargetCardState
+    extends ConsumerState<_CodexLaunchTargetCard> {
+  late final TextEditingController _controller;
+  String _lastSynced = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final stored = ref.watch(codexLaunchTargetProvider);
+    // provider 异步 load 完成后同步一次到输入框(仅当用户没在编辑不同值时)。
+    if (stored != _lastSynced && _controller.text == _lastSynced) {
+      _controller.text = stored;
+    }
+    _lastSynced = stored;
+
+    final hint = Platform.isMacOS
+        ? context.l10n.codexLaunchTargetHintMac
+        : Platform.isWindows
+            ? context.l10n.codexLaunchTargetHintWindows
+            : context.l10n.codexLaunchTargetHintDefault;
+
+    return SettingCard(
+      icon: Icons.launch_rounded,
+      title: context.l10n.codexLaunchTargetTitle,
+      description: context.l10n.codexLaunchTargetDescription,
+      child: SizedBox(
+        width: 360,
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                ),
+                onSubmitted: (v) {
+                  ref.read(codexLaunchTargetProvider.notifier).set(v);
+                  SmartDialog.showToast('已保存');
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton.filledTonal(
+              tooltip: context.l10n.codexLaunchTargetReset,
+              onPressed: () {
+                _controller.clear();
+                ref.read(codexLaunchTargetProvider.notifier).set('');
+              },
+              icon: const Icon(Icons.refresh_rounded),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

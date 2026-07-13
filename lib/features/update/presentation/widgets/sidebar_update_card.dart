@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimx/core/extensions/context_extensions.dart';
 import 'package:shimx/core/themes/app_colors.dart';
 import 'package:shimx/features/update/presentation/providers/app_update_provider.dart';
 
 /// 侧栏顶部更新提示卡片,仅在检测到新版本时展示。
-class SidebarUpdateCard extends ConsumerWidget {
+class SidebarUpdateCard extends HookConsumerWidget {
   const SidebarUpdateCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scrollController = useScrollController();
     final updateAsync = ref.watch(appUpdateCheckProvider);
     return updateAsync.maybeWhen(
       data: (result) {
@@ -67,14 +69,24 @@ class SidebarUpdateCard extends ConsumerWidget {
                         ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    changelog,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: bodyColor,
-                          height: 1.35,
+                  // 限最大高度,内容超出可滚。primary: false 避免跟侧栏的
+                  // 主 ScrollView 抢滚动手势;Scrollbar 让用户看到还有更多。
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: Scrollbar(
+                      controller: scrollController,
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Text(
+                          changelog,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: bodyColor,
+                                    height: 1.35,
+                                  ),
                         ),
+                      ),
+                    ),
                   ),
                 ],
               ),

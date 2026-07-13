@@ -14,6 +14,8 @@ class UpdateChangelogDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentSystemOnly = useState(true);
+    // 复用同一个 controller,不然每次 setState 都新建会漏。
+    final scrollController = useScrollController();
     final logsAsync = ref.watch(
       appUpdateLogsProvider(currentSystemOnly: currentSystemOnly.value),
     );
@@ -51,15 +53,23 @@ class UpdateChangelogDialog extends HookConsumerWidget {
                 if (items.isEmpty) {
                   return Center(child: Text(context.l10n.updateLogEmpty));
                 }
-                return ListView.separated(
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 2),
-                  itemBuilder: (context, index) {
-                    return _TimelineItem(
-                      item: items[index],
-                      isLast: index == items.length - 1,
-                    );
-                  },
+                // Scrollbar 明确挂 controller,避免 primary scroll 判定不到。
+                // thumbVisibility 会要求 build 时就有 valid scroll position,
+                // 有些窗口尺寸下会抛 assertion,让它按默认淡入淡出即可。
+                return Scrollbar(
+                  controller: scrollController,
+                  child: ListView.separated(
+                    controller: scrollController,
+                    padding: const EdgeInsets.only(right: 8),
+                    itemCount: items.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 2),
+                    itemBuilder: (context, index) {
+                      return _TimelineItem(
+                        item: items[index],
+                        isLast: index == items.length - 1,
+                      );
+                    },
+                  ),
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),

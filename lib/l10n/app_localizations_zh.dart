@@ -310,6 +310,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get remoteScriptsEmpty => '暂无远程脚本';
 
   @override
+  String get remoteScriptsGithubHint =>
+      '远程脚本目录托管在 GitHub,需要能正常访问 raw.githubusercontent.com 的网络环境';
+
+  @override
   String get remoteScriptInstallSuccess => '远程脚本已安装';
 
   @override
@@ -1245,4 +1249,23 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get codexRunningWithoutDebugBody =>
       '请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。';
+
+  @override
+  String get threadContextMenuDelete => '删除会话';
+
+  @override
+  String get threadDeleteConfirmTitle => '删除会话';
+
+  @override
+  String threadDeleteConfirmBody(String title) {
+    return '确定要删除\"$title\"吗?原始文件会先备份到应用数据目录,可以在文件夹里找回。';
+  }
+
+  @override
+  String get threadDeleteSuccess => '已删除';
+
+  @override
+  String threadDeleteFailed(String message) {
+    return '删除失败:$message';
+  }
 }

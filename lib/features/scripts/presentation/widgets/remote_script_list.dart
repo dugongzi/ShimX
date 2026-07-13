@@ -24,6 +24,8 @@ class RemoteScriptList extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const _GithubNetworkNotice(),
+        SizedBox(height: AppSizes.itemGap),
         Expanded(
           child: catalogAsync.when(
             data: (catalog) {
@@ -46,6 +48,48 @@ class RemoteScriptList extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _GithubNetworkNotice extends StatelessWidget {
+  const _GithubNetworkNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSizes.itemGap,
+        vertical: 10,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            size: 18,
+            color: colorScheme.primary,
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              context.l10n.remoteScriptsGithubHint,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface,
+                    height: 1.4,
+                  ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

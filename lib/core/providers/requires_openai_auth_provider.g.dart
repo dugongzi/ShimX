@@ -60,7 +60,7 @@ final class RequiresOpenaiAuthNotifierProvider
 }
 
 String _$requiresOpenaiAuthNotifierHash() =>
-    r'c7925fa75e3100dc07e8431f8cbbd1edba4366aa';
+    r'df2aa95080513b24a0b4c3712244c61b3462efb4';
 
 /// `~/.codex/config.toml` 里 `[model_providers.*]` 段的 `requires_openai_auth` 字段。
 ///

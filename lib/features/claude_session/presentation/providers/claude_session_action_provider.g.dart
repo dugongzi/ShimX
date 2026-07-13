@@ -152,3 +152,82 @@ final class ExportClaudeThreadFamily extends $Family
   @override
   String toString() => r'exportClaudeThreadProvider';
 }
+
+/// 删除某 Claude 会话:jsonl 备份到 appSupport 下再删除原文件。返回备份路径。
+
+@ProviderFor(deleteClaudeThread)
+const deleteClaudeThreadProvider = DeleteClaudeThreadFamily._();
+
+/// 删除某 Claude 会话:jsonl 备份到 appSupport 下再删除原文件。返回备份路径。
+
+final class DeleteClaudeThreadProvider
+    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
+    with $FutureModifier<String>, $FutureProvider<String> {
+  /// 删除某 Claude 会话:jsonl 备份到 appSupport 下再删除原文件。返回备份路径。
+  const DeleteClaudeThreadProvider._({
+    required DeleteClaudeThreadFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'deleteClaudeThreadProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$deleteClaudeThreadHash();
+
+  @override
+  String toString() {
+    return r'deleteClaudeThreadProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<String> create(Ref ref) {
+    final argument = this.argument as String;
+    return deleteClaudeThread(ref, jsonlPath: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DeleteClaudeThreadProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$deleteClaudeThreadHash() =>
+    r'7c2359e76fdc2bb06003bd2ce0f07cd332dbb89b';
+
+/// 删除某 Claude 会话:jsonl 备份到 appSupport 下再删除原文件。返回备份路径。
+
+final class DeleteClaudeThreadFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<String>, String> {
+  const DeleteClaudeThreadFamily._()
+    : super(
+        retry: null,
+        name: r'deleteClaudeThreadProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 删除某 Claude 会话:jsonl 备份到 appSupport 下再删除原文件。返回备份路径。
+
+  DeleteClaudeThreadProvider call({required String jsonlPath}) =>
+      DeleteClaudeThreadProvider._(argument: jsonlPath, from: this);
+
+  @override
+  String toString() => r'deleteClaudeThreadProvider';
+}

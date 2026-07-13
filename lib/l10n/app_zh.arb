@@ -123,6 +123,7 @@
   "restoreScript": "恢复",
   "scriptInstalled": "已安装",
   "remoteScriptsEmpty": "暂无远程脚本",
+  "remoteScriptsGithubHint": "远程脚本目录托管在 GitHub,需要能正常访问 raw.githubusercontent.com 的网络环境",
   "remoteScriptInstallSuccess": "远程脚本已安装",
   "remoteScriptInstallFailed": "安装失败：{message}",
   "@remoteScriptInstallFailed": {
@@ -505,5 +506,20 @@
   "codexLaunchTargetHintDefault": "自定义 codex 启动目标",
   "codexLaunchTargetReset": "重置为默认",
   "codexRunningWithoutDebugTitle": "Codex 已运行但未启用调试端口",
-  "codexRunningWithoutDebugBody": "请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。"
+  "codexRunningWithoutDebugBody": "请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。",
+  "threadContextMenuDelete": "删除会话",
+  "threadDeleteConfirmTitle": "删除会话",
+  "threadDeleteConfirmBody": "确定要删除\"{title}\"吗?原始文件会先备份到应用数据目录,可以在文件夹里找回。",
+  "@threadDeleteConfirmBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "threadDeleteSuccess": "已删除",
+  "threadDeleteFailed": "删除失败:{message}",
+  "@threadDeleteFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  }
 }

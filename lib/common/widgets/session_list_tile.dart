@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 /// 左侧两栏(项目 / 会话)共用的列表项。
+///
+/// [onSecondaryTapDown] 用来接右键(桌面端)。回调把点击位置传上去,
+/// 调用方可以直接用 `showMenu` 在鼠标位置弹菜单。项目栏不需要就不传。
 class SessionListTile extends StatelessWidget {
   const SessionListTile({
     super.key,
@@ -8,12 +11,14 @@ class SessionListTile extends StatelessWidget {
     required this.subtitle,
     required this.selected,
     required this.onTap,
+    this.onSecondaryTapDown,
   });
 
   final String title;
   final String subtitle;
   final bool selected;
   final VoidCallback onTap;
+  final ValueChanged<TapDownDetails>? onSecondaryTapDown;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +27,7 @@ class SessionListTile extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         onTap: onTap,
+        onSecondaryTapDown: onSecondaryTapDown,
         child: Container(
           color: selected
               ? colorScheme.primary.withValues(alpha: 0.10)

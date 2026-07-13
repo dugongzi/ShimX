@@ -123,6 +123,7 @@
   "restoreScript": "Restore",
   "scriptInstalled": "Installed",
   "remoteScriptsEmpty": "No remote scripts",
+  "remoteScriptsGithubHint": "The remote script index is hosted on GitHub. Make sure your network can reach raw.githubusercontent.com.",
   "remoteScriptInstallSuccess": "Remote script installed",
   "remoteScriptInstallFailed": "Install failed: {message}",
   "@remoteScriptInstallFailed": {
@@ -505,5 +506,20 @@
   "codexLaunchTargetHintDefault": "Custom codex launch target",
   "codexLaunchTargetReset": "Reset to default",
   "codexRunningWithoutDebugTitle": "Codex is running without a debug port",
-  "codexRunningWithoutDebugBody": "Please fully quit Codex, then click inject again so shim can relaunch it with the debug flag."
+  "codexRunningWithoutDebugBody": "Please fully quit Codex, then click inject again so shim can relaunch it with the debug flag.",
+  "threadContextMenuDelete": "Delete session",
+  "threadDeleteConfirmTitle": "Delete session",
+  "threadDeleteConfirmBody": "Delete \"{title}\"? A backup will be saved under the app support directory so you can restore it later.",
+  "@threadDeleteConfirmBody": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+  "threadDeleteSuccess": "Deleted",
+  "threadDeleteFailed": "Delete failed: {message}",
+  "@threadDeleteFailed": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  }
 }

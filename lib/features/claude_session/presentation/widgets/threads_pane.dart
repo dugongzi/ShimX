@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shimx/common/widgets/search_field.dart';
 import 'package:shimx/common/widgets/session_empty_box.dart';
@@ -10,6 +11,7 @@ import 'package:shimx/core/extensions/context_extensions.dart';
 import 'package:shimx/core/utils/time_format.dart';
 import 'package:shimx/features/claude_session/domain/models/claude_project.dart';
 import 'package:shimx/features/claude_session/domain/models/claude_thread.dart';
+import 'package:shimx/features/claude_session/presentation/providers/claude_session_action_provider.dart';
 import 'package:shimx/features/claude_session/presentation/providers/claude_session_query_provider.dart';
 
 /// 中间栏:列出当前选中项目下的所有会话,带顶部搜索框。
@@ -108,6 +110,13 @@ class ThreadsPane extends HookConsumerWidget {
                       subtitle: formatRelativeTime(context, t.updatedAtMs),
                       selected: isSelected,
                       onTap: () => onSelect(t),
+                      onSecondaryTapDown: (details) => _showContextMenu(
+                        context,
+                        ref,
+                        thread: t,
+                        title: title,
+                        position: details.globalPosition,
+                      ),
                     );
                   },
                 );
@@ -117,6 +126,80 @@ class ThreadsPane extends HookConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// 右键 Claude 会话行:弹一项"删除",确认后备份 jsonl 到应用目录并删除原文件。
+  Future<void> _showContextMenu(
+    BuildContext context,
+    WidgetRef ref, {
+    required ClaudeThread thread,
+    required String title,
+    required Offset position,
+  }) async {
+    final l10n = context.l10n;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
+    final chosen = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(position.dx, position.dy, 0, 0),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(
+                Icons.delete_outline_rounded,
+                size: 18,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                l10n.threadContextMenuDelete,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+    if (chosen != 'delete') return;
+    if (!context.mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n.threadDeleteConfirmTitle),
+        content: Text(l10n.threadDeleteConfirmBody(title)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: Text(l10n.threadContextMenuDelete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref.read(
+        deleteClaudeThreadProvider(jsonlPath: thread.jsonlPath).future,
+      );
+      ref.invalidate(
+        listClaudeThreadsProvider(encodedDir: project!.encodedDir),
+      );
+      SmartDialog.showToast(l10n.threadDeleteSuccess);
+    } catch (e) {
+      SmartDialog.showToast(l10n.threadDeleteFailed(e.toString()));
+    }
   }
 }
 

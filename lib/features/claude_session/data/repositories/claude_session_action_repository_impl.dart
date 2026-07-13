@@ -20,4 +20,9 @@ class ClaudeSessionActionRepositoryImpl
       outputPath: outputPath,
     );
   }
+
+  @override
+  Future<String> deleteThread({required String jsonlPath}) {
+    return dataSource.deleteThread(jsonlPath: jsonlPath);
+  }
 }

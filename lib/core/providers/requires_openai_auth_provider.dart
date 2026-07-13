@@ -35,9 +35,16 @@ class RequiresOpenaiAuthNotifier extends _$RequiresOpenaiAuthNotifier {
       final file = File(CodexPaths.configToml());
       if (!await file.exists()) return false;
       final text = await file.readAsString();
-      final match =
-          RegExp(r'requires_openai_auth\s*=\s*(true|false)', multiLine: true)
-              .firstMatch(text);
+      // 只读顶层 model_provider 指名的那一段。多 provider 时不能靠"文件里第一个
+      // requires_openai_auth"—— 那可能是别的 provider 的。
+      final providerId = _extractActiveModelProviderId(text);
+      if (providerId == null) return false;
+      final section = _extractProviderSection(text, providerId);
+      if (section == null) return false;
+      final match = RegExp(
+        r'^\s*requires_openai_auth\s*=\s*(true|false)',
+        multiLine: true,
+      ).firstMatch(section);
       if (match == null) return false;
       return match.group(1) == 'true';
     } catch (e) {
@@ -61,34 +68,52 @@ class RequiresOpenaiAuthNotifier extends _$RequiresOpenaiAuthNotifier {
         return;
       }
       final text = await file.readAsString();
-      final pattern =
-          RegExp(r'requires_openai_auth\s*=\s*(true|false)', multiLine: true);
-      final newLine = 'requires_openai_auth = $value';
-      String next;
-      if (pattern.hasMatch(text)) {
-        next = text.replaceAll(pattern, newLine);
-      } else {
-        // config 里没这一行,插到第一个 [model_providers.*] 段末尾;
-        // 找不到就直接追加到文件末尾。
-        final section = RegExp(
-          r'(\[model_providers\.[^\]]+\][^\[]*)',
-          multiLine: true,
+      final providerId = _extractActiveModelProviderId(text);
+      if (providerId == null) {
+        AppLogService.instance.warning(
+          'RequiresOpenaiAuth',
+          '未定位到顶层 model_provider,跳过写入',
         );
-        final m = section.firstMatch(text);
-        if (m != null) {
-          final before = text.substring(0, m.end);
-          final after = text.substring(m.end);
-          final trimmed = before.trimRight();
-          next = '$trimmed\n$newLine\n$after';
-        } else {
-          next = '${text.trimRight()}\n$newLine\n';
-        }
+        return;
       }
+      final range = _findProviderSectionRange(text, providerId);
+      if (range == null) {
+        AppLogService.instance.warning(
+          'RequiresOpenaiAuth',
+          '未找到 [model_providers.$providerId] 段,跳过写入',
+        );
+        return;
+      }
+      final sectionText = text.substring(range.start, range.end);
+      final newLine = 'requires_openai_auth = $value';
+      final lineRe = RegExp(
+        r'^[ \t]*requires_openai_auth\s*=\s*(true|false)[ \t]*\r?\n?',
+        multiLine: true,
+      );
+      String newSection;
+      if (lineRe.hasMatch(sectionText)) {
+        // 已有:原地替换,保留原换行,不影响 section 边界
+        newSection = sectionText.replaceFirstMapped(lineRe, (m) {
+          // 保留匹配末尾的换行(如果有),让下一行不被吃掉
+          final tail = m.group(0)!.endsWith('\n') ? '\n' : '';
+          return '$newLine$tail';
+        });
+      } else {
+        // 没有:插到 section 末尾的最后一个非空行之后,不改 section 边界
+        // 之前的实现把新行拼到 section.end 之外,导致跟下一段 [xxx] 挤在一起。
+        // 这里改成"在 section 内部"追加,section.end 本身保留原有的换行/边界。
+        final trimmedRight = sectionText.replaceFirst(RegExp(r'\s+$'), '');
+        final trailing = sectionText.substring(trimmedRight.length);
+        newSection = '$trimmedRight\n$newLine$trailing';
+        if (!newSection.endsWith('\n')) newSection = '$newSection\n';
+      }
+      final next =
+          text.substring(0, range.start) + newSection + text.substring(range.end);
       await file.writeAsString(next);
       AppLogService.instance.info(
         'RequiresOpenaiAuth',
         '已写入 config.toml',
-        details: 'requires_openai_auth = $value',
+        details: 'provider=$providerId requires_openai_auth = $value',
       );
     } catch (e) {
       AppLogService.instance.error(
@@ -98,4 +123,50 @@ class RequiresOpenaiAuthNotifier extends _$RequiresOpenaiAuthNotifier {
       );
     }
   }
+
+  /// 从 config 顶层抓 `model_provider = "xxx"`,决定"哪段是当前生效的 provider"。
+  /// 顶层 = 不在任何 [xxx] section 之内。TOML 语义上 section 之前的裸键才是顶层键。
+  String? _extractActiveModelProviderId(String text) {
+    final firstSection = RegExp(r'^\s*\[', multiLine: true).firstMatch(text);
+    final topLevel =
+        firstSection == null ? text : text.substring(0, firstSection.start);
+    final m = RegExp(
+      r'''^\s*model_provider\s*=\s*['"]([^'"]+)['"]''',
+      multiLine: true,
+    ).firstMatch(topLevel);
+    return m?.group(1);
+  }
+
+  /// 抽出 `[model_providers.<id>]` 段的文本(从 header 行开始到下一个 `[xxx]` 前)。
+  String? _extractProviderSection(String text, String id) {
+    final range = _findProviderSectionRange(text, id);
+    if (range == null) return null;
+    return text.substring(range.start, range.end);
+  }
+
+  /// 定位 `[model_providers.<id>]` 段在文件里的字符范围。
+  /// start = header 行行首,end = 下一个 `[xxx]` header 行行首(或文件末尾)。
+  _Range? _findProviderSectionRange(String text, String id) {
+    // header 里 id 可以带 . 或直接名字,允许可选的 . 语法(TOML 允许 dotted key)。
+    final headerRe = RegExp(
+      '^\\s*\\[model_providers\\.${RegExp.escape(id)}\\]\\s*\$',
+      multiLine: true,
+    );
+    final header = headerRe.firstMatch(text);
+    if (header == null) return null;
+    // 从 header 结束的下一个字符往后找,遇到下一个 header ("^[") 就是段尾
+    final afterHeaderStart = header.end;
+    final nextHeader = RegExp(r'^\s*\[', multiLine: true)
+        .firstMatch(text.substring(afterHeaderStart));
+    final end = nextHeader == null
+        ? text.length
+        : afterHeaderStart + nextHeader.start;
+    return _Range(header.start, end);
+  }
+}
+
+class _Range {
+  const _Range(this.start, this.end);
+  final int start;
+  final int end;
 }

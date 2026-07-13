@@ -314,6 +314,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get remoteScriptsEmpty => 'No remote scripts';
 
   @override
+  String get remoteScriptsGithubHint =>
+      'The remote script index is hosted on GitHub. Make sure your network can reach raw.githubusercontent.com.';
+
+  @override
   String get remoteScriptInstallSuccess => 'Remote script installed';
 
   @override
@@ -1262,4 +1266,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get codexRunningWithoutDebugBody =>
       'Please fully quit Codex, then click inject again so shim can relaunch it with the debug flag.';
+
+  @override
+  String get threadContextMenuDelete => 'Delete session';
+
+  @override
+  String get threadDeleteConfirmTitle => 'Delete session';
+
+  @override
+  String threadDeleteConfirmBody(String title) {
+    return 'Delete \"$title\"? A backup will be saved under the app support directory so you can restore it later.';
+  }
+
+  @override
+  String get threadDeleteSuccess => 'Deleted';
+
+  @override
+  String threadDeleteFailed(String message) {
+    return 'Delete failed: $message';
+  }
 }

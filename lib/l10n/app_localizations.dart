@@ -662,6 +662,12 @@ abstract class AppLocalizations {
   /// **'暂无远程脚本'**
   String get remoteScriptsEmpty;
 
+  /// No description provided for @remoteScriptsGithubHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'远程脚本目录托管在 GitHub,需要能正常访问 raw.githubusercontent.com 的网络环境'**
+  String get remoteScriptsGithubHint;
+
   /// No description provided for @remoteScriptInstallSuccess.
   ///
   /// In zh, this message translates to:
@@ -2383,6 +2389,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'请先完全退出 Codex,然后再点击注入让 shim 用调试参数重启它。'**
   String get codexRunningWithoutDebugBody;
+
+  /// No description provided for @threadContextMenuDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除会话'**
+  String get threadContextMenuDelete;
+
+  /// No description provided for @threadDeleteConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除会话'**
+  String get threadDeleteConfirmTitle;
+
+  /// No description provided for @threadDeleteConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定要删除\"{title}\"吗?原始文件会先备份到应用数据目录,可以在文件夹里找回。'**
+  String threadDeleteConfirmBody(String title);
+
+  /// No description provided for @threadDeleteSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除'**
+  String get threadDeleteSuccess;
+
+  /// No description provided for @threadDeleteFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除失败:{message}'**
+  String threadDeleteFailed(String message);
 }
 
 class _AppLocalizationsDelegate

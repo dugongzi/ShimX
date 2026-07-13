@@ -7,4 +7,8 @@ abstract class ClaudeSessionActionRepository {
     required String format,
     required String outputPath,
   });
+
+  /// 删除会话。先把 jsonl 挪到备份目录(带时间戳),再从原目录移除,
+  /// 便于用户误删后回滚。返回备份文件路径。
+  Future<String> deleteThread({required String jsonlPath});
 }

@@ -8,6 +8,7 @@ class _AnthropicToolState {
   String name = '';
   final StringBuffer arguments = StringBuffer();
   bool added = false;
+  bool finished = false;
 }
 
 class AnthropicMessagesStreamToResponsesTransformer {
@@ -21,13 +22,23 @@ class AnthropicMessagesStreamToResponsesTransformer {
   String _textItemId = '';
   final StringBuffer _textBuf = StringBuffer();
   var _textAdded = false;
+  var _textFinished = false;
 
   int? _reasoningOutputIndex;
   String _reasoningItemId = '';
   final StringBuffer _reasoningBuf = StringBuffer();
   var _reasoningAdded = false;
+  var _reasoningFinished = false;
+
+  /// 已经作为最终 output 数组元素累积起来的 item,按到达顺序。
+  /// content_block_stop 时收尾的 item 立即入队,_finalize 直接用。
+  final List<Map<String, dynamic>> _finishedItems = [];
 
   final Map<int, _AnthropicToolState> _tools = {};
+
+  /// 按 Anthropic 的 content block index 记录 block 类型,便于 content_block_stop
+  /// 时把工具的 arguments.done 提前刷出去,让 codex 尽早看到工具结束。
+  final Map<int, String> _blockKind = {};
 
   String? _stopReason;
   int _inputTokens = 0;
@@ -84,13 +95,16 @@ class AnthropicMessagesStreamToResponsesTransformer {
       _handleContentBlockStart(event, out);
     } else if (type == 'content_block_delta') {
       _handleContentBlockDelta(event, out);
+    } else if (type == 'content_block_stop') {
+      _handleContentBlockStop(event, out);
     } else if (type == 'message_delta') {
       _handleMessageDelta(event);
     } else if (type == 'message_stop') {
       _finalize(out);
     } else if (type == 'error') {
-      // ignore: avoid_print
-      print('[AnthropicTransform] upstream error: $event');
+      _emitUpstreamError(event, out);
+    } else if (type == 'ping') {
+      // 保活,忽略
     }
   }
 
@@ -118,6 +132,7 @@ class AnthropicMessagesStreamToResponsesTransformer {
     if (block is! Map<String, dynamic>) return;
 
     final type = block['type'];
+    if (type is String) _blockKind[blockIndex] = type;
     if (type == 'text') {
       final text = block['text'];
       if (text is String && text.isNotEmpty) _appendText(text, out);
@@ -136,10 +151,10 @@ class AnthropicMessagesStreamToResponsesTransformer {
       state.itemId = 'fc_${state.callId}';
       state.outputIndex = _takeIndex();
       state.added = true;
-      final input = block['input'];
-      if (input is Map && input.isNotEmpty) {
-        state.arguments.write(jsonEncode(input));
-      }
+      // Anthropic 规范:content_block_start 里 tool_use.input 恒为 {},完整 JSON
+      // 由后续 input_json_delta.partial_json 拼出。这里不能把 {} encode 塞进
+      // arguments,否则最终 arguments = "{}" + partial_json 变成非法 JSON,
+      // codex 侧 JSON.parse 失败,tool 直接空转。
       _emit(out, 'response.output_item.added', {
         'type': 'response.output_item.added',
         'output_index': state.outputIndex,
@@ -187,6 +202,45 @@ class AnthropicMessagesStreamToResponsesTransformer {
         });
       }
     }
+  }
+
+  void _handleContentBlockStop(Map<String, dynamic> event, HttpResponse out) {
+    _ensureStarted(out);
+    final index = event['index'];
+    final blockIndex = index is int ? index : 0;
+    final kind = _blockKind[blockIndex];
+    if (kind == 'tool_use') {
+      final state = _tools[blockIndex];
+      if (state != null && state.added && !state.finished) {
+        _finishToolState(out, state);
+      }
+    } else if (kind == 'text') {
+      // Anthropic 一个 message 可能出现多个 text block,但 Responses 侧当前
+      // 用单一 message item 累积所有文本。文本 block 结束不立即关 message item,
+      // 保留到 _finalize 里统一 done —— 否则下一个 text block 又要开新 item。
+    } else if (kind == 'thinking') {
+      // 同上,reasoning summary 里可能有多段。保留累计到 _finalize。
+    }
+  }
+
+  void _emitUpstreamError(Map<String, dynamic> event, HttpResponse out) {
+    _ensureStarted(out);
+    final err = event['error'];
+    final message = err is Map ? '${err['message'] ?? err}' : '$event';
+    final errType = err is Map && err['type'] is String
+        ? err['type'] as String
+        : 'upstream_error';
+    // 先 emit 一个 Responses 风格的 error 事件,codex 那边可能忽略但至少不吊死。
+    _emit(out, 'response.error', {
+      'type': 'error',
+      'code': errType,
+      'message': message,
+      'param': null,
+      'sequence_number': 0,
+    });
+    // 强制走 failed 收尾路径,别让流一直挂着。
+    _stopReason = 'error';
+    _finalize(out, failed: true, errorMessage: message);
   }
 
   void _handleMessageDelta(Map<String, dynamic> event) {
@@ -287,29 +341,51 @@ class AnthropicMessagesStreamToResponsesTransformer {
     });
   }
 
-  void _finalize(HttpResponse out) {
+  void _finalize(
+    HttpResponse out, {
+    bool failed = false,
+    String? errorMessage,
+  }) {
     if (_finalized) return;
     _finalized = true;
     _ensureStarted(out);
 
-    final output = <Map<String, dynamic>>[];
-    _finishReasoning(out, output);
-    _finishText(out, output);
-    _finishTools(out, output);
+    _finishReasoning(out);
+    _finishText(out);
+    // 还没在 content_block_stop 里收尾的 tool 补收尾(比如流被截断)。
+    for (final t in _tools.values.toList()
+      ..sort((a, b) => (a.outputIndex ?? 0).compareTo(b.outputIndex ?? 0))) {
+      if (t.added && !t.finished) _finishToolState(out, t);
+    }
 
-    final status = _stopReason == 'max_tokens' ? 'incomplete' : 'completed';
+    final String status;
+    if (failed) {
+      status = 'failed';
+    } else if (_stopReason == 'max_tokens') {
+      status = 'incomplete';
+    } else {
+      status = 'completed';
+    }
     final response = _baseResponse()
       ..['status'] = status
-      ..['output'] = output
+      ..['output'] = List<Map<String, dynamic>>.from(_finishedItems)
       ..['usage'] = _normalizedUsage();
-    _emit(out, 'response.completed', {
-      'type': 'response.completed',
+    if (failed && errorMessage != null) {
+      response['error'] = {
+        'code': 'upstream_error',
+        'message': errorMessage,
+      };
+    }
+    final eventName = failed ? 'response.failed' : 'response.completed';
+    _emit(out, eventName, {
+      'type': eventName,
       'response': response,
     });
   }
 
-  void _finishReasoning(HttpResponse out, List<Map<String, dynamic>> output) {
-    if (!_reasoningAdded) return;
+  void _finishReasoning(HttpResponse out) {
+    if (!_reasoningAdded || _reasoningFinished) return;
+    _reasoningFinished = true;
     final text = _reasoningBuf.toString();
     _emit(out, 'response.reasoning_summary_text.done', {
       'type': 'response.reasoning_summary_text.done',
@@ -337,11 +413,12 @@ class AnthropicMessagesStreamToResponsesTransformer {
       'output_index': _reasoningOutputIndex,
       'item': item,
     });
-    output.add(item);
+    _finishedItems.add(item);
   }
 
-  void _finishText(HttpResponse out, List<Map<String, dynamic>> output) {
-    if (!_textAdded) return;
+  void _finishText(HttpResponse out) {
+    if (!_textAdded || _textFinished) return;
+    _textFinished = true;
     final text = _textBuf.toString();
     _emit(out, 'response.output_text.done', {
       'type': 'response.output_text.done',
@@ -371,35 +448,35 @@ class AnthropicMessagesStreamToResponsesTransformer {
       'output_index': _textOutputIndex,
       'item': item,
     });
-    output.add(item);
+    _finishedItems.add(item);
   }
 
-  void _finishTools(HttpResponse out, List<Map<String, dynamic>> output) {
-    final toolStates = _tools.values.where((t) => t.added).toList()
-      ..sort((a, b) => (a.outputIndex ?? 0).compareTo(b.outputIndex ?? 0));
-    for (final t in toolStates) {
-      final argStr = t.arguments.toString();
-      _emit(out, 'response.function_call_arguments.done', {
-        'type': 'response.function_call_arguments.done',
-        'item_id': t.itemId,
-        'output_index': t.outputIndex,
-        'arguments': argStr,
-      });
-      final item = {
-        'id': t.itemId,
-        'type': 'function_call',
-        'status': 'completed',
-        'call_id': t.callId,
-        'name': t.name,
-        'arguments': argStr,
-      };
-      _emit(out, 'response.output_item.done', {
-        'type': 'response.output_item.done',
-        'output_index': t.outputIndex,
-        'item': item,
-      });
-      output.add(item);
-    }
+  /// 单个 tool_use block 结束时收尾:emit arguments.done + output_item.done,
+  /// 并把 item 加入 _finishedItems 以进入最终 response.output。
+  void _finishToolState(HttpResponse out, _AnthropicToolState t) {
+    if (t.finished) return;
+    t.finished = true;
+    final argStr = t.arguments.toString();
+    _emit(out, 'response.function_call_arguments.done', {
+      'type': 'response.function_call_arguments.done',
+      'item_id': t.itemId,
+      'output_index': t.outputIndex,
+      'arguments': argStr,
+    });
+    final item = {
+      'id': t.itemId,
+      'type': 'function_call',
+      'status': 'completed',
+      'call_id': t.callId,
+      'name': t.name,
+      'arguments': argStr,
+    };
+    _emit(out, 'response.output_item.done', {
+      'type': 'response.output_item.done',
+      'output_index': t.outputIndex,
+      'item': item,
+    });
+    _finishedItems.add(item);
   }
 
   void _emitResponseStarted(HttpResponse out) {

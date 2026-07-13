@@ -259,6 +259,9 @@ Map<String, Object?> _convertResponsesToChat(Map<String, Object?> src) {
   if (maxOut is int) out['max_tokens'] = maxOut;
   if (src['temperature'] != null) out['temperature'] = src['temperature'];
   if (src['top_p'] != null) out['top_p'] = src['top_p'];
+  if (src['parallel_tool_calls'] != null) {
+    out['parallel_tool_calls'] = src['parallel_tool_calls'];
+  }
 
   final reasoning = src['reasoning'];
   if (reasoning is Map) {
@@ -338,7 +341,21 @@ Map<String, Object?> _convertResponsesToAnthropicMessages(
   if (tools.isNotEmpty) out['tools'] = tools;
 
   final toolChoice = _responsesToolChoiceToAnthropic(src['tool_choice']);
-  if (toolChoice != null) out['tool_choice'] = toolChoice;
+  // parallel_tool_calls: false 在 Anthropic 侧要塞进 tool_choice.disable_parallel_tool_use。
+  // 只有 tool_choice.type == auto/any/tool 时该字段才生效;none 不适用。
+  final parallel = src['parallel_tool_calls'];
+  final disableParallel = parallel is bool && !parallel;
+  if (toolChoice != null) {
+    if (disableParallel && toolChoice['type'] != 'none') {
+      toolChoice['disable_parallel_tool_use'] = true;
+    }
+    out['tool_choice'] = toolChoice;
+  } else if (disableParallel && tools.isNotEmpty) {
+    out['tool_choice'] = {
+      'type': 'auto',
+      'disable_parallel_tool_use': true,
+    };
+  }
   if (src['temperature'] != null) out['temperature'] = src['temperature'];
   if (src['top_p'] != null) out['top_p'] = src['top_p'];
 
@@ -707,15 +724,15 @@ void _appendAnthropicContentToResponsesInput(
   String role,
   Object? content,
 ) {
+  final responsesRole = role == 'assistant' ? 'assistant' : 'user';
+  final textPartType = role == 'assistant' ? 'output_text' : 'input_text';
+
   if (content is String) {
     if (content.isNotEmpty) {
       input.add({
-        'role': role == 'assistant' ? 'assistant' : 'user',
+        'role': responsesRole,
         'content': [
-          {
-            'type': role == 'assistant' ? 'output_text' : 'input_text',
-            'text': content,
-          },
+          {'type': textPartType, 'text': content},
         ],
       });
     }
@@ -723,15 +740,31 @@ void _appendAnthropicContentToResponsesInput(
   }
 
   if (content is! List) return;
-  final textParts = <String>[];
+
+  // 按到达顺序遍历,text 段先攒着,遇到 tool_use / tool_result 就把在此之前
+  // 攒好的 text 先落成一条 message,然后把工具 item 追加进 input。
+  // 这样保留 Anthropic 原文里 [text, tool_use, text] 之类顺序。
+  final pending = <String>[];
+  void flushPending() {
+    if (pending.isEmpty) return;
+    input.add({
+      'role': responsesRole,
+      'content': [
+        {'type': textPartType, 'text': pending.join('\n\n')},
+      ],
+    });
+    pending.clear();
+  }
+
   for (final rawPart in content) {
     if (rawPart is! Map) continue;
     final part = _stringKeyedMap(rawPart);
     final type = part['type'];
     if (type == 'text') {
       final text = part['text'];
-      if (text is String && text.isNotEmpty) textParts.add(text);
+      if (text is String && text.isNotEmpty) pending.add(text);
     } else if (type == 'tool_use') {
+      flushPending();
       input.add({
         'type': 'function_call',
         'call_id': part['id'] ?? '',
@@ -739,6 +772,7 @@ void _appendAnthropicContentToResponsesInput(
         'arguments': jsonEncode(part['input'] ?? <String, Object?>{}),
       });
     } else if (type == 'tool_result') {
+      flushPending();
       input.add({
         'type': 'function_call_output',
         'call_id': part['tool_use_id'] ?? '',
@@ -746,16 +780,5 @@ void _appendAnthropicContentToResponsesInput(
       });
     }
   }
-
-  if (textParts.isNotEmpty) {
-    input.add({
-      'role': role == 'assistant' ? 'assistant' : 'user',
-      'content': [
-        {
-          'type': role == 'assistant' ? 'output_text' : 'input_text',
-          'text': textParts.join('\n\n'),
-        },
-      ],
-    });
-  }
+  flushPending();
 }

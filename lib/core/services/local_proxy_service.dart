@@ -100,6 +100,12 @@ class LocalProxyService {
 
   ProxyTarget? _target;
 
+  /// codex 发过来的最近一份 tools 数组快照。
+  /// codex 只在部分请求(标题子任务等)里发工具,主对话不发。为了让第三方模型
+  /// 也能调用工具,shim 把每次经过的 tools 记下来,主对话缺 tools 时用这份补上。
+  /// 保留 Responses 侧的原始 shape,注入时按目的协议再转换。
+  List<Object?>? _lastSeenTools;
+
   /// 每个 codex thread id 各自独立的 Claude 桥绑定。
   /// codex 侧栏每条会话对应一个 thread id(请求 header `session-id`),只对绑定过的
   /// thread 注入接续 prompt,其他 thread 不受影响。
@@ -379,13 +385,17 @@ class LocalProxyService {
       _copyRequestHeaders(request, upstreamRequest, spec.uri.host);
       _applyProtocolHeaders(upstreamRequest, spec.headers);
 
-      final bodyBytes = await _collectBody(request);
+      final rawBodyBytes = await _collectBody(request);
       // 调试用:把原始请求 body 前 800 字节 dump 出来定位发起方
       AppLogService.instance.info(
         'Proxy',
         '请求 body',
-        details: _summarizeBody(bodyBytes),
+        details: _summarizeBody(rawBodyBytes),
       );
+      // _dumpToolsField('入口 codex 原始', rawBodyBytes); // 诊断用,默认关
+      // codex 只在标题子任务等场景里塞 tools,主对话不塞。为了让第三方模型也能
+      // 调工具,shim 观察带 tools 的请求存下快照,发现主对话 tools 缺失时注入。
+      final bodyBytes = _captureAndInjectTools(rawBodyBytes);
       // 按 codex 请求头 session-id 查这个 thread 自己的 Claude 桥绑定。
       // 没绑就不注入,跟"全局兜底"明确切开。
       final codexThreadId = request.headers.value('session-id') ?? '';
@@ -424,6 +434,7 @@ class LocalProxyService {
         // 输出注入后整个 input/messages 数组(去掉 instructions 那段固定 prompt 后)
         _dumpInjectedBody(outBytes);
       }
+      // _dumpToolsField('转发上游前', outBytes); // 诊断用,默认关
       upstreamRequest.headers.contentLength = outBytes.length;
       upstreamRequest.add(outBytes);
 
@@ -721,6 +732,118 @@ class LocalProxyService {
         '- jsonl_path: ${binding.jsonlPath}\n'
         '- sessionId: ${binding.sessionId}$titlePart\n\n'
         '注意:这条 system 指引每轮都会出现,直到用户在客户端解除绑定。如果你已经在前面的轮次读取过该会话,可以直接复用记忆,不需要重复调用工具。';
+  }
+
+  /// 观察-注入:codex 只在部分请求(如标题子任务)里发 tools,主对话不发,
+  /// 导致第三方模型不知道能调工具。这里做两件事:
+  ///   1. 如果这次请求带了 tools,把 Responses 侧原样(去掉过滤词命中项)缓存
+  ///   2. 如果这次请求不带 tools 但有缓存,把缓存 tools 注入回去
+  /// 返回可能被改过的 body bytes。仅对 Responses 协议 body 有效(codex 只发这个)。
+  List<int> _captureAndInjectTools(List<int> rawBytes) {
+    if (rawBytes.isEmpty) return rawBytes;
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(utf8.decode(rawBytes));
+    } catch (_) {
+      return rawBytes;
+    }
+    if (decoded is! Map) return rawBytes;
+    final body = _stringKeyedMap(decoded);
+    final existing = body['tools'];
+
+    if (existing is List && existing.isNotEmpty) {
+      // 捕获:codex 这次带了 tools,存快照给后面主对话请求兜底。
+      _lastSeenTools = List<Object?>.from(existing);
+      AppLogService.instance.debug(
+        'Proxy',
+        '已缓存 codex tools 快照',
+        details: 'count=${existing.length}',
+      );
+      return rawBytes;
+    }
+
+    // 注入:codex 没发 tools。用缓存补。
+    final cached = _lastSeenTools;
+    if (cached == null || cached.isEmpty) {
+      AppLogService.instance.warning(
+        'Proxy',
+        'codex 未发 tools 且无缓存快照,上游模型将无法调工具',
+        details: 'body 里 tools 字段: ${existing == null ? "缺失" : "空数组"}',
+      );
+      return rawBytes;
+    }
+    body['tools'] = List<Object?>.from(cached);
+    AppLogService.instance.debug(
+      'Proxy',
+      '已向请求注入缓存 tools',
+      details: 'count=${cached.length}',
+    );
+    return utf8.encode(jsonEncode(body));
+  }
+
+  static Map<String, Object?> _stringKeyedMap(Map source) =>
+      source.map((k, v) => MapEntry(k.toString(), v));
+
+  /// 诊断:把 body 里的 tools 数组原样 dump 出来(不做摘要,不截断名字)。
+  /// 用来验证 codex 到底有没有发工具,以及 shim 转换前后有没有把工具搞丢。
+  /// 默认调用点被注释,排查时打开即可。
+  // ignore: unused_element
+  void _dumpToolsField(String stage, List<int> bytes) {
+    if (bytes.isEmpty) {
+      AppLogService.instance.info('Proxy', '[$stage] tools dump', details: '(empty body)');
+      return;
+    }
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(utf8.decode(bytes, allowMalformed: true));
+    } catch (e) {
+      AppLogService.instance.warning('Proxy', '[$stage] tools dump 解析失败', details: '$e');
+      return;
+    }
+    if (decoded is! Map) {
+      AppLogService.instance.info('Proxy', '[$stage] tools dump', details: '(non-object json)');
+      return;
+    }
+    final tools = decoded['tools'];
+    if (tools == null) {
+      AppLogService.instance.info(
+        'Proxy',
+        '[$stage] tools dump',
+        details: 'tools 字段缺失 (key 不存在)',
+      );
+      return;
+    }
+    if (tools is! List) {
+      AppLogService.instance.info(
+        'Proxy',
+        '[$stage] tools dump',
+        details: 'tools 不是数组: ${tools.runtimeType} 值=${_clip(jsonEncode(tools), 200)}',
+      );
+      return;
+    }
+    if (tools.isEmpty) {
+      AppLogService.instance.info(
+        'Proxy',
+        '[$stage] tools dump',
+        details: 'tools 是空数组 (codex 显式发了空数组)',
+      );
+      return;
+    }
+    final names = <String>[];
+    for (final t in tools) {
+      if (t is Map) {
+        final n = t['name'] ?? (t['function'] is Map ? (t['function'] as Map)['name'] : null);
+        names.add(n is String ? n : '(${t['type'] ?? '?'})');
+      }
+    }
+    final encoded = jsonEncode(tools);
+    AppLogService.instance.info(
+      'Proxy',
+      '[$stage] tools dump count=${tools.length} names=[${names.join(", ")}]',
+      details: encoded.length > 4000
+          ? '${encoded.substring(0, 4000)}…(+${encoded.length - 4000})'
+          : encoded,
+    );
   }
 
   /// body 摘要:解析 JSON 后只打印 model + input/messages 摘要,跳过固定的 instructions。
